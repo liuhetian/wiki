@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Worker 异步深度排序 · 泼溅渲染的架构实验台</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: #2c3325; }
+  canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  canvas:active { cursor: grabbing; }
+  .hud {
+    position: fixed; left: 16px; top: 14px; color: #f2e8d5;
+    font: 12px/1.7 "DM Mono", ui-monospace, monospace; letter-spacing: .06em;
+    pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+  .hud b { font-size: 14px; letter-spacing: .12em; }
+  .panel {
+    position: fixed; right: 16px; top: 14px; color: #f2e8d5;
+    font: 12px/2 "DM Mono", ui-monospace, monospace; letter-spacing: .04em;
+    background: rgba(0,0,0,.25); padding: 10px 14px; border-radius: 10px; user-select: none;
+  }
+  .panel label { display: flex; align-items: center; gap: 7px; cursor: pointer; white-space: nowrap; }
+  .panel input { accent-color: #f08c2e; }
+  .panel input[type=range] { width: 120px; }
+  .panel .sep { border-top: 1px solid #f2e8d544; margin: 6px 0; }
+  .stats {
+    position: fixed; left: 16px; bottom: 14px; color: #f2e8d5;
+    font: 12px/1.8 "DM Mono", ui-monospace, monospace; pointer-events: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+  .stats em { font-style: normal; color: #f08c2e; }
+  .err { position: fixed; inset: 0; display: none; place-items: center; color: #f2e8d5; font: 14px system-ui; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="hud"><b>SORT LAB</b><br>三团半透明高斯球互相穿插 —— 排序错一帧就露馅</div>
+<div class="panel">
+  <label><input type="radio" name="mode" value="worker" checked> Worker 异步排（oryzo 的做法）</label>
+  <label><input type="radio" name="mode" value="main"> 主线程每帧同步排</label>
+  <label><input type="radio" name="mode" value="none"> 不排序</label>
+  <div class="sep"></div>
+  <label>模拟排序耗时 <input type="range" id="cost" min="0" max="48" value="0"> <span id="costV">0ms</span></label>
+</div>
+<div class="stats" id="stats">–</div>
+<div class="err" id="err">需要 WebGL2 支持。</div>
+
+<script>
+/* ============================================================================
+ * Worker 异步深度排序 —— oryzo 泼溅渲染架构的实验台
+ *
+ * 半透明混合要求"从远到近"画，所以相机一动就得重排全部高斯。
+ * 排序放哪儿是个架构决策，这个 demo 让三个选项当场对质：
+ *
+ *   ① Worker 异步（oryzo 的选择，原站是 Rust→wasm 的 SplatSorter）：
+ *      渲染永不等排序；代价是排序结果晚 1~N 帧到货，
+ *      耗时拉高后能看到穿插处"游一下"才对（延迟帧数看左下角）。
+ *   ② 主线程同步：顺序永远新鲜，但排序耗时直接吃掉帧预算 —— 拉高滑杆看 FPS 跳水。
+ *   ③ 不排序：按生成顺序画，穿插处的前后关系随相机角度胡说八道。
+ *
+ *   消息协议按 oryzo 的形状复刻：INIT{positions} → READY；
+ *   SORT{zRow, sortBuffer} → SORT_DONE{sortBuffer}，索引缓冲 transferable
+ *   往返 ping-pong，零克隆。位置数组只在 INIT 传一次。
+ * ========================================================================== */
+
+const canvas = document.getElementById('gl');
+const gl = canvas.getContext('webgl2', { antialias: false, alpha: false });
+if (!gl) { document.getElementById('err').style.display = 'grid'; throw new Error('no webgl2'); }
+
+/* ---------- 场景：三团互相穿插的半透明高斯球壳 ---------- */
+
+const splats = [];
+const rand = (a, b) => a + Math.random() * (b - a);
+const gauss = () => (Math.random()+Math.random()+Math.random()+Math.random()-2)/2;
+
+const BLOBS = [
+  { c: [ 0.62,  0.0,  0.0], r: 0.62, color: [0.85, 0.55, 0.30] },  // 软木橙
+  { c: [-0.34,  0.55, 0.0], r: 0.62, color: [0.48, 0.58, 0.32] },  // 橄榄绿
+  { c: [-0.34, -0.55, 0.0], r: 0.62, color: [0.90, 0.85, 0.70] },  // 米白
+];
+for (const b of BLOBS) {
+  for (let i = 0; i < 1100; i++) {
+    // 球面均匀方向 × 半径 → 薄壳；壳与壳穿插的地方就是排序的照妖镜
+    let d = [gauss(), gauss(), gauss()];
+    const l = Math.hypot(...d) || 1; d = d.map(x => x / l);
+    const rr = b.r * rand(0.96, 1.04);
+    splats.push({
+      center: [b.c[0]+d[0]*rr, b.c[1]+d[1]*rr, b.c[2]+d[2]*rr],
+      scale: [rand(0.05, 0.075), rand(0.05, 0.075), 0.014],
+      normal: d,
+      color: b.color.map(x => x * rand(0.92, 1.08)),
+      alpha: 0.55,
+    });
+  }
+}
+const COUNT = splats.length;
+
+function quatFromNormal(n) {
+  const d = n[2];
+  if (d > 0.9999) return [0, 0, 0, 1];
+  if (d < -0.9999) return [1, 0, 0, 0];
+  const ax = [-n[1], n[0], 0];
+  const l = Math.hypot(...ax), a = Math.acos(d), s = Math.sin(a/2)/l;
+  return [ax[0]*s, ax[1]*s, ax[2]*s, Math.cos(a/2)];
+}
+
+/* ---------- 排序 Worker：内联 Blob，协议形状照抄 oryzo ---------- */
+
+const workerSrc = `
+let positions = null;
+const busyWait = ms => { const t0 = performance.now(); while (performance.now() - t0 < ms); };
+onmessage = e => {
+  const { type, payload } = e.data;
+  if (type === 'INIT') {
+    positions = payload.positions;                 // 只传一次，常驻 Worker
+    postMessage({ type: 'READY' });
+  } else if (type === 'SORT') {
+    const { zRow, cost, sortBuffer } = payload;
+    busyWait(cost);                                // 模拟"排序很贵"（wasm 里是真算力）
+    const n = positions.length / 3;
+    const depths = new Float32Array(n);
+    const idx = new Uint32Array(sortBuffer);
+    for (let i = 0; i < n; i++) {
+      depths[i] = zRow[0]*positions[3*i] + zRow[1]*positions[3*i+1] + zRow[2]*positions[3*i+2];
+      idx[i] = i;
+    }
+    idx.sort((a, b) => depths[a] - depths[b]);
+    postMessage({ type: 'SORT_DONE', sortBuffer }, [sortBuffer]);   // transferable 回传
+  }
+};`;
+const worker = new Worker(URL.createObjectURL(new Blob([workerSrc], { type: 'text/javascript' })));
+
+const positions = new Float32Array(COUNT * 3);
+splats.forEach((s, i) => positions.set(s.center, i * 3));
+let workerReady = false, sortInFlight = false, framesSinceRequest = 0, lagFrames = 0;
+let spareBuffer = new ArrayBuffer(COUNT * 4);      // ping-pong 用的备用索引缓冲
+worker.postMessage({ type: 'INIT', payload: { positions } });   // 结构化克隆一次，之后不再传
+worker.onmessage = e => {
+  if (e.data.type === 'READY') { workerReady = true; return; }
+  if (e.data.type === 'SORT_DONE') {
+    applyOrder(new Uint32Array(e.data.sortBuffer));
+    spareBuffer = e.data.sortBuffer;               // 拿回所有权，下次继续用
+    lagFrames = framesSinceRequest;                // 这批顺序"晚了几帧"
+    sortInFlight = false;
+  }
+};
+
+/* ---------- WebGL 管线（与本合集《高斯泼溅光栅化》同款，注释从简） ---------- */
+
+const VS = `#version 300 es
+precision highp float;
+in vec3 iCenter; in vec3 iScale; in vec4 iQuat; in vec4 iColorA;
+uniform mat4 uView, uProj; uniform vec2 uViewport, uFocal;
+out vec4 vColor; out vec3 vConic; out vec2 vPixPos;
+mat3 quatToMat3(vec4 q){float x=q.x,y=q.y,z=q.z,w=q.w;
+  return mat3(1.-2.*(y*y+z*z),2.*(x*y+w*z),2.*(x*z-w*y),
+              2.*(x*y-w*z),1.-2.*(x*x+z*z),2.*(y*z+w*x),
+              2.*(x*z+w*y),2.*(y*z-w*x),1.-2.*(x*x+y*y));}
+void main(){
+  vec2 corner = vec2(float(gl_VertexID % 2), float(gl_VertexID / 2)) * 2. - 1.;
+  vec4 viewC = uView * vec4(iCenter, 1.);
+  if (viewC.z > -0.3) { gl_Position = vec4(0.,0.,2.,1.); return; }
+  mat3 R = quatToMat3(iQuat);
+  mat3 M = R * mat3(iScale.x,0.,0., 0.,iScale.y,0., 0.,0.,iScale.z);
+  mat3 Sigma = M * transpose(M);
+  float invZ = 1./viewC.z, invZ2 = invZ*invZ;
+  mat3 J = mat3(uFocal.x*invZ,0.,0., 0.,uFocal.y*invZ,0.,
+                -uFocal.x*viewC.x*invZ2, -uFocal.y*viewC.y*invZ2, 0.);
+  mat3 T = J * mat3(uView);
+  mat3 S2 = T * Sigma * transpose(T);
+  float a = S2[0][0]+0.3, b = S2[1][0], c = S2[1][1]+0.3;
+  float det = a*c - b*b;
+  if (det <= 0.) { gl_Position = vec4(0.,0.,2.,1.); return; }
+  vConic = vec3(c, -b, a) / det;
+  float mid = 0.5*(a+c), rad = sqrt(max(0., mid*mid - det));
+  float l1 = mid+rad, l2 = max(mid-rad, 1e-4);
+  vec2 e1 = (abs(b)<1e-9) ? ((a>=c)?vec2(1.,0.):vec2(0.,1.)) : normalize(vec2(b, l1-a));
+  vec2 e2 = vec2(e1.y, -e1.x);
+  vec2 radiusPx = min(3.*sqrt(vec2(l1,l2)), 512.);
+  vec2 offsetPx = corner.x*e1*radiusPx.x + corner.y*e2*radiusPx.y;
+  vPixPos = offsetPx;
+  vec4 clip = uProj * viewC;
+  clip.xy += offsetPx / uViewport * 2. * clip.w;
+  gl_Position = clip;
+  vColor = iColorA;
+}`;
+const FS = `#version 300 es
+precision highp float;
+in vec4 vColor; in vec3 vConic; in vec2 vPixPos; out vec4 frag;
+void main(){
+  float power = 0.5*(vConic.x*vPixPos.x*vPixPos.x + vConic.z*vPixPos.y*vPixPos.y)
+              + vConic.y*vPixPos.x*vPixPos.y;
+  float alpha = vColor.a * exp(-power);
+  if (alpha < 1./255.) discard;
+  frag = vec4(vColor.rgb, alpha);
+}`;
+
+function compile(type, code) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, code); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog);
+if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+gl.useProgram(prog);
+
+const FLOATS = 14;
+const src = new Float32Array(COUNT * FLOATS);
+splats.forEach((s, i) => {
+  src.set(s.center, i*FLOATS);
+  src.set(s.scale, i*FLOATS+3);
+  src.set(quatFromNormal(s.normal), i*FLOATS+6);
+  src.set([...s.color, s.alpha], i*FLOATS+10);
+});
+const sorted = new Float32Array(COUNT * FLOATS);
+
+const vao = gl.createVertexArray();
+gl.bindVertexArray(vao);
+const vbo = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+gl.bufferData(gl.ARRAY_BUFFER, sorted.byteLength, gl.DYNAMIC_DRAW);
+[['iCenter',3,0],['iScale',3,12],['iQuat',4,24],['iColorA',4,40]].forEach(([n,sz,off]) => {
+  const loc = gl.getAttribLocation(prog, n);
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, sz, gl.FLOAT, false, FLOATS*4, off);
+  gl.vertexAttribDivisor(loc, 1);
+});
+
+function applyOrder(idx) {
+  for (let k = 0; k < COUNT; k++)
+    sorted.set(src.subarray(idx[k]*FLOATS, (idx[k]+1)*FLOATS), k*FLOATS);
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, sorted);
+}
+// 初始上传一份自然顺序（"不排序"模式直接用它）
+applyOrder(Uint32Array.from({ length: COUNT }, (_, i) => i));
+
+/* ---------- 主线程同步排序（模式②用，busy-wait 同款注水） ---------- */
+
+const depths = new Float32Array(COUNT), order = new Uint32Array(COUNT);
+function sortOnMain(zRow, cost) {
+  const t0 = performance.now();
+  while (performance.now() - t0 < cost);
+  for (let i = 0; i < COUNT; i++) {
+    depths[i] = zRow[0]*positions[3*i] + zRow[1]*positions[3*i+1] + zRow[2]*positions[3*i+2];
+    order[i] = i;
+  }
+  order.sort((a, b) => depths[a] - depths[b]);
+  applyOrder(order);
+  return performance.now() - t0;
+}
+
+/* ---------- 相机 / 循环 / 统计 ---------- */
+
+function perspective(fovY, aspect, near, far) {
+  const f = 1/Math.tan(fovY/2), nf = 1/(near-far);
+  return new Float32Array([f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0]);
+}
+const sub3=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const cross3=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const norm3=a=>{const l=Math.hypot(...a);return[a[0]/l,a[1]/l,a[2]/l]};
+function lookAt(eye, at, up) {
+  const z = norm3(sub3(eye,at)), x = norm3(cross3(up,z)), y = cross3(z,x);
+  return new Float32Array([x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0,
+    -dot3(x,eye),-dot3(y,eye),-dot3(z,eye),1]);
+}
+
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let theta = 0.3, phi = 0.5, vT = 0, vP = 0, dragging = false, px = 0, py = 0;
+canvas.addEventListener('pointerdown', e => { dragging = true; px = e.clientX; py = e.clientY; canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  vT = (e.clientX-px)*0.005; vP = (e.clientY-py)*0.004;
+  theta -= vT; phi += vP; px = e.clientX; py = e.clientY;
+});
+canvas.addEventListener('pointerup', () => dragging = false);
+
+gl.disable(gl.DEPTH_TEST);
+gl.enable(gl.BLEND);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+gl.clearColor(0.173, 0.2, 0.145, 1);
+
+const U = n => gl.getUniformLocation(prog, n);
+const costEl = document.getElementById('cost'), costV = document.getElementById('costV');
+const statsEl = document.getElementById('stats');
+costEl.addEventListener('input', () => costV.textContent = costEl.value + 'ms');
+
+let fps = 60, lastT = performance.now(), mainSortMs = 0;
+
+function frame() {
+  const now = performance.now();
+  fps = fps * 0.92 + (1000 / Math.max(1, now - lastT)) * 0.08;   // EMA
+  lastT = now;
+
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const w = canvas.clientWidth*dpr|0, h = canvas.clientHeight*dpr|0;
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+  gl.viewport(0, 0, w, h);
+
+  if (!dragging) {
+    theta -= vT; phi += vP; vT *= 0.94; vP *= 0.94;
+    if (!reduceMotion) theta += 0.006;             // 转快点，逼排序露马脚
+  }
+  phi = Math.max(-1.1, Math.min(1.1, phi));
+
+  const eye = [3.4*Math.cos(phi)*Math.cos(theta), 3.4*Math.cos(phi)*Math.sin(theta), 3.4*Math.sin(phi)];
+  const view = lookAt(eye, [0, 0, 0], [0, 0, 1]);
+  const fovY = 40*Math.PI/180;
+  const proj = perspective(fovY, w/h, 0.1, 100);
+  const zRow = [view[2], view[6], view[10]];
+  const cost = +costEl.value;
+  const mode = document.querySelector('input[name=mode]:checked').value;
+
+  if (mode === 'main') {
+    mainSortMs = sortOnMain(zRow, cost);
+  } else if (mode === 'worker' && workerReady && !sortInFlight) {
+    // 一次只挂一单：新相机角度会在下一单里补上（oryzo 同策略）
+    sortInFlight = true; framesSinceRequest = 0;
+    worker.postMessage({ type: 'SORT', payload: { zRow, cost, sortBuffer: spareBuffer } }, [spareBuffer]);
+  }
+  if (sortInFlight) framesSinceRequest++;
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.uniformMatrix4fv(U('uView'), false, view);
+  gl.uniformMatrix4fv(U('uProj'), false, proj);
+  gl.uniform2f(U('uViewport'), w, h);
+  gl.uniform2f(U('uFocal'), h/(2*Math.tan(fovY/2)), h/(2*Math.tan(fovY/2)));
+  gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, COUNT);
+
+  statsEl.innerHTML = `FPS <em>${fps.toFixed(0)}</em> · ${COUNT.toLocaleString()} 高斯 · ` +
+    (mode === 'worker' ? `排序延迟 <em>${lagFrames}</em> 帧（异步到货）`
+     : mode === 'main' ? `主线程排序占用 <em>${mainSortMs.toFixed(1)}ms</em>/帧`
+     : `未排序 —— 注意穿插处的前后关系错乱`);
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

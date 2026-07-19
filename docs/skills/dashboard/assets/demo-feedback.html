@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：反馈状态</title>
+<!--
+  demo-feedback.html —— 「反馈与空态」形状的最小可玩实现
+  （蓝本：open-dashboard 的 add-feedback-states + add-empty-state）。
+  复现的不变量：
+  - 每个数据区域都显式处理 loading / empty / error / ready 四态，共用一个 StateView 组件形状
+  - 空态必须给下一步动作（CTA），且区分「还没有数据」和「筛选无结果」两种文案
+  - 错误态给重试；loading 用骨架屏占位（不跳版式）
+  - 侧滑抽屉（Sheet）自包含、可关闭；瞬时反馈用 toast
+  demo 用分段控制手动切四态，方便看清每一态的样子（真实版由查询状态驱动）。
+  运行时：/vendor 的 React 18 UMD + htm，样式共用 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .region { min-height: 240px; }
+  .center { text-align: center; padding: 34px 16px; }
+  .center .icon { width: 44px; height: 44px; border-radius: 50%; background: var(--chip-off-bg);
+                  display: inline-flex; align-items: center; justify-content: center; font-size: 20px; }
+  .center h3 { margin: 10px 0 4px; font-size: 15px; }
+  .center p { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+  .sheet { position: fixed; top: 0; right: 0; bottom: 0; width: min(320px, 86vw);
+           background: var(--card); border-left: 1px solid var(--border); z-index: 25;
+           padding: 16px; box-shadow: -8px 0 24px rgba(0,0,0,.18); }
+  .sheet h2 { margin: 0 0 8px; font-size: 15px; }
+  .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.32); z-index: 24; }
+  .rowitem { display: flex; justify-content: space-between; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  .rowitem:last-child { border-bottom: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const ROWS = [
+  { id: 1, name: "对账单 2026-06", meta: "38 笔 · ¥ 214,300" },
+  { id: 2, name: "对账单 2026-05", meta: "41 笔 · ¥ 198,750" },
+  { id: 3, name: "对账单 2026-04", meta: "35 笔 · ¥ 176,020" },
+];
+
+// StateView：state 决定渲染哪个分支，"ready" 直通 children —— 全应用共用这一个形状
+function StateView({ state, empty, error, children }) {
+  if (state === "loading") return html`
+    <div>${[0, 1, 2, 3].map(i => html`<div key=${i} class="skel" style=${{ width: (82 - i * 12) + "%" }}></div>`)}</div>`;
+  if (state === "empty") return empty;
+  if (state === "error") return error;
+  return children;
+}
+
+function App() {
+  const [state, setState] = useState("ready");        // 真实版：由查询状态驱动
+  const [emptyKind, setEmptyKind] = useState("first"); // first=还没有数据 / filtered=筛选无结果
+  const [sheet, setSheet] = useState(false);
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const emptyView = emptyKind === "first"
+    ? html`
+      <div class="center">
+        <span class="icon">🗂️</span>
+        <h3>还没有对账单</h3>
+        <p>创建第一份对账单，或从旧系统导入历史数据。</p>
+        <button class="btn primary" onClick=${() => setToast("演示：去创建")}>新建对账单</button>
+        <button class="link" onClick=${() => setToast("演示：去导入")}>导入数据</button>
+      </div>`
+    : html`
+      <div class="center">
+        <span class="icon">🔍</span>
+        <h3>没有匹配的结果</h3>
+        <p>当前筛选条件下没有对账单 —— 试试放宽或清空筛选。</p>
+        <button class="btn" onClick=${() => { setState("ready"); setToast("已清空筛选"); }}>清空筛选</button>
+      </div>`;
+
+  const errorView = html`
+    <div style=${{ padding: "16px" }}>
+      <div class="alert danger">
+        <p><b>加载失败：</b>请求超时（504）。数据没有丢，重试通常可以恢复。</p>
+      </div>
+      <p style=${{ textAlign: "center", marginTop: "14px" }}>
+        <button class="btn" onClick=${() => { setState("loading"); setTimeout(() => setState("ready"), 900); }}>重试</button>
+      </p>
+    </div>`;
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>反馈与空态</h1>
+          <p class="sub">同一个数据区域的四态 —— 用下面的开关切着看；真实版由查询状态驱动</p>
+        </div>
+        <button class="btn" onClick=${() => setSheet(true)}>打开侧滑详情</button>
+      </header>
+
+      <div class="toolbar">
+        <div class="seg">
+          ${["loading", "empty", "error", "ready"].map(s => html`
+            <button key=${s} class=${state === s ? "on" : ""} onClick=${() => setState(s)}>
+              ${{ loading: "加载中", empty: "空态", error: "出错", ready: "有数据" }[s]}
+            </button>`)}
+        </div>
+        ${state === "empty" && html`
+          <div class="seg">
+            <button class=${emptyKind === "first" ? "on" : ""} onClick=${() => setEmptyKind("first")}>还没有数据</button>
+            <button class=${emptyKind === "filtered" ? "on" : ""} onClick=${() => setEmptyKind("filtered")}>筛选无结果</button>
+          </div>`}
+      </div>
+
+      <div class="card region">
+        <${StateView} state=${state} empty=${emptyView} error=${errorView}>
+          ${ROWS.map(r => html`
+            <div key=${r.id} class="rowitem">
+              <span style=${{ fontWeight: 550 }}>${r.name}</span>
+              <span style=${{ color: "var(--muted)" }}>${r.meta}
+                <button class="link" onClick=${() => setSheet(true)}>详情</button></span>
+            </div>`)}
+        <//>
+      </div>
+
+      ${sheet && html`
+        <div class="scrim" onClick=${() => setSheet(false)}></div>
+        <aside class="sheet" role="dialog" aria-label="对账单详情">
+          <h2>对账单 2026-06</h2>
+          <p class="sub">侧滑抽屉：自包含、点遮罩或按钮即关，不打断列表上下文</p>
+          <div class="rowitem"><span>笔数</span><b>38</b></div>
+          <div class="rowitem"><span>金额</span><b>¥ 214,300</b></div>
+          <div class="rowitem"><span>状态</span><span class="chip chip-warn">待复核</span></div>
+          <p style=${{ marginTop: "14px" }}>
+            <button class="btn primary" onClick=${() => { setSheet(false); setToast("已标记复核通过"); }}>复核通过</button>
+            <button class="btn" onClick=${() => setSheet(false)}>关闭</button>
+          </p>
+        </aside>`}
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：审计日志</title>
+<!--
+  demo-audit-log.html —— 「审计日志」形状的最小可玩实现
+  （蓝本：open-dashboard 的 add-audit-log + templates/AuditTrail.tsx + audit-log.tsx）。
+  复现的不变量：
+  - 追加式历史：demo 只读渲染，不做增删改；真实版由 recordAudit() 与 create*/update*/delete* 同事务写入
+  - 反向时间序：newest-first；结构 <ol><li>… 语义化，连线 + 小圆点为装饰
+  - 列表参数一个形状：{ types, from, to } → 过滤后的 entries；demo 在内存里过滤，真实版把同参数交给 AuditLogRepository.list()
+  - tone 决定圆点颜色（created/updated/deleted/status/login），changes 决定条目是否可展开
+  - diff 是字符串化的 { field, from?, to? } 数组：创建可省 from、删除可省 to；前端只按字符串渲染
+  - 时间双写：相对时间给扫读，绝对时间挂在 <time title> 里给追溯
+  - 权限：审计日志通常需要管理员角色，真实版路由 + server fn 都要 requireRole("admin")；demo 略去
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .count-line { margin: 6px 2px 10px; font-size: 12px; color: var(--muted); }
+  .count-line strong { color: var(--fg); }
+
+  .pills { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+  .pill { padding: 4px 11px; border-radius: 999px; border: 1px solid var(--border);
+          background: var(--card); color: var(--muted); cursor: pointer;
+          font: inherit; font-size: 12px; }
+  .pill:hover { border-color: var(--primary); color: var(--fg); }
+  .pill.on { background: var(--primary); border-color: var(--primary); color: var(--primary-fg); }
+
+  .trail { position: relative; list-style: none; padding: 4px 0 4px 32px;
+           margin: 0; border-left: 1px solid var(--border); }
+  .entry { position: relative; padding: 12px 4px 12px 4px; }
+  .entry + .entry { border-top: 1px dashed var(--border); }
+  .dot { position: absolute; left: -44px; top: 12px; width: 24px; height: 24px;
+         border-radius: 50%; display: grid; place-items: center;
+         font-size: 11px; font-weight: 650; color: #fff;
+         box-shadow: 0 0 0 4px var(--bg); }
+  .dot.created { background: #22884a; }
+  .dot.updated { background: var(--primary); color: var(--primary-fg); }
+  .dot.deleted { background: var(--danger); }
+  .dot.status  { background: #b47a17; }
+  .dot.login   { background: #6a737d; }
+
+  .row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .who { font-weight: 600; }
+  .what { color: var(--muted); }
+  .what strong { color: var(--fg); font-weight: 550; }
+  .when { margin-left: auto; font-size: 12px; color: var(--muted);
+          font-variant-numeric: tabular-nums; cursor: help;
+          border-bottom: 1px dotted var(--border); }
+  .expand { border: 0; background: none; color: var(--primary); padding: 0 4px;
+            cursor: pointer; font: inherit; font-size: 12px; }
+  .expand:hover { text-decoration: underline; }
+
+  .diff { margin: 8px 0 2px; padding: 6px 0 2px 12px; list-style: none;
+          border-left: 2px solid var(--border);
+          display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; }
+  .diff-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+  .diff-field { color: var(--fg); font-weight: 600; }
+  .diff-old { background: rgba(196, 55, 44, 0.12); color: var(--danger);
+              text-decoration: line-through; padding: 1px 6px; border-radius: 4px; }
+  .diff-new { background: rgba(23, 110, 52, 0.14); color: var(--chip-on-fg);
+              padding: 1px 6px; border-radius: 4px; }
+  .diff-arrow { color: var(--muted); }
+
+  .empty-card { padding: 30px 16px; text-align: center; color: var(--muted);
+                background: var(--card); border: 1px dashed var(--border); border-radius: 10px; }
+  .date { padding: 5px 8px; }
+  @media (max-width: 520px) { .when { margin-left: 0; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+// 时间锚点：让 demo 在任何日期打开都稳定
+const NOW = new Date("2026-07-07T15:34:00");
+const DAY_MS = 86400000;
+const T = (dSec) => new Date(NOW.getTime() + dSec * 1000);
+
+// 历史条目（newest-first）—— 覆盖各 tone：created / updated / deleted / status / login
+const ENTRIES = [
+  { id: "a-1", actor: "陈禾", tone: "status",  action: "变更了状态",
+    target: "订单 #1043", ts: T(-2 * 60),
+    changes: [{ field: "状态", from: "备货中", to: "已发货" }] },
+  { id: "a-2", actor: "李慕白", tone: "updated", action: "更新了",
+    target: "商品「云鸣耳机」", ts: T(-18 * 60),
+    changes: [
+      { field: "价格", from: "¥199", to: "¥179" },
+      { field: "库存", from: "120", to: "96" },
+    ] },
+  { id: "a-3", actor: "系统",   tone: "created", action: "创建了",
+    target: "退款单 #R-88", ts: T(-60 * 60),
+    changes: [
+      { field: "金额", to: "¥42.50" },
+      { field: "原因", to: "运输破损" },
+    ] },
+  { id: "a-4", actor: "王小满", tone: "deleted", action: "删除了",
+    target: "优惠券「SPRING20」", ts: T(-3 * 60 * 60),
+    changes: [{ field: "优惠码", from: "SPRING20" }] },
+  { id: "a-5", actor: "赵青",   tone: "login",   action: "登录了系统",
+    ts: T(-12 * 60 * 60) },
+  { id: "a-6", actor: "陈禾",   tone: "created", action: "创建了",
+    target: "客户「云上科技」", ts: T(-26 * 60 * 60) },
+  { id: "a-7", actor: "周芷",   tone: "updated", action: "更新了",
+    target: "订单 #1039", ts: T(-3 * DAY_MS / 1000),
+    changes: [
+      { field: "地址", from: "上海市浦东新区世纪大道 100 号", to: "上海市静安区南京西路 800 号" },
+      { field: "备注", to: "客户希望工作日送达" },
+    ] },
+  { id: "a-8", actor: "郑舟",   tone: "login",   action: "登录了系统",
+    ts: T(-6 * DAY_MS / 1000) },
+  { id: "a-9", actor: "冯霁",   tone: "deleted", action: "删除了",
+    target: "商品「过季氛围灯」", ts: T(-14 * DAY_MS / 1000),
+    changes: [{ field: "SKU", from: "SKU-A007" }] },
+  { id: "a-10", actor: "沈砚",  tone: "updated", action: "更新了",
+    target: "用户「陈禾」的角色", ts: T(-21 * DAY_MS / 1000),
+    changes: [{ field: "角色", from: "编辑", to: "管理员" }] },
+];
+
+const ACTION_TYPES = [
+  { key: "created", label: "创建" },
+  { key: "updated", label: "更新" },
+  { key: "deleted", label: "删除" },
+  { key: "status",  label: "状态变更" },
+  { key: "login",   label: "登录" },
+];
+
+const RANGES = [
+  { key: "today",  label: "今天" },
+  { key: "7d",     label: "近 7 天" },
+  { key: "30d",    label: "近 30 天" },
+  { key: "custom", label: "自定义" },
+];
+
+const TONE_CN = { created: "创建", updated: "更新", deleted: "删除", status: "状态", login: "登录" };
+
+function pad(n) { return String(n).padStart(2, "0"); }
+function absolute(ts) {
+  return ts.getFullYear() + "-" + pad(ts.getMonth() + 1) + "-" + pad(ts.getDate())
+       + " " + pad(ts.getHours()) + ":" + pad(ts.getMinutes());
+}
+function relative(ts) {
+  const s = Math.max(0, Math.floor((NOW.getTime() - ts.getTime()) / 1000));
+  if (s < 60) return s + " 秒前";
+  if (s < 3600) return Math.floor(s / 60) + " 分钟前";
+  if (s < 86400) return Math.floor(s / 3600) + " 小时前";
+  return Math.floor(s / 86400) + " 天前";
+}
+
+// 时间范围解算：真实版会把 { from, to } 一起打进 list 查询
+function resolveRange(range, from, to) {
+  const nowMs = NOW.getTime();
+  if (range === "today") {
+    const t0 = new Date(NOW); t0.setHours(0, 0, 0, 0);
+    return { fromMs: t0.getTime(), toMs: nowMs };
+  }
+  if (range === "7d")  return { fromMs: nowMs - 7 * DAY_MS,  toMs: nowMs };
+  if (range === "30d") return { fromMs: nowMs - 30 * DAY_MS, toMs: nowMs };
+  // custom
+  const f = new Date(from + "T00:00:00").getTime();
+  const t = new Date(to + "T23:59:59").getTime();
+  return { fromMs: f, toMs: t };
+}
+
+// demo 在内存里过滤；真实版：AuditLogRepository.list({ resource, types, from, to, page })
+function runList(entries, types, fromMs, toMs) {
+  return entries.filter(e =>
+    (types.length === 0 || types.includes(e.tone)) &&
+    e.ts.getTime() >= fromMs && e.ts.getTime() <= toMs);
+}
+
+function DiffList({ changes }) {
+  return html`
+    <ul class="diff">
+      ${changes.map((c, i) => html`
+        <li key=${i} class="diff-row">
+          <span class="diff-field">${c.field}:</span>
+          ${c.from !== undefined && html`<span class="diff-old">${c.from}</span>`}
+          ${c.from !== undefined && c.to !== undefined && html`<span class="diff-arrow">→</span>`}
+          ${c.to !== undefined && html`<span class="diff-new">${c.to}</span>`}
+        </li>`)}
+    </ul>`;
+}
+
+function Entry({ e, expanded, onToggle }) {
+  const has = e.changes && e.changes.length > 0;
+  return html`
+    <li class="entry">
+      <span class=${"dot " + e.tone} aria-label=${TONE_CN[e.tone]}>${e.actor.charAt(0)}</span>
+      <div class="row">
+        <span class="who">${e.actor}</span>
+        <span class="what">
+          ${e.action}${e.target ? html` <strong>${e.target}</strong>` : ""}
+        </span>
+        <time class="when" dateTime=${e.ts.toISOString()} title=${absolute(e.ts)}>
+          ${relative(e.ts)}
+        </time>
+        ${has && html`
+          <button class="expand" aria-expanded=${expanded ? "true" : "false"} onClick=${onToggle}>
+            ${expanded ? "收起 ▲" : "展开 ▼"}
+          </button>`}
+      </div>
+      ${expanded && has && html`<${DiffList} changes=${e.changes} />`}
+    </li>`;
+}
+
+function App() {
+  const [types, setTypes] = useState([]);              // 空数组 = 全部类型
+  const [range, setRange] = useState("30d");
+  const [from, setFrom] = useState("2026-06-07");
+  const [to,   setTo]   = useState("2026-07-07");
+  const [expanded, setExpanded] = useState({});
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const { fromMs, toMs } = useMemo(
+    () => resolveRange(range, from, to), [range, from, to]);
+  const filtered = useMemo(
+    () => runList(ENTRIES, types, fromMs, toMs), [types, fromMs, toMs]);
+
+  const toggleType = (k) => {
+    const next = types.includes(k) ? types.filter(x => x !== k) : [...types, k];
+    setTypes(next);
+    setToast("已过滤 · " + runList(ENTRIES, next, fromMs, toMs).length + " 条");
+  };
+  const clearTypes = () => { setTypes([]); setToast("已清除类型筛选"); };
+  const changeRange = (k) => {
+    setRange(k);
+    const r = resolveRange(k, from, to);
+    setToast("「" + RANGES.find(x => x.key === k).label + "」· "
+             + runList(ENTRIES, types, r.fromMs, r.toMs).length + " 条");
+  };
+  const expandAll = () => {
+    const m = {};
+    filtered.forEach(e => { if (e.changes && e.changes.length > 0) m[e.id] = true; });
+    setExpanded(m);
+    setToast("已展开全部");
+  };
+  const collapseAll = () => { setExpanded({}); setToast("已收起全部"); };
+  const toggle = (id) => setExpanded(m => ({ ...m, [id]: !m[id] }));
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>审计日志</h1>
+          <p class="sub">谁在什么时候对什么做了什么 · 追加式历史 · 展开看字段级 diff</p>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <div class="pills" role="group" aria-label="动作类型（多选）">
+          ${ACTION_TYPES.map(a => html`
+            <button key=${a.key}
+                    class=${"pill " + (types.includes(a.key) ? "on" : "")}
+                    aria-pressed=${types.includes(a.key) ? "true" : "false"}
+                    onClick=${() => toggleType(a.key)}>
+              ${a.label}
+            </button>`)}
+        </div>
+        ${types.length > 0 && html`
+          <button class="link" onClick=${clearTypes}>清除类型</button>`}
+      </div>
+
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="时间范围">
+          ${RANGES.map(r => html`
+            <button key=${r.key} class=${range === r.key ? "on" : ""}
+                    onClick=${() => changeRange(r.key)}>${r.label}</button>`)}
+        </div>
+        ${range === "custom" && html`
+          <input type="date" class="date" aria-label="起始日期"
+                 value=${from} max=${to}
+                 onChange=${e => setFrom(e.target.value)} />
+          <span style=${{ color: "var(--muted)" }}>–</span>
+          <input type="date" class="date" aria-label="截止日期"
+                 value=${to} min=${from}
+                 onChange=${e => setTo(e.target.value)} />`}
+        <span class="grow"></span>
+        <button class="btn sm" onClick=${expandAll} disabled=${filtered.length === 0}>全部展开</button>
+        <button class="btn sm" onClick=${collapseAll}>全部收起</button>
+      </div>
+
+      <p class="count-line">
+        共 <strong>${filtered.length}</strong> 条 · 最新在最上 · 追加式历史（只增不改不删）
+      </p>
+
+      ${filtered.length === 0
+        ? html`<div class="empty-card">
+                 没有匹配的记录 —— 试试放宽时间范围或清除类型筛选
+               </div>`
+        : html`
+          <ol class="trail">
+            ${filtered.map(e => html`
+              <${Entry} key=${e.id} e=${e}
+                        expanded=${!!expanded[e.id]}
+                        onToggle=${() => toggle(e.id)} />`)}
+          </ol>`}
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

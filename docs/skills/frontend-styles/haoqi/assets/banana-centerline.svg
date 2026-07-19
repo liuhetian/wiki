@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="1200"
+  height="420"
+  viewBox="0 0 1200 420"
+  fill="none"
+>
+  <title>Banana single-line center path</title>
+  <desc>A continuous centerline intended for tube-style 3D extrusion.</desc>
+
+  <!--
+    One open Bézier path, no fill, round caps and joins.
+    The stroke is only a 2D preview. In Spline, use this path as the centerline
+    and replace the preview stroke with a circular 3D path profile.
+  -->
+  <path
+    id="banana-centerline"
+    d="
+      M 108 356
+      C 112 288, 116 205, 122 122
+      C 128 61, 169 39, 220 49
+      C 274 59, 294 99, 274 137
+      C 254 173, 202 184, 130 176
+      C 204 170, 274 176, 301 214
+      C 329 254, 307 305, 254 326
+      C 210 344, 168 334, 141 307
+      C 168 334, 207 347, 251 345
+      C 302 343, 331 323, 351 288
+
+      C 367 257, 376 222, 407 210
+      C 437 198, 465 217, 468 249
+      C 472 284, 451 316, 421 321
+      C 392 326, 374 307, 378 280
+      C 383 250, 407 232, 434 238
+      C 460 244, 472 272, 476 299
+      C 480 324, 493 337, 508 328
+
+      C 528 318, 526 245, 548 216
+      C 570 187, 615 202, 630 236
+      C 647 273, 648 335, 665 327
+
+      C 681 319, 687 282, 693 250
+      C 700 218, 721 201, 747 210
+      C 776 220, 783 255, 771 287
+      C 760 317, 735 329, 713 316
+      C 692 303, 691 276, 705 254
+      C 720 231, 747 228, 765 245
+      C 783 261, 782 294, 790 315
+      C 798 335, 811 338, 823 327
+
+      C 843 316, 841 245, 862 216
+      C 884 187, 929 202, 944 236
+      C 961 273, 962 335, 979 327
+
+      C 995 319, 1001 282, 1007 250
+      C 1014 218, 1035 201, 1061 210
+      C 1090 220, 1097 255, 1085 287
+      C 1074 317, 1049 329, 1027 316
+      C 1006 303, 1005 276, 1019 254
+      C 1034 231, 1061 228, 1079 245
+      C 1097 261, 1096 294, 1104 315
+      C 1112 335, 1128 339, 1142 326
+      C 1153 316, 1158 299, 1161 282
+    "
+    stroke="#111111"
+    stroke-width="26"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    vector-effect="non-scaling-stroke"
+  />
+</svg>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：行内编辑</title>
+<!--
+  demo-inline-edit.html —— 「行内编辑」形状的最小可玩实现（蓝本：open-dashboard 的 add-inline-edit + table-inline-edit.tsx）。
+  复现的不变量：
+  - 同一时刻只有一个单元格处于编辑态（editing = { id, field }）；点击单元格原地换成输入框/下拉
+  - 文本/数字列 Enter 或失焦提交、Esc 撤销恢复原值；下拉列选中即提交
+  - 可编辑列是显式声明的（商品名/库存/状态），SKU 列刻意点不动作对照
+  - 提交前先校验（商品名非空、库存 0–999 整数），非法值拒绝提交并就地报错；每次提交都有 toast；
+    乐观更新 + 假服务端（库存直接改 0 会被拒绝）→ 失败回滚该字段 + 错误 toast
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .cellbtn { display: block; width: 100%; border: 0; background: none; font: inherit; color: inherit;
+             text-align: left; cursor: pointer; padding: 2px 6px; margin: -2px -6px; border-radius: 6px; }
+  .cellbtn:hover { background: var(--bg); box-shadow: inset 0 0 0 1px var(--border); }
+  .cellbtn.num-btn { text-align: right; }
+  .edit-input, .edit-select { width: 100%; padding: 3px 8px; font-size: 13px; }
+  .edit-input.invalid { border-color: var(--danger); }
+  .edit-input.num { text-align: right; }
+  .cell-err { margin: 2px 0 0; color: var(--danger); font-size: 12px; }
+  .saving { color: var(--muted); font-size: 12px; margin-left: 6px; }
+  .hint { margin-top: 10px; color: var(--muted); font-size: 13px; }
+  .toast.error { background: var(--danger); color: #fff; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+
+const SEED = [
+  { id: 1, name: "青瓷马克杯",   sku: "CU-1024", stock: 42,  status: "在售" },
+  { id: 2, name: "胡桃木托盘",   sku: "TR-0311", stock: 7,   status: "在售" },
+  { id: 3, name: "亚麻桌旗",     sku: "TB-2201", stock: 3,   status: "缺货" },
+  { id: 4, name: "黄铜书签",     sku: "BK-0977", stock: 156, status: "在售" },
+  { id: 5, name: "手工香薰蜡烛", sku: "CA-4408", stock: 23,  status: "下架" },
+  { id: 6, name: "再生纸笔记本", sku: "NB-1783", stock: 88,  status: "在售" },
+];
+
+const STATUS = ["在售", "缺货", "下架"];
+const STATUS_CHIP = { "在售": "chip-on", "缺货": "chip-warn", "下架": "chip-off" };
+
+// 可编辑列显式声明：不在这张表里的列（如 SKU）就是不可编辑
+const FIELDS = {
+  name: {
+    label: "商品名",
+    parse: v => { const t = v.trim(); return t ? { value: t } : { err: "商品名不能为空" }; },
+  },
+  stock: {
+    label: "库存",
+    parse: v => {
+      const t = v.trim();
+      if (!/^\d+$/.test(t) || Number(t) > 999) return { err: "库存需为 0–999 的整数" };
+      return { value: Number(t) };
+    },
+  },
+};
+
+// 假服务端：库存直接改为 0 会被业务规则拒绝，其余 700ms 后成功
+function fakeUpdate(id, field, value) {
+  return new Promise((resolve, reject) => setTimeout(() => {
+    if (field === "stock" && value === 0) reject(new Error("库存不能直接改为 0（请先下架商品）"));
+    else resolve();
+  }, 700));
+}
+
+function App() {
+  const [rows, setRows] = useState(SEED);
+  const [editing, setEditing] = useState(null); // { id, field }：同一时刻只有一个单元格在编辑态
+  const editingRef = useRef(null);              // 供 blur 回调判断编辑态是否仍然有效（Esc/Enter 后 blur 不重复提交）
+  const [draft, setDraft] = useState("");
+  const [err, setErr] = useState("");           // 当前编辑格的就地校验错误
+  const [pending, setPending] = useState({});   // { "id:field": true }：乐观更新等待假服务端确认
+  const [toast, setToast] = useState(null);     // { text, kind }
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2600);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const keyOf = (id, field) => id + ":" + field;
+  const isEditing = (id, field) => editing && editing.id === id && editing.field === field;
+  const setEditingCell = cell => { editingRef.current = cell; setEditing(cell); };
+
+  const startEdit = (row, field) => {
+    if (pending[keyOf(row.id, field)]) return; // 该格保存中，先别叠一层编辑
+    setEditingCell({ id: row.id, field });
+    setDraft(String(row[field]));
+    setErr("");
+  };
+  const cancelEdit = () => { setEditingCell(null); setErr(""); };
+
+  // 乐观更新：先改本地，再打假服务端；失败把该字段回滚到原值 + 错误 toast
+  const mutate = (row, field, value, label) => {
+    const prev = row[field];
+    const key = keyOf(row.id, field);
+    setRows(rs => rs.map(r => (r.id === row.id ? { ...r, [field]: value } : r)));
+    setPending(p => ({ ...p, [key]: true }));
+    fakeUpdate(row.id, field, value).then(
+      () => {
+        setPending(p => { const n = { ...p }; delete n[key]; return n; });
+        setToast({ text: `已更新「${field === "name" ? value : row.name}」的${label}`, kind: "ok" });
+      },
+      e => {
+        setRows(rs => rs.map(r => (r.id === row.id ? { ...r, [field]: prev } : r)));
+        setPending(p => { const n = { ...p }; delete n[key]; return n; });
+        setToast({ text: `保存失败：${e.message}，已回滚`, kind: "error" });
+      });
+  };
+
+  // 文本/数字列的提交：先校验；Enter 遇非法值就地报错留在编辑态，失焦遇非法值恢复原值 + 提示
+  const commitDraft = (row, field, fromBlur) => {
+    const cur = editingRef.current;
+    if (!cur || cur.id !== row.id || cur.field !== field) return;
+    const res = FIELDS[field].parse(draft);
+    if (res.err) {
+      if (fromBlur) { cancelEdit(); setToast({ text: `未提交：${res.err}，已恢复原值`, kind: "error" }); }
+      else setErr(res.err);
+      return;
+    }
+    cancelEdit();
+    if (res.value === row[field]) return; // 没变化就不打服务端
+    mutate(row, field, res.value, FIELDS[field].label);
+  };
+
+  // 下面三个是普通函数（不是组件）：直接内联 html 片段，避免每次渲染换组件身份导致输入框重挂丢焦点
+  const saving = (row, field) =>
+    pending[keyOf(row.id, field)] ? html`<span class="saving">保存中…</span>` : null;
+
+  const textCell = (row, field, num) => isEditing(row.id, field)
+    ? html`
+      <div>
+        <input class=${"edit-input" + (num ? " num" : "") + (err ? " invalid" : "")}
+               autoFocus value=${draft} inputMode=${num ? "numeric" : undefined}
+               aria-label=${"编辑" + FIELDS[field].label}
+               onChange=${e => { setDraft(e.target.value); setErr(""); }}
+               onKeyDown=${e => {
+                 if (e.key === "Enter") commitDraft(row, field, false);
+                 if (e.key === "Escape") cancelEdit();
+               }}
+               onBlur=${() => commitDraft(row, field, true)} />
+        ${err && html`<p class="cell-err">${err}</p>`}
+      </div>`
+    : html`
+      <button class=${"cellbtn" + (num ? " num-btn" : "")} title="点击编辑"
+              onClick=${() => startEdit(row, field)}>
+        <span style=${field === "name" ? { fontWeight: 550 } : null}>${row[field]}</span>
+        ${saving(row, field)}
+      </button>`;
+
+  const statusCell = row => isEditing(row.id, "status")
+    ? html`
+      <select class="edit-select" autoFocus value=${row.status} aria-label="编辑状态"
+              onChange=${e => {
+                const v = e.target.value;
+                cancelEdit();
+                if (v !== row.status) mutate(row, "status", v, "状态");
+              }}
+              onKeyDown=${e => { if (e.key === "Escape") cancelEdit(); }}
+              onBlur=${cancelEdit}>
+        ${STATUS.map(s => html`<option key=${s} value=${s}>${s}</option>`)}
+      </select>`
+    : html`
+      <button class="cellbtn" title="点击编辑" onClick=${() => startEdit(row, "status")}>
+        <span class=${"chip " + STATUS_CHIP[row.status]}>${row.status}</span>
+        ${saving(row, "status")}
+      </button>`;
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>商品库存</h1>
+          <p class="sub">点击「商品名 / 库存 / 状态」单元格原地编辑；SKU 列不可编辑</p>
+        </div>
+      </header>
+
+      <table class="list">
+        <thead>
+          <tr>
+            <th style=${{ width: "44px" }}>#</th>
+            <th>商品名</th>
+            <th>SKU</th>
+            <th class="num">库存</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(row => html`
+            <tr key=${row.id}>
+              <td class="num" style=${{ color: "var(--muted)" }}>${row.id}</td>
+              <td>${textCell(row, "name", false)}</td>
+              <td style=${{ color: "var(--muted)" }}>${row.sku}</td>
+              <td class="num">${textCell(row, "stock", true)}</td>
+              <td>${statusCell(row)}</td>
+            </tr>`)}
+        </tbody>
+      </table>
+
+      <p class="hint">
+        校验：商品名非空、库存 0–999 整数，非法值拒绝提交；「服务端」规则：库存不能直接改为
+        0 —— 提交先乐观生效、随后被拒绝回滚，演示乐观更新。
+      </p>
+
+      ${toast && html`<div class=${"toast" + (toast.kind === "error" ? " error" : "")}>${toast.text}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

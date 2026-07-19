@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：日历</title>
+<!--
+  demo-calendar.html —— 「日历」形状的最小可玩实现（蓝本：open-dashboard 的
+  add-calendar 参考 + templates/calendar.tsx 契约）。
+  复现的不变量：
+  - 可见月份是 state，网格靠 useMemo({year, month}) 派生；render 里不裸 new Date()。
+    demo 只在启动时读一次 wall clock 拿"今天"和种子月，之后完全靠状态推进。
+  - 事件按日归位，同格超出 MAX_VISIBLE 显示"+N 更多"折叠；完整列表在详情面板。
+  - 月初对齐周首日（此处采用中文习惯 周一为首日）：leading pad = (dow + 6) % 7，
+    末尾补齐到 7 的倍数；空格子是常态，不是空态提示。
+  - 破坏性操作（删除事件）先过确认弹窗；任何变更后 toast + 网格/面板同步刷新。
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .cal-toolbar { display: flex; justify-content: space-between; align-items: center;
+                 padding: 8px 12px; background: var(--card); border: 1px solid var(--border);
+                 border-radius: 10px 10px 0 0; }
+  .cal-title { font-weight: 650; font-size: 15px; }
+  .cal-nav { display: flex; gap: 6px; align-items: center; }
+  .cal-legend { display: flex; gap: 8px; padding: 8px 12px; background: var(--card);
+                border: 1px solid var(--border); border-top: 0;
+                font-size: 12px; color: var(--muted); align-items: center; flex-wrap: wrap; }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--card);
+         border: 1px solid var(--border); border-top: 0;
+         border-radius: 0 0 10px 10px; overflow: hidden; }
+  .cal-wk { padding: 6px 4px; font-size: 12px; color: var(--muted); text-align: center;
+            border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+  .cal-wk:nth-child(7n) { border-right: 0; }
+  .cell { min-height: 88px; padding: 5px 6px; border-bottom: 1px solid var(--border);
+          border-right: 1px solid var(--border); cursor: pointer;
+          display: flex; flex-direction: column; gap: 4px; background: var(--card); }
+  .cell:nth-child(7n) { border-right: 0; }
+  .cell:hover:not(.pad) { background: var(--bg); }
+  .cell.pad { cursor: default; background: transparent; }
+  .cell.pad:hover { background: transparent; }
+  .cell.sel { outline: 2px solid var(--primary); outline-offset: -2px; }
+  .day-num { font-size: 12px; color: var(--muted); align-self: flex-start;
+             font-variant-numeric: tabular-nums; padding: 0 6px; line-height: 18px; }
+  .cell.today .day-num { background: var(--primary); color: var(--primary-fg);
+                          border-radius: 999px; font-weight: 600; }
+  .evs { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+  .ev { font-size: 11px; padding: 1px 6px; border-radius: 4px; line-height: 16px;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ev.meet { background: var(--chip-on-bg); color: var(--chip-on-fg); }
+  .ev.task { background: var(--chip-warn-bg); color: var(--chip-warn-fg); }
+  .ev.due  { background: #fde3e0; color: var(--danger); }
+  @media (prefers-color-scheme: dark) {
+    .ev.due { background: #3b1c18; }
+  }
+  .more { font-size: 11px; color: var(--muted); padding: 0 4px; }
+
+  .day-panel { margin-top: 12px; padding: 12px 14px; background: var(--card);
+               border: 1px solid var(--border); border-radius: 10px; }
+  .day-panel h3 { margin: 0 0 8px; font-size: 14px; }
+  .day-panel .quiet { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+  .day-list { list-style: none; padding: 0; margin: 0 0 10px;
+              display: flex; flex-direction: column; gap: 6px; }
+  .day-list li { display: flex; gap: 10px; align-items: center; }
+  .day-list .title { flex: 1; }
+  .ev.legend { padding: 1px 10px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const WEEKDAYS = ["一", "二", "三", "四", "五", "六", "日"]; // Mon-first
+const TYPE_LABEL = { meet: "会议", task: "任务", due: "截止" };
+const MAX_VISIBLE = 3;
+
+function pad2(n) { return String(n).padStart(2, "0"); }
+function iso(y, m, d) { return `${y}-${pad2(m + 1)}-${pad2(d)}`; }
+
+// Wall clock 只在启动时读一次，之后完全靠 state 推进（invariant：render 里不再摸表）。
+const NOW = new Date();
+const TODAY = { y: NOW.getFullYear(), m: NOW.getMonth(), d: NOW.getDate() };
+const TODAY_ISO = iso(TODAY.y, TODAY.m, TODAY.d);
+
+// 种子事件对齐"今天"所在月，让 demo 一进来就是活的。
+const SEED = (() => {
+  const y = TODAY.y, m = TODAY.m;
+  return [
+    { id: 1,  date: iso(y, m, 3),      title: "版本复盘",      type: "meet" },
+    { id: 2,  date: iso(y, m, 5),      title: "登录页评审",    type: "meet" },
+    { id: 3,  date: iso(y, m, 8),      title: "补测试覆盖",    type: "task" },
+    { id: 4,  date: iso(y, m, 10),     title: "上线 v1.9",     type: "due"  },
+    { id: 5,  date: iso(y, m, 12),     title: "周会",          type: "meet" },
+    { id: 6,  date: iso(y, m, 12),     title: "1-on-1",        type: "meet" },
+    { id: 7,  date: iso(y, m, 12),     title: "站会纪要",      type: "task" },
+    { id: 8,  date: iso(y, m, 12),     title: "Demo 排练",     type: "meet" },
+    { id: 9,  date: iso(y, m, 15),     title: "合同续签",      type: "due"  },
+    { id: 10, date: iso(y, m, 18),     title: "OKR 对齐",      type: "meet" },
+    { id: 11, date: iso(y, m, 22),     title: "写文档",        type: "task" },
+    { id: 12, date: iso(y, m, 25),     title: "季报截止",      type: "due"  },
+    { id: 13, date: iso(y, m + 1, 2),  title: "下月启动会",    type: "meet" },
+    { id: 14, date: iso(y, m - 1, 28), title: "上月遗留任务",  type: "task" },
+  ];
+})();
+
+function Confirm({ text, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>确认操作</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" onClick=${onOk}>确认</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function App() {
+  const [ref, setRef] = useState({ year: TODAY.y, month: TODAY.m });
+  const [events, setEvents] = useState(SEED);
+  const [selected, setSelected] = useState(TODAY_ISO);
+  const [confirm, setConfirm] = useState(null);
+  const [creating, setCreating] = useState(null); // { date, title, type }
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  // 网格：从 (year, month) 派生，不读 wall clock。
+  const grid = useMemo(() => {
+    const firstDow = new Date(ref.year, ref.month, 1).getDay(); // 0=Sun..6=Sat
+    const leading = (firstDow + 6) % 7;                          // Mon-first offset
+    const days = new Date(ref.year, ref.month + 1, 0).getDate();
+    const cells = [];
+    for (let i = 0; i < leading; i++) cells.push(null);
+    for (let d = 1; d <= days; d++) cells.push(d);
+    while (cells.length % 7 !== 0) cells.push(null);
+    return cells;
+  }, [ref.year, ref.month]);
+
+  const byDay = useMemo(() => {
+    const map = new Map();
+    for (const e of events) {
+      const list = map.get(e.date) || [];
+      list.push(e);
+      map.set(e.date, list);
+    }
+    return map;
+  }, [events]);
+
+  const selectedList = byDay.get(selected) || [];
+
+  const shift = delta => setRef(p => {
+    const next = p.month + delta;
+    return {
+      year: p.year + Math.floor(next / 12),
+      month: ((next % 12) + 12) % 12,
+    };
+  });
+  const backToToday = () => {
+    setRef({ year: TODAY.y, month: TODAY.m });
+    setSelected(TODAY_ISO);
+  };
+  const saveNew = () => {
+    const title = creating.title.trim();
+    if (!title) return;
+    const nextId = (events.reduce((mx, e) => Math.max(mx, e.id), 0)) + 1;
+    setEvents([...events, { id: nextId, date: creating.date, title, type: creating.type }]);
+    setToast(`已新建"${title}"`);
+    setCreating(null);
+  };
+  const askDelete = e => setConfirm({
+    text: `删除"${e.title}"？此操作不可撤销。`,
+    onOk: () => {
+      setEvents(evts => evts.filter(x => x.id !== e.id));
+      setToast(`已删除"${e.title}"`);
+      setConfirm(null);
+    },
+  });
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>发布日历</h1>
+          <p class="sub">月份网格 · 上/下月切换 · 点日期看详情 · 会议/任务/截止三色区分</p>
+        </div>
+      </header>
+
+      <div class="cal-toolbar">
+        <div class="cal-title">${ref.year} 年 ${ref.month + 1} 月</div>
+        <div class="cal-nav">
+          <button class="btn sm" onClick=${() => shift(-1)} aria-label="上月">← 上月</button>
+          <button class="btn sm" onClick=${() => shift(1)} aria-label="下月">下月 →</button>
+          <button class="btn sm" onClick=${backToToday}>今天</button>
+        </div>
+      </div>
+
+      <div class="cal-legend">
+        <span>类型：</span>
+        <span class="ev meet legend">${TYPE_LABEL.meet}</span>
+        <span class="ev task legend">${TYPE_LABEL.task}</span>
+        <span class="ev due legend">${TYPE_LABEL.due}</span>
+      </div>
+
+      <div class="cal">
+        ${WEEKDAYS.map(w => html`<div class="cal-wk" key=${"wk-" + w}>${w}</div>`)}
+        ${grid.map((day, i) => {
+          if (day === null) return html`<div class="cell pad" key=${"pad-" + i}></div>`;
+          const d = iso(ref.year, ref.month, day);
+          const list = byDay.get(d) || [];
+          const cls = "cell"
+            + (d === TODAY_ISO ? " today" : "")
+            + (d === selected ? " sel" : "");
+          return html`
+            <div class=${cls} key=${d} onClick=${() => setSelected(d)}>
+              <span class="day-num">${day}</span>
+              <div class="evs">
+                ${list.slice(0, MAX_VISIBLE).map(e => html`
+                  <span class=${"ev " + e.type} key=${e.id} title=${e.title}>${e.title}</span>`)}
+                ${list.length > MAX_VISIBLE && html`
+                  <span class="more">+${list.length - MAX_VISIBLE} 更多</span>`}
+              </div>
+            </div>`;
+        })}
+      </div>
+
+      <div class="day-panel">
+        <h3>${selected} · 共 ${selectedList.length} 项</h3>
+        ${selectedList.length === 0
+          ? html`<p class="quiet">当天空档。</p>`
+          : html`
+            <ul class="day-list">
+              ${selectedList.map(e => html`
+                <li key=${e.id}>
+                  <span class=${"ev " + e.type}>${TYPE_LABEL[e.type]}</span>
+                  <span class="title">${e.title}</span>
+                  <button class="link danger" onClick=${() => askDelete(e)}>删除</button>
+                </li>`)}
+            </ul>`}
+        <button class="btn sm"
+                onClick=${() => setCreating({ date: selected, title: "", type: "meet" })}>
+          + 新建
+        </button>
+      </div>
+
+      ${creating && html`
+        <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) setCreating(null); }}>
+          <div class="modal">
+            <h2>新建记录</h2>
+            <label>日期
+              <input value=${creating.date}
+                     onChange=${e => setCreating({ ...creating, date: e.target.value })} />
+            </label>
+            <label>标题
+              <input value=${creating.title} placeholder="例如：站会"
+                     onChange=${e => setCreating({ ...creating, title: e.target.value })} />
+            </label>
+            <label>类型
+              <select value=${creating.type}
+                      onChange=${e => setCreating({ ...creating, type: e.target.value })}>
+                <option value="meet">${TYPE_LABEL.meet}</option>
+                <option value="task">${TYPE_LABEL.task}</option>
+                <option value="due">${TYPE_LABEL.due}</option>
+              </select>
+            </label>
+            <div class="actions">
+              <button class="btn" onClick=${() => setCreating(null)}>取消</button>
+              <button class="btn primary" disabled=${!creating.title.trim()}
+                      onClick=${saveNew}>保存</button>
+            </div>
+          </div>
+        </div>`}
+
+      ${confirm && html`<${Confirm} text=${confirm.text} onOk=${confirm.onOk}
+                                    onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：列控制</title>
+<!--
+  demo-table-columns.html —— 「列控制」形状的最小可玩实现（蓝本：open-dashboard 的 ColumnControls.tsx + add-table-columns）。
+  复现的不变量：
+  - 列显隐与密度都是受控状态：显隐是一张 id → bool 的映射（对应 TanStack 的 columnVisibility），
+    密度归父组件所有，popover 内部不留任何副本
+  - 身份列（姓名）以 enableHiding: false 退出隐藏；popover 只列出可隐藏的列（对应 column.getCanHide() 过滤）
+  - 复选框的名字读列定义的 label（对应蓝本的 columnDef.meta.label），与表头渲染解耦
+  - demo 额外把两项偏好持久到 localStorage（真实版接用户偏好持久化）；排序/筛选与列显隐互不干扰
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--fg); }
+  .arrow { font-size: 10px; }
+  /* 密度：紧凑档收紧行高与内边距（舒适档即 demo.css 默认） */
+  table.list.compact thead th { padding: 4px 12px; }
+  table.list.compact tbody td { padding: 3px 12px; font-size: 12.5px; }
+  /* 「列」popover */
+  .colwrap { position: relative; }
+  .cnt { color: var(--muted); font-size: 12px; }
+  .pop { position: absolute; right: 0; top: calc(100% + 6px); z-index: 15; width: 232px;
+         background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+         padding: 12px 14px; box-shadow: 0 8px 24px rgba(0,0,0,.16);
+         display: flex; flex-direction: column; gap: 8px; }
+  .pop h3 { margin: 0; font-size: 12px; font-weight: 500; color: var(--muted); }
+  .pop-head { display: flex; justify-content: space-between; align-items: center; }
+  .pop label.col { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+  .pop .lock { margin: 0; font-size: 12px; color: var(--muted); }
+  .pop .hr { height: 1px; background: var(--border); margin: 2px 0; }
+  .dens { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .dens button { padding: 5px 8px; font: inherit; font-size: 12.5px; cursor: pointer;
+                 border: 1px solid var(--border); border-radius: 8px;
+                 background: var(--card); color: var(--fg); }
+  .dens button[aria-pressed="true"] { background: var(--primary); border-color: var(--primary);
+                                      color: var(--primary-fg); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+
+const STATUS = {
+  active:    { text: "活跃",   cls: "chip-on"   },
+  invited:   { text: "邀请中", cls: "chip-warn" },
+  suspended: { text: "停用",   cls: "chip-off"  },
+};
+
+// 列定义：label 即蓝本的 meta.label（popover 复选框的名字，与表头渲染解耦）；
+// 姓名是身份列，enableHiding: false 让它退出隐藏。9 列故意偏多。
+const COLUMNS = [
+  { id: "name",   label: "姓名", enableHiding: false, sortable: true,
+    cell: r => html`<span style=${{ fontWeight: 550 }}>${r.name}</span>` },
+  { id: "email",  label: "邮箱", cell: r => r.email },
+  { id: "team",   label: "团队", cell: r => r.team },
+  { id: "role",   label: "角色", cell: r => r.role },
+  { id: "status", label: "状态",
+    cell: r => html`<span class=${"chip " + STATUS[r.status].cls}>${STATUS[r.status].text}</span>` },
+  { id: "city",   label: "城市", cell: r => r.city },
+  { id: "joined", label: "加入日期", numeric: true, sortable: true, cell: r => r.joined },
+  { id: "lastActive", label: "最近活跃", cell: r => r.lastActive },
+  { id: "tickets", label: "工单数", numeric: true, sortable: true, cell: r => r.tickets },
+];
+
+const DATA = [
+  { id: 1,  name: "陈禾",   email: "chenhe@corp.cn",    team: "平台", role: "负责人", status: "active",    city: "上海", joined: "2026-03-14", lastActive: "2 小时前", tickets: 12 },
+  { id: 2,  name: "李慕白", email: "mubai@corp.cn",     team: "平台", role: "管理员", status: "active",    city: "北京", joined: "2026-05-02", lastActive: "昨天",     tickets: 5  },
+  { id: 3,  name: "王小满", email: "xiaoman@corp.cn",   team: "研发", role: "工程师", status: "invited",   city: "深圳", joined: "2025-11-20", lastActive: "—",        tickets: 0  },
+  { id: 4,  name: "赵青",   email: "zhaoqing@corp.cn",  team: "研发", role: "分析师", status: "active",    city: "杭州", joined: "2026-01-08", lastActive: "4 天前",   tickets: 23 },
+  { id: 5,  name: "周芷",   email: "zhouzhi@corp.cn",   team: "设计", role: "设计师", status: "active",    city: "成都", joined: "2026-06-17", lastActive: "刚刚",     tickets: 8  },
+  { id: 6,  name: "吴限",   email: "wuxian@corp.cn",    team: "运维", role: "工程师", status: "suspended", city: "广州", joined: "2025-09-30", lastActive: "上个月",   tickets: 31 },
+  { id: 7,  name: "郑舟",   email: "zhengzhou@corp.cn", team: "平台", role: "工程师", status: "active",    city: "上海", joined: "2026-02-25", lastActive: "3 小时前", tickets: 17 },
+  { id: 8,  name: "冯霁",   email: "fengji@corp.cn",    team: "设计", role: "设计师", status: "invited",   city: "武汉", joined: "2026-04-11", lastActive: "—",        tickets: 0  },
+  { id: 9,  name: "褚遂",   email: "chusui@corp.cn",    team: "研发", role: "工程师", status: "active",    city: "南京", joined: "2026-05-29", lastActive: "昨天",     tickets: 9  },
+  { id: 10, name: "卫疏",   email: "weishu@corp.cn",    team: "运维", role: "分析师", status: "suspended", city: "西安", joined: "2025-12-05", lastActive: "2 周前",   tickets: 26 },
+];
+
+// 与蓝本一致：默认藏一列（模板里是 location: false），演示「默认隐藏 + 用户可召回」
+const DEFAULT_VISIBILITY = { city: false };
+const DEFAULT_DENSITY = "comfortable";
+const LS_KEY = "demo-table-columns:prefs";
+
+function loadPrefs() {
+  try {
+    const p = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+    if (!p || typeof p !== "object") return null;
+    const visibility = {};
+    COLUMNS.forEach(c => {
+      if (c.enableHiding !== false && p.visibility && p.visibility[c.id] === false) visibility[c.id] = false;
+    });
+    return { visibility, density: p.density === "compact" ? "compact" : "comfortable" };
+  } catch (e) { return null; }
+}
+const SAVED = loadPrefs();
+
+// 「列」popover：只读写父级传下来的显隐映射与密度，自己不留副本（蓝本不变量）。
+function ColumnControls({ columns, isVisible, onToggle, onReset, density, onDensityChange }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const onKey = e => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const hideable = columns.filter(c => c.enableHiding !== false); // 对应 column.getCanHide()
+  const locked = columns.filter(c => c.enableHiding === false);
+  const shown = columns.filter(isVisible).length;
+
+  return html`
+    <div class="colwrap" ref=${ref}>
+      <button class="btn" aria-expanded=${open} onClick=${() => setOpen(o => !o)}>
+        列 <span class="cnt">${shown}/${columns.length}</span>
+      </button>
+      ${open && html`
+        <div class="pop" role="dialog" aria-label="列控制">
+          <div class="pop-head">
+            <h3>显示列</h3>
+            <button class="link" onClick=${onReset}>重置</button>
+          </div>
+          ${hideable.map(c => html`
+            <label class="col" key=${c.id}>
+              <input type="checkbox" checked=${isVisible(c)} onChange=${() => onToggle(c.id)} />
+              ${c.label}
+            </label>`)}
+          <p class="lock">${locked.map(c => "「" + c.label + "」").join("")}为身份列，不可隐藏</p>
+          <div class="hr"></div>
+          <h3>密度</h3>
+          <div class="dens">
+            <button aria-pressed=${density === "comfortable"}
+                    onClick=${() => onDensityChange("comfortable")}>舒适</button>
+            <button aria-pressed=${density === "compact"}
+                    onClick=${() => onDensityChange("compact")}>紧凑</button>
+          </div>
+        </div>`}
+    </div>`;
+}
+
+function App() {
+  // 列显隐（id → bool 映射，对应 TanStack columnVisibility）与密度：受控 + 持久化
+  const [visibility, setVisibility] = useState(SAVED ? SAVED.visibility : { ...DEFAULT_VISIBILITY });
+  const [density, setDensity] = useState(SAVED ? SAVED.density : DEFAULT_DENSITY);
+  // 查询状态（「看什么」）：与列控制（「怎么看」）各管各的，互不引用
+  const [q, setQ] = useState("");
+  const [status, setStatus] = useState("全部");
+  const [sort, setSort] = useState({ by: "joined", dir: "desc" });
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ visibility, density })); } catch (e) {}
+  }, [visibility, density]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const isVisible = c => visibility[c.id] !== false;
+  const visibleCols = COLUMNS.filter(isVisible);
+
+  const rows = useMemo(() => {
+    const kw = q.trim().toLowerCase();
+    const list = DATA.filter(r =>
+      (status === "全部" || STATUS[r.status].text === status) &&
+      (r.name.toLowerCase().includes(kw) || r.email.toLowerCase().includes(kw)));
+    const mul = sort.dir === "asc" ? 1 : -1;
+    return [...list].sort((a, b) => (a[sort.by] < b[sort.by] ? -1 : a[sort.by] > b[sort.by] ? 1 : 0) * mul);
+  }, [q, status, sort]);
+
+  const toggleColumn = id => setVisibility(v => ({ ...v, [id]: v[id] === false }));
+  const resetColumns = () => { setVisibility({ ...DEFAULT_VISIBILITY }); setToast("已恢复默认列显隐"); };
+  const toggleSort = by =>
+    setSort(s => ({ by, dir: s.by === by && s.dir === "asc" ? "desc" : "asc" }));
+
+  const SortTh = ({ by, children }) => html`
+    <th class="sortable" onClick=${() => toggleSort(by)}>
+      ${children} <span class="arrow">${sort.by === by ? (sort.dir === "asc" ? "▲" : "▼") : ""}</span>
+    </th>`;
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>成员总表</h1>
+          <p class="sub">9 列故意偏多 —— 点「列」挑你要看的；偏好存 localStorage，刷新仍在</p>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <input class="grow" placeholder="搜索姓名或邮箱…" value=${q} onChange=${e => setQ(e.target.value)} />
+        <select value=${status} onChange=${e => setStatus(e.target.value)}>
+          <option>全部</option><option>活跃</option><option>邀请中</option><option>停用</option>
+        </select>
+        <${ColumnControls} columns=${COLUMNS} isVisible=${isVisible} onToggle=${toggleColumn}
+                           onReset=${resetColumns} density=${density} onDensityChange=${setDensity} />
+      </div>
+
+      <div style=${{ overflowX: "auto" }}>
+        <table class=${"list" + (density === "compact" ? " compact" : "")}>
+          <thead>
+            <tr>
+              ${visibleCols.map(c => c.sortable
+                ? html`<${SortTh} key=${c.id} by=${c.id}>${c.label}<//>`
+                : html`<th key=${c.id}>${c.label}</th>`)}
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => html`
+              <tr key=${r.id}>
+                ${visibleCols.map(c => html`<td key=${c.id} class=${c.numeric ? "num" : ""}>${c.cell(r)}</td>`)}
+              </tr>`)}
+            ${rows.length === 0 && html`<tr><td class="empty" colSpan=${visibleCols.length}>没有匹配的成员</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="pager">
+        <span>共 ${rows.length} 行 · 显示 ${visibleCols.length} / ${COLUMNS.length} 列 ·
+              密度：${density === "compact" ? "紧凑" : "舒适"}</span>
+      </footer>
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

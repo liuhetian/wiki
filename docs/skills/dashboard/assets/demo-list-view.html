@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：紧凑列表</title>
+<!--
+  demo-list-view.html —— 「紧凑列表」形状的最小可玩实现（蓝本：open-dashboard 的 add-list-view + list-lite / list-lazy 两个模板）。
+  复现的不变量：
+  - 密度即卖点：紧凑行 = 首部头像 + 主行/次行两行文本 + 尾部状态与时间，没有表格骨架（无表头、无列线）
+  - 空态、加载态显式处理：搜索无结果有空态行；「加载更多」与分区首次展开都先出骨架行
+  - lazy 变体：按类型分组，分区首次展开才“取数”，取到后缓存——收起再展开即时，不重复取
+  - 搜索/筛选放局部 state（蓝本捆绑 demo 同款）；真实资源该状态进 URL
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .rowlist { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .rowline, .sechead { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 12px;
+                       border: 0; background: none; font: inherit; color: inherit;
+                       text-align: left; cursor: pointer; }
+  .rowline:hover, .sechead:hover { background: var(--bg); }
+  .sechead { padding: 9px 12px; font-weight: 550; }
+  .rowlist > * + *, .secbody > * { border-top: 1px solid var(--border); }
+  .secbody .rowline { padding-left: 34px; }
+
+  .avatar { flex: 0 0 30px; width: 30px; height: 30px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+  .av-deploy  { background: var(--chip-on-bg);   color: var(--chip-on-fg); }
+  .av-alert   { background: var(--chip-warn-bg); color: var(--chip-warn-fg); }
+  .av-approve { background: var(--primary);      color: var(--primary-fg); }
+  .av-comment { background: var(--chip-off-bg);  color: var(--chip-off-fg); }
+
+  .rowmain { flex: 1; min-width: 0; }
+  .primary, .secondary { display: block; line-height: 1.4; white-space: nowrap;
+                         overflow: hidden; text-overflow: ellipsis; }
+  .primary { font-size: 13px; font-weight: 550; }
+  .secondary { font-size: 12px; color: var(--muted); }
+  .rowmeta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .time { width: 64px; text-align: right; color: var(--muted); font-size: 12px;
+          font-variant-numeric: tabular-nums; }
+
+  .caret { display: inline-block; font-size: 10px; color: var(--muted); transition: transform .15s; }
+  .caret.open { transform: rotate(90deg); }
+  .seccount { margin-left: auto; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+  .skelrow { display: flex; align-items: center; gap: 10px; padding: 9px 12px; }
+  .skelrow .skel { margin: 0; }
+  .secbody .skelrow { padding-left: 34px; }
+
+  .morebtn { width: 100%; padding: 9px 12px; border: 0; background: none; color: var(--primary);
+             font: inherit; cursor: pointer; }
+  .morebtn:hover { background: var(--bg); }
+  .foot { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const PAGE = 8;   // 平铺模式首屏条数
+const STEP = 6;   // 每次「加载更多」的条数
+const TYPES = ["部署", "告警", "审批", "评论"];
+const AV_CLASS = { "部署": "av-deploy", "告警": "av-alert", "审批": "av-approve", "评论": "av-comment" };
+const CHIP = { "已处理": "chip-on", "待处理": "chip-warn", "已忽略": "chip-off" };
+
+const FEED = [
+  { id: 1,  type: "告警", actor: "监控",   title: "生产库 CPU 连续 5 分钟 > 90%",      detail: "pg-primary · 当前 93%",            time: "4 分钟前",  status: "待处理" },
+  { id: 2,  type: "评论", actor: "郑舟",   title: "在《七月发布计划》中提到了你",       detail: "「@你 这段的风险评估补一下？」",    time: "8 分钟前",  status: "待处理" },
+  { id: 3,  type: "审批", actor: "李慕白", title: "申请生产数据库只读权限",             detail: "有效期 7 天 · 用于故障排查",        time: "12 分钟前", status: "待处理" },
+  { id: 4,  type: "部署", actor: "陈禾",   title: "api-server v2.4.1 发布到生产",       detail: "流水线 #482 · 全量 12 分钟",        time: "18 分钟前", status: "已处理" },
+  { id: 5,  type: "部署", actor: "沈砚",   title: "web-console 灰度 20% → 50%",         detail: "流水线 #479 · 错误率 0.02%",        time: "26 分钟前", status: "待处理" },
+  { id: 6,  type: "评论", actor: "冯霁",   title: "回复了你的评审意见",                 detail: "PR #1024 · 「已改成批量接口」",     time: "40 分钟前", status: "已处理" },
+  { id: 7,  type: "告警", actor: "监控",   title: "订单接口 P99 延迟超阈值",            detail: "orders-api · 1.8s（阈值 1s）",      time: "1 小时前",  status: "待处理" },
+  { id: 8,  type: "部署", actor: "韩澈",   title: "billing-service 回滚到 v1.9.0",      detail: "流水线 #475 · 触发原因：超时告警",  time: "2 小时前",  status: "已处理" },
+  { id: 9,  type: "审批", actor: "王小满", title: "新增供应商「云杉科技」",             detail: "合同编号 HT-2026-114",              time: "3 小时前",  status: "待处理" },
+  { id: 10, type: "审批", actor: "赵青",   title: "报销单 ¥2,380（差旅）",              detail: "6 月上海出差 · 附 5 张发票",        time: "昨天",      status: "已处理" },
+  { id: 11, type: "告警", actor: "监控",   title: "对象存储用量达 80%",                 detail: "bucket:assets · 1.6 TB / 2 TB",     time: "昨天",      status: "已处理" },
+  { id: 12, type: "评论", actor: "褚遂",   title: "在工单 #667 中 @ 了你",              detail: "「复现步骤见附件视频」",            time: "昨天",      status: "已处理" },
+  { id: 13, type: "部署", actor: "陈禾",   title: "cron-worker v0.8.3 发布到预发",      detail: "流水线 #471 · 全量 4 分钟",         time: "昨天",      status: "已处理" },
+  { id: 14, type: "审批", actor: "周芷",   title: "申请开通 CRM 管理员角色",            detail: "转岗销售运营 · 直属审批通过",       time: "2 天前",    status: "已处理" },
+  { id: 15, type: "告警", actor: "监控",   title: "证书 30 天内到期",                   detail: "*.corp.cn · 2026-08-02 到期",       time: "2 天前",    status: "已忽略" },
+  { id: 16, type: "部署", actor: "沈砚",   title: "search-api v3.1.0 发布失败",         detail: "流水线 #468 · 镜像构建出错",        time: "3 天前",    status: "已忽略" },
+  { id: 17, type: "审批", actor: "吴限",   title: "延长测试环境保留期",                 detail: "env-feature-pay · +14 天",          time: "3 天前",    status: "已忽略" },
+  { id: 18, type: "评论", actor: "卫疏",   title: "赞了你的复盘文档",                   detail: "《6·18 大促值班复盘》",             time: "4 天前",    status: "已忽略" },
+];
+
+// 一条紧凑行：首部头像（首字圆形，按类型着色）+ 主次两行 + 尾部状态与时间
+function Row({ item, onOpen }) {
+  return html`
+    <button type="button" class="rowline" onClick=${() => onOpen(item)}>
+      <span class=${"avatar " + AV_CLASS[item.type]}>${item.actor[0]}</span>
+      <span class="rowmain">
+        <span class="primary">${item.title}</span>
+        <span class="secondary">${item.type} · ${item.actor} · ${item.detail}</span>
+      </span>
+      <span class="rowmeta">
+        <span class=${"chip " + CHIP[item.status]}>${item.status}</span>
+        <span class="time">${item.time}</span>
+      </span>
+    </button>`;
+}
+
+function SkelRow() {
+  return html`
+    <div class="skelrow" aria-hidden="true">
+      <span class="skel" style=${{ flex: "0 0 30px", width: 30, height: 30, borderRadius: "50%" }}></span>
+      <span style=${{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+        <span class="skel" style=${{ width: "45%", height: 12 }}></span>
+        <span class="skel" style=${{ width: "70%", height: 10 }}></span>
+      </span>
+      <span class="skel" style=${{ width: 56, height: 18, borderRadius: 999 }}></span>
+    </div>`;
+}
+
+function Detail({ item, onClose, onGo }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div class="modal">
+        <h2>${item.title}</h2>
+        <p style=${{ margin: 0, color: "var(--muted)", fontSize: 13 }}>
+          ${item.type} · ${item.actor} · ${item.time}
+        </p>
+        <p style=${{ margin: 0 }}>${item.detail}</p>
+        <p style=${{ margin: 0 }}>状态：<span class=${"chip " + CHIP[item.status]}>${item.status}</span></p>
+        <div class="actions">
+          <button class="btn" onClick=${onClose}>关闭</button>
+          <button class="btn primary" onClick=${() => onGo(item)}>前往处理</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function App() {
+  const [mode, setMode] = useState("flat");     // flat = lite 变体；grouped = lazy 变体
+  const [q, setQ] = useState("");
+  const [visible, setVisible] = useState(PAGE); // 平铺模式已“取到”的条数
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [secs, setSecs] = useState({});         // 分区状态：type -> { expanded, loading, loaded }
+  const [detail, setDetail] = useState(null);
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const kw = q.trim().toLowerCase();
+  const matched = useMemo(() =>
+    FEED.filter(n => !kw || (n.title + n.actor + n.detail).toLowerCase().includes(kw)), [kw]);
+
+  // lite 变体：有搜索词时本地全量过滤；无搜索词时增量显示 + 「加载更多」
+  const flatRows = kw ? matched : FEED.slice(0, visible);
+  const remain = FEED.length - visible;
+
+  const loadMore = () => {
+    setLoadingMore(true);
+    setTimeout(() => {
+      setVisible(v => Math.min(v + STEP, FEED.length));
+      setLoadingMore(false);
+    }, 550);
+  };
+
+  // lazy 变体：分区首次展开才“取数”，取到后缓存；再展开直接显示
+  const toggleSec = type => {
+    setSecs(prev => {
+      const cur = prev[type] || { expanded: false, loading: false, loaded: false };
+      if (cur.expanded) return { ...prev, [type]: { ...cur, expanded: false } };
+      if (cur.loaded) return { ...prev, [type]: { ...cur, expanded: true } };
+      setTimeout(() => {
+        setSecs(p => ({ ...p, [type]: { ...p[type], loading: false, loaded: true } }));
+      }, 600);
+      return { ...prev, [type]: { expanded: true, loading: true, loaded: false } };
+    });
+  };
+
+  const goHandle = item => {
+    setDetail(null);
+    setToast("已模拟跳转：" + item.type + " · " + item.title);
+  };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>团队动态</h1>
+          <p class="sub">紧凑行：头像 + 主次两行 + 尾部状态/时间 · 点行看详情</p>
+        </div>
+        <div class="seg">
+          <button class=${mode === "flat" ? "on" : ""} onClick=${() => setMode("flat")}>平铺</button>
+          <button class=${mode === "grouped" ? "on" : ""} onClick=${() => setMode("grouped")}>按类型分组</button>
+        </div>
+      </header>
+
+      ${mode === "flat" && html`
+        <div>
+          <div class="toolbar">
+            <input class="grow" placeholder="搜索标题、人名或内容…" value=${q}
+                   onChange=${e => setQ(e.target.value)} />
+          </div>
+          <div class="rowlist">
+            ${flatRows.map(n => html`<${Row} key=${n.id} item=${n} onOpen=${setDetail} />`)}
+            ${loadingMore && [1, 2, 3].map(i => html`<${SkelRow} key=${"s" + i} />`)}
+            ${flatRows.length === 0 && html`<div class="empty">没有匹配「${q.trim()}」的动态</div>`}
+            ${!kw && remain > 0 && !loadingMore && html`
+              <button class="morebtn" onClick=${loadMore}>加载更多（还有 ${remain} 条）</button>`}
+          </div>
+          <p class="foot">
+            ${kw ? "匹配 " + flatRows.length + " 条" : "已加载 " + flatRows.length + " / " + FEED.length + " 条"}
+            · lite 变体：本地搜索过滤
+          </p>
+        </div>`}
+
+      ${mode === "grouped" && html`
+        <div>
+          <div class="rowlist">
+            ${TYPES.map(type => {
+              const s = secs[type] || {};
+              const items = FEED.filter(n => n.type === type);
+              return html`
+                <div key=${type}>
+                  <button type="button" class="sechead" aria-expanded=${!!s.expanded}
+                          onClick=${() => toggleSec(type)}>
+                    <span class=${"caret" + (s.expanded ? " open" : "")}>▶</span>
+                    ${type}
+                    <span class="seccount">${items.length} 条</span>
+                  </button>
+                  ${s.expanded && html`
+                    <div class="secbody">
+                      ${s.loading && items.map(n => html`<${SkelRow} key=${"s" + n.id} />`)}
+                      ${!s.loading && items.map(n => html`<${Row} key=${n.id} item=${n} onOpen=${setDetail} />`)}
+                    </div>`}
+                </div>`;
+            })}
+          </div>
+          <p class="foot">lazy 变体：分区首次展开才取数（骨架屏 → 缓存，再展开即时）</p>
+        </div>`}
+
+      ${detail && html`<${Detail} item=${detail} onClose=${() => setDetail(null)} onGo=${goHandle} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

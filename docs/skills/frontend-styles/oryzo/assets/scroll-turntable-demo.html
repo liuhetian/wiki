@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>滚动叙事翻滚转台 · ORYZO "ISN'T JUST A COASTER" 场景复现</title>
+<style>
+  :root { --ink: #f2e8d5; --accent: #f08c2e; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: #17110c; }
+  body { font-family: "DM Mono", ui-monospace, monospace; color: var(--ink); }
+  canvas#gl { position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; }
+
+  /* 第二幕的暖色轮廓光：CSS 渐变叠在 canvas 下面，强度由 JS 按进度驱动 */
+  #glow { position: fixed; inset: 0; pointer-events: none; opacity: 0;
+    background: radial-gradient(75% 60% at 50% 88%, #b4581e 0%, #5e2c0e44 45%, transparent 70%); }
+
+  /* ---- 第一幕：制图桌文案 ---- */
+  #act1 { position: fixed; left: 5%; bottom: 12%; max-width: 21em; pointer-events: none; }
+  #act1 .k { font-size: 11px; letter-spacing: .2em; color: var(--accent); margin-bottom: 8px; }
+  #act1 p { font-size: 14px; line-height: 1.8; letter-spacing: .04em; }
+
+  /* ---- 第二幕：钉住的大标题 + 右侧小字 ---- */
+  #act2 { position: fixed; inset: 0; pointer-events: none; }
+  #act2 h2 { position: absolute; left: 6%; top: 42%; font-size: clamp(24px, 3.6vw, 44px);
+    letter-spacing: .04em; line-height: 1.25; font-weight: 600;
+    font-family: system-ui, sans-serif; }
+  #act2 p { position: absolute; right: 6%; top: 44%; width: 17em;
+    font-size: 12.5px; line-height: 1.8; letter-spacing: .05em; }
+
+  /* ---- 第三幕：逐词模糊显影的大标题 ---- */
+  #act3 { position: fixed; inset: 0; display: grid; justify-items: center;
+    align-content: start; padding-top: 10vh; pointer-events: none; }
+  #act3 h2 { font-size: clamp(34px, 6vw, 72px); font-weight: 650;
+    font-family: system-ui, sans-serif; display: flex; gap: .28em; }
+  #act3 h2 span { display: inline-block; }          /* 每个词独立吃 blur/opacity */
+  #act3 .sub { margin-top: 6px; font-size: 12px; letter-spacing: .25em; color: var(--accent); }
+
+  .hud { position: fixed; left: 16px; top: 14px; font-size: 12px; line-height: 1.7;
+    letter-spacing: .06em; pointer-events: none; }
+  .hud b { font-size: 14px; letter-spacing: .12em; }
+  .hud em { font-style: normal; color: var(--accent); }
+  .hint { position: fixed; left: 50%; bottom: 14px; translate: -50% 0; font-size: 11px;
+    letter-spacing: .26em; opacity: .75; pointer-events: none; transition: opacity .4s; }
+  .hint.gone { opacity: 0; }
+  .err { position: fixed; inset: 0; display: none; place-items: center; font: 14px system-ui; }
+</style>
+</head>
+<body>
+<div id="glow"></div>
+<canvas id="gl"></canvas>
+
+<div id="act1">
+  <div class="k">ACT 1 · 制图桌</div>
+  <p>滚动开始时整个环境先熄灯 —— 垫子淡出，只留主角。<br>原站这里是照片级泼溅场景整体退场。</p>
+</div>
+
+<div id="act2">
+  <h2>ISN'T JUST<br>A COASTER.</h2>
+  <p>主角不换、场景在换：同一枚杯垫从制图桌被"接"进黑场，跟着滚动翻滚转体，轮廓光渐次亮起。</p>
+</div>
+
+<div id="act3">
+  <h2><span>Powered</span><span>by</span><span>AI*</span></h2>
+  <div class="sub">ORYZO-1</div>
+</div>
+
+<div class="hud"><b>SCENE MORPH</b><br><span id="stat">–</span></div>
+<div class="hint" id="hint">↓ 滚动推进三幕（滚轮 / 拖拽 / 方向键）</div>
+<div class="err" id="err">需要 WebGL2 支持。</div>
+
+<script>
+/* ============================================================================
+ * 滚动叙事翻滚转台 —— oryzo.ai "ISN'T JUST A COASTER" 场景切换的复现
+ *
+ * 原站行为（滚动侦察逐帧观察，2026-07-12）：
+ *   幕1→幕2：hero 的照片级环境整体熄灯退场，唯独杯垫留在画面里 ——
+ *            "主角连续、场景切换"是整站叙事的骨架；
+ *   幕2：    杯垫跟随滚动进度做端对端翻滚（约两整圈），
+ *            标题钉在左侧不动，暖色轮廓光随进度亮起；
+ *   幕2→幕3："Powered by AI*" 逐词从 blur 里显影，杯垫缩小下沉交棒给下一幕。
+ *
+ * 实现：泼溅管线（同《高斯泼溅渲染系统》）+ 模型矩阵 uniform（转台就是它）
+ *      + 一个虚拟滚动进度同时驱动 WebGL 旋转 / CSS 灯光 / DOM 文案。
+ * ========================================================================== */
+
+const canvas = document.getElementById('gl');
+const gl = canvas.getContext('webgl2', { antialias: false, alpha: false });
+if (!gl) { document.getElementById('err').style.display = 'grid'; throw new Error('no webgl2'); }
+
+/* ---------- 场景数据：软木杯垫 + 制图垫（两组分开画，垫子能单独熄灯） ---------- */
+
+const rand = (a, b) => a + Math.random() * (b - a);
+function quatFromNormal(n) {
+  const d = n[2];
+  if (d > 0.9999) return [0, 0, 0, 1];
+  if (d < -0.9999) return [1, 0, 0, 0];
+  const ax = [-n[1], n[0], 0];
+  const l = Math.hypot(...ax), a = Math.acos(d), s = Math.sin(a/2)/l;
+  return [ax[0]*s, ax[1]*s, ax[2]*s, Math.cos(a/2)];
+}
+/* 数据造法同《高斯泼溅渲染系统》主 demo：连贯纹理 + 车削轮廓黄金角采样 + 法线。
+ * 原站的杯垫是训练出来的扫描资产（照片感在数据里），程序化用这三件套逼近。 */
+function makeCorkSampler() {
+  const S = 512, c = document.createElement('canvas');
+  c.width = c.height = S;
+  const g = c.getContext('2d');
+  g.fillStyle = '#c99a5f'; g.fillRect(0, 0, S, S);
+  const shades = ['#e0b67c', '#c78f54', '#b67e45', '#d8ab70', '#a8703a', '#d1a066', '#bd8a50', '#e6c08a'];
+  for (let i = 0; i < 3200; i++) {
+    g.fillStyle = shades[Math.random() * shades.length | 0];
+    g.globalAlpha = rand(0.35, 0.85);
+    g.beginPath();
+    g.ellipse(Math.random() * S, Math.random() * S, rand(2, 8), rand(1.5, 5), Math.random() * Math.PI, 0, 7);
+    g.fill();
+  }
+  g.globalAlpha = 0.06;
+  for (let i = 0; i < 46; i++) {
+    g.fillStyle = Math.random() < 0.5 ? '#8a5c2e' : '#eec48d';
+    g.beginPath();
+    g.ellipse(Math.random() * S, Math.random() * S, rand(40, 110), rand(30, 90), Math.random() * Math.PI, 0, 7);
+    g.fill();
+  }
+  g.globalAlpha = 1;
+  for (let i = 0; i < 320; i++) {
+    g.fillStyle = '#4a2f18';
+    g.globalAlpha = rand(0.5, 0.85);
+    g.beginPath();
+    g.ellipse(Math.random() * S, Math.random() * S, rand(0.8, 2.4), rand(0.8, 2), Math.random() * Math.PI, 0, 7);
+    g.fill();
+  }
+  const d = g.getImageData(0, 0, S, S).data;
+  return (x, y) => {
+    const u = Math.min(S - 1, Math.max(0, (x * 0.48 + 0.5) * S | 0));
+    const v = Math.min(S - 1, Math.max(0, (y * 0.48 + 0.5) * S | 0));
+    const i = (v * S + u) * 4;
+    return [d[i] / 255, d[i + 1] / 255, d[i + 2] / 255];
+  };
+}
+const corkTex = makeCorkSampler();
+const GA = Math.PI * (3 - Math.sqrt(5));
+
+const coaster = [], mat = [];
+function revolve(out, { N, pos, nrm, ao, sMul = 1 }) {
+  for (let k = 0; k < N; k++) {
+    const t = (k + 0.5) / N, th = k * GA;
+    const [r, z] = pos(t), n2 = nrm(t);
+    const cx = r * Math.cos(th), cy = r * Math.sin(th);
+    const n = [n2[0] * Math.cos(th), n2[0] * Math.sin(th), n2[1]];
+    const col = corkTex(cx, cy), shade = ao(t) * rand(0.97, 1.03);
+    const s = 0.0135 * sMul * rand(0.85, 1.15);
+    out.push({
+      center: [cx, cy, z],
+      scale: [s, s, 0.005],
+      quat: quatFromNormal(n),
+      color: [col[0] * shade, col[1] * shade, col[2] * shade],
+      alpha: 1,
+      normal: n,
+    });
+  }
+}
+// 凹面 / 内坡 / 平沿 / 圆唇 / 外壁 / 底面（翻滚会露出背面，底面必须有）
+revolve(coaster, { N: 6800, pos: t => [0.74 * Math.sqrt(t), 0.10], nrm: () => [0, 1], ao: () => 0.88 });
+revolve(coaster, { N: 1700, pos: t => [0.74 + t * 0.08, 0.10 + t * 0.055], nrm: () => [-0.566, 0.824], ao: t => 0.8 + t * 0.16 });
+revolve(coaster, { N: 2600, pos: t => [Math.sqrt(0.82 ** 2 + t * (0.94 ** 2 - 0.82 ** 2)), 0.155], nrm: () => [0, 1], ao: () => 1.0 });
+revolve(coaster, { N: 1900, pos: t => { const a = t * Math.PI / 2; return [0.94 + 0.05 * Math.sin(a), 0.105 + 0.05 * Math.cos(a)]; },
+                   nrm: t => { const a = t * Math.PI / 2; return [Math.sin(a), Math.cos(a)]; }, ao: t => 0.98 - t * 0.1 });
+revolve(coaster, { N: 2100, pos: t => [0.99, 0.105 - t * 0.09], nrm: () => [1, 0], ao: t => 0.86 - t * 0.18 });
+revolve(coaster, { N: 4200, pos: t => [0.97 * Math.sqrt(t), 0.008], nrm: () => [0, -1], ao: () => 0.62, sMul: 1.25 });
+{ // 制图垫：第一幕的环境，随进度整体熄灯
+  for (let i = 0; i < 1900; i++) {
+    const t = Math.random()*Math.PI*2, rr = 1.02 + 1.7*Math.pow(Math.random(), 0.7);
+    const g = rand(-0.025, 0.025);
+    mat.push({
+      center: [rr*Math.cos(t), rr*Math.sin(t), -0.02],
+      scale: [rand(0.05,0.1), rand(0.05,0.1), 0.012],
+      quat: quatFromNormal([0,0,1]),
+      color: [0.27+g, 0.33+g, 0.20+g], alpha: rand(0.95, 1),
+      normal: [0, 0, 1],
+    });
+  }
+  for (let i = 0; i < 260; i++) {
+    const t = Math.random()*Math.PI*2, rr = Math.sqrt(Math.random())*1.08;
+    mat.push({
+      center: [rr*Math.cos(t), rr*Math.sin(t), -0.03],
+      scale: [rand(0.06,0.11), rand(0.06,0.11), 0.012],
+      quat: quatFromNormal([0,0,1]),
+      color: [0.25, 0.31, 0.19], alpha: 1,
+      normal: [0, 0, 1],
+    });
+  }
+  // 接触阴影：把杯垫"放"到垫子上（第一幕；熄灯后跟垫子一起淡出）
+  for (let i = 0; i < 170; i++) {
+    const t = Math.random()*Math.PI*2, rr = 1.12*Math.sqrt(Math.random());
+    const s = rand(0.08, 0.16);
+    mat.push({
+      center: [rr*Math.cos(t) - 0.10, rr*Math.sin(t) + 0.07, -0.012],
+      scale: [s, s, 0.01],
+      quat: quatFromNormal([0,0,1]),
+      color: [0.16, 0.20, 0.12], alpha: 0.4,
+      normal: [0, 0, 1],
+    });
+  }
+}
+
+/* ---------- 着色器：泼溅管线 + 模型旋转/平移/缩放 uniform（转台本体） ---------- */
+
+const VS = `#version 300 es
+precision highp float;
+in vec3 iCenter; in vec3 iScale; in vec4 iQuat; in vec4 iColorA;
+in vec3 iNormal;             // 表面法线：方向光着色（跟着模型一起转）
+uniform mat4 uView, uProj;
+uniform vec2 uViewport, uFocal;
+uniform mat3 uModelRot;      // 转台：跟随滚动进度的翻滚旋转
+uniform vec3 uModelPos;
+uniform float uModelScale;
+uniform float uAlphaMul;     // 整组熄灯用（垫子淡出）
+uniform float uWarm;         // 轮廓光：暖色乘进颜色里
+uniform vec3 uLight;         // 世界空间方向光（已归一化）
+out vec4 vColor; out vec3 vConic; out vec2 vPixPos;
+mat3 quatToMat3(vec4 q){float x=q.x,y=q.y,z=q.z,w=q.w;
+  return mat3(1.-2.*(y*y+z*z),2.*(x*y+w*z),2.*(x*z-w*y),
+              2.*(x*y-w*z),1.-2.*(x*x+z*z),2.*(y*z+w*x),
+              2.*(x*z+w*y),2.*(y*z-w*x),1.-2.*(x*x+y*y));}
+void main(){
+  vec2 corner = vec2(float(gl_VertexID % 2), float(gl_VertexID / 2)) * 2. - 1.;
+  vec3 center = uModelRot * (iCenter * uModelScale) + uModelPos;
+  vec4 viewC = uView * vec4(center, 1.);
+  if (viewC.z > -0.3) { gl_Position = vec4(0.,0.,2.,1.); return; }
+  mat3 R = quatToMat3(iQuat);
+  mat3 M = uModelRot * (R * mat3(iScale.x*uModelScale,0.,0., 0.,iScale.y*uModelScale,0., 0.,0.,iScale.z*uModelScale));
+  mat3 Sigma = M * transpose(M);
+  float invZ = 1./viewC.z, invZ2 = invZ*invZ;
+  mat3 J = mat3(uFocal.x*invZ,0.,0., 0.,uFocal.y*invZ,0.,
+                -uFocal.x*viewC.x*invZ2, -uFocal.y*viewC.y*invZ2, 0.);
+  mat3 T = J * mat3(uView);
+  mat3 S2 = T * Sigma * transpose(T);
+  float a = S2[0][0]+0.3, b = S2[1][0], c = S2[1][1]+0.3;
+  float det = a*c - b*b;
+  if (det <= 0.) { gl_Position = vec4(0.,0.,2.,1.); return; }
+  vConic = vec3(c, -b, a) / det;
+  float mid = 0.5*(a+c), rad = sqrt(max(0., mid*mid - det));
+  float l1 = mid+rad, l2 = max(mid-rad, 1e-4);
+  vec2 e1 = (abs(b)<1e-9) ? ((a>=c)?vec2(1.,0.):vec2(0.,1.)) : normalize(vec2(b, l1-a));
+  vec2 e2 = vec2(e1.y, -e1.x);
+  vec2 radiusPx = min(3.*sqrt(vec2(l1,l2)), 512.);
+  vec2 offsetPx = corner.x*e1*radiusPx.x + corner.y*e2*radiusPx.y;
+  vPixPos = offsetPx;
+  vec4 clip = uProj * viewC;
+  clip.xy += offsetPx / uViewport * 2. * clip.w;
+  gl_Position = clip;
+  // 方向光：法线跟着模型旋转 —— 翻滚时亮面在杯垫上"流动"，立体感的来源
+  vec3 n = normalize(uModelRot * iNormal);
+  float lam = 0.62 + 0.38 * max(0., dot(n, uLight));
+  // 轮廓光：模型空间里"朝下 + 靠外"的部分被暖光染一点
+  float rim = clamp(1.2 - center.y*0.4 - center.z*0.8, 0., 1.) * uWarm;
+  vec3 warm = vec3(1.0 + rim*0.45, 1.0 + rim*0.12, 1.0 - rim*0.15);
+  vColor = vec4(iColorA.rgb * lam * warm, iColorA.a * uAlphaMul);
+}`;
+const FS = `#version 300 es
+precision highp float;
+in vec4 vColor; in vec3 vConic; in vec2 vPixPos; out vec4 frag;
+void main(){
+  float power = 0.5*(vConic.x*vPixPos.x*vPixPos.x + vConic.z*vPixPos.y*vPixPos.y)
+              + vConic.y*vPixPos.x*vPixPos.y;
+  float alpha = vColor.a * exp(-power);
+  if (alpha < 1./255.) discard;
+  frag = vec4(vColor.rgb, alpha);
+}`;
+
+function compile(type, code) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, code); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog);
+if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+gl.useProgram(prog);
+{ // 方向光：左前上方"棚灯"，固定在世界空间（模型转、光不转）
+  const L = [0.45, -0.3, 0.85], l = Math.hypot(...L);
+  gl.uniform3f(gl.getUniformLocation(prog, 'uLight'), L[0] / l, L[1] / l, L[2] / l);
+}
+
+/* ---------- 每组一个实例缓冲；深度排序要用"模型变换后"的中心 ---------- */
+
+const FLOATS = 17;   // center 3 + scale 3 + quat 4 + colorA 4 + normal 3
+function makeGroup(list) {
+  const n = list.length;
+  const src = new Float32Array(n * FLOATS);
+  list.forEach((s, i) => {
+    src.set(s.center, i*FLOATS);
+    src.set(s.scale, i*FLOATS+3);
+    src.set(s.quat, i*FLOATS+6);
+    src.set([...s.color, s.alpha], i*FLOATS+10);
+    src.set(s.normal, i*FLOATS+14);
+  });
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  const vbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, src.byteLength, gl.DYNAMIC_DRAW);
+  [['iCenter',3,0],['iScale',3,12],['iQuat',4,24],['iColorA',4,40],['iNormal',3,56]].forEach(([nm,sz,off]) => {
+    const loc = gl.getAttribLocation(prog, nm);
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, sz, gl.FLOAT, false, FLOATS*4, off);
+    gl.vertexAttribDivisor(loc, 1);
+  });
+  return { n, src, vao, vbo, buf: new Float32Array(n*FLOATS),
+           depths: new Float32Array(n), order: new Uint32Array(n) };
+}
+const gCoaster = makeGroup(coaster);
+const gMat = makeGroup(mat);
+
+function sortUpload(g, view, rot, scl, pos) {
+  const { n, src, depths, order, buf } = g;
+  for (let i = 0; i < n; i++) {
+    const o = i*FLOATS, x = src[o], y = src[o+1], z = src[o+2];
+    // 模型变换后的中心（rot 是 9 元素 mat3，列主序）
+    const wx = (rot[0]*x + rot[3]*y + rot[6]*z) * scl + pos[0];
+    const wy = (rot[1]*x + rot[4]*y + rot[7]*z) * scl + pos[1];
+    const wz = (rot[2]*x + rot[5]*y + rot[8]*z) * scl + pos[2];
+    depths[i] = view[2]*wx + view[6]*wy + view[10]*wz;
+    order[i] = i;
+  }
+  order.sort((A, B) => depths[A] - depths[B]);
+  for (let k = 0; k < n; k++)
+    buf.set(src.subarray(order[k]*FLOATS, (order[k]+1)*FLOATS), k*FLOATS);
+  gl.bindBuffer(gl.ARRAY_BUFFER, g.vbo);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, buf);
+}
+
+/* ---------- 虚拟滚动（wheel / 拖拽 / 键盘 → 三幕进度） ---------- */
+
+const MAXPX = 5200;
+const sm = { target: 0, current: 0 };
+addEventListener('wheel', e => { e.preventDefault();
+  sm.target = Math.max(0, Math.min(MAXPX, sm.target + e.deltaY * (e.deltaMode === 1 ? 40 : 1)));
+}, { passive: false });
+addEventListener('keydown', e => {
+  const map = { ArrowUp: -100, ArrowDown: 100, PageUp: -900, PageDown: 900 };
+  if (e.key in map) { e.preventDefault(); sm.target = Math.max(0, Math.min(MAXPX, sm.target + map[e.key])); }
+});
+let dragY = null;
+canvas.addEventListener('pointerdown', e => { dragY = e.clientY; canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove', e => {
+  if (dragY === null) return;
+  sm.target = Math.max(0, Math.min(MAXPX, sm.target + (dragY - e.clientY) * 3));
+  dragY = e.clientY;
+});
+canvas.addEventListener('pointerup', () => dragY = null);
+
+/* ---------- 相机 / 数学 ---------- */
+
+function perspective(fovY, aspect, near, far) {
+  const f = 1/Math.tan(fovY/2), nf = 1/(near-far);
+  return new Float32Array([f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0]);
+}
+const sub3=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const cross3=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const norm3=a=>{const l=Math.hypot(...a);return[a[0]/l,a[1]/l,a[2]/l]};
+function lookAt(eye, at, up) {
+  const z = norm3(sub3(eye,at)), x = norm3(cross3(up,z)), y = cross3(z,x);
+  return new Float32Array([x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0,
+    -dot3(x,eye),-dot3(y,eye),-dot3(z,eye),1]);
+}
+// 绕任意轴旋转的 mat3（列主序 9 元素）
+function axisRot(ax, a) {
+  const [x,y,z] = norm3(ax), c = Math.cos(a), s = Math.sin(a), t = 1-c;
+  return [t*x*x+c, t*x*y+s*z, t*x*z-s*y,
+          t*x*y-s*z, t*y*y+c, t*y*z+s*x,
+          t*x*z+s*y, t*y*z-s*x, t*z*z+c];
+}
+function mulRot(A, B) {  // A*B，列主序
+  const r = new Array(9);
+  for (let c = 0; c < 3; c++) for (let rw = 0; rw < 3; rw++)
+    r[c*3+rw] = A[rw]*B[c*3] + A[3+rw]*B[c*3+1] + A[6+rw]*B[c*3+2];
+  return r;
+}
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp01 = t => Math.max(0, Math.min(1, t));
+// 分段进度：把总进度切成 [起, 止] 的局部 0..1
+const seg = (p, a, b) => clamp01((p - a) / (b - a));
+
+/* ---------- 主循环：一个进度驱动 WebGL / CSS 灯光 / 三幕 DOM ---------- */
+
+gl.disable(gl.DEPTH_TEST);
+gl.enable(gl.BLEND);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+const U = n => gl.getUniformLocation(prog, n);
+const glow = document.getElementById('glow');
+const act1 = document.getElementById('act1'), act2 = document.getElementById('act2'), act3 = document.getElementById('act3');
+const words = act3.querySelectorAll('h2 span');
+const stat = document.getElementById('stat'), hint = document.getElementById('hint');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function frame() {
+  sm.current += (sm.target - sm.current) * (reduceMotion ? 1 : 0.1);
+  const p = sm.current / MAXPX;                  // 总进度 0..1
+
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const w = canvas.clientWidth*dpr|0, h = canvas.clientHeight*dpr|0;
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+  gl.viewport(0, 0, w, h);
+
+  /* 三幕的进度切分 */
+  const pDim   = seg(p, 0.02, 0.2);    // 幕1→2：环境熄灯
+  const pTurn  = seg(p, 0.12, 0.8);    // 幕2：翻滚
+  const pHand  = seg(p, 0.8, 1.0);     // 幕2→3：交棒
+
+  /* 背景与灯光 */
+  const bg = [lerp(0.247, 0.09, pDim) - pHand*0.02,
+              lerp(0.29, 0.067, pDim) - pHand*0.01,
+              lerp(0.196, 0.05, pDim)];
+  gl.clearColor(bg[0], bg[1], bg[2], 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  glow.style.opacity = (pTurn > 0 ? Math.sin(Math.min(pTurn, 1) * Math.PI) * 0.9 : 0) + pHand * 0.35;
+
+  /* 相机：第一幕俯视制图桌 → 第二幕平视黑场 */
+  const camPhi = lerp(0.95, 0.38, seg(p, 0.02, 0.3));
+  const camR = lerp(4.1, 4.6, pDim);
+  const eye = [camR*Math.cos(camPhi)*Math.cos(0.9), camR*Math.cos(camPhi)*Math.sin(0.9), camR*Math.sin(camPhi)];
+  const view = lookAt(eye, [0, 0, 0.05], [0, 0, 1]);
+  const fovY = 38*Math.PI/180;
+  const proj = perspective(fovY, w/h, 0.1, 100);
+
+  gl.uniformMatrix4fv(U('uView'), false, view);
+  gl.uniformMatrix4fv(U('uProj'), false, proj);
+  gl.uniform2f(U('uViewport'), w, h);
+  gl.uniform2f(U('uFocal'), h/(2*Math.tan(fovY/2)), h/(2*Math.tan(fovY/2)));
+
+  /* 垫子：原地不动，随 pDim 熄灯（画在前 = 垫底） */
+  const I3 = [1,0,0, 0,1,0, 0,0,1];
+  const matAlpha = 1 - pDim;
+  if (matAlpha > 0.01) {
+    sortUpload(gMat, view, I3, 1, [0,0,0]);
+    gl.bindVertexArray(gMat.vao);
+    gl.uniformMatrix3fv(U('uModelRot'), false, new Float32Array(I3));
+    gl.uniform3f(U('uModelPos'), 0, 0, 0);
+    gl.uniform1f(U('uModelScale'), 1);
+    gl.uniform1f(U('uAlphaMul'), matAlpha);
+    gl.uniform1f(U('uWarm'), 0);
+    gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, gMat.n);
+  }
+
+  /* 杯垫：翻滚转台。端对端两整圈 + 缓慢进动，交棒段缩小下沉 */
+  const flip = pTurn * Math.PI * 4;                       // 两整圈
+  const rot = mulRot(axisRot([0,0,1], pTurn*0.9), axisRot([1,0.25,0], flip));
+  const scl = lerp(1, 0.55, pHand);
+  const pos = [0, pHand*0.3, lerp(0, -0.9, pHand)];
+  sortUpload(gCoaster, view, rot, scl, pos);
+  gl.bindVertexArray(gCoaster.vao);
+  gl.uniformMatrix3fv(U('uModelRot'), false, new Float32Array(rot));
+  gl.uniform3f(U('uModelPos'), ...pos);
+  gl.uniform1f(U('uModelScale'), scl);
+  gl.uniform1f(U('uAlphaMul'), 1);
+  gl.uniform1f(U('uWarm'), Math.sin(Math.min(pTurn,1)*Math.PI));
+  gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, gCoaster.n);
+
+  /* DOM 三幕：进度信封控制透明度/模糊 */
+  act1.style.opacity = 1 - pDim;
+  const a2 = Math.min(seg(p, 0.16, 0.28), 1 - seg(p, 0.68, 0.8));  // 淡入…停留…淡出
+  act2.style.opacity = a2;
+  act2.style.transform = `translateY(${(1 - a2) * 10}px)`;
+  words.forEach((sp, i) => {                              // 幕3：逐词 blur 显影，级联
+    const t = seg(pHand, 0.25 + i*0.15, 0.55 + i*0.15);
+    sp.style.opacity = t;
+    sp.style.filter = `blur(${(1 - t) * 14}px)`;
+  });
+  act3.querySelector('.sub').style.opacity = seg(pHand, 0.7, 1);
+
+  hint.classList.toggle('gone', sm.current > 60);
+  const act = p < 0.14 ? '1 · 制图桌' : p < 0.8 ? '2 · 翻滚转台' : '3 · 交棒';
+  stat.innerHTML = `进度 <em>${(p*100).toFixed(0)}%</em> · 幕 <em>${act}</em> · 翻滚 <em>${(flip/Math.PI*180).toFixed(0)}°</em>`;
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

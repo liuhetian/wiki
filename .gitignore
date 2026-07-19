@@ -1,0 +1,41 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Zensical / MkDocs build output
+site/
+.cache/
+
+# Secrets
+.env
+.env.*
+
+# 大体积资源不入库（本地 docs/ 是部署的唯一完整来源，另一份镜像在备份 COS 桶：scripts/backup-media.sh）
+# 位图/视频/3D/音频：git 里只放文本（md、svg、代码）；二进制媒体走备份桶
+*.mp4
+*.webm
+*.mov
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.avif
+*.glb
+*.gltf
+*.mp3
+*.wav
+*.pdf
+# 重型第三方 vendor 真身：版本钉死在 scripts/fetch-vendor.sh，缺了跑它恢复
+docs/vendor/mathjax/
+docs/vendor/echarts/
+
+.claude/
+.agents/

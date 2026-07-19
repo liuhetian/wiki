@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>滚动感知吸顶导航 — open-design.ai site-chrome 拆解</title>
+<style>
+  /* ============================================================
+     Atelier Zero 令牌（取自 open-design 官网 globals.css :root）
+     ============================================================ */
+  :root {
+    --paper: #fafafa;
+    --paper-dark: #f0f0f0;
+    --ink: #262626;
+    --ink-soft: #434343;
+    --ink-mute: #595959;
+    --ink-faint: #8c8c8c;
+    --coral: #63fe13;       /* 官网变量名叫 coral，实为荧光绿 */
+    --bone: #ffffff;
+    --line: #d9d9d9;
+    --shadow: 0 30px 60px -30px rgba(38, 38, 38, .16);
+    --sans: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============================================================
+     Headroom 导航条（官网 .site-chrome + enhanceHeader）：
+     固定在顶部；.is-hidden 时整条上移出屏。显隐只切一个类，
+     位移交给 CSS 过渡 —— JS 每帧至多改一次 DOM
+     ============================================================ */
+  .chrome {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    transform: translateY(0);
+    transition: transform .28s ease;
+  }
+  .chrome.is-hidden { transform: translateY(-100%); }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px clamp(16px, 4vw, 32px);
+    background: rgba(250, 250, 250, .88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .wordmark { font-weight: 800; font-size: 17px; letter-spacing: -0.02em; }
+  .wordmark i { font-style: normal; color: var(--coral); }
+  .links { display: flex; align-items: center; gap: clamp(10px, 2.6vw, 22px); }
+  .links a { color: var(--ink-mute); text-decoration: none; font-size: 13px; font-weight: 600; }
+  .links a:hover { color: var(--ink); }
+  .btn-dl {
+    background: var(--coral);
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    box-shadow: 0 8px 18px -8px rgba(99, 254, 19, .8);
+  }
+
+  /* 状态 HUD：右下角小监视器，帮助看清当前显隐判定 */
+  .hud {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    z-index: 10;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+  .hud b { color: var(--coral); font-weight: 700; }
+
+  /* 演示内容：几屏假文章卡片，让页面滚得起来 */
+  main { padding: 96px clamp(16px, 5vw, 40px) 60px; max-width: 760px; margin: 0 auto; }
+  main h1 { font-size: clamp(24px, 4.6vw, 36px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+  main h1 em { font-style: normal; background: linear-gradient(transparent 65%, var(--coral) 65%); }
+  main > p.lead { color: var(--ink-mute); font-size: 14px; margin-bottom: 28px; }
+  .block {
+    background: var(--bone);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .block h2 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .block h2::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--coral); margin-right: 8px; }
+  .block p { font-size: 13.5px; color: var(--ink-mute); line-height: 1.8; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chrome { transition: none; }   /* 减动效：显隐瞬切，不做滑动 */
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome" data-headroom>
+  <nav class="nav">
+    <span class="wordmark">Open Design<i>.</i></span>
+    <span class="links">
+      <a href="#">方案</a>
+      <a href="#">插件</a>
+      <a href="#">社区</a>
+      <a class="btn-dl" href="#">下载</a>
+    </span>
+  </nav>
+</div>
+
+<div class="hud" data-hud>y <b data-y>0</b> · Δ <b data-delta>0</b> · <b data-state>显示</b></div>
+
+<main>
+  <h1>往下滚<em>导航让路</em>，往上滚立刻回来</h1>
+  <p class="lead">open-design.ai 顶部 site-chrome 的 Headroom 模式 —— 阅读时导航不占屏，想导航时一抬手就在。</p>
+
+  <div class="block"><h2>为什么不是滚过阈值就藏</h2><p>老式做法"滚过 300px 隐藏"，会在用户回滚找导航时失灵。Headroom 看的是方向：向下滚是在读内容，导航退场把整屏让给正文；向上滚是想回头或找入口，导航立刻返场。判定只差一个符号位，体验差一个档次。</p></div>
+  <div class="block"><h2>6px 死区</h2><p>displacement 小于 6px 的抖动不触发判定 —— trackpad 惯性、手指微颤、滚动回弹都被这个死区吃掉，导航不会神经质地闪。官网的 scrollDelta 就是 6。</p></div>
+  <div class="block"><h2>100px 安全区</h2><p>页面顶部 100px 内永远显示（showTopThreshold=100）：刚开始滚就藏导航显得慌张，顶部本来也遮不住什么内容。</p></div>
+  <div class="block"><h2>rAF 折叠</h2><p>trackpad 的 scroll 事件超过 60Hz，每个事件都读 scrollY 写 class 会强制同步布局。官网把监听包进 requestAnimationFrame：一帧内的事件风暴折叠成一次 DOM 变更，PageSpeed 实测省下约 700ms 的 forced reflow。</p></div>
+  <div class="block"><h2>只切一个类</h2><p>JS 只负责 is-hidden 的加减，位移动画完全交给 CSS transition（transform .28s ease）。合成器处理 translateY，不触发布局。</p></div>
+  <div class="block"><h2>试一试</h2><p>在这个 iframe 里上下滚动，盯右下角 HUD：y 是滚动位置，Δ 是本帧位移，状态跟着方向翻转。慢慢滚（Δ 在 ±6 以内）导航纹丝不动。</p></div>
+  <div class="block"><h2>完</h2><p>滚回顶部 100px 内，无论方向，导航必定在场。</p></div>
+</main>
+
+<script>
+/* ============================================================
+   Headroom 吸顶导航 —— 照搬官网 enhanceHeader
+   （apps/landing-page/app/_components/home-enhancer.astro）
+
+   规则（优先级从高到低）：
+     1. y <= 100（showTopThreshold）→ 永远显示
+     2. 本帧位移 delta > +6（scrollDelta）→ 向下滚，隐藏
+     3. 本帧位移 delta < -6            → 向上滚，显示
+     |delta| <= 6 的微动不改状态（死区防抖）
+
+   性能关键：scroll 监听包 rAF —— trackpad >60Hz 的事件风暴
+   折叠成每帧一次读写（官网 PSI 实测：不节流的版本背了
+   ~700ms 的 forced reflow）。ticking 标志保证一帧只排一次。
+   ============================================================ */
+(() => {
+  const nav = document.querySelector('[data-headroom]');
+  const hudY = document.querySelector('[data-y]');
+  const hudDelta = document.querySelector('[data-delta]');
+  const hudState = document.querySelector('[data-state]');
+
+  let lastY = window.scrollY;
+  let ticking = false;
+  const showTopThreshold = 100;   // 顶部安全区：100px 内永远显示
+  const scrollDelta = 6;          // 死区：±6px 的微动不触发
+
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      const delta = y - lastY;
+      if (y <= showTopThreshold) nav.classList.remove('is-hidden');
+      else if (delta > scrollDelta) nav.classList.add('is-hidden');
+      else if (delta < -scrollDelta) nav.classList.remove('is-hidden');
+      lastY = y;
+      ticking = false;
+
+      // HUD 仅演示用，官网无此段
+      hudY.textContent = String(Math.round(y));
+      hudDelta.textContent = (delta > 0 ? '+' : '') + Math.round(delta);
+      hudState.textContent = nav.classList.contains('is-hidden') ? '隐藏' : '显示';
+    });
+  }, { passive: true });   // passive：明确不 preventDefault，滚动不等 JS
+})();
+</script>
+</body>
+</html>

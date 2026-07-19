@@ -1,0 +1,1 @@
+../../../../deploy-cert/deploy_cert_to_cos.py

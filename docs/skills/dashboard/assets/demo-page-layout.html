@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：多栏布局</title>
+<!--
+  demo-page-layout.html —— 「多栏布局」形状的最小可玩实现（蓝本：open-dashboard 的 split-layout）。
+  复现的不变量：
+  - 主内容栏（左，宽）+ 元信息侧栏（右，窄）；侧栏是补充，主内容独立可读
+  - 响应式塌缩：宽屏 720+ 两栏并列，窄屏 < 720 塌缩为单栏（demo 中侧栏在窄屏折叠成手风琴）
+  - 用现成小组件拼装（Card / 描述列表 / 状态芯片），主/侧栏都不是硬编码大块
+  简化：demo 用 CSS Grid 内联切换 + `.narrow` 类模拟；真实版做成布局组件，断点靠 Tailwind
+        （lg:grid-cols-[1fr_320px]），侧栏折叠状态可选放 URL/localStorage。
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .layout { display: grid; gap: 14px; align-items: start; grid-template-columns: 1fr; }
+  @media (min-width: 720px) {
+    .layout:not(.narrow) { grid-template-columns: 1fr 280px; }
+  }
+  .layout .col, .layout aside { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .card-h { padding: 10px 14px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 13px;
+            display: flex; justify-content: space-between; align-items: center; }
+  .card-h.tap { cursor: pointer; user-select: none; }
+  .card-h .arrow { color: var(--muted); font-size: 11px; }
+  .card-b { padding: 12px 14px; }
+  .taskh { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 2px 0 4px; }
+  .taskh h2 { margin: 0; font-size: 17px; }
+  .kv { display: grid; grid-template-columns: 72px 1fr; row-gap: 6px; column-gap: 10px; font-size: 13px; margin: 0; }
+  .kv dt { color: var(--muted); margin: 0; }
+  .kv dd { margin: 0; }
+  .thread { display: flex; flex-direction: column; gap: 10px; }
+  .cmt { display: flex; flex-direction: column; gap: 2px; padding-bottom: 8px; border-bottom: 1px dashed var(--border); }
+  .cmt:last-of-type { border-bottom: 0; padding-bottom: 0; }
+  .cmt-h { display: flex; gap: 8px; align-items: center; font-size: 12px; }
+  .cmt-a { font-weight: 600; color: var(--fg); font-size: 13px; }
+  .cmt-at { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+  .cmt-x { margin-left: auto; }
+  .cmt-b { margin: 0 0 0 30px; font-size: 13px; color: var(--fg); }
+  .avatar { display: inline-flex; width: 22px; height: 22px; align-items: center; justify-content: center;
+            border-radius: 999px; background: var(--chip-off-bg); color: var(--fg); font-size: 11px; font-weight: 600; }
+  .people, .links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+  .people li { display: flex; gap: 8px; align-items: center; }
+  .people .role { color: var(--muted); font-size: 12px; }
+  .links a { color: var(--primary); text-decoration: none; }
+  .links a:hover { text-decoration: underline; }
+  .composer { display: flex; gap: 8px; margin-top: 10px; }
+  .composer textarea { flex: 1; resize: vertical; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect, useMemo } = React;
+const html = htm.bind(React.createElement);
+
+const STATUSES = [
+  { key: "open",  label: "待办",   cls: "chip-warn" },
+  { key: "doing", label: "进行中", cls: "chip-on"   },
+  { key: "done",  label: "已完成", cls: "chip-off"  },
+];
+const SEED_COMMENTS = [
+  { id: 1, author: "陈禾",   at: "2026-06-15 10:12", body: "预发复现了：导出 5 万行会卡在 80% 附近，网关超时。" },
+  { id: 2, author: "李慕白", at: "2026-06-15 11:48", body: "看着像 worker 超时。我把导出改成流式，别把整个文件先缓到内存里。" },
+  { id: 3, author: "王小满", at: "2026-06-16 09:03", body: "优先级抬到高：两家企业客户被卡在这个上。" },
+];
+
+function Confirm({ text, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>确认操作</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" onClick=${onOk}>确认</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// 卡片分区：宽屏总是展开；窄屏（侧栏塌缩到主内容下方后）可点头折叠 = 手风琴
+function CardSection({ title, collapsible, defaultOpen, children }) {
+  const [openN, setOpenN] = useState(defaultOpen !== false);
+  const open = collapsible ? openN : true;
+  const toggle = collapsible ? () => setOpenN(v => !v) : undefined;
+  return html`
+    <section class="card">
+      <div class=${"card-h" + (collapsible ? " tap" : "")}
+           onClick=${toggle}
+           role=${collapsible ? "button" : undefined}
+           aria-expanded=${collapsible ? String(open) : undefined}
+           tabIndex=${collapsible ? 0 : undefined}
+           onKeyDown=${collapsible ? e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } } : undefined}>
+        <span>${title}</span>
+        ${collapsible && html`<span class="arrow">${open ? "▾" : "▸"}</span>`}
+      </div>
+      ${open && html`<div class="card-b">${children}</div>`}
+    </section>`;
+}
+
+function App() {
+  const [forceNarrow, setForceNarrow] = useState(false);
+  const [autoNarrow, setAutoNarrow] = useState(false);
+  const [status, setStatus] = useState("open");
+  const [comments, setComments] = useState(SEED_COMMENTS);
+  const [draft, setDraft] = useState("");
+  const [toast, setToast] = useState("");
+  const [confirm, setConfirm] = useState(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 719px)");
+    const sync = () => setAutoNarrow(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const isNarrow = forceNarrow || autoNarrow;
+  const sChip = useMemo(() => STATUSES.find(s => s.key === status), [status]);
+
+  const changeStatus = k => {
+    if (k === status) return;
+    setStatus(k);
+    setToast(`状态已改为「${STATUSES.find(s => s.key === k).label}」`);
+  };
+  const submit = () => {
+    const body = draft.trim();
+    if (!body) return;
+    const now = new Date();
+    const at = now.toISOString().slice(0, 16).replace("T", " ");
+    setComments(cs => [...cs, { id: Date.now(), author: "我", at, body }]);
+    setDraft("");
+    setToast("评论已发布");
+  };
+  const del = (id, snippet) => setConfirm({
+    text: `删除评论「${snippet}」？此操作不可撤销。`,
+    onOk: () => {
+      setComments(cs => cs.filter(c => c.id !== id));
+      setConfirm(null);
+      setToast("评论已删除");
+    },
+  });
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>任务详情</h1>
+          <p class="sub">主内容 + 元信息侧栏；点右上切换窄屏预览，看塌缩</p>
+        </div>
+        <button class="btn sm" disabled=${autoNarrow}
+                title=${autoNarrow ? "iframe 已足够窄，正处在自然塌缩下" : ""}
+                onClick=${() => { const n = !forceNarrow; setForceNarrow(n); setToast(n ? "已切窄屏预览" : "已切回宽屏"); }}>
+          ${forceNarrow ? "切回宽屏" : "切窄屏预览"}
+        </button>
+      </header>
+
+      <div class=${"layout" + (forceNarrow ? " narrow" : "")}>
+        <div class="col">
+          <div class="taskh">
+            <h2>大数据导出任务超时</h2>
+            <span class=${"chip " + sChip.cls}>${sChip.label}</span>
+          </div>
+
+          <${CardSection} title="描述" collapsible=${isNarrow} defaultOpen=${true}>
+            <p style=${{ margin: 0 }}>
+              导出超过约 5 万行时，CSV 生成任务会卡住，最终因网关超时失败。
+              小体量导出正常，回归点看起来在缓冲这一步，而不在查询本身。
+            </p>
+            <p style=${{ margin: "8px 0 0" }}>
+              建议改为把行流式写给客户端，别在服务端把整份文件先物化到内存再统一发。
+            </p>
+          <//>
+
+          <${CardSection} title="详情" collapsible=${isNarrow} defaultOpen=${true}>
+            <dl class="kv">
+              <dt>负责人</dt><dd>李慕白</dd>
+              <dt>报告人</dt><dd>陈禾</dd>
+              <dt>优先级</dt><dd>高</dd>
+              <dt>组件</dt><dd>报表 / 导出</dd>
+              <dt>创建于</dt><dd>2026-06-15</dd>
+              <dt>截止</dt><dd>2026-06-22</dd>
+            </dl>
+          <//>
+
+          <${CardSection} title=${"讨论 · " + comments.length} collapsible=${isNarrow} defaultOpen=${true}>
+            <div class="thread">
+              ${comments.map(c => html`
+                <div key=${c.id} class="cmt">
+                  <div class="cmt-h">
+                    <span class="avatar">${c.author.slice(0, 1)}</span>
+                    <span class="cmt-a">${c.author}</span>
+                    <span class="cmt-at">${c.at}</span>
+                    <button class="link danger cmt-x"
+                            onClick=${() => del(c.id, c.body.slice(0, 12) + (c.body.length > 12 ? "…" : ""))}>删除</button>
+                  </div>
+                  <p class="cmt-b">${c.body}</p>
+                </div>`)}
+              ${comments.length === 0 && html`<p class="empty" style=${{ margin: 0, padding: "12px 0" }}>还没有讨论</p>`}
+            </div>
+            <div class="composer">
+              <textarea rows="2" placeholder="写点什么…" value=${draft}
+                        onChange=${e => setDraft(e.target.value)}></textarea>
+              <button class="btn primary" disabled=${!draft.trim()} onClick=${submit}>发送</button>
+            </div>
+          <//>
+        </div>
+
+        <aside>
+          <${CardSection} title="状态" collapsible=${isNarrow} defaultOpen=${true}>
+            <div class="seg">
+              ${STATUSES.map(s => html`
+                <button key=${s.key} class=${status === s.key ? "on" : ""}
+                        onClick=${() => changeStatus(s.key)}>${s.label}</button>`)}
+            </div>
+          <//>
+
+          <${CardSection} title="参与者" collapsible=${isNarrow} defaultOpen=${false}>
+            <ul class="people">
+              <li><span class="avatar">李</span><span>李慕白</span><span class="role">· 负责人</span></li>
+              <li><span class="avatar">陈</span><span>陈禾</span><span class="role">· 报告人</span></li>
+              <li><span class="avatar">王</span><span>王小满</span><span class="role">· 关注</span></li>
+              <li><span class="avatar">赵</span><span>赵青</span><span class="role">· 关注</span></li>
+            </ul>
+          <//>
+
+          <${CardSection} title="相关链接" collapsible=${isNarrow} defaultOpen=${false}>
+            <ul class="links">
+              <li><a href="#" onClick=${e => e.preventDefault()}>PR #482 · 流式导出实现</a></li>
+              <li><a href="#" onClick=${e => e.preventDefault()}>监控告警：export-timeout</a></li>
+              <li><a href="#" onClick=${e => e.preventDefault()}>需求文档 v2.4 · 报表增强</a></li>
+            </ul>
+          <//>
+        </aside>
+      </div>
+
+      ${confirm && html`<${Confirm} text=${confirm.text} onOk=${confirm.onOk} onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>报纸版设计系统 demo：文章索引</title>
+<!--
+  newspaper-demo.html —— newspaper-style 设计系统的交互全家福。
+  复现的不变量（对应 newspaper-style.md 的组件文档）：
+  - 类目下拉是「改值即整页提交」：np-select + data-np-autosubmit，筛选状态进 URL（?cat=xxx）
+  - 复制链接按钮复制的是「当前筛选后」的 URL，而不是固定地址
+  - 无匹配类目时显示 .no-data 空状态
+  样式/交互逻辑均复用同级 newspaper.css / newspaper.js（同一份源文件，不重复定义）。
+-->
+<script>document.documentElement.className += ' js';</script>
+<link rel="stylesheet" href="newspaper.css">
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <div class="meta"><span>版式实验室 · DEMO</span><span>NO. 07</span></div>
+    <h1>报纸版设计系统</h1>
+    <p class="subtitle">暖米纸面 · 粗黑分割线 · 强对比排版 —— 交互组件全家福</p>
+  </header>
+
+  <div class="kicker">目录 · 共六篇 · 演示用虚构内容</div>
+
+  <div class="section-rule">
+    <form method="get" data-np-autosubmit style="display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap;">
+      <div style="min-width:220px; flex:1;">
+        <div style="font-size:13px; font-weight:800; color:var(--muted); letter-spacing:0.12em; margin-bottom:6px;">按类目筛选</div>
+        <select name="cat" class="np-select">
+          <option value="">全部类目</option>
+          <option value="shizheng">时政</option>
+          <option value="caijing">财经</option>
+          <option value="wenhua">文化</option>
+        </select>
+        <noscript><button type="submit" class="btn" style="margin-top:8px;">应用</button></noscript>
+      </div>
+      <button type="button" class="btn np-copy" data-link="">复制本页链接</button>
+    </form>
+  </div>
+
+  <div class="np-loading-region">
+    <div class="loading-overlay">
+      <div class="loading-box"><div class="label">正在加载…</div><div class="loading-bar"></div></div>
+    </div>
+
+    <div id="list" style="display:grid; gap:14px; margin-top:22px;">
+      <article class="card" data-cat="shizheng">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
+          <h3 style="margin:0; font-size:19px;">总编按：版式即态度<span class="badge">本期头条</span></h3>
+          <span style="font-size:13px; color:var(--muted); white-space:nowrap;">时政</span>
+        </div>
+        <p style="margin:10px 0 0; color:var(--body); line-height:1.6;">粗线分割、无阴影无圆角，靠排版本身建立层级——这是一种克制，也是一种立场。</p>
+      </article>
+
+      <article class="card" data-cat="caijing">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
+          <h3 style="margin:0; font-size:19px;">数字纸媒的印刷术乡愁</h3>
+          <span style="font-size:13px; color:var(--muted); white-space:nowrap;">财经</span>
+        </div>
+        <p style="margin:10px 0 0; color:var(--body); line-height:1.6;">屏幕想模仿纸张的重量感，最后学会的却是纸张的规矩：留白、对齐、粗细分明的边界。</p>
+      </article>
+
+      <article class="card" data-cat="wenhua">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
+          <h3 style="margin:0; font-size:19px;">宋体重生记：从铅字到网页</h3>
+          <span style="font-size:13px; color:var(--muted); white-space:nowrap;">文化</span>
+        </div>
+        <p style="margin:10px 0 0; color:var(--body); line-height:1.6;">字重与字号的对比，替代了插画和渐变，成为页面上唯一的视觉重音。</p>
+      </article>
+
+      <article class="card" data-cat="shizheng">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
+          <h3 style="margin:0; font-size:19px;">会议室里的排版政治<span class="badge">已归档</span></h3>
+          <span style="font-size:13px; color:var(--muted); white-space:nowrap;">时政</span>
+        </div>
+        <p style="margin:10px 0 0; color:var(--body); line-height:1.6;">谁的标题占据头版、谁的引言被摘句放大，从来不只是设计问题。</p>
+      </article>
+
+      <article class="card" data-cat="caijing">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
+          <h3 style="margin:0; font-size:19px;">广告位与叙事权的百年拉锯</h3>
+          <span style="font-size:13px; color:var(--muted); white-space:nowrap;">财经</span>
+        </div>
+        <p style="margin:10px 0 0; color:var(--body); line-height:1.6;">版面越干净，越衬得出「这一段是重点」——强对比本身就是一种编辑判断。</p>
+      </article>
+
+      <article class="card" data-cat="wenhua">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
+          <h3 style="margin:0; font-size:19px;">留白是最贵的版面</h3>
+          <span style="font-size:13px; color:var(--muted); white-space:nowrap;">文化</span>
+        </div>
+        <p style="margin:10px 0 0; color:var(--body); line-height:1.6;">不装饰，恰恰是最费判断力的装饰选择。</p>
+      </article>
+    </div>
+
+    <div id="empty" class="no-data" style="display:none; margin-top:22px;">
+      本类目暂无文章
+      <div class="hint">换个类目试试，或选「全部类目」</div>
+    </div>
+  </div>
+
+  <div class="core-left">“靠排版建立层级，不用装饰图片、渐变、阴影、圆角。”</div>
+  <div class="core-invert">下拉筛选、复制链接、加载遮罩——这三个组件的源码都在 newspaper.js 里，全部基于 class 钩子，无硬编码 id。</div>
+
+  <div class="section-rule" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+    <button class="btn">默认按钮</button>
+    <button class="btn btn-solid">实心按钮</button>
+    <button class="btn disabled" disabled>禁用按钮</button>
+    <span class="badge">徽标示例</span>
+  </div>
+
+  <div class="toast"></div>
+</div>
+
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var cat = params.get('cat') || '';
+  var select = document.querySelector('select[name="cat"]');
+  if (select) select.value = cat;
+
+  var cards = document.querySelectorAll('#list [data-cat]');
+  var visible = 0;
+  cards.forEach(function (card) {
+    var match = !cat || card.getAttribute('data-cat') === cat;
+    card.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+  document.getElementById('empty').style.display = visible ? 'none' : '';
+
+  var copyBtn = document.querySelector('.np-copy');
+  if (copyBtn) copyBtn.setAttribute('data-link', location.pathname + location.search);
+})();
+</script>
+<script src="newspaper.js"></script>
+</body>
+</html>

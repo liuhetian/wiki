@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>页底渐进高斯模糊 — open-design.ai Gradual Blur 拆解</title>
+<style>
+  /* ================================================================
+     Atelier Zero 令牌（open-design 仓库 apps/landing-page/app/globals.css）
+     ================================================================ */
+  :root {
+    --paper: #fafafa;
+    --paper-dark: #f0f0f0;
+    --ink: #262626;
+    --ink-soft: #434343;
+    --ink-mute: #595959;
+    --ink-faint: #8c8c8c;
+    --coral: #63fe13;
+    --bone: #ffffff;
+    --line: #d9d9d9;
+    --shadow: 0 30px 60px -30px rgba(38, 38, 38, 0.16);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--paper); }
+  body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+    color: var(--ink);
+    padding: 34px clamp(18px, 5vw, 52px) 30vh; /* 底部留足滚动余量，让内容能穿过模糊带 */
+    -webkit-font-smoothing: antialiased;
+  }
+  .kicker { font-size: 12px; letter-spacing: .22em; color: var(--ink-faint); margin-bottom: 8px; }
+  h1 { font-size: clamp(24px, 3.6vw, 34px); font-weight: 800; letter-spacing: -.02em; margin-bottom: 10px; }
+  .lead { color: var(--ink-mute); font-size: 14px; line-height: 1.9; max-width: 46em; margin-bottom: 30px; }
+  .lead b { color: var(--ink); }
+
+  /* 一组有细节的内容：模糊只有"糊掉细节"才看得见，所以铺文字和细纹卡片 */
+  .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0; }
+  .chip {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--bone);
+    padding: 18px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--ink-soft);
+  }
+  .chip .n { display: block; font-size: 30px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
+  .chip.green { background: var(--coral); border-color: transparent; color: var(--ink); }
+  /* 细条纹背景：穿过模糊带时梯度看得最清楚 */
+  .stripes {
+    height: 90px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: repeating-linear-gradient(90deg, var(--ink) 0 2px, var(--bone) 2px 14px);
+  }
+  p.body { font-size: 14px; line-height: 2; color: var(--ink-soft); max-width: 46em; margin: 14px 0; }
+
+  /* ---- target='parent' 变体：卡片自己的底边模糊 ---- */
+  .hero-card {
+    position: relative;          /* parent 模式的锚点：层叠在卡片内部 absolute */
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: var(--bone);
+    box-shadow: var(--shadow);
+    margin: 26px 0 34px;
+    padding: 26px 26px 64px;
+  }
+  .hero-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+  .hero-card .art {
+    margin-top: 14px;
+    height: 150px;
+    border-radius: 12px;
+    background:
+      radial-gradient(circle at 20% 40%, var(--coral) 0 26px, transparent 27px),
+      radial-gradient(circle at 55% 70%, var(--ink) 0 18px, transparent 19px),
+      radial-gradient(circle at 80% 30%, var(--coral) 0 12px, transparent 13px),
+      repeating-linear-gradient(45deg, var(--paper-dark) 0 10px, var(--bone) 10px 24px);
+  }
+
+  footer { color: var(--ink-faint); font-size: 12px; letter-spacing: .1em; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<p class="kicker">GRADUAL BLUR · 页底渐进高斯模糊</p>
+<h1>内容不是被裁掉的，是化进白雾里的</h1>
+<p class="lead">
+  往下滚，注意 iframe 底边：文字和条纹经过时<b>先轻微发虚、再彻底化开</b>，
+  不是一条生硬的白色渐变盖上去。滚到卡片处还有一个 target='parent' 的局部版本。
+</p>
+
+<div class="hero-card" data-gradual-blur data-target="parent" data-height="3.4rem" data-strength="2" data-div-count="6">
+  <h2>target='parent' 变体</h2>
+  <p class="body" style="margin:0">官网 hero 区背景画的底边就是这个用法：容器 <code>position:relative</code>，模糊带 absolute 贴在容器内底边，只把这张"画"的下沿糊进纸面。</p>
+  <div class="art"></div>
+</div>
+
+<div class="row">
+  <div class="chip"><span class="n">10</span>层 backdrop-filter 叠出梯度</div>
+  <div class="chip green"><span class="n">2ⁿ</span>模糊量指数增长</div>
+  <div class="chip"><span class="n">4</span>段 mask 划定每层的责任区</div>
+</div>
+
+<div class="stripes"></div>
+
+<p class="body">这条模糊带最反直觉的地方：一个 <code>backdrop-filter: blur()</code> 只能给整块区域一个统一的模糊值，做不出"越靠底越糊"。官网的解法（来自 React Bits 的 Gradual Blur，MIT，原作者 ansh-dhanani）是把带子切成 10 层完全重叠的 div，每层各自持有一档递增的模糊值，再用四段式 mask 让每层只在自己负责的横条里显影 —— 肉眼看到的连续梯度其实是 10 档阶梯，档距小到看不出台阶。</p>
+
+<div class="row">
+  <div class="chip"><span class="n">01</span>层与层之间 mask 有一格重叠，接缝互相咬合</div>
+  <div class="chip"><span class="n">02</span>pointer-events:none，带子不挡任何点击</div>
+  <div class="chip"><span class="n">03</span>SSR 直出内联样式 div，浏览器端零 JS</div>
+</div>
+
+<p class="body">官网首页用的参数：position bottom、height 4rem、strength 3、divCount 10、curve linear、exponential。挂法有两种：target='page' 时 position:fixed 钉在视口底边（本页这条），target='parent' 时 absolute 贴在最近的定位祖先内（上面卡片那条）。除此以外两种模式生成的层完全一样。</p>
+
+<div class="stripes" style="background: repeating-linear-gradient(0deg, var(--ink-faint) 0 1px, var(--bone) 1px 8px)"></div>
+
+<p class="body">滚到这里时回头看底边 —— 任何内容（黑字、荧光绿块、细条纹）从带子里穿出来的过程都是渐进的。这也是它和"白色渐变遮罩"的本质区别：渐变遮罩是把内容盖白，Gradual Blur 是把内容<b>失焦</b>，颜色还在、形状还在，只是化开了。</p>
+
+<footer>ATELIER ZERO · GRADUAL BLUR DEMO</footer>
+
+<script>
+/* ================================================================
+   Gradual Blur 生成器 —— 算法逐行对齐官网
+   apps/landing-page/app/_components/gradual-blur.tsx（React Bits
+   "Gradual Blur" 的 SSR 移植版）。官网在构建期用 React 直接渲染出
+   这些内联样式 div（浏览器端零 JS）；demo 为了让参数可调，用同一
+   段公式在运行时生成。
+
+   核心公式（第 i 层，i = 1..divCount）：
+     progress  = curve(i / divCount)            // 本 demo: linear
+     blur(i)   = exponential
+                   ? 2^(progress*4) * 0.0625 * strength   // 指数档
+                   : 0.0625 * (progress*divCount+1) * strength
+     increment = 100 / divCount
+     p1..p4    = increment*(i-1), *i, *(i+1), *(i+2)      // 四段 mask
+     mask      = linear-gradient(to bottom,
+                   transparent p1%, black p2%[, black p3%][, transparent p4%])
+
+   四段 mask 是整个效果的灵魂：第 i 层只在 p1→p4 这个窗口内显影，
+   窗口之间彼此重叠一格（p3/p4 伸进下一层的区域），所以相邻两档
+   模糊值在重叠带内互相过渡，肉眼看不到台阶。
+   ================================================================ */
+(() => {
+  const CURVES = {
+    linear: (p) => p,
+    bezier: (p) => p * p * (3 - 2 * p),
+    'ease-in': (p) => p * p,
+    'ease-out': (p) => 1 - Math.pow(1 - p, 2),
+    'ease-in-out': (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2),
+  };
+
+  const buildGradualBlur = ({
+    host = document.body,      // 挂载点：page 模式挂 body，parent 模式挂定位容器
+    target = 'page',           // 'page' → fixed 钉视口底；'parent' → absolute 贴容器底
+    position = 'bottom',
+    height = '4rem',           // 官网首页同值
+    strength = 3,              // 官网首页同值
+    divCount = 10,             // 官网首页同值
+    curve = 'linear',
+    exponential = true,        // 官网首页同值
+    opacity = 1,
+  } = {}) => {
+    const wrap = document.createElement('div');
+    wrap.setAttribute('aria-hidden', 'true');
+    Object.assign(wrap.style, {
+      position: target === 'page' ? 'fixed' : 'absolute',
+      [position]: '0',
+      left: '0', right: '0',
+      height,
+      pointerEvents: 'none',   // 带子纯装饰，绝不能挡住下面的链接和按钮
+      zIndex: '50',
+    });
+
+    const curveFunc = CURVES[curve] || CURVES.linear;
+    const increment = 100 / divCount;
+    const dir = { top: 'to top', bottom: 'to bottom', left: 'to left', right: 'to right' }[position];
+
+    for (let i = 1; i <= divCount; i++) {
+      const progress = curveFunc(i / divCount);
+      const blurValue = exponential
+        ? Math.pow(2, progress * 4) * 0.0625 * strength
+        : 0.0625 * (progress * divCount + 1) * strength;
+
+      /* 四段 mask 断点，保留 1 位小数（官网同样做了 round×10/10） */
+      const p1 = Math.round((increment * i - increment) * 10) / 10;
+      const p2 = Math.round(increment * i * 10) / 10;
+      const p3 = Math.round((increment * i + increment) * 10) / 10;
+      const p4 = Math.round((increment * i + increment * 2) * 10) / 10;
+
+      let gradient = `transparent ${p1}%, black ${p2}%`;
+      if (p3 <= 100) gradient += `, black ${p3}%`;
+      if (p4 <= 100) gradient += `, transparent ${p4}%`;
+
+      const layer = document.createElement('div');
+      Object.assign(layer.style, {
+        position: 'absolute',
+        inset: '0',
+        opacity: String(opacity),
+        maskImage: `linear-gradient(${dir}, ${gradient})`,
+        webkitMaskImage: `linear-gradient(${dir}, ${gradient})`,
+        backdropFilter: `blur(${blurValue.toFixed(3)}rem)`,
+        webkitBackdropFilter: `blur(${blurValue.toFixed(3)}rem)`,
+      });
+      wrap.appendChild(layer);
+    }
+    host.appendChild(wrap);
+  };
+
+  /* ① 页底整条：官网首页 <GradualBlur target='page' .../> 的参数原样 */
+  buildGradualBlur({ target: 'page', height: '4rem', strength: 3, divCount: 10, curve: 'linear', exponential: true });
+
+  /* ② 卡片局部：data- 属性驱动的 parent 模式（官网 hero 底边同款用法） */
+  document.querySelectorAll('[data-gradual-blur]').forEach((el) => {
+    buildGradualBlur({
+      host: el,
+      target: 'parent',
+      height: el.dataset.height || '3rem',
+      strength: Number(el.dataset.strength || 2),
+      divCount: Number(el.dataset.divCount || 6),
+      curve: 'linear',
+      exponential: true,
+    });
+  });
+
+  /* 模糊带本身是静止的（不动、不闪），不属于 prefers-reduced-motion
+     要关停的"运动"；官网同样对它不做减动降级。注释留此说明。 */
+})();
+</script>
+</body>
+</html>

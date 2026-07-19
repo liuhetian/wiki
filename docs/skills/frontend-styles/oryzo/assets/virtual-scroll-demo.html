@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>虚拟滚动与场景推进 · ORYZO scrollManager 架构复刻</title>
+<style>
+  :root {
+    --bg: #47523a;
+    --ink: #f2e8d5;
+    --accent: #f08c2e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* 页面本体不滚：浏览器原生滚动被整个架空，一切输入喂给 scrollManager */
+  html, body { height: 100%; overflow: hidden; background: var(--bg); }
+  body { font-family: "DM Mono", ui-monospace, monospace; color: var(--ink); }
+
+  /* 底层 canvas：吃滚动进度。canvas 是 replaced element，inset:0 不会自动撑满，宽高要显式给 */
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; }
+
+  #world { position: fixed; inset: 0; will-change: transform; }  /* DOM 内容层：跟着虚拟滚动位移 */
+  section {
+    height: 100vh; display: grid; place-content: center; gap: 14px;
+    text-align: center; pointer-events: none;
+  }
+  section .no { font-size: 12px; letter-spacing: .3em; color: var(--accent); }
+  section h2 { font-size: clamp(26px, 5vw, 44px); letter-spacing: .04em; font-weight: 500; }
+  section p { font-size: 13px; line-height: 1.9; letter-spacing: .06em; opacity: .8; max-width: 34em; }
+
+  /* 右侧进度轨 */
+  .track {
+    position: fixed; right: 14px; top: 50%; translate: 0 -50%;
+    width: 3px; height: 42vh; background: #f2e8d533; border-radius: 99px;
+  }
+  .track i { position: absolute; left: 0; top: 0; width: 100%; height: 0%;
+    background: var(--accent); border-radius: 99px; display: block; }
+
+  .hint {
+    position: fixed; left: 50%; bottom: 16px; translate: -50% 0;
+    font-size: 11px; letter-spacing: .28em; opacity: .8;
+    display: flex; gap: 10px; align-items: center;
+    transition: opacity .5s; pointer-events: none;
+  }
+  .hint.gone { opacity: 0; }
+  .hint .dot { width: 22px; height: 22px; border: 1px solid var(--ink); border-radius: 50%;
+    display: grid; place-items: center; font-size: 12px;
+    animation: bob 1.6s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(4px); } }
+
+  .hud { position: fixed; left: 16px; top: 14px; font-size: 12px; line-height: 1.7;
+    letter-spacing: .06em; pointer-events: none; }
+  .hud b { font-size: 14px; letter-spacing: .12em; }
+  .hud em { font-style: normal; color: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) { .hint .dot { animation: none; } }
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+
+<div id="world">
+  <section>
+    <div class="no">01 · INTRO</div>
+    <h2>页面根本没在滚</h2>
+    <p>浏览器原生滚动被架空：wheel / 触摸 / 键盘全部喂给一个 scrollManager，
+       它维护 target 与 current 两个标量，每帧 lerp 逼近 —— 于是 DOM 位移、
+       背景 canvas、进度条吃的是同一个数。</p>
+  </section>
+  <section>
+    <div class="no">02 · NORMALIZE</div>
+    <h2>wheel 先归一化再消费</h2>
+    <p>鼠标滚轮按行报、触控板按像素报、老浏览器按页报 ——
+       deltaMode 三种取值先统一换算成像素，手感才能跨设备一致。</p>
+  </section>
+  <section>
+    <div class="no">03 · KEYBOARD</div>
+    <h2>键盘是一等公民</h2>
+    <p>↑↓ 一步 100px，PageUp / PageDown 走整屏，Home / End 直达两端 ——
+       oryzo 的 scrollManager 把这些全接管了，无障碍不靠原生滚动也能保住。</p>
+  </section>
+  <section>
+    <div class="no">04 · DRIVE</div>
+    <h2>一个进度驱动一切</h2>
+    <p>滚动进度 0→1 同时驱动：DOM 层 translateY、背景那枚"杯垫"的旋转与配色、
+       右侧进度条 —— 内容层和 WebGL 层不会各滚各的。</p>
+  </section>
+</div>
+
+<div class="track"><i id="bar"></i></div>
+<div class="hint" id="hint"><span class="dot">↓</span> SCROLL TO CONTINUE</div>
+<div class="hud"><b>VIRTUAL SCROLL</b><br><span id="stat">scroll 0px · 进度 0%</span></div>
+
+<script>
+/* ============================================================================
+ * 虚拟滚动 scrollManager —— oryzo.ai 滚动架构的最小复刻
+ *
+ * 原站 bundle 里可核实的行为（本 demo 逐条对齐）：
+ *   - wheel 事件带 PIXEL_STEP 常数归一化（deltaMode 行/页 → 像素）
+ *   - 键盘接管：ArrowUp/Down ±100px，PageUp/Down ±一屏（scrollToPixel API）
+ *   - scrollTo 支持传选择器/像素，路由切换时 scrollToPixel(0, 立即)
+ * 平滑手感的 lerp 系数是我的拟合值（原站未逐帧核对，属意译）。
+ *
+ * 为什么架空原生滚动：整页是一块 canvas，场景推进需要"可编程的滚动值"——
+ * 能 lerp、能 clamp、能被路由重置、能同时喂给 DOM 和 WebGL。
+ * 代价是要自己还键盘/无障碍的债，oryzo 把这笔债还了。
+ * ========================================================================== */
+
+const SECTIONS = 4;
+const view = () => innerHeight;
+const maxScroll = () => (SECTIONS - 1) * view();
+
+/* ---------- 输入侧：wheel 归一化 + 键盘 + 触摸拖动 ---------- */
+
+// deltaMode: 0=像素 1=行 2=页 —— 统一换算成像素（经典 normalizeWheel 思路）
+const LINE_PX = 40, PAGE_PX = 800;
+function wheelToPixels(e) {
+  const k = e.deltaMode === 1 ? LINE_PX : e.deltaMode === 2 ? PAGE_PX : 1;
+  return e.deltaY * k;
+}
+
+const sm = {                       // scrollManager 本体：两个标量 + 一把 lerp
+  target: 0,
+  current: 0,
+  to(px, immediate = false) {
+    this.target = Math.max(0, Math.min(maxScroll(), px));
+    if (immediate) this.current = this.target;
+  },
+  by(px) { this.to(this.target + px); },
+};
+
+addEventListener('wheel', e => { e.preventDefault(); sm.by(wheelToPixels(e)); }, { passive: false });
+
+addEventListener('keydown', e => {
+  const map = {                    // 键位与步长对齐 oryzo：方向键 100px，翻页键一屏
+    ArrowUp: -100, ArrowDown: 100,
+    PageUp: -view(), PageDown: view(),
+    Home: -1e9, End: 1e9,
+    ' ': view(),
+  };
+  if (e.key in map) { e.preventDefault(); sm.by(map[e.key]); }
+});
+
+let touchY = null;
+addEventListener('pointerdown', e => touchY = e.clientY);
+addEventListener('pointermove', e => {
+  if (touchY === null) return;
+  sm.by((touchY - e.clientY) * 2);   // 拖 1px 滚 2px：模拟触摸惯性前的直接跟手
+  touchY = e.clientY;
+});
+addEventListener('pointerup', () => touchY = null);
+
+/* ---------- 输出侧：同一个进度喂 DOM / canvas / 进度条 ---------- */
+
+const world = document.getElementById('world');
+const bar = document.getElementById('bar');
+const hint = document.getElementById('hint');
+const stat = document.getElementById('stat');
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// 每个"场景"给背景杯垫一组关键帧：颜色 / 半径比 / 转速，段间线性插值
+const KEYS = [
+  { ring: '#c98d4e', mat: '#3f4a32', r: 0.30, spin: 0.6 },
+  { ring: '#d9a266', mat: '#39442e', r: 0.38, spin: 1.4 },
+  { ring: '#f08c2e', mat: '#333d2a', r: 0.33, spin: 2.4 },
+  { ring: '#f2e8d5', mat: '#2c3525', r: 0.42, spin: 0.9 },
+];
+const hex2rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, t) => a + (b - a) * t;
+const mixColor = (h1, h2, t) => {
+  const [r1, g1, b1] = hex2rgb(h1), [r2, g2, b2] = hex2rgb(h2);
+  return `rgb(${mix(r1,r2,t)|0},${mix(g1,g2,t)|0},${mix(b1,b2,t)|0})`;
+};
+
+let spinAcc = 0, lastT = performance.now();
+
+function frame(now) {
+  const dt = Math.min(50, now - lastT) / 1000; lastT = now;
+
+  // 心脏：current 每帧向 target 指数逼近（lerp 系数为拟合值）
+  sm.target = Math.max(0, Math.min(maxScroll(), sm.target));
+  sm.current += (sm.target - sm.current) * (reduceMotion ? 1 : 0.11);
+  if (Math.abs(sm.target - sm.current) < 0.1) sm.current = sm.target;
+
+  const progress = maxScroll() ? sm.current / maxScroll() : 0;
+
+  // ① DOM 内容层
+  world.style.transform = `translateY(${-sm.current}px)`;
+  // ② 进度条 + HUD + 提示
+  bar.style.height = (progress * 100).toFixed(2) + '%';
+  stat.innerHTML = `scroll <em>${sm.current.toFixed(0)}px</em> · 进度 <em>${(progress * 100).toFixed(0)}%</em>`;
+  hint.classList.toggle('gone', sm.current > 40);
+
+  // ③ 背景 canvas：段内插值两组关键帧
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const w = canvas.clientWidth * dpr | 0, h = canvas.clientHeight * dpr | 0;
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+  const seg = Math.min(SECTIONS - 2, Math.floor(progress * (SECTIONS - 1)));
+  const t = progress * (SECTIONS - 1) - seg;
+  const A = KEYS[seg], B = KEYS[seg + 1];
+  const ringC = mixColor(A.ring, B.ring, t);
+  const matC = mixColor(A.mat, B.mat, t);
+  const rr = mix(A.r, B.r, t) * Math.min(w, h);
+  spinAcc += mix(A.spin, B.spin, t) * dt * (reduceMotion ? 0 : 1);
+
+  ctx.fillStyle = matC;
+  ctx.fillRect(0, 0, w, h);
+  ctx.save();
+  ctx.translate(w / 2, h / 2);
+  ctx.rotate(spinAcc + progress * Math.PI * 2);   // 滚动本身也直接贡献旋转：跟手感
+  // 虚线双圆环 = 首页那枚"蓝图杯垫"的简笔画
+  ctx.strokeStyle = ringC; ctx.globalAlpha = 0.9;
+  ctx.setLineDash([6 * dpr, 8 * dpr]); ctx.lineWidth = 2 * dpr;
+  ctx.beginPath(); ctx.arc(0, 0, rr, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(0, 0, rr * 0.56, 0, Math.PI * 2); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.globalAlpha = 0.22; ctx.lineWidth = rr * 0.44;
+  ctx.beginPath(); ctx.arc(0, 0, rr * 0.78, 0, Math.PI * 2); ctx.stroke();
+  // 圆周上的一颗"控制点"标记当前角度
+  ctx.globalAlpha = 1; ctx.fillStyle = ringC;
+  ctx.fillRect(rr - 5 * dpr, -5 * dpr, 10 * dpr, 10 * dpr);
+  ctx.restore();
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

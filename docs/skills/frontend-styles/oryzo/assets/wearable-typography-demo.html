@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>巨型标题横穿：辉光与景深换焦 · ORYZO wearable 一幕复现</title>
+<style>
+  :root { --ink: #f2e8d5; --accent: #f08c2e; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: #1b120a; }
+  body { font-family: "DM Mono", ui-monospace, monospace; color: var(--ink); }
+
+  /* 背景暖场 */
+  .amb { position: fixed; inset: 0; pointer-events: none;
+    background: radial-gradient(80% 70% at 50% 100%, #7a3c14aa 0%, transparent 65%); }
+
+  /* ---- 巨型标题：横穿 + 辉光 + 可整体虚焦，三个都由 JS 按进度驱动 ---- */
+  #mega {
+    position: fixed; top: 50%; left: 0; translate: 0 -50%;
+    font-family: system-ui, sans-serif; font-weight: 700; white-space: nowrap;
+    font-size: clamp(64px, 13vw, 170px); letter-spacing: .01em;
+    will-change: transform, filter; pointer-events: none;
+  }
+
+  /* ---- 产品检视框：细线框 + 四角刻度 + 轨道圆点，摄影棚取景器的味道 ---- */
+  .viewer {
+    position: fixed; left: 50%; top: 50%; translate: -50% -50%;
+    width: min(46vmin, 380px); aspect-ratio: 3/4;
+    border: 1px solid #f2e8d544; pointer-events: none;
+  }
+  .viewer i { position: absolute; width: 9px; height: 9px; border: 1px solid #f2e8d5aa; }
+  .viewer i:nth-child(1) { left: -1px; top: -1px; border-right: 0; border-bottom: 0; }
+  .viewer i:nth-child(2) { right: -1px; top: -1px; border-left: 0; border-bottom: 0; }
+  .viewer i:nth-child(3) { left: -1px; bottom: -1px; border-right: 0; border-top: 0; }
+  .viewer i:nth-child(4) { right: -1px; bottom: -1px; border-left: 0; border-top: 0; }
+  .viewer .dot { position: absolute; width: 5px; height: 5px; border-radius: 50%;
+    background: #fff; right: 8%; top: 6%; }
+
+  /* 框内两层内容：杯垫（前段焦点）与"人像"（后段焦点），换焦=两层 blur 互换 */
+  .layer { position: absolute; inset: 0; display: grid; place-items: center;
+    will-change: filter, opacity; }
+  .coaster {
+    width: 62%; aspect-ratio: 1; border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #d9a266, #c98d4e 45%, #8a5a2b 80%);
+    box-shadow: inset 0 -12px 26px #00000055, 0 26px 60px #000a;
+    position: relative;
+  }
+  .coaster::after { content: ''; position: absolute; inset: 14%; border-radius: 50%;
+    background: radial-gradient(circle at 42% 36%, #b57f42, #8f5f2e 72%);
+    box-shadow: inset 0 8px 20px #0006; }
+
+  /* "人像"占位画：纯 CSS 的外套 + 别在胸口的杯垫（不借任何真实照片） */
+  .figure { width: 100%; height: 100%; position: relative; overflow: hidden;
+    background: linear-gradient(180deg, #241409 0%, #3a2010 55%, #4a2a12 100%); }
+  .figure .coat { position: absolute; inset: 18% -6% -4%;
+    background: radial-gradient(120% 90% at 50% 12%, #5a3316 0%, #402209 46%, #2c1505 100%);
+    border-radius: 44% 44% 0 0 / 30% 30% 0 0;
+    box-shadow: inset 0 18px 40px #00000088; }
+  .figure .zip { position: absolute; left: 50%; top: 22%; bottom: 0; width: 2px;
+    background: #00000055; }
+  .figure .badge { position: absolute; left: 34%; top: 38%; width: 26%; aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 32%, #e2a760, #c98d4e 50%, #8a5a2b 85%);
+    box-shadow: 0 8px 22px #000c, inset 0 -6px 14px #0006; }
+  .figure .badge::after { content: ''; position: absolute; inset: 16%; border-radius: 50%;
+    background: radial-gradient(circle at 42% 36%, #b57f42, #8f5f2e 75%);
+    box-shadow: inset 0 5px 12px #0007; }
+
+  .kicker { position: fixed; left: 6%; top: 40%; font-size: 12px; letter-spacing: .2em; }
+  .kicker b { display: block; font-size: 15px; margin-top: 6px; letter-spacing: .1em; }
+
+  .hud { position: fixed; left: 16px; top: 14px; font-size: 12px; line-height: 1.7; letter-spacing: .06em; }
+  .hud b { font-size: 14px; letter-spacing: .12em; }
+  .hud em { font-style: normal; color: var(--accent); }
+  .hint { position: fixed; left: 50%; bottom: 14px; translate: -50% 0; font-size: 11px;
+    letter-spacing: .26em; opacity: .75; transition: opacity .4s; }
+  .hint.gone { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="amb"></div>
+
+<div id="mega">it's wearable</div>
+
+<div class="viewer">
+  <i></i><i></i><i></i><i></i><span class="dot"></span>
+  <div class="layer" id="layerA"><div class="coaster"></div></div>
+  <div class="layer" id="layerB">
+    <div class="figure"><div class="coat"></div><div class="zip"></div><div class="badge"></div></div>
+  </div>
+</div>
+
+<div class="kicker">SO PORTABLE,<b id="kb">…</b></div>
+<div class="hud"><b>RACK FOCUS</b><br><span id="stat">–</span></div>
+<div class="hint" id="hint">↓ 滚动：标题横穿 → 辉光 → 焦点换到人像</div>
+
+<script>
+/* ============================================================================
+ * 巨型标题横穿 + 辉光 + 景深换焦 —— oryzo.ai "it's wearable" 一幕的复现
+ *
+ * 原站行为（滚动侦察逐帧观察）：
+ *   ① 视口高的巨型标题从右横穿到左，速度跟滚动 1:1，穿过产品检视框的层前层后；
+ *   ② 中段标题白热发光（bloom），像打过曝的摄影棚灯；
+ *   ③ 尾段"换焦"：标题失焦化开，检视框里的内容从虚焦里显影 ——
+ *      焦点从"字"移到"人"，杯垫已经别在外套上。文字层和场景层互为景深。
+ *
+ * 复现：一个虚拟滚动进度 p 同时驱动三件事 ——
+ *   标题 translateX（横穿）、text-shadow 强度（辉光）、两层 filter:blur 互换（换焦）。
+ * "人像"是纯 CSS 画的占位（外套渐变 + 胸口杯垫徽章），不借任何照片。
+ * ========================================================================== */
+
+const MAXPX = 4200;
+const sm = { target: 0, current: 0 };
+addEventListener('wheel', e => { e.preventDefault();
+  sm.target = Math.max(0, Math.min(MAXPX, sm.target + e.deltaY * (e.deltaMode === 1 ? 40 : 1)));
+}, { passive: false });
+addEventListener('keydown', e => {
+  const map = { ArrowUp: -100, ArrowDown: 100, PageUp: -900, PageDown: 900 };
+  if (e.key in map) { e.preventDefault(); sm.target = Math.max(0, Math.min(MAXPX, sm.target + map[e.key])); }
+});
+let dragY = null;
+addEventListener('pointerdown', e => dragY = e.clientY);
+addEventListener('pointermove', e => {
+  if (dragY === null) return;
+  sm.target = Math.max(0, Math.min(MAXPX, sm.target + (dragY - e.clientY) * 3));
+  dragY = e.clientY;
+});
+addEventListener('pointerup', () => dragY = null);
+
+const mega = document.getElementById('mega');
+const layerA = document.getElementById('layerA'), layerB = document.getElementById('layerB');
+const stat = document.getElementById('stat'), hint = document.getElementById('hint');
+const kb = document.getElementById('kb');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp01 = t => Math.max(0, Math.min(1, t));
+const seg = (p, a, b) => clamp01((p - a) / (b - a));
+
+function frame() {
+  sm.current += (sm.target - sm.current) * (reduceMotion ? 1 : 0.1);
+  const p = sm.current / MAXPX;
+
+  /* ① 横穿：从视口右外 → 左外，跟滚动 1:1 */
+  const x = (0.9 - p * 1.9) * innerWidth;
+  /* ② 辉光信封：中段最亮。三层 text-shadow 叠出 bloom，色温偏暖白 */
+  const glow = Math.sin(clamp01(seg(p, 0.15, 0.75)) * Math.PI);
+  /* ③ 换焦：前段字实景虚，尾段字虚景实 */
+  const focusScene = seg(p, 0.55, 0.85);          // 0=聚焦文字 1=聚焦场景
+  const textBlur = focusScene * 16;
+  const megaColor = `rgb(${242+13*glow|0},${232+23*glow|0},${213+42*glow|0})`;
+
+  mega.style.transform = `translateX(${x}px)`;
+  mega.style.color = megaColor;
+  mega.style.filter = `blur(${textBlur.toFixed(1)}px)`;
+  mega.style.textShadow = glow > 0.02
+    ? `0 0 ${18*glow}px #fff8, 0 0 ${55*glow}px #ffe9c4aa, 0 0 ${130*glow}px #ffdf9e66`
+    : 'none';
+
+  /* 场景两层：杯垫单品 →（虚焦交叉）→ 穿在身上 */
+  layerA.style.opacity = 1 - focusScene;
+  layerA.style.filter = `blur(${(focusScene * 14).toFixed(1)}px)`;
+  layerB.style.opacity = focusScene;
+  layerB.style.filter = `blur(${((1 - focusScene) * 18).toFixed(1)}px)`;
+
+  kb.textContent = focusScene > 0.5 ? "it's wearable" : '…';
+  hint.classList.toggle('gone', sm.current > 60);
+  stat.innerHTML = `进度 <em>${(p*100).toFixed(0)}%</em> · 辉光 <em>${(glow*100).toFixed(0)}%</em> · 焦点 <em>${focusScene < 0.5 ? '文字' : '场景'}</em>`;
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

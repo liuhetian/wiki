@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AI 工具实践分享</title>
+<!-- 字体真身随站发布（原 Google Fonts 国内不可达）；中文走 PingFang/雅黑系统兜底 -->
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="stage">
+    <div class="stage-inner" id="stageInner" data-active="0"></div>
+  </div>
+  <div class="spacer"></div>
+  <div class="global-timer" id="globalTimer">00:00</div>
+  <!-- 全屏按钮（wiki 发布版新增）：文章内嵌 iframe 与新标签页都可一键进入沉浸阅读 -->
+  <button class="fs-btn" id="fsBtn" title="全屏切换（快捷键 F）">⛶&ensp;全屏</button>
+  <style>
+    .fs-btn {
+      position: fixed; bottom: 1.2vh; right: 1.2vw; z-index: 9999;
+      font: 600 max(1.1vw, 12px)/1 'Inter', 'Noto Sans SC', sans-serif;
+      letter-spacing: 0.14em;
+      color: rgba(10, 10, 10, 0.58); background: none;
+      border: 1px solid rgba(10, 10, 10, 0.18); border-radius: 999px;
+      padding: 0.6em 1.1em; cursor: pointer;
+    }
+    .fs-btn:hover { color: #ff6a1a; border-color: #ff6a1a; }
+  </style>
+  <script>
+    (() => {
+      const btn = document.getElementById('fsBtn');
+      const root = document.documentElement;
+      const toggle = () => document.fullscreenElement || document.webkitFullscreenElement
+        ? (document.exitFullscreen || document.webkitExitFullscreen).call(document)
+        : (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+      btn.addEventListener('click', toggle);
+      // 快捷键 F 由 deck.js 原生处理，此处不再监听（避免双触发互相抵消）
+      document.addEventListener('fullscreenchange', () => {
+        btn.innerHTML = document.fullscreenElement ? '⛶&ensp;退出全屏' : '⛶&ensp;全屏';
+      });
+    })();
+  </script>
+  <script src="content.js"></script>
+  <script src="layouts.js"></script>
+  <script src="deck.js"></script>
+</body>
+</html>

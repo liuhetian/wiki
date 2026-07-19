@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：卡片列表</title>
+<!--
+  demo-card-list.html —— 「卡片列表」形状的最小可玩实现（蓝本：open-dashboard 的 add-card-list，
+  即 CardList + useResourceList 契约）。
+  复现的不变量：
+  - 与表格同一份列表参数形状：{ page, pageSize, search, filters(status), sortBy, sortDir } → { rows, total }
+  - 卡片页与表格页共用同一个 useResourceList（此处为内存版）：切换卡片/表格视图，列表状态一动不动，只换渲染
+  - 卡片画廊是 CSS grid 自适应列数；每张卡等价于表格的一行（标题 + 状态 chip + meta + 操作）
+  - 空结果有空态；上/下架操作完成后 toast
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 10px; }
+  .pcard { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .pcard-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .pcard-head h3 { margin: 0; font-size: 14px; line-height: 1.4; }
+  .meta { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 12px; font-size: 12px; }
+  .meta div { display: flex; gap: 6px; }
+  .meta dt { color: var(--muted); }
+  .meta dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .pcard-ops { margin-top: auto; display: flex; justify-content: flex-end; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const PAGE_SIZE = 6;
+const SEED = [
+  { id: 1,  name: "青瓷马克杯",   category: "餐厨", price: 68,  stock: 120, updated: "2026-06-28", listed: true  },
+  { id: 2,  name: "胡桃木托盘",   category: "餐厨", price: 129, stock: 45,  updated: "2026-06-30", listed: true  },
+  { id: 3,  name: "便携手冲壶",   category: "餐厨", price: 199, stock: 12,  updated: "2026-05-16", listed: false },
+  { id: 4,  name: "黄铜书签",     category: "文具", price: 25,  stock: 300, updated: "2026-06-02", listed: true  },
+  { id: 5,  name: "软面速写本",   category: "文具", price: 32,  stock: 210, updated: "2026-06-21", listed: true  },
+  { id: 6,  name: "钛合金钢笔",   category: "文具", price: 480, stock: 8,   updated: "2026-04-09", listed: false },
+  { id: 7,  name: "蓝牙机械键盘", category: "数码", price: 399, stock: 64,  updated: "2026-07-01", listed: true  },
+  { id: 8,  name: "桌面收线器",   category: "数码", price: 19,  stock: 500, updated: "2026-05-28", listed: true  },
+  { id: 9,  name: "氮化镓充电器", category: "数码", price: 149, stock: 90,  updated: "2026-06-11", listed: true  },
+  { id: 10, name: "亚麻抱枕套",   category: "家居", price: 59,  stock: 150, updated: "2026-03-30", listed: false },
+  { id: 11, name: "香薰蜡烛",     category: "家居", price: 88,  stock: 76,  updated: "2026-06-25", listed: true  },
+  { id: 12, name: "羊毛盖毯",     category: "家居", price: 269, stock: 33,  updated: "2026-05-05", listed: true  },
+  { id: 13, name: "折叠露营灯",   category: "户外", price: 139, stock: 58,  updated: "2026-06-18", listed: true  },
+  { id: 14, name: "双层钛杯",     category: "户外", price: 158, stock: 0,   updated: "2026-02-14", listed: false },
+];
+
+/* 与「表格」形状同一份列表参数管道：ListParams → { rows, total }。
+   demo 在内存里过滤/排序/分页（行数变少时把页码拉回范围内）；
+   真实版把同一份参数交给 Repository.list()，在服务端执行。 */
+function listProducts(all, { page, pageSize, search, filters, sortBy, sortDir }) {
+  const kw = (search || "").trim().toLowerCase();
+  const hit = all.filter(p =>
+    (!filters.status || (filters.status === "在售") === p.listed) &&
+    (p.name.toLowerCase().includes(kw) || p.category.toLowerCase().includes(kw)));
+  const mul = sortDir === "asc" ? 1 : -1;
+  const sorted = [...hit].sort((a, b) =>
+    (a[sortBy] < b[sortBy] ? -1 : a[sortBy] > b[sortBy] ? 1 : 0) * mul);
+  const total = sorted.length;
+  const cur = Math.min(page, Math.max(1, Math.ceil(total / pageSize)));
+  return { rows: sorted.slice((cur - 1) * pageSize, cur * pageSize), total };
+}
+
+/* useResourceList 的内存版：一个钩子包掉列表状态 + 查询，
+   卡片页和表格页共用它，页面只决定怎么渲染 rows。
+   真实版还负责把这份状态同步进 URL（validateSearch + navigate）。 */
+function useResourceList(all) {
+  const [params, setParams] = useState({
+    page: 1, pageSize: PAGE_SIZE, search: "",
+    filters: { status: "" }, sortBy: "updated", sortDir: "desc",
+  });
+  const { rows, total } = useMemo(() => listProducts(all, params), [all, params]);
+  const pages = Math.max(1, Math.ceil(total / params.pageSize));
+  const page = Math.min(params.page, pages);
+  const set = patch => setParams(p => ({ ...p, ...patch }));
+  return {
+    rows, total, page, pages, params,
+    setSearch: v => set({ search: v, page: 1 }),
+    setStatus: v => set({ filters: { status: v }, page: 1 }),
+    setSort: (sortBy, sortDir) => set({ sortBy, sortDir, page: 1 }),
+    setPage: p => set({ page: p }),
+  };
+}
+
+const SORTS = [
+  { key: "updated:desc", label: "最近更新" },
+  { key: "updated:asc",  label: "最早更新" },
+  { key: "price:asc",    label: "价格 低→高" },
+  { key: "price:desc",   label: "价格 高→低" },
+  { key: "stock:desc",   label: "库存 多→少" },
+];
+
+function Chip({ listed }) {
+  return html`<span class=${"chip " + (listed ? "chip-on" : "chip-off")}>${listed ? "在售" : "下架"}</span>`;
+}
+
+/* 每张卡等价于表格的一行：标题 + 状态 chip + meta + 操作（cards.tsx 平行于 columns.tsx） */
+function ProductCard({ p, onToggle }) {
+  return html`
+    <div class="card pcard">
+      <div class="pcard-head">
+        <h3>${p.name}</h3>
+        <${Chip} listed=${p.listed} />
+      </div>
+      <dl class="meta">
+        <div><dt>类目</dt><dd>${p.category}</dd></div>
+        <div><dt>价格</dt><dd>¥${p.price}</dd></div>
+        <div><dt>库存</dt><dd>${p.stock} 件</dd></div>
+        <div><dt>更新</dt><dd>${p.updated}</dd></div>
+      </dl>
+      <div class="pcard-ops">
+        <button class="btn sm" onClick=${onToggle}>${p.listed ? "下架" : "上架"}</button>
+      </div>
+    </div>`;
+}
+
+function App() {
+  const [all, setAll] = useState(SEED);
+  const [view, setView] = useState("cards"); // 呈现方式是页面自己的事，不进列表参数
+  const [toast, setToast] = useState("");
+  const list = useResourceList(all);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const toggleListed = p => {
+    setAll(items => items.map(i => (i.id === p.id ? { ...i, listed: !i.listed } : i)));
+    setToast(`已${p.listed ? "下架" : "上架"}「${p.name}」`);
+  };
+
+  const sortKey = `${list.params.sortBy}:${list.params.sortDir}`;
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>商品管理</h1>
+          <p class="sub">卡片画廊呈现；搜索 / 筛选 / 排序 / 分页与表格共用同一份列表参数，可切表格视图对照</p>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <input class="grow" placeholder="搜索商品或类目…" value=${list.params.search}
+               onChange=${e => list.setSearch(e.target.value)} />
+        <select aria-label="状态筛选" value=${list.params.filters.status}
+                onChange=${e => list.setStatus(e.target.value)}>
+          <option value="">全部状态</option><option value="在售">在售</option><option value="下架">下架</option>
+        </select>
+        <select aria-label="排序" value=${sortKey}
+                onChange=${e => { const [by, dir] = e.target.value.split(":"); list.setSort(by, dir); }}>
+          ${SORTS.map(s => html`<option key=${s.key} value=${s.key}>${s.label}</option>`)}
+        </select>
+        <div class="seg">
+          <button class=${view === "cards" ? "on" : ""} onClick=${() => setView("cards")}>卡片</button>
+          <button class=${view === "table" ? "on" : ""} onClick=${() => setView("table")}>表格</button>
+        </div>
+      </div>
+
+      ${list.rows.length === 0 && html`
+        <div class="card"><p class="empty" style=${{ margin: 0 }}>没有匹配的商品，试试清掉搜索或筛选</p></div>`}
+
+      ${list.rows.length > 0 && view === "cards" && html`
+        <div class="cards">
+          ${list.rows.map(p => html`<${ProductCard} key=${p.id} p=${p} onToggle=${() => toggleListed(p)} />`)}
+        </div>`}
+
+      ${list.rows.length > 0 && view === "table" && html`
+        <table class="list">
+          <thead>
+            <tr><th>名称</th><th>类目</th><th class="num">价格</th><th class="num">库存</th><th>状态</th><th class="ops">操作</th></tr>
+          </thead>
+          <tbody>
+            ${list.rows.map(p => html`
+              <tr key=${p.id}>
+                <td style=${{ fontWeight: 550 }}>${p.name}</td>
+                <td>${p.category}</td>
+                <td class="num">¥${p.price}</td>
+                <td class="num">${p.stock}</td>
+                <td><${Chip} listed=${p.listed} /></td>
+                <td class="ops"><button class="link" onClick=${() => toggleListed(p)}>${p.listed ? "下架" : "上架"}</button></td>
+              </tr>`)}
+          </tbody>
+        </table>`}
+
+      <footer class="pager">
+        <span>共 ${list.total} 件 · 第 ${list.page} / ${list.pages} 页 · 切换视图不重置列表参数</span>
+        <div>
+          <button class="btn" disabled=${list.page <= 1} onClick=${() => list.setPage(list.page - 1)}>上一页</button>
+          <button class="btn" disabled=${list.page >= list.pages} onClick=${() => list.setPage(list.page + 1)}>下一页</button>
+        </div>
+      </footer>
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

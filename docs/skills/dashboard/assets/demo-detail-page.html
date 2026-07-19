@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：详情页</title>
+<!--
+  demo-detail-page.html —— 「详情页」形状的最小可玩实现
+  （蓝本：open-dashboard 的 add-detail-page + products_.$id.tsx 模板）。
+  复现的不变量：
+  - 详情查询键固定形状 ["<资源>", "detail", id]；一条记录一次查询，靠 id 命中
+  - 三态显式渲染：loading（骨架屏占位、不跳版式）/ ready（正文）/ not-found（可返回列表）
+  - 头部结构：标题 + StatusChip + Edit/Delete 操作按钮；字段区用 DescriptionList 分组键值对
+  - 编辑复用列表用的同一份表单弹窗（这里是 dialog；真实版是 <Resource>FormDialog）
+  - 破坏性操作（Delete）先确认；成功后导航回 /<资源> 列表 + toast
+  demo 顶部加了「加载中 / 有数据 / 未找到」三态切换，方便看清每一态；真实版由查询状态驱动。
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .crumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .crumb .link { padding: 0; }
+  .crumb .sep { color: var(--muted); opacity: .6; }
+  .detail-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start;
+                 gap: 12px; margin-bottom: 12px; }
+  .detail-head h1 { margin: 0; font-size: 22px; }
+  .detail-head .title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .detail-head .sku { margin: 4px 0 0; font: 12px ui-monospace, "SFMono-Regular", Menlo, monospace; color: var(--muted); }
+  .actbar { display: flex; gap: 8px; }
+  .section { padding: 14px 16px; }
+  .section + .section { margin-top: 10px; }
+  .section h2 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em;
+                color: var(--muted); font-weight: 600; }
+  /* DescriptionList：网格键值对，full 项跨整行 */
+  .dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 20px; }
+  .dl .item { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .dl .item.full { grid-column: 1 / -1; }
+  .dl .k { font-size: 12px; color: var(--muted); }
+  .dl .v { font-size: 14px; line-height: 1.55; word-break: break-word; }
+  .dl .v.mono { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 13px; }
+  @media (max-width: 560px) { .dl { grid-template-columns: 1fr 1fr; } }
+  /* 骨架屏排布：仿真正文的高度，避免切换态跳版式 */
+  .skel-head { display: flex; justify-content: space-between; gap: 12px; }
+  .skel-head .col { flex: 1; }
+  .skel-lg { height: 24px; }
+  .skel-sm { height: 12px; }
+  .not-found { padding: 44px 16px; text-align: center; }
+  .not-found .icon { width: 44px; height: 44px; border-radius: 50%; background: var(--chip-off-bg);
+                     display: inline-flex; align-items: center; justify-content: center; font-size: 20px; }
+  .not-found h2 { margin: 10px 0 4px; font-size: 16px; }
+  .not-found p { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect, useMemo } = React;
+const html = htm.bind(React.createElement);
+
+// 一条示范数据（真实版：loader 里 ensureQueryData(productDetailQuery(id))，命中就直出）
+const SEED = {
+  id: "P-2081",
+  name: "胡桃木托盘 · 长款",
+  sku: "WT-TRAY-LONG-01",
+  status: "在售",         // 在售 / 缺货 / 停产
+  category: "家居",
+  price: 189,
+  stock: 42,
+  createdAt: "2025-11-08 14:20",
+  updatedAt: "2026-06-30 09:47",
+  description: "整木刨切胡桃木，35×22cm，食品级木蜡油。适合早餐、茶点、小物件收纳；每片纹理独立，色差属自然特征。",
+};
+// 详情查询键的形状 —— demo 只在这里体现「一条记录一次查询、靠 id 命中」的契约
+const detailQueryKey = id => ["products", "detail", id];
+
+const STATUS_CHIP = { "在售": "chip-on", "缺货": "chip-warn", "停产": "chip-off" };
+const CATEGORIES = ["家居", "餐具", "厨电", "文具"];
+const STATUSES = ["在售", "缺货", "停产"];
+
+// 通用确认弹窗（破坏性操作用）
+function Confirm({ title, text, danger, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal" role="dialog" aria-modal="true" aria-label=${title}>
+        <h2>${title}</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class=${"btn " + (danger ? "" : "primary")}
+                  style=${danger ? { background: "var(--danger)", borderColor: "var(--danger)", color: "#fff" } : null}
+                  onClick=${onOk}>${danger ? "删除" : "确认"}</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// 编辑弹窗：真实版是列表复用的 <Resource>FormDialog，同一份表单，编辑/新建靠 mode 切
+function EditDialog({ record, onSave, onCancel }) {
+  const [v, setV] = useState({
+    name: record.name, category: record.category, status: record.status,
+    price: record.price, stock: record.stock, description: record.description,
+  });
+  const invalid = !v.name.trim() || v.price == null || v.stock == null || v.price < 0 || v.stock < 0;
+  const set = (k, val) => setV(s => ({ ...s, [k]: val }));
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal" role="dialog" aria-modal="true" aria-label="编辑商品">
+        <h2>编辑：${record.name}</h2>
+        <label>名称
+          <input value=${v.name} onChange=${e => set("name", e.target.value)} />
+        </label>
+        <div class="row2">
+          <label>分类
+            <select value=${v.category} onChange=${e => set("category", e.target.value)}>
+              ${CATEGORIES.map(c => html`<option key=${c} value=${c}>${c}</option>`)}
+            </select>
+          </label>
+          <label>状态
+            <select value=${v.status} onChange=${e => set("status", e.target.value)}>
+              ${STATUSES.map(s => html`<option key=${s} value=${s}>${s}</option>`)}
+            </select>
+          </label>
+        </div>
+        <div class="row2">
+          <label>价格（¥）
+            <input type="number" step="0.01" min="0" value=${v.price == null ? "" : String(v.price)}
+                   onChange=${e => set("price", e.target.value === "" ? undefined : Number(e.target.value))} />
+          </label>
+          <label>库存
+            <input type="number" min="0" value=${v.stock == null ? "" : String(v.stock)}
+                   onChange=${e => set("stock", e.target.value === "" ? undefined : Number(e.target.value))} />
+          </label>
+        </div>
+        <label>描述
+          <textarea rows="3" value=${v.description}
+                    onChange=${e => set("description", e.target.value)}></textarea>
+        </label>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" disabled=${invalid}
+                  onClick=${() => onSave({ ...record, ...v, name: v.name.trim() })}>保存</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// DescriptionList：与真实版同名同形状，键值对分组渲染；full 项跨整行
+function DescriptionList({ items }) {
+  return html`
+    <dl class="dl">
+      ${items.map((it, i) => html`
+        <div key=${i} class=${"item" + (it.full ? " full" : "")}>
+          <dt class="k">${it.label}</dt>
+          <dd class=${"v" + (it.mono ? " mono" : "")} style=${{ margin: 0 }}>${it.value}</dd>
+        </div>`)}
+    </dl>`;
+}
+
+function LoadingView() {
+  return html`
+    <div>
+      <div class="card section">
+        <div class="skel-head">
+          <div class="col">
+            <div class="skel skel-lg" style=${{ width: "60%", margin: "4px 0 10px" }}></div>
+            <div class="skel skel-sm" style=${{ width: "35%", margin: "0 0 4px" }}></div>
+          </div>
+          <div class="col" style=${{ display: "flex", gap: "8px", justifyContent: "flex-end", flex: "0 0 auto" }}>
+            <div class="skel" style=${{ width: "72px", height: "32px", margin: 0 }}></div>
+            <div class="skel" style=${{ width: "72px", height: "32px", margin: 0 }}></div>
+          </div>
+        </div>
+      </div>
+      <div class="card section">
+        ${[70, 55, 82, 40].map((w, i) => html`
+          <div key=${i} class="skel skel-sm" style=${{ width: w + "%", margin: "8px 0" }}></div>`)}
+      </div>
+    </div>`;
+}
+
+function NotFoundView({ onBack }) {
+  return html`
+    <div class="card not-found">
+      <span class="icon">🕳️</span>
+      <h2>没有找到这条商品</h2>
+      <p>可能已被删除，或链接里的 ID 拼错了。回到列表挑一条吧。</p>
+      <button class="btn primary" onClick=${onBack}>返回商品列表</button>
+    </div>`;
+}
+
+function App() {
+  const [mode, setMode] = useState("ready");      // 真实版：由 useQuery 的 isLoading / data 决定
+  const [record, setRecord] = useState(SEED);
+  const [editing, setEditing] = useState(false);
+  const [confirm, setConfirm] = useState(null);   // { title, text, onOk, danger }
+  const [toast, setToast] = useState("");
+  const [deleted, setDeleted] = useState(false);  // 演示：删除后停留在「未找到」态
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  // 详情查询键的形状（真实版：queryClient.getQueryData(key)）
+  const qkey = useMemo(() => detailQueryKey(record.id), [record.id]);
+
+  const goList = () => setToast("演示：返回 /products 列表");
+  const onSave = next => {
+    setRecord({ ...next, updatedAt: "2026-07-07 15:32" });
+    setEditing(false);
+    setToast(`已保存「${next.name}」`);
+  };
+  const onDelete = () => setConfirm({
+    title: `删除「${record.name}」？`,
+    text: "此操作不可撤销。删除后会返回商品列表。",
+    danger: true,
+    onOk: () => {
+      setConfirm(null);
+      setDeleted(true);
+      setMode("not-found");
+      setToast(`已删除「${record.name}」（真实版此时导航回 /products）`);
+    },
+  });
+
+  const ready = mode === "ready" && !deleted;
+  const loading = mode === "loading";
+  const notFound = mode === "not-found" || deleted;
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>商品详情</h1>
+          <p class="sub">头部（标题 + 状态 + 操作）· 字段分区 · 编辑弹窗 · 三态可切</p>
+        </div>
+        <div class="seg" role="tablist" aria-label="演示态切换">
+          ${["loading", "ready", "not-found"].map(m => html`
+            <button key=${m} class=${mode === m ? "on" : ""}
+                    onClick=${() => { setMode(m); if (m !== "not-found") setDeleted(false); }}>
+              ${{ loading: "加载中", ready: "有数据", "not-found": "未找到" }[m]}
+            </button>`)}
+        </div>
+      </header>
+
+      <div class="crumb">
+        <button class="link" onClick=${goList}>商品</button>
+        <span class="sep">/</span>
+        <span style=${{ color: "var(--fg)" }}>${ready ? record.name : notFound ? "未找到" : "加载中"}</span>
+        <span style=${{ marginLeft: "auto", color: "var(--muted)", fontFamily: "ui-monospace, Menlo, monospace" }}>
+          queryKey = ${JSON.stringify(qkey)}
+        </span>
+      </div>
+
+      ${loading && html`<${LoadingView} />`}
+      ${notFound && html`<${NotFoundView} onBack=${goList} />`}
+      ${ready && html`
+        <div class="card section">
+          <div class="detail-head">
+            <div>
+              <div class="title-row">
+                <h1>${record.name}</h1>
+                <span class=${"chip " + STATUS_CHIP[record.status]}>${record.status}</span>
+              </div>
+              <p class="sku">${record.sku}</p>
+            </div>
+            <div class="actbar">
+              <button class="btn" onClick=${() => setEditing(true)}>编辑</button>
+              <button class="btn" style=${{ color: "var(--danger)" }} onClick=${onDelete}>删除</button>
+            </div>
+          </div>
+        </div>
+
+        <section class="card section" aria-label="基本信息">
+          <h2>基本信息</h2>
+          <${DescriptionList} items=${[
+            { label: "ID", value: record.id, mono: true },
+            { label: "分类", value: record.category },
+            { label: "状态", value: html`<span class=${"chip " + STATUS_CHIP[record.status]}>${record.status}</span>` },
+            { label: "SKU", value: record.sku, mono: true },
+            { label: "价格", value: `¥ ${record.price.toFixed(2)}` },
+            { label: "库存", value: record.stock },
+          ]} />
+        </section>
+
+        <section class="card section" aria-label="时间信息">
+          <h2>时间</h2>
+          <${DescriptionList} items=${[
+            { label: "创建时间", value: record.createdAt },
+            { label: "更新时间", value: record.updatedAt },
+          ]} />
+        </section>
+
+        <section class="card section" aria-label="描述">
+          <h2>描述</h2>
+          <${DescriptionList} items=${[
+            { label: "商品描述", value: record.description || "—", full: true },
+          ]} />
+        </section>
+
+        <div style=${{ marginTop: "12px" }}>
+          <button class="btn" onClick=${goList}>← 返回商品列表</button>
+        </div>`}
+
+      ${editing && html`<${EditDialog} record=${record} onSave=${onSave} onCancel=${() => setEditing(false)} />`}
+      ${confirm && html`<${Confirm} ...${confirm} onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

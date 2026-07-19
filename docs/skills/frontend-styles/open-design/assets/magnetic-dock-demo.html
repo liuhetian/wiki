@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>磁性 Dock 预览切换 — open-design.ai Labs 模块拆解</title>
+<style>
+  /* ============================================================
+     Atelier Zero 令牌（取自 open-design 官网 globals.css :root）
+     ============================================================ */
+  :root {
+    --paper: #fafafa;
+    --paper-dark: #f0f0f0;
+    --ink: #262626;
+    --ink-soft: #434343;
+    --ink-mute: #595959;
+    --ink-faint: #8c8c8c;
+    --coral: #63fe13;       /* 官网变量名叫 coral，实为荧光绿 */
+    --coral-soft: #83ff3b;
+    --bone: #ffffff;
+    --line: #d9d9d9;
+    --shadow: 0 30px 60px -30px rgba(38, 38, 38, .16);
+    --sans: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 20px 40px;
+    min-height: 100vh;
+  }
+  .head { text-align: center; margin-bottom: 20px; }
+  .head h1 { font-size: clamp(18px, 3.4vw, 26px); font-weight: 800; letter-spacing: -0.02em; }
+  .head h1 em { font-style: normal; background: linear-gradient(transparent 65%, var(--coral) 65%); }
+  .head p { color: var(--ink-mute); font-size: 13px; margin-top: 6px; }
+
+  /* ============================================================
+     预览舞台：dock 上方的作品预览区。
+     官网 Labs 的预览是 1592×1000 的作品图；这里用 CSS 渐变卡
+     顶替。.viewport 是持久 track 的载体（overflow:hidden 裁边）
+     ============================================================ */
+  .stage {
+    width: min(680px, 100%);
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: var(--bone);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    position: relative;
+  }
+  .viewport {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;    /* 关键：滑动时只露出取景框内的部分 */
+  }
+  .card {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px;
+  }
+  .card-big { font-size: clamp(34px, 6vw, 60px); font-weight: 800; letter-spacing: -0.04em; line-height: .92; }
+  .card-sub { font-size: 13px; font-weight: 600; color: inherit; opacity: .75; margin-top: 8px; }
+  /* 六种模式各一张渐变卡（对应官网 Prototype/Live Artifact/Slides/图片/HyperFrames/视频） */
+  .card[data-art="0"] { background: linear-gradient(135deg, #ffffff, #e9ffe0 55%, #baff85); }
+  .card[data-art="1"] { background: linear-gradient(150deg, #f5f5f5, #dddddd 60%, #63fe13); }
+  .card[data-art="2"] { background: linear-gradient(160deg, #262626, #404040); color: #fafafa; }
+  .card[data-art="3"] { background: linear-gradient(120deg, #eaffdd, #ffffff 50%, #ececec); }
+  .card[data-art="4"] { background: linear-gradient(140deg, #d7ffb8, #f2fff0 55%, #ffffff); }
+  .card[data-art="5"] { background: linear-gradient(165deg, #303030, #1d1d1d); color: #63fe13; }
+
+  /* ============================================================
+     Dock 槽体：白底圆角 17px 容器（官网 .lab-dock），
+     tile 48px 圆角 13px；变换原点 bottom center，放大时
+     像 macOS Dock 一样"从底部长高"
+     ============================================================ */
+  .dock {
+    /* 定位上下文,不能省:JS 用 offsetLeft 读 tile 中心,offsetParent
+       必须是 dock 本身。漏掉这行 offsetLeft 会相对 body,与
+       cursorX - dockLeft 两套坐标系错位超出 DIST,磁性放大恒为 0 */
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(2px, 1vw, 4px);
+    margin-top: 46px;   /* 给 active 常显 tooltip 留出探出的空间 */
+    padding: clamp(7px, 2vw, 9px) clamp(8px, 2.6vw, 13px);
+    background: var(--bone);
+    border: 1px solid var(--line);
+    border-radius: 17px;
+    box-shadow: var(--shadow), inset 0 0 0 1px rgba(21, 20, 15, .04);
+  }
+  .tile {
+    position: relative;
+    width: clamp(38px, 9.5vw, 48px);
+    height: clamp(38px, 9.5vw, 48px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-size: clamp(16px, 4.2vw, 21px);
+    cursor: pointer;
+    text-decoration: none;
+    /* 关键：从底边中心缩放，放大才有"Dock 隆起"的观感 */
+    transform-origin: bottom center;
+    /* 短过渡顶替 spring：磁性放大由 JS 每帧写 inline transform，
+       过渡只负责把离散帧串顺滑 */
+    transition: transform .14s ease-out, background .16s ease, border-color .16s ease;
+    will-change: transform;
+    user-select: none;
+  }
+  .tile:hover, .tile:focus-visible { background: #f4fff0; border-color: var(--coral); outline: none; }
+  /* 选中 tile：抬升出 dock + 黑墨渐变底 + 投影（官网 .lab-dock-item.active）。
+     注意这个 -20px 抬升会被 JS 的磁性放大 transform 覆盖——
+     所以 JS 里要把 lift 折进 inline transform 一起写 */
+  .tile.active {
+    transform: translateY(-20px);
+    background: linear-gradient(180deg, var(--ink-soft) 0%, var(--ink) 100%);
+    border-color: transparent;
+    box-shadow: 0 14px 24px -10px rgba(38, 38, 38, .45);
+  }
+
+  /* tooltip 气泡：黑底白字，从 tile 顶边探出 4px */
+  .tip {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    white-space: nowrap;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: var(--bone);
+    font-size: 12px;
+    line-height: 1.3;
+    opacity: 0;
+    transform: translateX(-50%) translateY(6px);
+    pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  .tile:hover .tip, .tile:focus-visible .tip, .tile.active .tip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  /* hover 别的 tile 时，把 active 的常显气泡藏起来，
+     两只气泡不打架（官网原 selector 的直译） */
+  .dock:hover .tile.active:not(:hover) .tip {
+    opacity: 0;
+    transform: translateX(-50%) translateY(6px);
+  }
+
+  .note { margin-top: 18px; font-size: 12px; color: var(--ink-faint); text-align: center; }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* 官网做法：reduce 下磁性放大和自动轮播整体停用（JS 里判断），
+       点击切换保留；这里再把过渡关掉 */
+    .tile, .tip { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <h1>macOS 风格<em>磁性 Dock</em>，切换上方预览</h1>
+  <p>鼠标掠过 dock 感受靠近放大；点 tile 或等 2.4s 自动轮播，预览整片横滑切换</p>
+</div>
+
+<div class="stage">
+  <div class="viewport" data-viewport>
+    <!-- 初始卡；后续卡由 JS 在持久 track 里增删 -->
+    <div class="card" data-card data-art="0">
+      <div class="card-big">Prototype</div>
+      <div class="card-sub">可交互原型 · 一句话生成</div>
+    </div>
+  </div>
+</div>
+
+<div class="dock" data-dock>
+  <button class="tile active" data-tile data-art="0" data-title="Prototype"><span>📐</span><span class="tip">Prototype</span></button>
+  <button class="tile" data-tile data-art="1" data-title="Live Artifact"><span>🪟</span><span class="tip">Live Artifact</span></button>
+  <button class="tile" data-tile data-art="2" data-title="Slides"><span>📽️</span><span class="tip">Slides</span></button>
+  <button class="tile" data-tile data-art="3" data-title="图片"><span>🖼️</span><span class="tip">图片</span></button>
+  <button class="tile" data-tile data-art="4" data-title="HyperFrames"><span>🎞️</span><span class="tip">HyperFrames</span></button>
+  <button class="tile" data-tile data-art="5" data-title="视频"><span>🎬</span><span class="tip">视频</span></button>
+</div>
+
+<p class="note">hover dock 时轮播暂停；滚出视口时停表（IntersectionObserver threshold 0.2）</p>
+
+<script>
+/* ============================================================
+   ① 磁性放大 —— 官网 enhanceLabDock（React Bits "Dock" 的
+      vanilla 移植，apps/landing-page/app/pages/index.astro）
+
+   参数照官网：MAX = 1.08（峰值缩放，克制的一跳，不压过邻居）
+              DIST = 104px（光标影响半径，三角衰减）
+
+   算法：t = max(0, 1 - |光标x - tile中心| / DIST)
+         scale = 1 + (MAX - 1) * t
+
+   陷阱与解法（官网注释原话的精髓）：tile 中心必须用
+   offsetLeft + offsetWidth/2 —— offset 几何不受 transform 影响，
+   若改用 getBoundingClientRect() 读中心，读数会包含上一帧的
+   缩放，形成"读→写→读"的反馈回路，鼠标不动 dock 也会抖。
+   ============================================================ */
+(() => {
+  const dock = document.querySelector('[data-dock]');
+  const tiles = Array.from(dock.querySelectorAll('[data-tile]'));
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!reduceMotion) {
+    const MAX = 1.08;
+    const DIST = 104;
+    let ticking = false;
+    const apply = (cursorX) => {
+      const dockLeft = dock.getBoundingClientRect().left;
+      const x = cursorX - dockLeft;
+      for (const it of tiles) {
+        const center = it.offsetLeft + it.offsetWidth / 2;   // 不受 transform 影响
+        const t = Math.max(0, 1 - Math.abs(x - center) / DIST);
+        // active 的 CSS 抬升（translateY(-20px)）会被 inline transform
+        // 覆盖，所以折进来一起写，抬升在 hover 中存活
+        const lift = it.classList.contains('active') ? 'translateY(-20px) ' : '';
+        it.style.transform = `${lift}scale(${(1 + (MAX - 1) * t).toFixed(3)})`;
+      }
+    };
+    // rAF 节流：trackpad 的 mousemove 频率 >60Hz，折叠成每帧一次
+    dock.addEventListener('mousemove', (event) => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { apply(event.clientX); ticking = false; });
+    }, { passive: true });
+    // 离开清 inline transform，交回 CSS（active 的 -20px 由 CSS 恢复）
+    dock.addEventListener('mouseleave', () => {
+      for (const it of tiles) it.style.transform = '';
+    });
+  }
+
+  /* ============================================================
+     ② 预览切换 + 自动轮播 —— 官网 enhanceLabAutoCycle
+
+     滑动动画用"持久 track"：一个 flex 容器装当前卡，切换时把
+     新卡塞到旁边、整条 translateX 平移，560ms 走完在
+     transitionend 里【同一个同步块】移除旧卡 + transition:none
+     复位 translateX(0)——中间不给浏览器重绘机会。
+     官网特意不重建 track：此前 replaceWith() 销毁了带
+     will-change 的合成层，合成器闪现一帧旧纹理（换层闪烁）。
+     ============================================================ */
+  const viewport = document.querySelector('[data-viewport]');
+  let currentCard = viewport.querySelector('[data-card]');
+  const SLIDE_EASE = 'transform 560ms cubic-bezier(0.23, 1, 0.32, 1)';
+  const CARDS = [
+    { big: 'Prototype',     sub: '可交互原型 · 一句话生成' },
+    { big: 'Live Artifact', sub: '活的交付物 · 数据接进来还能动' },
+    { big: 'Slides',        sub: '演示文稿 · 滚动即翻页' },
+    { big: '图片',           sub: '视觉稿 · 直接可用的成图' },
+    { big: 'HyperFrames',   sub: '动效分镜 · 帧驱动的叙事' },
+    { big: '视频',           sub: '成片输出 · 从网页到视频' },
+  ];
+
+  const makeCard = (i) => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.dataset.art = String(i);
+    el.style.flex = '0 0 100%';
+    el.style.position = 'relative';   // track 内改流式排布
+    el.innerHTML = `<div class="card-big">${CARDS[i].big}</div><div class="card-sub">${CARDS[i].sub}</div>`;
+    return el;
+  };
+
+  let track = null;
+  const ensureTrack = () => {
+    if (track) return;
+    track = document.createElement('div');
+    track.style.cssText = 'position:absolute;inset:0;display:flex;width:100%;will-change:transform;transform:translateX(0)';
+    currentCard.style.flex = '0 0 100%';
+    currentCard.style.position = 'relative';
+    viewport.appendChild(track);
+    track.appendChild(currentCard);   // 当前卡成为 track 的独子
+  };
+
+  let index = 0;
+  let activeCleanup = null;   // 快速连点时先把上一场滑动立刻收尾
+
+  const setMeta = (i) => {
+    tiles.forEach((t, k) => t.classList.toggle('active', k === i));
+  };
+
+  const slideTo = (i, dir) => {
+    if (dir === 0) return;
+    if (reduceMotion) {   // reduce：原地换卡，不滑
+      setMeta(i);
+      const fresh = makeCard(i);
+      if (track) { track.replaceChildren(fresh); currentCard = fresh; }
+      else { viewport.replaceChildren(fresh); currentCard = fresh; }
+      return;
+    }
+    if (activeCleanup) activeCleanup();
+    setMeta(i);
+    ensureTrack();
+
+    const incoming = makeCard(i);
+    const outgoing = currentCard;
+    currentCard = incoming;
+    const forward = dir > 0;
+
+    // 起始态：新卡停在旧卡旁边（前进→右邻，后退→左邻）
+    track.style.transition = 'none';
+    if (forward) {
+      track.appendChild(incoming);
+      track.style.transform = 'translateX(0)';
+    } else {
+      track.insertBefore(incoming, track.firstChild);
+      track.style.transform = 'translateX(-100%)';
+    }
+    void track.offsetWidth;   // 强制提交起始态，再开动画
+
+    track.style.transition = SLIDE_EASE;
+    track.style.transform = forward ? 'translateX(-100%)' : 'translateX(0)';
+
+    let cleaned = false;
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
+      activeCleanup = null;
+      track.removeEventListener('transitionend', cleanup);
+      // 移除旧卡 + 复位归零在同一个同步块里完成：
+      // 中间无重绘 → 无闪烁；track 层从未销毁
+      track.style.transition = 'none';
+      if (outgoing.parentNode === track) track.removeChild(outgoing);
+      track.style.transform = 'translateX(0)';
+    };
+    activeCleanup = cleanup;
+    track.addEventListener('transitionend', cleanup, { once: true });
+    setTimeout(cleanup, 700);   // transitionend 丢失时的兜底
+  };
+
+  /* 自动轮播：2.4s 一步永远向前；hover 暂停（表继续走，tick 空转）；
+     IntersectionObserver 离屏停表、回屏开表 */
+  const INTERVAL = 2400;
+  let timer = null;
+  let paused = false;
+  const tick = () => {
+    if (paused) return;
+    const next = (index + 1) % tiles.length;
+    slideTo(next, 1);
+    index = next;
+  };
+  const start = () => { if (!reduceMotion && timer == null) timer = setInterval(tick, INTERVAL); };
+  const stop = () => { if (timer != null) { clearInterval(timer); timer = null; } };
+
+  dock.addEventListener('mouseenter', () => { paused = true; });
+  dock.addEventListener('mouseleave', () => { paused = false; });
+
+  // 点 tile：方向跟着目标在当前左侧还是右侧走；重启计时保证
+  // 手选的卡至少驻留一个完整间隔
+  tiles.forEach((it, i) => {
+    it.addEventListener('click', () => {
+      const dir = i === index ? 0 : i > index ? 1 : -1;
+      slideTo(i, dir);
+      index = i;
+      if (timer != null) { stop(); start(); }
+    });
+  });
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) entry.isIntersecting ? start() : stop();
+    }, { threshold: 0.2 });
+    io.observe(dock);
+  } else {
+    start();
+  }
+})();
+</script>
+</body>
+</html>

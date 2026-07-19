@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：权限门控（RBAC）</title>
+<!--
+  demo-rbac.html —— 「角色与权限」形状的最小可玩实现（蓝本：open-dashboard 的 add-rbac）。
+  复现的不变量：
+  - ROLE_PERMISSIONS 矩阵是唯一事实源：所有门控都问 can(role, perm)，绝不散落 if (role === "admin")
+  - UI 门控只是体验（禁用/隐藏），不是安全 —— 服务端必须用 requireRole/requirePermission 再查一遍（fail closed）
+  - RoleGate 组件按角色/权限包住整块 UI（此处的「危险操作」面板只有管理员可见）
+  切换角色，看工具栏按钮的可用性、行内操作和面板的可见性怎么跟着矩阵走。
+  运行时：/vendor 的 React 18 UMD + htm，样式共用 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .matrix td, .matrix th { text-align: center; }
+  .matrix td:first-child, .matrix th:first-child { text-align: left; }
+  .yes { color: var(--chip-on-fg); font-weight: 650; }
+  .no { color: var(--muted); }
+  .panel { padding: 14px 16px; margin-top: 12px; }
+  .panel h2 { margin: 0 0 6px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+// ---- rbac.ts 的形状：矩阵是唯一事实源，helpers 纯函数、客户端安全 ----
+const PERMS = ["orders:view", "orders:edit", "orders:delete", "settings:manage"];
+const PERM_LABEL = { "orders:view": "查看订单", "orders:edit": "编辑订单",
+                     "orders:delete": "删除订单", "settings:manage": "管理设置" };
+const ROLE_PERMISSIONS = {
+  viewer: ["orders:view"],
+  editor: ["orders:view", "orders:edit"],
+  admin:  ["orders:view", "orders:edit", "orders:delete", "settings:manage"],
+};
+const ROLE_LABEL = { viewer: "访客", editor: "编辑", admin: "管理员" };
+const can = (role, perm) => ROLE_PERMISSIONS[role].includes(perm);
+
+// RoleGate：按权限包住整块 UI；服务端仍要 requirePermission 再查（UI 门控 ≠ 安全）
+function RoleGate({ role, need, fallback = null, children }) {
+  return can(role, need) ? children : fallback;
+}
+
+const ORDERS = [
+  { id: "SO-1041", customer: "长风文创", total: 5200,  status: "待发货" },
+  { id: "SO-1042", customer: "禾木书店", total: 1180,  status: "已完成" },
+  { id: "SO-1043", customer: "青崖民宿", total: 20400, status: "待付款" },
+];
+
+function App() {
+  const [role, setRole] = useState("viewer");
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const act = (perm, label) => {
+    // 演示服务端语义：真实版在 server fn 里 requirePermission(role, perm)，不满足抛 FORBIDDEN
+    if (!can(role, perm)) { setToast("服务端拒绝：FORBIDDEN"); return; }
+    setToast(`已执行「${label}」`);
+  };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>订单中心</h1>
+          <p class="sub">切角色看门控变化 —— 全部按钮都问同一张 ROLE_PERMISSIONS 矩阵</p>
+        </div>
+        <div class="seg">
+          ${Object.keys(ROLE_PERMISSIONS).map(r => html`
+            <button key=${r} class=${role === r ? "on" : ""} onClick=${() => setRole(r)}>${ROLE_LABEL[r]}</button>`)}
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <span class="sub">当前角色：<span class="chip chip-on">${ROLE_LABEL[role]}</span></span>
+        <span class="grow"></span>
+        <button class="btn" disabled=${!can(role, "orders:edit")}
+                onClick=${() => act("orders:edit", "新建订单")}>新建订单</button>
+        <button class="btn" disabled=${!can(role, "orders:delete")}
+                onClick=${() => act("orders:delete", "清理已取消订单")}>清理已取消</button>
+      </div>
+
+      <table class="list">
+        <thead><tr><th>订单号</th><th>客户</th><th class="num">金额</th><th>状态</th><th class="ops">操作</th></tr></thead>
+        <tbody>
+          ${ORDERS.map(o => html`
+            <tr key=${o.id}>
+              <td style=${{ fontWeight: 550 }}>${o.id}</td>
+              <td>${o.customer}</td>
+              <td class="num">¥ ${o.total.toLocaleString("zh-CN")}</td>
+              <td><span class="chip chip-warn">${o.status}</span></td>
+              <td class="ops">
+                <button class="link" onClick=${() => act("orders:view", "查看 " + o.id)}>查看</button>
+                <button class="link" disabled=${!can(role, "orders:edit")}
+                        onClick=${() => act("orders:edit", "编辑 " + o.id)}>编辑</button>
+                <button class="link danger" disabled=${!can(role, "orders:delete")}
+                        onClick=${() => act("orders:delete", "删除 " + o.id)}>删除</button>
+              </td>
+            </tr>`)}
+        </tbody>
+      </table>
+
+      <${RoleGate} role=${role} need="settings:manage"
+        fallback=${html`<p class="sub" style=${{ marginTop: "12px" }}>⛔ 「危险操作」面板已按角色隐藏（RoleGate fallback）</p>`}>
+        <div class="card panel">
+          <h2>危险操作（仅管理员可见 —— RoleGate 包住整块）</h2>
+          <button class="btn" style=${{ color: "var(--danger)" }}
+                  onClick=${() => act("settings:manage", "归档本季度订单")}>归档本季度订单</button>
+        </div>
+      <//>
+
+      <div class="card panel">
+        <h2>ROLE_PERMISSIONS 矩阵（唯一事实源）</h2>
+        <table class="list matrix">
+          <thead><tr><th>权限</th>${Object.keys(ROLE_PERMISSIONS).map(r => html`<th key=${r}>${ROLE_LABEL[r]}</th>`)}</tr></thead>
+          <tbody>
+            ${PERMS.map(p => html`
+              <tr key=${p}>
+                <td>${PERM_LABEL[p]} <span class="sub" style=${{ fontSize: "11px" }}>${p}</span></td>
+                ${Object.keys(ROLE_PERMISSIONS).map(r => html`
+                  <td key=${r} class=${can(r, p) ? "yes" : "no"}>${can(r, p) ? "✓" : "—"}</td>`)}
+              </tr>`)}
+          </tbody>
+        </table>
+        <p class="sub" style=${{ marginTop: "8px" }}>
+          UI 门控只是体验；真实边界在服务端 —— server fn 里 requirePermission(role, perm) 不满足抛 FORBIDDEN（fail closed）。
+        </p>
+      </div>
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

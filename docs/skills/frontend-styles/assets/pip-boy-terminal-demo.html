@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoSubX V1.0.2</title>
+    <!--
+      pip-boy-terminal-demo.html —— 「前端风格收集」的 PIP-BOY 琥珀终端演示真身。
+
+      吸纳自一个「视频字幕烧录工具」的界面（2026-07-09 收录），Fallout Pip-Boy
+      灵感的复古 CRT 终端风。原生 HTML/CSS/JS、无任何依赖，样式内联不拆分 ——
+      整块自包含更利于 AI 一次读完、直接改色改结构套用。
+      风格铁律：单色琥珀 + 硬边框 + 等宽字体 + 字符前缀建立层级，
+      绝不用渐变、圆角、阴影；等宽字体链走 @font-face + src:local()，不走 CDN。
+    -->
+    <style>
+        :root {
+            --amber: #ffb000;
+            --amber-dim: #cc8d00;
+            --bg-color: #050500;
+            --green: #00ff41;
+            --red: #ff3333;
+            --panel-border: 2px solid var(--amber);
+        }
+
+        @font-face {
+            /* 尝试使用系统自带等宽字体来模拟终端 */
+            font-family: 'Terminal';
+            src: local('Courier New'), local('Consolas'), local('Monaco'), monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--amber);
+            font-family: 'Terminal', 'Courier New', Courier, monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            padding: 15px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            text-shadow: 0 0 2px rgba(255, 176, 0, 0.4);
+        }
+
+        /* 选中文字的颜色 */
+        ::selection {
+            background: var(--amber);
+            color: var(--bg-color);
+        }
+
+        /* 顶部导航/标题 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: 10px;
+            border-bottom: var(--panel-border);
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .online-status {
+            color: var(--green);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-shadow: 0 0 4px rgba(0, 255, 65, 0.6);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--green);
+            border-radius: 50%;
+            display: inline-block;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .header-status-box {
+            border: 1px solid var(--amber);
+            padding: 2px 10px;
+            font-size: 14px;
+        }
+
+        /* 主体网格布局 */
+        main {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 15px;
+            flex: 1;
+            min-height: 0; /* 允许内部滚动 */
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* 隐藏左侧滚动条但保持可滚动 */
+        .left-column::-webkit-scrollbar { width: 0; }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 面板通用样式 */
+        .panel {
+            border: var(--panel-border);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 按钮和输入框 */
+        button, .btn {
+            background: transparent;
+            color: var(--amber);
+            border: 1px solid var(--amber);
+            padding: 5px 10px;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.1s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        button:hover, .btn:hover {
+            background: var(--amber);
+            color: var(--bg-color);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        input[type="text"] {
+            background: transparent;
+            border: 1px solid var(--amber);
+            color: var(--amber);
+            padding: 6px;
+            font-family: inherit;
+            width: 100%;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0 0 5px rgba(255, 176, 0, 0.5);
+        }
+
+        /* 特殊颜色 */
+        .text-green { color: var(--green); }
+        .text-white { color: #fff; text-shadow: none; }
+        .border-red { border-color: var(--red) !important; color: var(--red) !important; }
+        .border-red:hover { background-color: var(--red) !important; color: var(--bg-color) !important; }
+
+        /* 表单行 */
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .file-upload-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            white-space: nowrap;
+        }
+
+        /* 列表/状态项 */
+        .status-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-item .prefix { width: 30px; }
+        .status-item .name { flex: 1; text-align: center; }
+        .status-item .state { width: 60px; text-align: right; }
+
+        /* 输出文件列表 */
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        .file-item a {
+            color: var(--amber);
+            text-decoration: none;
+        }
+        .file-item a:hover {
+            color: #fff;
+        }
+
+        /* 系统日志区域 */
+        .log-panel {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-header {
+            padding: 10px 15px;
+            border-bottom: 1px dashed var(--amber);
+        }
+
+        .log-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+            border-left: 1px solid var(--amber);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--amber);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #fff;
+        }
+
+        /* 底部 */
+        footer {
+            margin-top: 10px;
+            text-align: right;
+            font-size: 12px;
+            opacity: 0.8;
+            padding-bottom: 5px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background-color: var(--amber);
+            vertical-align: middle;
+            animation: blink 1s step-end infinite;
+        }
+
+        /* 隐藏真实的文件上传控件 */
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>VideoSubX V1.0.2 <span class="online-status"><span class="dot"></span> ONLINE</span></h1>
+        <div class="header-status-box">处理中</div>
+    </header>
+
+    <main>
+        <!-- 左侧控制列 -->
+        <div class="left-column">
+            <!-- 任务控制面板 -->
+            <div class="panel">
+                <div class="form-row">
+                    <label>视频链接：</label>
+                    <input type="text" value="https://www.youtube.com/watch?v=SqD_8FGk89o" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>或上传本地文件：</label>
+                    <div class="file-upload-row">
+                        <label class="btn">选择文件
+                            <input type="file">
+                        </label>
+                        <span>未选择文件</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button>开始任务</button>
+                    <button>继续任务</button>
+                    <button class="border-red">强制停止</button>
+                    <button>归档重置</button>
+                </div>
+            </div>
+
+            <!-- 系统状态面板 -->
+            <div class="panel">
+                <div class="panel-title">
+                    <span>>> 系统状态</span>
+                </div>
+                <div class="status-list">
+                    <div class="status-item">
+                        <span class="prefix">[X]</span>
+                        <span class="name">低画质获取</span>
+                        <span class="state text-green">已完成</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="prefix">[>]</span>
+                        <span class="name">神经网络处理</span>
+                        <span class="state text-white">运行中</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="prefix">[X]</span>
+                        <span class="name">高画质获取</span>
+                        <span class="state text-green">已完成</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="prefix">[ ]</span>
+                        <span class="name">最终烧录</span>
+                        <span class="state text-white">等待中</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 手动操作面板 -->
+            <div class="panel">
+                <div class="panel-title">
+                    <span>>> 手动操作</span>
+                </div>
+
+                <div class="file-upload-row" style="justify-content: space-between;">
+                    <div style="display: flex; gap:10px; align-items: center;">
+                        <span>覆盖上传 (.ass):</span>
+                        <label class="btn" style="padding: 2px 5px;">选择文件<input type="file"></label>
+                        <span>未选择任何文件</span>
+                    </div>
+                    <button style="padding: 2px 10px;">上传文件</button>
+                </div>
+
+                <div class="action-buttons" style="margin-top: 10px;">
+                    <button>重试最佳下载</button>
+                    <button>执行烧录</button>
+                </div>
+            </div>
+
+            <!-- 输出文件面板 -->
+            <div class="panel">
+                <div class="panel-title">
+                    <span>>> 输出文件</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-item">
+                        <span>NO NEW GPUs_.jpg</span>
+                        <a href="#">[下载]</a>
+                    </div>
+                    <div class="file-item">
+                        <span>NO NEW GPUs_.mkv</span>
+                        <a href="#">[下载]</a>
+                    </div>
+                    <div class="file-item">
+                        <span>NO NEW GPUs_.best.jpg</span>
+                        <a href="#">[下载]</a>
+                    </div>
+                    <div class="file-item">
+                        <span>NO NEW GPUs_.best.webm</span>
+                        <a href="#">[下载]</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧日志列 -->
+        <div class="panel log-panel">
+            <div class="panel-title log-header">
+                <span>>> 系统日志</span>
+                <button id="clearBtn">清除屏幕</button>
+            </div>
+            <div class="log-content" id="logContent">port-443): Read timed out.
+[19:29:07] Retrying download in 2s...
+[19:29:09] [youtube] Extracting URL: https://www.youtube.com/watch?v=SqD_8FGk89o
+[19:29:09] [youtube] SqD_8FGk89o: Downloading webpage
+[19:29:09] 2026-02-07 19:29:09,754 - INFO - common_separator - Audio duration is 0.18 hours (661.16 seconds).
+[19:29:09] 2026-02-07 19:29:09,754 - INFO - common_separator - Using pydub for writing.
+[19:29:10] 2026-02-07 19:29:10,022 - INFO - common_separator - Writing output with 16-bit depth
+[19:29:11] [youtube] SqD_8FGk89o: Downloading android vr player API JSON
+[19:29:11] [youtube] SqD_8FGk89o: Downloading web safari player API JSON
+[19:29:12] [youtube] SqD_8FGk89o: Downloading player 4e51e895-tv
+[19:29:12] [youtube] [jsc:deno] Solving JS challenges using deno
+[19:29:14] [youtube] SqD_8FGk89o: Downloading m3u8 information
+[19:29:15] [info] SqD_8FGk89o: Downloading 1 format(s): 401+251
+[19:29:15] Deleting existing file output\NO NEW GPUs_.best.webp
+[19:29:15] [info] Downloading video thumbnail 45 ...
+[19:29:16] [info] Writing video thumbnail 45 to: output\NO NEW GPUs_.best.webp
+[19:29:16] [download] Resuming download at byte 186148090
+[19:29:17] [download] Destination: output\NO NEW GPUs_.best.f401.mp4
+[19:29:27] [download]   90.1% of  240.70MiB at    6.01MiB/s ETA 00:03
+[19:29:28] 2026-02-07 19:29:28,049 - INFO - mdxc_separator - Saving Vocals stem to raw_(Vocals)_model_mel_band_roformer_ep_3005_sdr_11.mp3...
+[19:29:28] 2026-02-07 19:29:28,061 - INFO - common_separator - Audio duration is 0.18 hours (661.16 seconds).
+[19:29:28] 2026-02-07 19:29:28,061 - INFO - common_separator - Using pydub for writing.
+[19:29:28] 2026-02-07 19:29:28,374 - INFO - common_separator - Writing output with 16-bit depth
+[19:29:34] [download] 100% of  240.70MiB in 00:00:17 at 13.57MiB/s
+[19:29:35] [download] Destination: output\NO NEW GPUs_.best.f251.webm
+[19:29:37] [download] 100% of    9.93MiB in 00:00:03 at 2.88MiB/s
+[19:29:37] [Merger] Merging formats into "output\NO NEW GPUs_.best.webm"
+[19:29:38] Deleting original file output\NO NEW GPUs_.best.f401.mp4 (pass -k to keep)
+[19:29:38] Deleting original file output\NO NEW GPUs_.best.f251.webm (pass -k to keep)
+[19:29:38] [ThumbnailsConvertor] Converting thumbnail "output\NO NEW GPUs_.best.webp" to jpg
+[19:29:39] Deleting original file output\NO NEW GPUs_.best.webp (pass -k to keep)
+[19:29:39] Task B: Best quality download complete.<span class="cursor"></span></div>
+        </div>
+    </main>
+
+    <footer>
+        _ 连接已建立 | PIP-BOY OS v7.1.08
+    </footer>
+
+    <script>
+        // 实现清除屏幕的功能和滚动到底部
+        document.addEventListener('DOMContentLoaded', () => {
+            const logContent = document.getElementById('logContent');
+            const clearBtn = document.getElementById('clearBtn');
+
+            // 初始滚动到底部
+            logContent.scrollTop = logContent.scrollHeight;
+
+            // 清除屏幕
+            clearBtn.addEventListener('click', () => {
+                logContent.innerHTML = '<span class="cursor"></span>';
+            });
+
+            // 模拟日志追加 (可选效果)
+            /*
+            setInterval(() => {
+                const newLog = `\n[${new Date().toTimeString().split(' ')[0]}] System heartbeat check OK.`;
+                const cursor = '<span class="cursor"></span>';
+                // 移除旧光标
+                logContent.innerHTML = logContent.innerHTML.replace(cursor, '');
+                // 追加新内容和光标
+                logContent.innerHTML += newLog + cursor;
+                // 滚动到底部
+                logContent.scrollTop = logContent.scrollHeight;
+            }, 5000);
+            */
+        });
+    </script>
+</body>
+</html>

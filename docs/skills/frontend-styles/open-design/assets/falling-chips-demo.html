@@ -1,0 +1,413 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>图标物理掉落 · FallingText demo</title>
+<style>
+  /* ============================================================
+   * 图标物理掉落 —— open-design.ai 首页 Method 模块复刻
+   *
+   * 官网实现：React Bits <FallingText /> 移植成 vanilla + matter-js
+   * （vendored 到 public/enhancers/matter.min.js，滚近时才注入）。
+   * 一排 coding-agent 图标 chip 静态排好（SEO 可见），滚到视口
+   * 上半区时集体掉进一个物理沙箱，堆在底部还能被鼠标拖着扔。
+   *
+   * 官网参数（见 apps/landing-page/app/pages/index.astro 的
+   * initFallingText）：
+   *   gravity 0.9 / restitution 0.8 / frictionAir 0.01 / friction 0.2
+   *   初速 vx = (rand-.5)*5，角速度 (rand-.5)*0.05
+   *   MouseConstraint stiffness 0.9（几乎是硬拖）
+   *   触发：IntersectionObserver rootMargin '0px 0px -45% 0px'
+   *
+   * 本 demo 与官网的差异：为了自包含（无 CDN / 无依赖），没带
+   * matter-js，手写了一个 ~100 行的迷你 2D 物理引擎——chip 用圆形
+   * 碰撞近似（官网是矩形刚体），重力/弹性/空气阻力/初速全部沿用
+   * 官网数值的观感换算；图标用 emoji 代替官网的 agent SVG logo。
+   * 渲染方式与官网完全一致：物理体本身透明，DOM chip 元素按
+   * left/top + rotate 贴上去（所以文字/图标始终是真实 DOM）。
+   * ============================================================ */
+  :root {
+    --paper: #fafafa;
+    --paper-dark: #f0f0f0;
+    --ink: #262626;
+    --ink-soft: #434343;
+    --ink-mute: #595959;
+    --ink-faint: #8c8c8c;
+    --coral: #63fe13;        /* 荧光绿：全站唯一强调色 */
+    --coral-soft: #83ff3b;
+    --bone: #ffffff;
+    --line: #d9d9d9;
+    --shadow: 0 30px 60px -30px rgba(38, 38, 38, 0.16);
+  }
+  * { margin: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- 引导区：demo 里造出"往下滚"的动作，好让 IO 触发像官网一样发生 ---- */
+  .intro {
+    min-height: 62vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+    padding: 40px 24px;
+  }
+  .intro .kicker {
+    font-size: 12px;
+    letter-spacing: .22em;
+    color: var(--ink-faint);
+  }
+  .intro h1 { font-size: clamp(24px, 5vw, 40px); letter-spacing: -0.02em; }
+  .intro h1 em { font-style: normal; color: var(--olive, #218c00); background: linear-gradient(transparent 62%, var(--coral) 62%); }
+  .intro p { color: var(--ink-mute); font-size: 14px; }
+  .intro .down { margin-top: 18px; font-size: 22px; animation: bob 1.6s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(8px); } }
+
+  /* ---- Method 模块（物理沙箱） ---- */
+  .method { padding: 30px 0 60px; }
+  .method-head { text-align: center; margin-bottom: 18px; }
+  .method-head h2 { font-size: clamp(20px, 4vw, 30px); letter-spacing: -0.02em; }
+  .method-head p { color: var(--ink-mute); font-size: 13px; margin-top: 6px; }
+
+  .falling-text {
+    position: relative;
+    height: 440px;
+    max-width: 920px;
+    margin: 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--bone);
+    overflow: hidden;
+    /* 拖 chip 时禁掉触摸滚动手势，鼠标滚轮不受影响（见下方注释） */
+    touch-action: none;
+    cursor: grab;
+  }
+  .falling-text-target {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    padding: 26px 30px 0;
+  }
+  /* chip 样式照抄官网 .falling-word.falling-chip：60×60、圆角 15、白底、
+     双层阴影（外投影 + inset 描边） */
+  .falling-chip {
+    width: 60px;
+    height: 60px;
+    margin: 8px;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(21, 20, 15, .12), inset 0 0 0 1px rgba(21, 20, 15, .06);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    user-select: none;
+  }
+
+  /* 掉落开始的一瞬间渐显的中央 banner（官网 .falling-text-reveal.is-visible），
+     且整条可拖拽：--drag-x/--drag-y 叠加在居中 translate 之上 */
+  .falling-reveal {
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    transform: translate(calc(-50% + var(--drag-x, 0px)), calc(-50% + var(--drag-y, 0px)));
+    padding: 18px 30px;
+    border-radius: 16px;
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 700;
+    font-size: clamp(15px, 2.6vw, 21px);
+    letter-spacing: .01em;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transition: opacity .8s ease;
+    cursor: grab;
+    z-index: 5;
+    user-select: none;
+  }
+  .falling-reveal em { font-style: normal; color: var(--coral); }
+  .falling-reveal.is-visible { opacity: 1; }
+  .falling-reveal.is-dragging, .falling-text.is-dragging { cursor: grabbing; }
+
+  .replay {
+    display: block;
+    margin: 20px auto 0;
+    padding: 9px 22px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bone);
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color .16s, color .16s;
+  }
+  .replay:hover { border-color: var(--ink); color: var(--ink); }
+
+  .outro { height: 120px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .intro .down { animation: none; }
+  }
+</style>
+
+<section class="intro">
+  <p class="kicker">OPEN-DESIGN.AI · METHOD 模块</p>
+  <h1>往下滚，图标就<em>掉下来</em></h1>
+  <p>官网用 IntersectionObserver（rootMargin '0px 0px -45% 0px'）等这排图标滚进视口上半区才触发。</p>
+  <div class="down" aria-hidden="true">↓</div>
+</section>
+
+<section class="method">
+  <div class="method-head">
+    <h2>一套设计流程，接得住每一个 Agent</h2>
+    <p>掉下来之后可以用鼠标把 chip 拖起来扔；中央黑条也能拖走。</p>
+  </div>
+
+  <div class="falling-text" data-falling-text>
+    <div class="falling-text-target">
+      <!-- 官网这里是 21+ 个 coding-agent 的 SVG logo chip；demo 用 emoji 代替 -->
+      <span class="falling-chip">🤖</span><span class="falling-chip">✨</span>
+      <span class="falling-chip">🎨</span><span class="falling-chip">⚡</span>
+      <span class="falling-chip">🧠</span><span class="falling-chip">🛠️</span>
+      <span class="falling-chip">🚀</span><span class="falling-chip">💡</span>
+      <span class="falling-chip">🧩</span><span class="falling-chip">📐</span>
+      <span class="falling-chip">🖥️</span><span class="falling-chip">🎯</span>
+      <span class="falling-chip">🔮</span><span class="falling-chip">🪄</span>
+      <span class="falling-chip">📦</span><span class="falling-chip">🧪</span>
+      <span class="falling-chip">🖌️</span><span class="falling-chip">⌨️</span>
+    </div>
+    <div class="falling-reveal" data-falling-reveal>18+ <em>Coding Agent</em>，全部接得住</div>
+  </div>
+
+  <button class="replay" data-replay type="button">↺ 重播掉落</button>
+</section>
+
+<div class="outro"></div>
+
+<script>
+(() => {
+  /* ============================================================
+   * 迷你 2D 物理引擎（官网用的是 matter-js，这里为自包含手写）
+   *
+   * 简化点：chip 一律当半径 30 的圆处理（官网是 60×60 矩形刚体，
+   * 堆叠时能看到棱角互相卡住；圆形堆叠更"滚"一点，气质近似）。
+   * 保留的官网数值：
+   *   gravity 0.9      → 换算成 0.9 * 2000 px/s²
+   *   restitution 0.8  → 碰撞反弹保留 80% 法向速度
+   *   frictionAir 0.01 → 每 1/60s 衰减 1%（pow(0.99, dt*60)）
+   *   friction 0.2     → 落地时切向速度衰减
+   *   初速 vx=(rand-.5)*5 px/tick ≈ *60 → px/s
+   *   角速度 (rand-.5)*0.05 rad/tick ≈ *60 → rad/s
+   *   拖拽 stiffness 0.9 → 弹簧系数 27/s（≈50ms 跟手到位）
+   *
+   * 官网另有一个容易踩的坑：matter 的 Mouse 会监听 wheel 把页面
+   * 滚动吞掉，官网专门 removeEventListener 拆掉了它。本 demo 用
+   * pointer 事件自己实现拖拽、完全不碰 wheel，天然没这个问题。
+   * ============================================================ */
+  const container = document.querySelector('[data-falling-text]');
+  const reveal = document.querySelector('[data-falling-reveal]');
+  const replayBtn = document.querySelector('[data-replay]');
+  const chips = Array.from(container.querySelectorAll('.falling-chip'));
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const R = 30;                 // 圆形近似半径（chip 60×60）
+  const GRAV = 0.9 * 2000;      // gravity 0.9
+  const REST = 0.8;             // restitution
+  const AIR = 0.99;             // frictionAir 0.01 / tick
+  const FRIC = 0.2;             // 地面摩擦
+  const SPRING = 27;            // MouseConstraint stiffness 0.9 的跟手感
+
+  let bodies = [];
+  let started = false;
+  let raf = 0;
+  let grabbed = null;
+  const mouse = { x: 0, y: 0 };
+
+  /* 官网同款渲染契约：物理体不可见，DOM chip 由物理状态驱动
+     （left/top 定圆心，translate(-50%,-50%) rotate() 摆姿态）。 */
+  const initBodies = () => {
+    const box = container.getBoundingClientRect();
+    bodies = chips.map((elem) => {
+      const r = elem.getBoundingClientRect();
+      return {
+        elem,
+        x: r.left - box.left + r.width / 2,
+        y: r.top - box.top + r.height / 2,
+        vx: (Math.random() - 0.5) * 5 * 60,       // 官网初速换算
+        vy: 0,
+        angle: 0,
+        av: (Math.random() - 0.5) * 0.05 * 60,    // 官网角速度换算
+      };
+    });
+    for (const b of bodies) {
+      b.elem.style.position = 'absolute';
+      b.elem.style.margin = '0';
+      b.elem.style.left = '0';
+      b.elem.style.top = '0';
+      b.elem.style.willChange = 'transform';
+    }
+  };
+
+  const paint = () => {
+    for (const b of bodies) {
+      b.elem.style.transform =
+        `translate(${b.x - R}px, ${b.y - R}px) rotate(${b.angle}rad)`;
+    }
+  };
+
+  const step = (dt) => {
+    const W = container.clientWidth;
+    const H = container.clientHeight;
+    const air = Math.pow(AIR, dt * 60);
+
+    for (const b of bodies) {
+      if (b === grabbed) {
+        // 硬弹簧拖拽：速度指向指针（释放时速度保留 → 可以甩出去）
+        b.vx = (mouse.x - b.x) * SPRING;
+        b.vy = (mouse.y - b.y) * SPRING;
+      } else {
+        b.vy += GRAV * dt;
+      }
+      b.vx *= air; b.vy *= air;
+      b.x += b.vx * dt; b.y += b.vy * dt;
+      b.angle += b.av * dt;
+
+      // 地面 / 侧墙 / 天花板（官网四面墙同款，墙体透明）
+      if (b.y + R > H) {
+        b.y = H - R;
+        if (b.vy > 0) b.vy = -b.vy * REST;
+        if (Math.abs(b.vy) < 30) b.vy = 0;          // 静止化，防抖动
+        b.vx *= (1 - FRIC * dt * 8);                // friction 0.2
+        b.av += (b.vx / R - b.av) * 0.25;           // 滚动：角速度向 v/r 收敛
+      }
+      if (b.x - R < 0) { b.x = R; b.vx = Math.abs(b.vx) * REST; }
+      if (b.x + R > W) { b.x = W - R; b.vx = -Math.abs(b.vx) * REST; }
+      if (b.y - R < 0) { b.y = R; b.vy = Math.abs(b.vy) * REST; }
+      b.av *= 0.995;
+    }
+
+    // 圆-圆碰撞：位置分离 + 等质量法向冲量，迭代 2 轮稳住堆叠
+    for (let it = 0; it < 2; it++) {
+      for (let i = 0; i < bodies.length; i++) {
+        for (let j = i + 1; j < bodies.length; j++) {
+          const a = bodies[i], c = bodies[j];
+          const dx = c.x - a.x, dy = c.y - a.y;
+          const d2 = dx * dx + dy * dy, min = R * 2;
+          if (d2 >= min * min || d2 === 0) continue;
+          const d = Math.sqrt(d2), nx = dx / d, ny = dy / d;
+          const over = (min - d) / 2;
+          a.x -= nx * over; a.y -= ny * over;
+          c.x += nx * over; c.y += ny * over;
+          const rv = (c.vx - a.vx) * nx + (c.vy - a.vy) * ny;
+          if (rv < 0) {
+            const imp = -(1 + REST) * rv / 2;
+            a.vx -= nx * imp; a.vy -= ny * imp;
+            c.vx += nx * imp; c.vy += ny * imp;
+            // 切向速度差换一点自旋，让堆里的 chip 互相带着转
+            const tv = (c.vx - a.vx) * -ny + (c.vy - a.vy) * nx;
+            a.av += tv * 0.002; c.av -= tv * 0.002;
+          }
+        }
+      }
+    }
+  };
+
+  let last = 0;
+  const loop = (ts) => {
+    const dt = Math.min((ts - last) / 1000, 0.032) || 0.016;
+    last = ts;
+    // 两个子步提高稳定性（相当于 120Hz 积分）
+    step(dt / 2); step(dt / 2);
+    paint();
+    raf = requestAnimationFrame(loop);
+  };
+
+  const start = () => {
+    if (started) return;
+    started = true;
+    initBodies();
+    paint();
+    reveal.classList.add('is-visible');   // 官网：掉落开始即渐显，不等落定
+    last = performance.now();
+    raf = requestAnimationFrame(loop);
+  };
+
+  /* ---- 触发：滚进视口上半区（官网 rootMargin '0px 0px -45% 0px'） ---- */
+  if (reduceMotion) {
+    // 官网同款兜底：reduced-motion 不跑物理、不下载 matter-js，直接亮 banner
+    reveal.classList.add('is-visible');
+    replayBtn.style.display = 'none';
+  } else {
+    new IntersectionObserver((entries, io) => {
+      if (entries.some((e) => e.isIntersecting)) { io.disconnect(); start(); }
+    }, { threshold: 0, rootMargin: '0px 0px -45% 0px' }).observe(container);
+  }
+
+  /* ---- chip 拖拽（对应官网 MouseConstraint stiffness 0.9） ---- */
+  const toLocal = (e) => {
+    const r = container.getBoundingClientRect();
+    mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+  };
+  container.addEventListener('pointerdown', (e) => {
+    if (!started || e.target.closest('[data-falling-reveal]')) return;
+    toLocal(e);
+    grabbed = bodies.find((b) => (b.x - mouse.x) ** 2 + (b.y - mouse.y) ** 2 < (R + 8) ** 2) || null;
+    if (grabbed) {
+      container.classList.add('is-dragging');
+      container.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    }
+  });
+  container.addEventListener('pointermove', (e) => { if (grabbed) toLocal(e); });
+  const drop = () => { grabbed = null; container.classList.remove('is-dragging'); };
+  container.addEventListener('pointerup', drop);
+  container.addEventListener('pointercancel', drop);
+
+  /* ---- banner 拖拽：--drag-x/--drag-y 叠在居中 translate 上（官网同款） ---- */
+  (() => {
+    let dragging = false, sx = 0, sy = 0, bx = 0, by = 0;
+    const v = (n) => parseFloat(reveal.style.getPropertyValue(n)) || 0;
+    reveal.addEventListener('pointerdown', (e) => {
+      e.preventDefault(); e.stopPropagation();   // 别让下面的物理层同时抓到
+      dragging = true; sx = e.clientX; sy = e.clientY;
+      bx = v('--drag-x'); by = v('--drag-y');
+      reveal.classList.add('is-dragging');
+      reveal.setPointerCapture(e.pointerId);
+    });
+    reveal.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      reveal.style.setProperty('--drag-x', `${bx + (e.clientX - sx)}px`);
+      reveal.style.setProperty('--drag-y', `${by + (e.clientY - sy)}px`);
+    });
+    const end = () => { dragging = false; reveal.classList.remove('is-dragging'); };
+    reveal.addEventListener('pointerup', end);
+    reveal.addEventListener('pointercancel', end);
+  })();
+
+  /* ---- 重播：还原到 flex 布局的初始位置重新掉一遍 ---- */
+  replayBtn.addEventListener('click', () => {
+    if (!started) { start(); return; }
+    cancelAnimationFrame(raf);
+    started = false;
+    grabbed = null;
+    reveal.classList.remove('is-visible');
+    reveal.style.removeProperty('--drag-x');
+    reveal.style.removeProperty('--drag-y');
+    for (const b of bodies) {
+      b.elem.style.position = '';
+      b.elem.style.margin = '';
+      b.elem.style.transform = '';
+      b.elem.style.left = '';
+      b.elem.style.top = '';
+    }
+    requestAnimationFrame(() => start());
+  });
+})();
+</script>

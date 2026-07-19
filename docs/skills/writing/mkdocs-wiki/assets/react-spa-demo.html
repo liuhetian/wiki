@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>React 单页 demo：商品管理</title>
+<!--
+  react-spa-demo.html —— 本 wiki「嵌入交互单页」规范（skills/writing/mkdocs-wiki/index.md 第 9 节）的演示真身。
+
+  约定的落实：
+  - 纯客户端：全部状态在内存里，无任何服务端依赖，静态托管（对象存储）直接可跑
+  - 自包含：运行时库 vendor 在全站共享的 /vendor/（仓库 docs/vendor/）、根绝对路径引用，不走 CDN
+    · React 18 UMD（React 19 起官方不再发 UMD 构建，免构建场景钉 18）
+    · htm —— 1KB 的 tagged template，替代 JSX，从而不需要 Babel/打包器
+  - demo 逻辑不压缩：本文件随 wiki 发布、有独立 URL，AI GET 到即可读懂全部实现
+
+  内容：一个迷你「CRUD 表格」形状（呼应 skills/dashboard 的 open-dashboard 文章）——
+  搜索 / 分类筛选 / 分页 / 新增 / 编辑 / 上下架 / 删除 / 统计卡片 / toast 反馈。
+-->
+<style>
+  /* 设计令牌：亮暗两套，跟随系统 prefers-color-scheme */
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --fg: #1f2328; --muted: #6a737d;
+    --border: #e4e7eb; --primary: #3564d7; --primary-fg: #ffffff; --danger: #c4372c;
+    --chip-on-bg: #e3f4e8; --chip-on-fg: #176e34;
+    --chip-off-bg: #f0f1f3; --chip-off-fg: #6a737d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15181c; --card: #1e2227; --fg: #e6e9ec; --muted: #8b949e;
+      --border: #333a42; --primary: #5b8bf0; --danger: #e5695f;
+      --chip-on-bg: #12351f; --chip-on-fg: #5fca86;
+      --chip-off-bg: #2a2f36; --chip-off-fg: #8b949e;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 14px/1.6 system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  .page { max-width: 880px; margin: 0 auto; padding: 20px 16px 28px; }
+
+  .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .head h1 { margin: 0; font-size: 20px; }
+  .sub { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+  .stat { padding: 10px 14px; }
+  .stat-label { margin: 0; color: var(--muted); font-size: 12px; }
+  .stat-value { margin: 2px 0 0; font-size: 20px; font-weight: 650; font-variant-numeric: tabular-nums; }
+
+  .toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
+  .search { flex: 1; }
+  input, select {
+    padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--card); color: var(--fg); font: inherit;
+  }
+  input:focus, select:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
+
+  table { width: 100%; border-collapse: collapse; background: var(--card);
+          border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  thead th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 500;
+             padding: 9px 12px; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--bg) 55%, var(--card)); }
+  tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.name { font-weight: 550; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .ops { text-align: right; white-space: nowrap; }
+  .empty { text-align: center; color: var(--muted); padding: 26px 12px; }
+  .warn { color: var(--danger); font-weight: 650; }
+
+  .chip { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 12px; }
+  .chip-on { background: var(--chip-on-bg); color: var(--chip-on-fg); }
+  .chip-off { background: var(--chip-off-bg); color: var(--chip-off-fg); }
+
+  .btn { padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px;
+         background: var(--card); color: var(--fg); font: inherit; cursor: pointer; }
+  .btn:hover:not(:disabled) { border-color: var(--primary); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-fg); }
+  .link { border: 0; background: none; color: var(--primary); font: inherit; cursor: pointer; padding: 0 5px; }
+  .link.danger { color: var(--danger); }
+
+  .pager { display: flex; justify-content: space-between; align-items: center;
+           margin-top: 10px; color: var(--muted); font-size: 13px; }
+  .pager div { display: flex; gap: 8px; }
+
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.42);
+             display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+           padding: 18px 20px; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 10px; }
+  .modal h2 { margin: 0 0 2px; font-size: 16px; }
+  .modal label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+  .modal input, .modal select { width: 100%; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .err { margin: 0; color: var(--danger); font-size: 12px; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
+  .toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+           background: var(--fg); color: var(--bg); padding: 8px 16px; border-radius: 999px;
+           font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,.25); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);   // htm 替代 JSX：html`<${组件} 属性=${值} />`
+
+const PAGE_SIZE = 5;
+const CATS = ["数码", "服饰", "食品", "家居"];
+const SEED = [
+  { id: 1,  name: "无线降噪耳机",        cat: "数码", price: 899,  stock: 42,  on: true  },
+  { id: 2,  name: "机械键盘 87 键",      cat: "数码", price: 399,  stock: 18,  on: true  },
+  { id: 3,  name: "4K 显示器 27 寸",     cat: "数码", price: 1499, stock: 7,   on: true  },
+  { id: 4,  name: "纯棉基础 T 恤",       cat: "服饰", price: 79,   stock: 230, on: true  },
+  { id: 5,  name: "防晒轻薄外套",        cat: "服饰", price: 199,  stock: 0,   on: false },
+  { id: 6,  name: "羊毛混纺围巾",        cat: "服饰", price: 129,  stock: 64,  on: true  },
+  { id: 7,  name: "云南小粒咖啡豆 500g", cat: "食品", price: 68,   stock: 96,  on: true  },
+  { id: 8,  name: "冻干草莓脆 100g",     cat: "食品", price: 25,   stock: 150, on: true  },
+  { id: 9,  name: "山核桃仁礼盒",        cat: "食品", price: 158,  stock: 12,  on: false },
+  { id: 10, name: "香薰蜡烛（雪松）",    cat: "家居", price: 89,   stock: 40,  on: true  },
+  { id: 11, name: "折叠收纳箱三件套",    cat: "家居", price: 119,  stock: 55,  on: true  },
+  { id: 12, name: "陶瓷马克杯 350ml",    cat: "家居", price: 39,   stock: 0,   on: true  },
+];
+
+function StatCard({ label, value }) {
+  return html`
+    <div class="card stat">
+      <p class="stat-label">${label}</p>
+      <p class="stat-value">${value}</p>
+    </div>`;
+}
+
+// 新增 / 编辑共用一个弹窗：item 无 id 视为新增
+function Modal({ item, cats, onSave, onClose }) {
+  const isNew = !item.id;
+  const [f, setF] = useState({
+    name: item.name || "", cat: item.cat || cats[0],
+    price: item.price ?? "", stock: item.stock ?? "",
+  });
+  const [err, setErr] = useState("");
+  const set = k => e => setF({ ...f, [k]: e.target.value });
+
+  const submit = e => {
+    e.preventDefault();
+    const price = Number(f.price), stock = Number(f.stock);
+    if (!f.name.trim()) return setErr("名称不能为空");
+    if (f.price === "" || !Number.isFinite(price) || price < 0) return setErr("价格要是非负数字");
+    if (f.stock === "" || !Number.isInteger(stock) || stock < 0) return setErr("库存要是非负整数");
+    onSave({ ...item, name: f.name.trim(), cat: f.cat, price, stock });
+  };
+
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onClose(); }}>
+      <form class="modal" onSubmit=${submit}>
+        <h2>${isNew ? "新增商品" : "编辑商品"}</h2>
+        <label>名称
+          <input value=${f.name} onChange=${set("name")} placeholder="商品名称" autoFocus />
+        </label>
+        <label>分类
+          <select value=${f.cat} onChange=${set("cat")}>
+            ${cats.map(c => html`<option key=${c} value=${c}>${c}</option>`)}
+          </select>
+        </label>
+        <div class="row2">
+          <label>价格（¥）
+            <input type="number" min="0" step="0.01" value=${f.price} onChange=${set("price")} />
+          </label>
+          <label>库存
+            <input type="number" min="0" step="1" value=${f.stock} onChange=${set("stock")} />
+          </label>
+        </div>
+        ${err && html`<p class="err">${err}</p>`}
+        <div class="actions">
+          <button type="button" class="btn" onClick=${onClose}>取消</button>
+          <button type="submit" class="btn primary">${isNew ? "创建" : "保存"}</button>
+        </div>
+      </form>
+    </div>`;
+}
+
+function App() {
+  const [rows, setRows] = useState(SEED);
+  const [q, setQ] = useState("");
+  const [cat, setCat] = useState("全部");
+  const [page, setPage] = useState(1);
+  const [editing, setEditing] = useState(null);   // null=关闭 | {}=新增 | 行对象=编辑
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const filtered = useMemo(
+    () => rows.filter(r =>
+      (cat === "全部" || r.cat === cat) &&
+      r.name.toLowerCase().includes(q.trim().toLowerCase())),
+    [rows, q, cat],
+  );
+  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const cur = Math.min(page, pages);
+  const view = filtered.slice((cur - 1) * PAGE_SIZE, cur * PAGE_SIZE);
+  const stockValue = rows.reduce((s, r) => s + r.price * r.stock, 0);
+
+  const save = item => {
+    if (item.id) {
+      setRows(rows.map(r => (r.id === item.id ? item : r)));
+      setToast(`已保存「${item.name}」`);
+    } else {
+      const id = Math.max(0, ...rows.map(r => r.id)) + 1;
+      setRows([{ ...item, id, on: true }, ...rows]);
+      setToast(`已创建「${item.name}」`);
+    }
+    setEditing(null);
+  };
+  const toggle = r => {
+    setRows(rows.map(x => (x.id === r.id ? { ...x, on: !x.on } : x)));
+    setToast(`「${r.name}」已${r.on ? "下架" : "上架"}`);
+  };
+  const remove = r => {
+    if (!window.confirm(`删除「${r.name}」？`)) return;
+    setRows(rows.filter(x => x.id !== r.id));
+    setToast(`已删除「${r.name}」`);
+  };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>商品管理</h1>
+          <p class="sub">React 18 + htm 自包含单页 · 数据在内存里，刷新即重置</p>
+        </div>
+        <button class="btn primary" onClick=${() => setEditing({})}>＋ 新增商品</button>
+      </header>
+
+      <div class="stats">
+        <${StatCard} label="商品总数" value=${rows.length} />
+        <${StatCard} label="在售" value=${rows.filter(r => r.on).length} />
+        <${StatCard} label="库存货值" value=${"¥ " + stockValue.toLocaleString("zh-CN")} />
+      </div>
+
+      <div class="toolbar">
+        <input class="search" placeholder="搜索商品名…" value=${q}
+               onChange=${e => { setQ(e.target.value); setPage(1); }} />
+        <select value=${cat} onChange=${e => { setCat(e.target.value); setPage(1); }}>
+          <option value="全部">全部分类</option>
+          ${CATS.map(c => html`<option key=${c} value=${c}>${c}</option>`)}
+        </select>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>名称</th><th>分类</th><th class="num">价格</th><th class="num">库存</th><th>状态</th><th class="ops">操作</th></tr>
+        </thead>
+        <tbody>
+          ${view.map(r => html`
+            <tr key=${r.id}>
+              <td class="name">${r.name}</td>
+              <td>${r.cat}</td>
+              <td class="num">¥ ${r.price.toLocaleString("zh-CN")}</td>
+              <td class="num">${r.stock === 0 ? html`<span class="warn">0</span>` : r.stock}</td>
+              <td><span class=${"chip " + (r.on ? "chip-on" : "chip-off")}>${r.on ? "在售" : "下架"}</span></td>
+              <td class="ops">
+                <button class="link" onClick=${() => setEditing(r)}>编辑</button>
+                <button class="link" onClick=${() => toggle(r)}>${r.on ? "下架" : "上架"}</button>
+                <button class="link danger" onClick=${() => remove(r)}>删除</button>
+              </td>
+            </tr>`)}
+          ${view.length === 0 && html`
+            <tr><td class="empty" colSpan="6">没有匹配的商品 —— 换个关键词或清空筛选试试</td></tr>`}
+        </tbody>
+      </table>
+
+      <footer class="pager">
+        <span>共 ${filtered.length} 件 · 第 ${cur} / ${pages} 页</span>
+        <div>
+          <button class="btn" disabled=${cur <= 1} onClick=${() => setPage(cur - 1)}>上一页</button>
+          <button class="btn" disabled=${cur >= pages} onClick=${() => setPage(cur + 1)}>下一页</button>
+        </div>
+      </footer>
+
+      ${editing !== null && html`
+        <${Modal} item=${editing} cats=${CATS} onSave=${save} onClose=${() => setEditing(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

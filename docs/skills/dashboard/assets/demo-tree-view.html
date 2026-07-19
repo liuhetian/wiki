@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：树形</title>
+<!--
+  demo-tree-view.html —— 「树形」形状的最小可玩实现（蓝本：open-dashboard 的 add-tree-view + tree.tsx 模板）。
+  复现的不变量：
+  - 展开状态是一个 Set<id>；渲染是按 id 键控的递归节点组件
+  - 按深度缩进（本 demo 20px × depth），箭头图标反映展开状态并随开合旋转 90°
+  - 叶子点击 = 打开/路由（demo 里 toast 完整路径），文件夹点击 = 切换展开
+  - 深层节点首次展开时用骨架屏占位（demo 用 LAZY 集合 + 定时器 400ms 模拟），加载后缓存于 loaded 集
+  - 键盘可达：容器 tabIndex=0，↑↓ 移动焦点，Enter/Space 触发当前行
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .tree { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+          padding: 6px 0; outline: none; }
+  .tree:focus-visible { border-color: var(--primary); }
+  .row { display: flex; align-items: center; gap: 8px; padding: 6px 12px;
+         cursor: pointer; user-select: none; font-size: 13px; }
+  .row:hover { background: var(--chip-off-bg); }
+  .row.focused { background: var(--chip-off-bg);
+                 box-shadow: inset 2px 0 0 var(--primary); }
+  .caret { display: inline-block; width: 12px; color: var(--muted);
+           font-size: 10px; transition: transform .15s ease; }
+  .caret.open { transform: rotate(90deg); }
+  .caret.leaf { visibility: hidden; }
+  .icon { width: 18px; text-align: center; font-size: 14px; line-height: 1; }
+  .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .count { color: var(--muted); font-size: 12px; }
+  .skel { height: 10px; margin: 6px 12px; }
+  .hint { color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+// 懒加载的节点：首次展开时用骨架屏撑 LAZY_MS，之后进 loaded 集缓存
+const LAZY = new Set(["src-features-products"]);
+const LAZY_MS = 420;
+
+const TREE = [
+  {
+    id: "src", name: "src",
+    children: [
+      {
+        id: "src-components", name: "components",
+        children: [
+          {
+            id: "src-components-ui", name: "ui",
+            children: [
+              { id: "ui-button", name: "button.tsx" },
+              { id: "ui-card",   name: "card.tsx" },
+              { id: "ui-badge",  name: "badge.tsx" },
+            ],
+          },
+          { id: "src-components-form", name: "form.tsx" },
+        ],
+      },
+      {
+        id: "src-features", name: "features",
+        children: [
+          {
+            id: "src-features-products", name: "products",
+            children: [
+              { id: "products-schema",  name: "schema.ts" },
+              { id: "products-server",  name: "server.ts" },
+              { id: "products-queries", name: "queries.ts" },
+              { id: "products-readme",  name: "README.md" },
+            ],
+          },
+        ],
+      },
+      { id: "src-config", name: "app.ts" },
+    ],
+  },
+  {
+    id: "drizzle", name: "drizzle",
+    children: [
+      { id: "drizzle-0000", name: "0000_init.sql" },
+      { id: "drizzle-meta", name: "meta.json" },
+    ],
+  },
+  { id: "readme", name: "README.md" },
+];
+
+// 把树按当前展开状态压平成可见行，供渲染与键盘导航共用
+function flatten(nodes, depth, pathPrefix, expanded, loaded, out) {
+  for (const n of nodes) {
+    const p = pathPrefix ? pathPrefix + "/" + n.name : n.name;
+    out.push({ node: n, depth, path: p });
+    const isFolder = Array.isArray(n.children);
+    if (!isFolder || !expanded.has(n.id)) continue;
+    // 懒节点尚未加载：不下钻，由渲染时的骨架屏占位
+    if (LAZY.has(n.id) && !loaded.has(n.id)) continue;
+    flatten(n.children, depth + 1, p, expanded, loaded, out);
+  }
+}
+
+function collectFolderIds(nodes, out) {
+  for (const n of nodes) {
+    if (Array.isArray(n.children)) {
+      out.push(n.id);
+      collectFolderIds(n.children, out);
+    }
+  }
+}
+
+function App() {
+  // 展开集：瞬态 UI 状态，真实版可考虑进 URL / localStorage
+  const [expanded, setExpanded] = useState(new Set(["src", "src-components", "src-components-ui"]));
+  const [loading,  setLoading]  = useState(new Set());
+  const [loaded,   setLoaded]   = useState(new Set());
+  const [focusIdx, setFocusIdx] = useState(0);
+  const [toast,    setToast]    = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2000);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const visible = useMemo(() => {
+    const out = [];
+    flatten(TREE, 0, "", expanded, loaded, out);
+    return out;
+  }, [expanded, loaded]);
+
+  // 收起后可见行会变少：把焦点夹到有效范围
+  useEffect(() => {
+    if (focusIdx > visible.length - 1) {
+      setFocusIdx(Math.max(0, visible.length - 1));
+    }
+  }, [visible.length, focusIdx]);
+
+  function beginLazy(id) {
+    setLoading(prev => { const next = new Set(prev); next.add(id); return next; });
+    setTimeout(() => {
+      setLoaded(prev  => { const next = new Set(prev); next.add(id); return next; });
+      setLoading(prev => { const next = new Set(prev); next.delete(id); return next; });
+    }, LAZY_MS);
+  }
+
+  function toggle(entry) {
+    const n = entry.node;
+    const isFolder = Array.isArray(n.children);
+    if (!isFolder) { setToast("已打开：" + entry.path); return; }
+    const wasOpen = expanded.has(n.id);
+    setExpanded(prev => {
+      const next = new Set(prev);
+      if (wasOpen) next.delete(n.id); else next.add(n.id);
+      return next;
+    });
+    if (!wasOpen && LAZY.has(n.id) && !loaded.has(n.id) && !loading.has(n.id)) {
+      beginLazy(n.id);
+    }
+  }
+
+  function expandAll() {
+    const ids = [];
+    collectFolderIds(TREE, ids);
+    setExpanded(new Set(ids));
+    for (const id of ids) {
+      if (LAZY.has(id) && !loaded.has(id) && !loading.has(id)) beginLazy(id);
+    }
+    setToast("已展开全部 " + ids.length + " 个目录");
+  }
+
+  function collapseAll() {
+    setExpanded(new Set());
+    setFocusIdx(0);
+    setToast("已收起全部");
+  }
+
+  function onKeyDown(e) {
+    if (visible.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setFocusIdx(i => Math.min(visible.length - 1, i + 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setFocusIdx(i => Math.max(0, i - 1));
+    } else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      const cur = visible[focusIdx];
+      if (cur) toggle(cur);
+    }
+  }
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>项目文件树</h1>
+          <p class="sub">点箭头或整行展开 · 叶子文件点击打开 · 键盘 ↑↓ 移动、Enter 触发</p>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <button class="btn sm" onClick=${expandAll}>全部展开</button>
+        <button class="btn sm" onClick=${collapseAll}>全部收起</button>
+        <span class="grow"></span>
+        <span class="hint">已展开 ${expanded.size} 个目录 · 可见 ${visible.length} 行</span>
+      </div>
+
+      <div class="tree" tabIndex=${0} role="tree" aria-label="项目文件" onKeyDown=${onKeyDown}>
+        ${visible.map((v, i) => {
+          const isFolder  = Array.isArray(v.node.children);
+          const isOpen    = expanded.has(v.node.id);
+          const isLoading = loading.has(v.node.id);
+          const count     = isFolder ? v.node.children.length : 0;
+          return html`
+            <div key=${v.node.id}
+                 class=${"row" + (i === focusIdx ? " focused" : "")}
+                 role="treeitem"
+                 aria-level=${v.depth + 1}
+                 aria-expanded=${isFolder ? isOpen : undefined}
+                 style=${{ paddingLeft: (v.depth * 20 + 12) + "px" }}
+                 onClick=${() => { setFocusIdx(i); toggle(v); }}>
+              <span class=${"caret" + (isFolder ? "" : " leaf") + (isOpen ? " open" : "")}>▶</span>
+              <span class="icon">${isFolder ? (isOpen ? "📂" : "📁") : "📄"}</span>
+              <span class="name">${v.node.name}</span>
+              ${isFolder && html`<span class="count">${count} 项</span>`}
+            </div>
+            ${isFolder && isOpen && isLoading && html`
+              <div key=${"skel-" + v.node.id}>
+                ${[0, 1, 2].map(k => html`
+                  <div key=${k} class="skel"
+                       style=${{ marginLeft: ((v.depth + 1) * 20 + 12) + "px",
+                                 width: (58 - k * 12) + "%" }}></div>`)}
+              </div>`}
+          `;
+        })}
+        ${visible.length === 0 && html`<div class="empty">空树</div>`}
+      </div>
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>
