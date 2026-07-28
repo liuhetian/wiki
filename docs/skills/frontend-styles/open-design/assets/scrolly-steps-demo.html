@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>滚动锁定步骤联动 — open-design.ai Capabilities 模块拆解</title>
+<style>
+  /* ============================================================
+     Atelier Zero 令牌（取自 open-design 官网 globals.css :root）
+     纸白底 + 黑墨字 + 荧光绿唯一强调色
+     ============================================================ */
+  :root {
+    --paper: #fafafa;
+    --paper-dark: #f0f0f0;
+    --ink: #262626;
+    --ink-soft: #434343;
+    --ink-mute: #595959;
+    --ink-faint: #8c8c8c;
+    --coral: #63fe13;       /* 官网变量名叫 coral，实为荧光绿 */
+    --coral-soft: #83ff3b;
+    --bone: #ffffff;
+    --line: #d9d9d9;
+    --shadow: 0 30px 60px -30px rgba(38, 38, 38, .16);
+    --sans: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 开头一屏：提示往下滚 */
+  .intro {
+    height: 55vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    padding: 0 24px;
+  }
+  .intro h1 { font-size: clamp(22px, 4vw, 32px); font-weight: 800; letter-spacing: -0.02em; }
+  .intro h1 em { font-style: normal; background: linear-gradient(transparent 65%, var(--coral) 65%); }
+  .intro p { color: var(--ink-mute); font-size: 14px; }
+  .intro .arrow { margin-top: 14px; font-size: 20px; animation: bob 1.6s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(6px); } }
+
+  /* ============================================================
+     滚动锁定轨道（官网 enhanceCapScrolly 的骨架）：
+     外层 .scrolly 是一条"高轨道"——高度 = 步数 × 100vh，
+     真正可见的 .sticky 钉在轨道顶部（position:sticky; top:0;
+     height:100vh），于是页面滚动穿过轨道时模块看似"冻结"，
+     滚动量被 JS 换算成步骤进度。轨道走完，页面才继续前进。
+     ============================================================ */
+  .scrolly { height: 400vh; position: relative; }
+  .sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 24px clamp(20px, 5vw, 56px);
+    overflow: hidden;
+  }
+  .sticky h2 { font-size: clamp(20px, 3.4vw, 30px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .sticky .lead { color: var(--ink-mute); font-size: 13px; margin-bottom: 26px; }
+
+  .row { display: flex; gap: clamp(24px, 4vw, 56px); align-items: stretch; }
+
+  /* 左列：步骤列表。active 高亮由 JS 按 round(p) 切换 */
+  .steps { list-style: none; flex: 0 0 220px; display: flex; flex-direction: column; gap: 6px; }
+  .step {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease;
+  }
+  .step-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .step-label { font-size: 15px; font-weight: 600; color: var(--ink-mute); transition: color .2s ease; }
+  .step.is-active { background: var(--bone); border-color: var(--line); box-shadow: var(--shadow); }
+  .step.is-active .step-num { color: var(--ink); }
+  .step.is-active .step-label { color: var(--ink); }
+  .step.is-active .step-num::after { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--coral); margin-left: 8px; vertical-align: 1px; }
+
+  /* 右列：帧堆叠的"卷轴"。所有帧绝对定位铺满，初始停在
+     translateY(100%)（画面下方），JS 按进度把第 k 帧拉上来；
+     zIndex 递增保证后来的帧永远盖住先前的帧 */
+  .visual {
+    position: relative;
+    flex: 1;
+    min-height: clamp(260px, 52vh, 420px);
+    border-radius: 18px;
+    overflow: hidden;            /* 关键：裁掉停在下方待命的帧 */
+    border: 1px solid var(--line);
+    background: var(--bone);
+    box-shadow: var(--shadow);
+  }
+  .frame {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 26px;
+    transform: translateY(100%); /* 无 JS 时的初始位：藏在下方 */
+    will-change: transform;
+  }
+  .frame:first-child { transform: none; } /* 首帧兜底可见 */
+  .frame-big { font-size: clamp(44px, 8vw, 84px); font-weight: 800; letter-spacing: -0.04em; line-height: .9; }
+  .frame-cap { font-size: 14px; font-weight: 600; margin-top: 10px; }
+  .frame-tag {
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--coral);
+    margin-bottom: auto;
+  }
+  /* 每帧一张 CSS 渐变卡，无外部图片 */
+  .frame:nth-child(1) { background: linear-gradient(135deg, #ffffff, #e9ffe0 60%, #c9ff9e); }
+  .frame:nth-child(2) { background: linear-gradient(135deg, #f5f5f5, #dcdcdc 55%, #63fe13); color: var(--ink); }
+  .frame:nth-child(3) { background: linear-gradient(160deg, #262626, #434343); color: var(--paper); }
+  .frame:nth-child(3) .frame-tag { background: var(--coral); color: var(--ink); }
+  .frame:nth-child(4) { background: linear-gradient(120deg, #eaffdd, #ffffff 45%, #f0f0f0); }
+
+  /* 结尾一段：证明轨道走完页面已解锁 */
+  .outro {
+    min-height: 45vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-mute);
+    font-size: 14px;
+    text-align: center;
+    padding: 40px 24px;
+  }
+
+  /* 窄屏撤掉 pin（sticky 变 static），改为纯点击切换 —— JS 检测到
+     窄屏会清掉 inline transform，这里的 .is-active 规则接手决定哪帧
+     可见。官网断点是 880px（页面级视口）；本 demo 活在文章 iframe 里，
+     视口只有内容栏宽度（~700-800px），照抄 880 会让 pin 永远进不去
+     滚动锁定分支，所以降到 520 —— 桌面阅读时体验滚动锁定，手机上
+     iframe 更窄，仍走点击降级 */
+  @media (max-width: 520px) {
+    .sticky { position: static; height: auto; }
+    .scrolly { height: auto; }
+    .row { flex-direction: column; }
+    .steps { flex: none; flex-direction: row; flex-wrap: wrap; }
+    .frame { transform: translateY(100%); transition: transform .35s ease; }
+    .frame.is-active { transform: none !important; }
+  }
+
+  /* 无障碍：跟手滚动本身不是自主动画，保留；
+     但平滑滚动跳转与提示箭头在 reduce 下停用 */
+  @media (prefers-reduced-motion: reduce) {
+    .intro .arrow { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>往下滚：模块<em>被钉住</em>，滚动变成进度</h1>
+  <p>open-design.ai 首页 Capabilities 模块的 scrollytelling 骨架 —— 四步走完，页面才放行</p>
+  <div class="arrow">↓</div>
+</div>
+
+<!-- 高轨道：400vh（4 步 × 100vh），sticky 模块钉在其中 -->
+<div class="scrolly" data-scrolly>
+  <div class="sticky">
+    <h2>从一句话到上线，四步</h2>
+    <p class="lead">左侧步骤随滚动逐个点亮，右侧画面 1:1 跟手上滑切换 —— 点击任意步骤可直接跳到对应滚动切片</p>
+    <div class="row">
+      <ol class="steps" data-steps>
+        <li class="step is-active" data-step><span class="step-num">01</span><span class="step-label">描述需求</span></li>
+        <li class="step" data-step><span class="step-num">02</span><span class="step-label">挑选风格</span></li>
+        <li class="step" data-step><span class="step-num">03</span><span class="step-label">生成原型</span></li>
+        <li class="step" data-step><span class="step-num">04</span><span class="step-label">一键发布</span></li>
+      </ol>
+      <div class="visual" data-frames>
+        <div class="frame"><span class="frame-tag">STEP 01</span><div class="frame-big">说人话</div><div class="frame-cap">一句需求描述，代替一沓原型图</div></div>
+        <div class="frame"><span class="frame-tag">STEP 02</span><div class="frame-big">挑气质</div><div class="frame-cap">从设计系统目录里选一种视觉语言</div></div>
+        <div class="frame"><span class="frame-tag">STEP 03</span><div class="frame-big">出原型</div><div class="frame-cap">Agent 直接产出可交互的页面</div></div>
+        <div class="frame"><span class="frame-tag">STEP 04</span><div class="frame-big">上线 ✓</div><div class="frame-cap">满意即发布，不满意回到上一步</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="outro">
+  <p>轨道走完，页面恢复正常滚动。<br>官网同页的 About 模块是同款机制的变体：radio tab + 提前收尾驻留。</p>
+</div>
+
+<script>
+/* ============================================================
+   滚动锁定步骤联动 —— 照搬官网 enhanceCapScrolly 的算法
+   （apps/landing-page/app/pages/index.astro）
+
+   核心三行：
+     range    = 轨道总高 - sticky 高度   （可分配的滚动量）
+     scrolled = clamp(-轨道.top, 0, range)（已消耗的滚动量）
+     p        = scrolled / range * (n-1) （连续进度 0..n-1）
+
+   第 k 帧的位移：translateY(clamp(k - p, 0, 1) * 100%)
+   —— p 越过 k 的瞬间，第 k 帧刚好从 100%（画面下方）走到 0
+   （盖住上一帧）。位移直接由滚动量线性决定，没有缓动补间，
+   所以"跟手"：手指停，画面停。
+   ============================================================ */
+(() => {
+  const scrolly = document.querySelector('[data-scrolly]');
+  const sticky  = scrolly.querySelector('.sticky');
+  const steps   = Array.from(scrolly.querySelectorAll('[data-step]'));
+  const frames  = Array.from(scrolly.querySelectorAll('.frame'));
+  const n = steps.length;
+  const span = Math.max(1, n - 1);   // n 步 → n-1 次切换，均分滚动量
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const range = () => Math.max(1, scrolly.offsetHeight - sticky.offsetHeight);
+  // 断点必须与上面的媒体查询同一个值（官网 880 / demo 520，原因见
+  // CSS 注释）：窄屏 sticky 失效（CSS 已改 static），range 会塌成
+  // ~1px，滚动驱动失去意义 → 清 transform 交回 click+CSS
+  const isMobile = () => innerWidth <= 520;
+
+  let activeStep = -1;
+  let ticking = false;
+
+  const setActive = (idx) => {
+    activeStep = idx;
+    steps.forEach((s, k) => s.classList.toggle('is-active', k === idx));
+    frames.forEach((f, k) => f.classList.toggle('is-active', k === idx));
+  };
+
+  const update = () => {
+    ticking = false;
+    if (isMobile()) {
+      // 窄屏：撤掉 inline 样式，让 CSS 的 .is-active 规则接管
+      frames.forEach((f) => { f.style.transform = ''; f.style.zIndex = ''; });
+      return;
+    }
+    const r = range();
+    const scrolled = Math.min(Math.max(-scrolly.getBoundingClientRect().top, 0), r);
+    const p = (scrolled / r) * span;
+    frames.forEach((f, k) => {
+      f.style.zIndex = String(k + 1);          // 后帧永远盖前帧
+      const ty = Math.min(Math.max(k - p, 0), 1) * 100;
+      f.style.transform = `translateY(${ty}%)`;
+    });
+    const idx = Math.min(Math.max(Math.round(p), 0), n - 1);
+    if (idx !== activeStep) setActive(idx);
+  };
+
+  // rAF 节流：滚动事件折叠成每帧一次 DOM 写入
+  const onScroll = () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+
+  // 点击步骤 → 滚到该步对应的轨道切片（i/span × range），
+  // 让点击与滚动共用同一套进度坐标系，二者永远同步
+  steps.forEach((s, i) => {
+    s.addEventListener('click', () => {
+      if (isMobile()) { setActive(i); return; }
+      const targetY = scrollY + scrolly.getBoundingClientRect().top + (i / span) * range();
+      scrollTo({ top: targetY, behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+  });
+
+  update();
+})();
+</script>
+</body>
+</html>

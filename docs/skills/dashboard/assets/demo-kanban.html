@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：看板</title>
+<!--
+  demo-kanban.html —— 「看板」形状的最小可玩实现（蓝本：open-dashboard 的 add-kanban）。
+  复现的不变量：
+  - 一个状态枚举驱动列；卡片所在列**就是**它的状态；跨列移动 = 持久化状态变更（此处更新内存 state + toast）
+  - 指针 + 键盘双可达：整卡可拖（HTML5 DnD），◀ ▶ 按钮等价移动（蓝本用 dnd-kit，此处用平台原生能力近似）
+  - 拖拽悬停的列有可见的接收反馈
+  简化：新卡追加列尾；列内排序（真实版由 dnd-kit 提供）不在最小实现里。
+  运行时：/vendor 的 React 18 UMD + htm，样式共用 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: start; }
+  .col { padding: 10px; min-height: 300px; }
+  .col.over { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 6%, var(--card)); }
+  .col h2 { margin: 0 0 8px; font-size: 13px; color: var(--muted); font-weight: 600;
+            display: flex; justify-content: space-between; }
+  .kcard { border: 1px solid var(--border); border-radius: 8px; background: var(--bg);
+           padding: 8px 10px; margin-bottom: 8px; cursor: grab; }
+  .kcard:active { cursor: grabbing; }
+  .kcard .t { margin: 0; font-weight: 550; font-size: 13px; }
+  .kcard .m { margin: 2px 0 6px; color: var(--muted); font-size: 12px; }
+  .kcard .mv { display: flex; justify-content: space-between; }
+  .kcard.dragging { opacity: .4; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const COLUMNS = [
+  { key: "todo",  label: "待跟进" },
+  { key: "doing", label: "洽谈中" },
+  { key: "done",  label: "已成交" },
+];
+const SEED = [
+  { id: 1, title: "云资源年度续约",   amount: 128000, owner: "陈禾",   status: "todo"  },
+  { id: 2, title: "数据平台 POC",     amount: 45000,  owner: "李慕白", status: "todo"  },
+  { id: 3, title: "客服系统二期",     amount: 220000, owner: "王小满", status: "doing" },
+  { id: 4, title: "BI 报表定制",      amount: 38000,  owner: "赵青",   status: "doing" },
+  { id: 5, title: "安全审计服务",     amount: 96000,  owner: "周芷",   status: "doing" },
+  { id: 6, title: "官网改版",         amount: 52000,  owner: "吴限",   status: "done"  },
+  { id: 7, title: "小程序商城",       amount: 87000,  owner: "郑舟",   status: "todo"  },
+];
+
+function App() {
+  const [cards, setCards] = useState(SEED);
+  const [dragId, setDragId] = useState(null);
+  const [overCol, setOverCol] = useState(null);
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  // 移动 = 改状态（真实版在这里调 Repository.update(cardId, { status: to }) 并做乐观更新）
+  const move = (id, to) => {
+    const card = cards.find(c => c.id === id);
+    if (!card || card.status === to) return;
+    setCards(cs => cs.map(c => (c.id === id ? { ...c, status: to } : c)));
+    setToast(`「${card.title}」→ ${COLUMNS.find(c => c.key === to).label}`);
+  };
+  const step = (id, dir) => {
+    const card = cards.find(c => c.id === id);
+    const i = COLUMNS.findIndex(c => c.key === card.status) + dir;
+    if (i >= 0 && i < COLUMNS.length) move(id, COLUMNS[i].key);
+  };
+
+  const money = n => "¥ " + n.toLocaleString("zh-CN");
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>商机看板</h1>
+          <p class="sub">拖卡片到别的列，或用 ◀ ▶ 移动 —— 列就是状态，移动即状态变更</p>
+        </div>
+      </header>
+
+      <div class="board">
+        ${COLUMNS.map(col => {
+          const list = cards.filter(c => c.status === col.key);
+          return html`
+            <div key=${col.key} class=${"card col" + (overCol === col.key ? " over" : "")}
+                 onDragOver=${e => { e.preventDefault(); setOverCol(col.key); }}
+                 onDragLeave=${() => setOverCol(null)}
+                 onDrop=${e => { e.preventDefault(); setOverCol(null); if (dragId != null) move(dragId, col.key); }}>
+              <h2><span>${col.label}</span>
+                  <span>${list.length} 单 · ${money(list.reduce((s, c) => s + c.amount, 0))}</span></h2>
+              ${list.map(c => html`
+                <div key=${c.id} class=${"kcard" + (dragId === c.id ? " dragging" : "")}
+                     draggable="true"
+                     onDragStart=${() => setDragId(c.id)}
+                     onDragEnd=${() => { setDragId(null); setOverCol(null); }}>
+                  <p class="t">${c.title}</p>
+                  <p class="m">${money(c.amount)} · ${c.owner}</p>
+                  <div class="mv">
+                    <button class="link" aria-label="移到左列" disabled=${c.status === COLUMNS[0].key}
+                            onClick=${() => step(c.id, -1)}>◀</button>
+                    <button class="link" aria-label="移到右列" disabled=${c.status === COLUMNS[COLUMNS.length - 1].key}
+                            onClick=${() => step(c.id, 1)}>▶</button>
+                  </div>
+                </div>`)}
+              ${list.length === 0 && html`<p class="empty">拖一张卡片进来</p>`}
+            </div>`;
+        })}
+      </div>
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

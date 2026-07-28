@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：表单</title>
+<!--
+  demo-form.html —— 「表单」形状的最小可玩实现（蓝本：open-dashboard 的表单系统契约 + add-form）。
+  复现的不变量：
+  - 逐字段校验（zod 风格：必填 / 格式 / 范围），错误只在字段 touched 或提交尝试后就地显示
+  - 提交按钮在表单无效或提交中时禁用（SubmitButton 语义），提交中显示「保存中…」
+  - 服务端错误两层：能归因到字段的映射回字段（名称唯一约束），归因不到的走顶部 FormError 横幅（定价上限）
+  - 数字字段清空时值为 undefined（NumberField 契约）；创建/编辑共用一份表单，靠 key 重挂载得到干净重置
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .form-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 11px; }
+  .form-card h2 { margin: 0; font-size: 15px; }
+  .field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+  .field .req { color: var(--danger); }
+  .hint { margin: 0; font-size: 12px; color: var(--muted); opacity: .85; }
+  input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--danger); }
+  .recs { margin-top: 12px; }
+  .recs-head { padding: 9px 12px; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .rec { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  .rec:last-child { border-bottom: 0; }
+  .rec-main { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .rec-name { font-weight: 550; }
+  .rec-side { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const CATEGORIES = ["餐具", "家居", "厨电", "文具"];
+const SEED = [
+  { id: 1, name: "经典白瓷杯",   slug: "classic-mug",    price: 39,  category: "餐具", desc: "骨瓷杯身，320ml。" },
+  { id: 2, name: "胡桃木托盘",   slug: "walnut-tray",    price: 129, category: "家居", desc: "整木刨切，食品级木蜡油。" },
+  { id: 3, name: "亚麻餐巾四条装", slug: "linen-napkin-4", price: 59,  category: "餐具", desc: "" },
+];
+const EMPTY = { name: "", slug: "", price: undefined, category: "", desc: "" };
+
+// zod 风格的逐字段校验（必填 / 格式 / 范围）：返回 { 字段: 错误信息 }，空对象即通过
+function validate(v) {
+  const errs = {};
+  const name = v.name.trim();
+  if (!name) errs.name = "名称必填";
+  else if (name.length < 2) errs.name = "名称至少 2 个字";
+  const slug = v.slug.trim();
+  if (!slug) errs.slug = "编码必填";
+  else if (!/^[a-z0-9-]+$/.test(slug)) errs.slug = "只能用小写字母、数字和连字符";
+  if (v.price == null) errs.price = "价格必填";                    // NumberField 契约：清空即 undefined
+  else if (v.price < 0.01 || v.price > 99999) errs.price = "价格需在 0.01 ~ 99999 之间";
+  if (!v.category) errs.category = "请选择分类";
+  if (v.desc.length > 100) errs.desc = `描述最多 100 字（当前 ${v.desc.length} 字）`;
+  return errs;
+}
+
+// label + 控件 + 错误/提示：错误优先于提示，就地显示在字段下方
+function Field({ label, required, error, hint, children }) {
+  return html`
+    <label class="field">
+      <span>${label}${required && html`<span class="req"> *</span>`}</span>
+      ${children}
+      ${error ? html`<p class="err">${error}</p>` : hint ? html`<p class="hint">${hint}</p>` : null}
+    </label>`;
+}
+
+// 创建/编辑共用的表单。父组件用 key（编辑记录 id / 新建 nonce）重挂载它，天然拿到干净重置。
+function ProductForm({ record, isDupName, onSaved, onCancel }) {
+  const [values, setValues] = useState(record
+    ? { name: record.name, slug: record.slug, price: record.price, category: record.category, desc: record.desc }
+    : EMPTY);
+  const [touched, setTouched] = useState({});
+  const [attempted, setAttempted] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState("");             // 表单级：FormError 横幅
+  const [serverFieldErrors, setServerFieldErrors] = useState({}); // 字段级：服务端错误映射回字段
+
+  const errs = validate(values);
+  const invalid = Object.keys(errs).length > 0;
+  // SubmitButton 语义：无效或提交中即禁用（首次交互前不惩罚空表单，对齐 TanStack 的 canSubmit）
+  const canSubmit = !submitting && !(invalid && (attempted || dirty));
+
+  const set = (f, v) => {
+    setDirty(true);
+    setValues(vs => ({ ...vs, [f]: v }));
+    setServerFieldErrors(se => { if (!se[f]) return se; const n = { ...se }; delete n[f]; return n; });
+  };
+  const blur = f => setTouched(t => ({ ...t, [f]: true }));
+  const shown = f => serverFieldErrors[f] || ((touched[f] || attempted) ? errs[f] : undefined);
+
+  const submit = e => {
+    e.preventDefault();
+    setAttempted(true);                        // 空表单点提交：错误全部亮出，按钮转为禁用
+    if (invalid || submitting) return;
+    setSubmitting(true);
+    setServerError("");
+    setServerFieldErrors({});
+    setTimeout(() => {                         // 模拟一次服务端往返（真实版 await mutateAsync）
+      const name = values.name.trim();
+      if (isDupName(name)) {                   // 唯一约束冲突：字段级映射 + 表单级横幅
+        setSubmitting(false);
+        setServerFieldErrors({ name: "该名称已存在（服务端唯一约束）" });
+        setServerError("保存失败：服务端校验未通过，请修正标红字段");
+        return;
+      }
+      if (values.price > 9999) {               // 归因不到单个字段的业务规则：只走表单级横幅
+        setSubmitting(false);
+        setServerError("服务端拒绝：定价超过当前套餐上限（¥9999）");
+        return;
+      }
+      onSaved({ name, slug: values.slug.trim(), price: values.price,
+                category: values.category, desc: values.desc.trim() });
+    }, 600);
+  };
+
+  const reset = () => {
+    setValues(EMPTY); setTouched({}); setAttempted(false); setDirty(false);
+    setServerError(""); setServerFieldErrors({});
+  };
+
+  return html`
+    <form class="card form-card" onSubmit=${submit} noValidate>
+      <h2>${record ? `编辑商品：${record.name}` : "新建商品"}</h2>
+      ${serverError && html`<div class="alert danger" role="alert"><p>${serverError}</p></div>`}
+      <${Field} label="名称" required error=${shown("name")}>
+        <input value=${values.name} aria-invalid=${!!shown("name")} placeholder="如：珐琅小奶锅"
+               onChange=${e => set("name", e.target.value)} onBlur=${() => blur("name")} />
+      <//>
+      <div class="row2">
+        <${Field} label="编码" required error=${shown("slug")} hint="小写字母、数字、连字符">
+          <input value=${values.slug} aria-invalid=${!!shown("slug")} placeholder="如：enamel-pot"
+                 onChange=${e => set("slug", e.target.value)} onBlur=${() => blur("slug")} />
+        <//>
+        <${Field} label="价格（¥）" required error=${shown("price")} hint="0.01 ~ 99999">
+          <input type="number" inputMode="decimal" step="0.01"
+                 value=${values.price == null ? "" : String(values.price)}
+                 aria-invalid=${!!shown("price")}
+                 onChange=${e => set("price", e.target.value === "" ? undefined : Number(e.target.value))}
+                 onBlur=${() => blur("price")} />
+        <//>
+      </div>
+      <${Field} label="分类" required error=${shown("category")}>
+        <select value=${values.category} aria-invalid=${!!shown("category")}
+                onChange=${e => { set("category", e.target.value); blur("category"); }}>
+          <option value="" disabled>请选择…</option>
+          ${CATEGORIES.map(c => html`<option key=${c} value=${c}>${c}</option>`)}
+        </select>
+      <//>
+      <${Field} label="描述" error=${shown("desc")} hint="选填，最多 100 字">
+        <textarea rows="2" value=${values.desc} aria-invalid=${!!shown("desc")}
+                  onChange=${e => set("desc", e.target.value)} onBlur=${() => blur("desc")}></textarea>
+      <//>
+      <div class="actions">
+        ${record
+          ? html`<button type="button" class="btn" onClick=${onCancel}>取消</button>`
+          : html`<button type="button" class="btn" disabled=${submitting} onClick=${reset}>重置</button>`}
+        <button type="submit" class="btn primary" disabled=${!canSubmit}>
+          ${submitting ? "保存中…" : record ? "保存修改" : "保存"}
+        </button>
+      </div>
+    </form>`;
+}
+
+function App() {
+  const [records, setRecords] = useState(SEED);
+  const [editing, setEditing] = useState(null); // 正在编辑的记录，null = 新建
+  const [nonce, setNonce] = useState(0);        // 新建成功后换 key，重挂载出一份干净表单
+  const [lastId, setLastId] = useState(null);
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const isDupName = name =>
+    records.some(r => r.name === name && (!editing || r.id !== editing.id));
+
+  const handleSaved = vals => {
+    if (editing) {
+      setRecords(rs => rs.map(r => (r.id === editing.id ? { ...r, ...vals } : r)));
+      setLastId(editing.id);
+      setToast(`已保存「${vals.name}」`);
+      setEditing(null);
+    } else {
+      const id = Math.max(0, ...records.map(r => r.id)) + 1;
+      setRecords(rs => [{ id, ...vals }, ...rs]);
+      setLastId(id);
+      setToast(`已创建「${vals.name}」`);
+      setNonce(n => n + 1);
+    }
+  };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>商品维护</h1>
+          <p class="sub">创建/编辑共用一份校验表单；试试空表单提交、重名提交、定价超上限</p>
+        </div>
+      </header>
+
+      <${ProductForm} key=${editing ? "edit-" + editing.id : "new-" + nonce}
+        record=${editing} isDupName=${isDupName}
+        onSaved=${handleSaved} onCancel=${() => setEditing(null)} />
+
+      <section class="card recs">
+        <div class="recs-head">商品列表（${records.length}）—— 新记录出现在顶部</div>
+        ${records.map(r => html`
+          <div class="rec" key=${r.id}>
+            <div class="rec-main">
+              <span class="rec-name">${r.name}</span>
+              <span class="chip chip-off">${r.category}</span>
+              ${r.id === lastId && html`<span class="chip chip-on">刚保存</span>`}
+            </div>
+            <div class="rec-side">
+              <span class="num">¥${r.price}</span>
+              <button class="link" onClick=${() => setEditing(r)}>编辑</button>
+            </div>
+          </div>`)}
+      </section>
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

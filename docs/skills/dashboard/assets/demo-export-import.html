@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：CSV 导入导出</title>
+<!--
+  demo-export-import.html —— 「CSV 导入导出」形状的最小可玩实现（蓝本：open-dashboard 的 csv.ts 契约 + add-export-import）。
+  复现的不变量：
+  - toCsv 按 RFC 4180 转义：字段含逗号/引号/CR/LF 才裹引号，内嵌引号翻倍；不手拼字符串
+  - downloadCsv 只在浏览器可用（守卫 document）；parseCsv 是纯函数，正确处理引号内的逗号与换行
+  - 导入只预览不直接落库：表头映射 + 逐行校验（合法绿/非法红 + 行级错误），确认后只入合法行，重复 id 跳过并报告
+  - 导出作用于当前（筛选后）的行；导入导出的结果都用 toast 报数
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  details { margin-bottom: 10px; }
+  details > summary { cursor: pointer; color: var(--muted); font-size: 13px; user-select: none; }
+  .csvbox { margin: 8px 0 0; padding: 10px 12px; background: var(--card); border: 1px solid var(--border);
+            border-radius: 10px; font: 12px/1.7 ui-monospace, SFMono-Regular, Consolas, monospace;
+            white-space: pre-wrap; word-break: break-all; }
+  .modal.wide { max-width: 680px; max-height: 86vh; overflow: auto; }
+  textarea.csv { font: 12px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; min-height: 92px; resize: vertical; }
+  .preview-wrap { max-height: 250px; overflow: auto; border-radius: 10px; }
+  .row-ok td  { background: color-mix(in srgb, var(--chip-on-fg) 8%, var(--card)); }
+  .row-dup td { background: color-mix(in srgb, var(--chip-warn-fg) 10%, var(--card)); }
+  .row-bad td { background: color-mix(in srgb, var(--danger) 10%, var(--card)); }
+  .vmsg { font-size: 12px; white-space: normal; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const STATUSES = ["活跃", "邀请中", "停用"];
+const CHIP = { "活跃": "chip-on", "邀请中": "chip-warn", "停用": "chip-off" };
+
+const SEED = [
+  { id: 1, name: "陈禾",   email: "chenhe@corp.cn",   role: "负责人", status: "活跃" },
+  { id: 2, name: "李慕白", email: "mubai@corp.cn",    role: "管理员", status: "活跃" },
+  { id: 3, name: "王小满", email: "xiaoman@corp.cn",  role: "工程师", status: "邀请中" },
+  { id: 4, name: "赵青",   email: "zhaoqing@corp.cn", role: "分析师", status: "活跃" },
+  { id: 5, name: "周芷",   email: "zhouzhi@corp.cn",  role: "工程师", status: "停用" },
+];
+
+// 导出列投影：表头 + 取值器（蓝本的 CsvColumn<T>；真实版通常照抄资源的 columns.tsx）
+const EXPORT_COLUMNS = [
+  { header: "ID",   accessor: r => r.id },
+  { header: "姓名", accessor: r => r.name },
+  { header: "邮箱", accessor: r => r.email },
+  { header: "角色", accessor: r => r.role },
+  { header: "状态", accessor: r => r.status },
+];
+const HEADERS = EXPORT_COLUMNS.map(c => c.header);
+const REQUIRED = ["ID", "姓名", "邮箱", "状态"]; // 角色可空
+
+// 内置示例：埋了引号内逗号、翻倍引号、引号内换行三个转义坑，外加坏行与重复 id
+const SAMPLE_CSV = [
+  'ID,姓名,邮箱,角色,状态',
+  '21,"钱通,渠道推荐",qiantong@corp.cn,运营,活跃',
+  '22,"孙""大圣""邈",sunmiao@corp.cn,工程师,邀请中',
+  '23,"周\n行文",zhouxw@corp.cn,分析师,活跃',
+  '24,吴用,wuyong@corp.cn,工程师,在职',
+  'x9,林错,lincuo@corp.cn,运营,活跃',
+  '3,王小满,chongfu@corp.cn,工程师,活跃',
+  '26,郑缺,zhengque@corp.cn,分析师,',
+].join("\n");
+
+/* ---------- CSV 工具：蓝本 csv.ts 的逐行移植（toCsv/parseCsv 是纯函数） ---------- */
+
+// RFC 4180：含逗号/引号/CR/LF 的字段裹双引号，内嵌引号翻倍
+function escapeField(value) {
+  const str = value == null ? "" : String(value);
+  if (/[",\r\n]/.test(str)) return '"' + str.replaceAll('"', '""') + '"';
+  return str;
+}
+
+function toCsv(rows, columns) {
+  const lines = [columns.map(c => escapeField(c.header)).join(",")];
+  for (const row of rows) {
+    lines.push(columns.map(c => escapeField(c.accessor(row))).join(","));
+  }
+  return lines.join("\r\n");
+}
+
+// 仅浏览器可用：守卫 document，服务端调用是 no-op（蓝本不变量）
+function downloadCsv(filename, csv) {
+  if (typeof document === "undefined") return;
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.style.display = "none";
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(url);
+}
+
+// 把 CSV 文本切成记录数组；引号内的逗号、换行、翻倍引号都按 RFC 4180 处理
+function parseRecords(text) {
+  const records = [];
+  let field = "";
+  let record = [];
+  let inQuotes = false;
+  let started = false;
+
+  const pushField = () => { record.push(field); field = ""; };
+  const pushRecord = () => { pushField(); records.push(record); record = []; started = false; };
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    started = true;
+
+    if (inQuotes) {
+      if (char === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
+      } else {
+        field += char;
+      }
+      continue;
+    }
+
+    if (char === '"') inQuotes = true;
+    else if (char === ",") pushField();
+    else if (char === "\r") { if (text[i + 1] === "\n") i++; pushRecord(); }
+    else if (char === "\n") pushRecord();
+    else field += char;
+  }
+
+  if (started || field !== "" || record.length > 0) pushRecord();
+  return records.filter(rec => !(rec.length === 1 && rec[0] === ""));
+}
+
+// 第一行是表头；数据行按表头映射成对象（短行补 ""）
+function parseCsv(text) {
+  const records = parseRecords(text);
+  if (records.length === 0) return { headers: [], rows: [] };
+  const headers = records[0];
+  const rows = records.slice(1).map(record => {
+    const row = {};
+    headers.forEach((header, index) => { row[header] = record[index] ?? ""; });
+    return row;
+  });
+  return { headers, rows };
+}
+
+/* ---------- 导入校验：表头映射 + 行级规则（真实版换成资源的 Zod schema） ---------- */
+function validateRows(parsed, existingIds) {
+  const seen = new Set(existingIds);
+  return parsed.rows.map((raw, i) => {
+    const get = h => (parsed.headers.includes(h) ? (raw[h] || "").trim() : null);
+    const errors = [];
+    for (const h of REQUIRED) if (get(h) === null) errors.push(`缺少「${h}」列`);
+
+    const idText = get("ID");
+    let id = null;
+    if (idText === "") errors.push("ID 为空");
+    else if (idText !== null && !/^\d+$/.test(idText)) errors.push(`ID「${idText}」不是数字`);
+    else if (idText !== null) id = Number(idText);
+
+    if (get("姓名") === "") errors.push("姓名为空");
+    if (get("邮箱") === "") errors.push("邮箱为空");
+
+    const status = get("状态");
+    if (status === "") errors.push("状态为空");
+    else if (status !== null && !STATUSES.includes(status))
+      errors.push(`状态「${status}」不在枚举（${STATUSES.join("/")}）`);
+
+    let state = "ok", msg = "";
+    if (errors.length) { state = "bad"; msg = errors.join("；"); }
+    else if (seen.has(id)) { state = "dup"; msg = `id ${id} 已存在，将跳过`; }
+    else seen.add(id);
+
+    return {
+      key: i, raw, state, msg,
+      row: { id, name: get("姓名") || "", email: get("邮箱") || "", role: get("角色") || "", status: status || "" },
+    };
+  });
+}
+
+function ImportModal({ existingIds, onImport, onClose }) {
+  const [text, setText] = useState("");
+  const checked = useMemo(
+    () => (text.trim() ? validateRows(parseCsv(text), existingIds) : null),
+    [text, existingIds],
+  );
+  const okRows = checked ? checked.filter(r => r.state === "ok") : [];
+  const dupN = checked ? checked.filter(r => r.state === "dup").length : 0;
+  const badN = checked ? checked.filter(r => r.state === "bad").length : 0;
+
+  const pickFile = e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    file.text().then(t => setText(t));
+    e.target.value = ""; // 允许再选同一个文件
+  };
+
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div class="modal wide">
+        <h2>导入 CSV</h2>
+        <p class="sub" style=${{ margin: 0 }}>
+          第一行是表头（需含 ${REQUIRED.join("、")}，多余列忽略）；先解析预览、逐行校验，确认后只导入合法行。
+        </p>
+        <div class="toolbar" style=${{ margin: 0 }}>
+          <input type="file" accept=".csv,text/csv" aria-label="选择 CSV 文件" class="grow" onChange=${pickFile} />
+          <button class="btn sm" onClick=${() => setText(SAMPLE_CSV)}>填入示例 CSV（含转义坑）</button>
+        </div>
+        <textarea class="csv" rows="5" placeholder="或直接把 CSV 文本粘贴到这里…" value=${text}
+                  onChange=${e => setText(e.target.value)}></textarea>
+
+        ${checked && html`
+          <div>
+            <p class="sub" style=${{ margin: "0 0 6px" }}>
+              解析出 ${checked.length} 行：合法 ${okRows.length} · 重复 id ${dupN} · 非法 ${badN}
+            </p>
+            <div class="preview-wrap">
+              <table class="list">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    ${HEADERS.map(h => html`<th key=${h}>${h}</th>`)}
+                    <th>校验</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${checked.map((r, i) => html`
+                    <tr key=${r.key} class=${"row-" + r.state}>
+                      <td class="num">${i + 1}</td>
+                      ${HEADERS.map(h => html`<td key=${h}>${r.raw[h] ?? ""}</td>`)}
+                      <td class="vmsg">
+                        ${r.state === "ok" && html`<span class="chip chip-on">合法</span>`}
+                        ${r.state === "dup" && html`<span class="chip chip-warn">${r.msg}</span>`}
+                        ${r.state === "bad" && html`<span class="err">${r.msg}</span>`}
+                      </td>
+                    </tr>`)}
+                  ${checked.length === 0 && html`
+                    <tr><td class="empty" colSpan=${HEADERS.length + 2}>没有数据行</td></tr>`}
+                </tbody>
+              </table>
+            </div>
+          </div>`}
+
+        <div class="actions">
+          <button class="btn" onClick=${onClose}>取消</button>
+          <button class="btn primary" disabled=${okRows.length === 0}
+                  onClick=${() => onImport(okRows.map(r => r.row), { dup: dupN, bad: badN })}>
+            导入 ${okRows.length} 行
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function App() {
+  const [rows, setRows] = useState(SEED);
+  const [status, setStatus] = useState("全部");
+  const [importing, setImporting] = useState(false);
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2600);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const view = useMemo(
+    () => rows.filter(r => status === "全部" || r.status === status),
+    [rows, status],
+  );
+  const csv = useMemo(() => toCsv(view, EXPORT_COLUMNS), [view]);
+  const existingIds = useMemo(() => rows.map(r => r.id), [rows]);
+
+  const doExport = () => {
+    downloadCsv("members.csv", csv);
+    setToast(`已导出 ${view.length} 行到 members.csv`);
+  };
+  const doImport = (newRows, skipped) => {
+    setRows(rs => [...rs, ...newRows]);
+    setImporting(false);
+    const parts = [`已导入 ${newRows.length} 行`];
+    if (skipped.dup) parts.push(`跳过 ${skipped.dup} 行重复 id`);
+    if (skipped.bad) parts.push(`忽略 ${skipped.bad} 行非法`);
+    setToast(parts.join("，"));
+  };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>成员名单</h1>
+          <p class="sub">导出＝当前筛选后的行 → RFC 4180 CSV；导入＝先解析预览、逐行校验，确认后只入合法行</p>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="状态筛选">
+          ${["全部", ...STATUSES].map(s => html`
+            <button key=${s} class=${status === s ? "on" : ""} onClick=${() => setStatus(s)}>${s}</button>`)}
+        </div>
+        <span class="grow"></span>
+        <button class="btn" onClick=${doExport}>导出 CSV（${view.length} 行）</button>
+        <button class="btn primary" onClick=${() => setImporting(true)}>导入 CSV</button>
+      </div>
+
+      <details>
+        <summary>预览 CSV 文本（导出产物，不用下载也能看）</summary>
+        <pre class="csvbox">${csv}</pre>
+      </details>
+
+      <table class="list">
+        <thead>
+          <tr><th>ID</th><th>姓名</th><th>邮箱</th><th>角色</th><th>状态</th></tr>
+        </thead>
+        <tbody>
+          ${view.map(r => html`
+            <tr key=${r.id}>
+              <td class="num">${r.id}</td>
+              <td style=${{ fontWeight: 550 }}>${r.name}</td>
+              <td>${r.email}</td>
+              <td>${r.role}</td>
+              <td><span class=${"chip " + (CHIP[r.status] || "chip-off")}>${r.status}</span></td>
+            </tr>`)}
+          ${view.length === 0 && html`<tr><td class="empty" colSpan="5">该筛选下没有成员</td></tr>`}
+        </tbody>
+      </table>
+
+      <footer class="pager">
+        <span>共 ${rows.length} 名成员 · 当前筛选 ${view.length} 行（导出以此为准）</span>
+      </footer>
+
+      ${importing && html`
+        <${ImportModal} existingIds=${existingIds} onImport=${doImport} onClose=${() => setImporting(false)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

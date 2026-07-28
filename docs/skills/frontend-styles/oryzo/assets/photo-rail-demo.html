@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>横向照片滑轨 · ORYZO 编辑部画廊复现</title>
+<style>
+  :root { --ink: #f2e8d5; --accent: #f08c2e; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: #1b120a; }
+  body { font-family: "DM Mono", ui-monospace, monospace; color: var(--ink); }
+  .amb { position: fixed; inset: 0; pointer-events: none;
+    background: radial-gradient(80% 70% at 50% 100%, #6e351288 0%, transparent 65%); }
+
+  /* ---- 滑轨：纵向滚动 1:1 折算成横向位移 ---- */
+  #rail { position: fixed; top: 50%; left: 0; translate: 0 -50%;
+    display: flex; gap: 4vmin; align-items: center; will-change: transform; }
+
+  .card { flex: 0 0 auto; width: min(34vmin, 300px); aspect-ratio: 3/4;
+    position: relative; overflow: hidden; border-radius: 2px;
+    box-shadow: 0 24px 70px #000b;
+    will-change: scale, filter; }   /* scale/filter 由 JS 每帧驱动，别加 CSS transition 打架 */
+  .card .cap { position: absolute; left: 10px; bottom: 8px; font-size: 10px;
+    letter-spacing: .18em; color: #fff9; text-transform: uppercase; }
+
+  /* —— 每张"大片"都是 CSS 画的占位：渐变布光 + 软木圆盘道具 —— */
+  .disc { position: absolute; border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #d9a266, #c98d4e 48%, #8a5a2b 85%);
+    box-shadow: 0 10px 30px #000a, inset 0 -8px 18px #0006; }
+  .disc::after { content: ''; position: absolute; inset: 15%; border-radius: 50%;
+    background: radial-gradient(circle at 42% 36%, #b57f42, #8f5f2e 75%);
+    box-shadow: inset 0 6px 14px #0007; }
+
+  .p1 { background: linear-gradient(160deg, #3d2410, #241204 70%); }
+  .p1 .disc { width: 46%; aspect-ratio: 1; left: 28%; top: 30%; }
+  .p1::after { content: ''; position: absolute; inset: 55% -10% -10% 40%;
+    background: radial-gradient(closest-side, #67401d, transparent); }
+
+  .p2 { background: #b3271e; }                     /* 糖纸红 */
+  .p2 .disc { width: 58%; aspect-ratio: 1; left: 21%; top: 24%; }
+  .p2 .wm { position: absolute; inset: 0; font-size: 22px; font-weight: 700;
+    color: #ffffff2e; display: grid; place-items: center;
+    transform: rotate(-28deg) scale(2.4); letter-spacing: .4em; }
+
+  .p3 { background: linear-gradient(200deg, #d8cfc2, #a89a86 60%, #6b5c49); }
+  .p3 .hat { position: absolute; left: 18%; top: 16%; width: 64%; height: 34%;
+    border-radius: 50% 50% 8% 8% / 90% 90% 10% 10%;
+    background: radial-gradient(circle at 45% 30%, #c1622c, #96431c 70%); }
+  .p3 .disc { width: 30%; aspect-ratio: 1; left: 35%; top: 52%; }
+
+  .p4 { background: linear-gradient(180deg, #0d0a08, #241812 65%, #38251a); }
+  .p4 .face { position: absolute; right: -18%; top: -6%; width: 90%; height: 112%;
+    border-radius: 48% 52% 46% 54% / 58% 56% 44% 42%;
+    background: linear-gradient(200deg, #c98f68, #8f5c3c 65%, #5c3722); }
+  .p4 .disc { width: 34%; aspect-ratio: 1; right: 14%; top: 26%; }
+
+  .p5 { background: linear-gradient(170deg, #8f1f14, #6e150d 70%); }  /* 红毛衣口袋 */
+  .p5::before { content: ''; position: absolute; inset: 30% 12% 20%;
+    background: repeating-linear-gradient(90deg, #a5271a 0 9px, #7d1a10 9px 18px);
+    border-radius: 10px; box-shadow: inset 0 14px 26px #0008; }
+  .p5 .disc { width: 40%; aspect-ratio: 1; left: 30%; top: 38%; }
+
+  .p6 { background: linear-gradient(180deg, #cfd6ce, #9aa694 60%, #5d685a); }
+  .p6 .cup { position: absolute; left: 30%; top: 22%; width: 40%; height: 42%;
+    background: linear-gradient(180deg, #f4efe6, #d9d2c4); border-radius: 6px 6px 10px 10px; }
+  .p6 .disc { width: 44%; aspect-ratio: 1; left: 28%; top: 62%; }
+
+  /* WARNING 缎带：玩梗照片上的"专业人士操作"贴条 */
+  .warn { position: absolute; left: 0; right: 0; bottom: 14%; padding: 5px 8px;
+    background: #0d0d0d; color: #ffd83d; font-size: 9px; letter-spacing: .12em;
+    display: flex; gap: 6px; align-items: center; }
+  .warn::before { content: '⚠'; }
+
+  /* ---- 取景框：钉死在视口中央，卡片从它"底下"流过 ---- */
+  .viewfinder { position: fixed; left: 50%; top: 50%; translate: -50% -50%;
+    width: min(38vmin, 330px); aspect-ratio: 3/4; pointer-events: none;
+    border: 1px solid #f2e8d555; }
+  .viewfinder i { position: absolute; width: 10px; height: 10px; border: 1px solid #f2e8d5cc; }
+  .viewfinder i:nth-child(1) { left: -1px; top: -1px; border-right: 0; border-bottom: 0; }
+  .viewfinder i:nth-child(2) { right: -1px; top: -1px; border-left: 0; border-bottom: 0; }
+  .viewfinder i:nth-child(3) { left: -1px; bottom: -1px; border-right: 0; border-top: 0; }
+  .viewfinder i:nth-child(4) { right: -1px; bottom: -1px; border-left: 0; border-top: 0; }
+
+  .kicker { position: fixed; left: 6%; top: 42%; font-size: 12px; letter-spacing: .2em; }
+  .kicker b { display: block; font-size: 15px; margin-top: 6px; }
+  .hud { position: fixed; left: 16px; top: 14px; font-size: 12px; line-height: 1.7; letter-spacing: .06em; }
+  .hud b { font-size: 14px; letter-spacing: .12em; }
+  .hud em { font-style: normal; color: var(--accent); }
+  .hint { position: fixed; left: 50%; bottom: 14px; translate: -50% 0; font-size: 11px;
+    letter-spacing: .26em; opacity: .75; transition: opacity .4s; }
+  .hint.gone { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="amb"></div>
+
+<div id="rail">
+  <div class="card p1"><span class="disc"></span><span class="cap">Studio 001</span></div>
+  <div class="card p2"><span class="wm">ORYZO</span><span class="disc"></span><span class="cap">Wrapped</span></div>
+  <div class="card p3"><span class="hat"></span><span class="disc"></span><span class="cap">Cap fit</span>
+    <div class="warn">PERFORMED BY PROFESSIONALS. DO NOT ATTEMPT.</div></div>
+  <div class="card p4"><span class="face"></span><span class="disc"></span><span class="cap">Eye wear</span></div>
+  <div class="card p5"><span class="disc"></span><span class="cap">Pocket</span></div>
+  <div class="card p6"><span class="cup"></span><span class="disc"></span><span class="cap">Rise &amp; grind</span></div>
+</div>
+
+<div class="viewfinder"><i></i><i></i><i></i><i></i></div>
+<div class="kicker">SO PORTABLE,<b>it's wearable</b></div>
+<div class="hud"><b>PHOTO RAIL</b><br><span id="stat">–</span></div>
+<div class="hint" id="hint">↓ 纵向滚动 = 横向走片（滚轮 / 拖拽 / 方向键）</div>
+
+<script>
+/* ============================================================================
+ * 横向照片滑轨 —— oryzo.ai wearable 一幕后半段的复现
+ *
+ * 原站行为（滚动侦察逐帧观察）：纵向滚动被折算成横向走片，
+ * 编辑部风格的玩梗照片（别帽子上、当眼罩、咬嘴里、揣口袋…）依次经过
+ * 视口中央那只钉死的"取景框"；过框的卡片放大、点亮，离框的压暗虚化。
+ *
+ * 复现要点：
+ *   - 滑轨 translateX = -滚动值，纵向输入 1:1 变横向位移；
+ *   - "激活"不用 IntersectionObserver —— 每帧算卡片中心到取景框中心的
+ *     距离，距离→scale/亮度/饱和的连续函数，无级过渡（原站的过框感同源）；
+ *   - 所有"照片"都是 CSS 画的占位大片（渐变布光 + 软木圆盘道具），
+ *     WARNING 缎带、糖纸红、水印这些叙事贴纸也一并致敬。
+ * ========================================================================== */
+
+const rail = document.getElementById('rail');
+const cards = [...rail.children];
+const stat = document.getElementById('stat'), hint = document.getElementById('hint');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const sm = { target: 0, current: 0 };
+// 手写版 scroll-snap：每张卡固定分到 VIRT px 虚拟里程，总里程 = (卡数-1)×VIRT。
+// 里程和"轨道有多长/视口有多宽"彻底解耦 —— 最后一张永远能精确走到框中心
+const VIRT = 640;
+let MAXPX = (cards.length - 1) * VIRT;
+
+let lastInput = -1e9;                 // 空闲吸附的计时起点
+const bump = px => {
+  sm.target = Math.max(0, Math.min(MAXPX, sm.target + px));
+  lastInput = performance.now();
+};
+addEventListener('wheel', e => { e.preventDefault(); bump(e.deltaY * (e.deltaMode === 1 ? 40 : 1)); }, { passive: false });
+addEventListener('keydown', e => {   // 方向键 = 正好走一张
+  const map = { ArrowUp: -VIRT, ArrowDown: VIRT, ArrowLeft: -VIRT, ArrowRight: VIRT, PageUp: -VIRT, PageDown: VIRT };
+  if (e.key in map) { e.preventDefault(); bump(map[e.key]); }
+});
+let dragP = null;
+addEventListener('pointerdown', e => dragP = { x: e.clientX, y: e.clientY });
+addEventListener('pointermove', e => {
+  if (!dragP) return;   // 横竖拖都认，取绝对位移更大的轴
+  const dx = dragP.x - e.clientX, dy = dragP.y - e.clientY;
+  bump((Math.abs(dx) > Math.abs(dy) ? dx : dy) * 2.4);
+  dragP = { x: e.clientX, y: e.clientY };
+});
+addEventListener('pointerup', () => dragP = null);
+
+function frame() {
+  // 空闲吸附：松手 250ms 后把 target 缓动到最近的整卡位 —— 静止状态永远有一张卡端正在框里
+  if (!dragP && performance.now() - lastInput > 250) {
+    const snap = Math.round(sm.target / VIRT) * VIRT;
+    sm.target += (snap - sm.target) * 0.12;
+  }
+  sm.current += (sm.target - sm.current) * (reduceMotion ? 1 : 0.1);
+
+  // 里程 → 卡位：段首 30% 钉在当前卡（停留一拍），后 70% smoothstep 滑向下一张。
+  // 任何时刻框里都有一张"正片"，而不是两张卡在半路
+  const t = Math.min(sm.current / VIRT, cards.length - 1);
+  const i = Math.min(cards.length - 2, Math.floor(t));
+  const f = Math.min(1, t - i);
+  const DWELL = 0.3;
+  let g = f <= DWELL ? 0 : (f - DWELL) / (1 - DWELL);
+  g = g * g * (3 - 2 * g);                         // smoothstep：起停都带缓动
+  const railX = cards[i].offsetLeft + (cards[i + 1].offsetLeft - cards[i].offsetLeft) * g;
+  // 卡片同宽：让"当前插值卡位"的中心对准视口中心（也就是取景框中心）
+  const offset = innerWidth / 2 - cards[0].offsetWidth / 2;
+  rail.style.transform = `translateX(${offset - railX}px)`;
+
+  // 过框感：到取景框中心的距离 → scale / 亮度 / 饱和（连续函数，无级）
+  const cx = innerWidth / 2;
+  let active = 0, best = 1e9;
+  cards.forEach((c, i) => {
+    const r = c.getBoundingClientRect();
+    const d = Math.abs(r.left + r.width / 2 - cx) / innerWidth;   // 0=正中
+    const k = Math.max(0, 1 - d * 2.4);                            // 靠近才起效
+    c.style.scale = (0.86 + k * 0.2).toFixed(3);
+    c.style.filter = `brightness(${(0.55 + k * 0.55).toFixed(2)}) saturate(${(0.6 + k * 0.5).toFixed(2)}) blur(${((1 - k) * 1.6).toFixed(1)}px)`;
+    c.style.zIndex = (k * 100) | 0;
+    if (d < best) { best = d; active = i; }
+  });
+
+  hint.classList.toggle('gone', sm.current > 60);
+  stat.innerHTML = `里程 <em>${sm.current.toFixed(0)}px</em> · 过框 <em>${active + 1}/${cards.length}</em> · ${cards[active].querySelector('.cap').textContent}`;
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

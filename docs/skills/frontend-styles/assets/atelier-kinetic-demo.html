@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ATELIER NULL — 纸上动力学</title>
+<!--
+  atelier-kinetic-demo.html —— 「前端风格收集」的 ATELIER 纸白动力学演示真身。
+
+  这页不是从某个真实站点扒下来的，是拿一段「审美基调提示词」现做的产物 ——
+  提示词原文四条（图标统一 Lucide、禁 emoji；对标 Awwwards 每日最佳；把浏览器
+  当交互式艺术画布、追求先锋排版与物理动效；做沉浸式精品页），全文抄在文章
+  reference/atelier-kinetic.md 里。收录目的是给这段 prompt 留一个可跑的靶子：
+  它到底会长出什么东西、哪些条款能落地、哪些条款是过度放飞的开关。
+
+  ── 落地时对提示词做的收敛 ────────────────────────────────────
+  ① 「Lucide 图标」：不拉 lucide CDN / npm，把用到的 5 个图标按官方 24×24
+     stroke 轮廓手抄成 <symbol>，页内 <use> 复用（wiki 的 CDN 禁令，见
+     skills/writing/mkdocs-wiki/index.md 第 9 节）。全页零 emoji，连状态点
+     都是 CSS 圆点而不是 ●。
+  ② 「Awwwards 水准」落到四件可验收的事：自写弹簧积分器统一驱动所有动效、
+     自定义双层光标、巨字逐字遮罩入场 + 指针排斥、滚动驱动的横向作品轨。
+     没有一处用 transition 硬凑物理感 —— 手感全部来自同一个 rAF 循环。
+  ③ 「先锋排版」限定在 hero 与页脚：巨字负字距 -0.055em、行高 .78、第二行
+     故意右缩进并与第一行咬合、竖排侧标、等宽小字做刻度。正文段落不参与
+     实验，仍是 16px / 1.9 的老实排版 —— 不然就是不可读的海报。
+  ④ 字体不走 CDN：无衬线走 Helvetica Neue → Arial → PingFang SC 回退，衬线
+     斜体走 Times New Roman。Linux 上会落到 Liberation / Noto，字形不同但
+     版式关系（巨字咬合、斜体对比）不塌。
+
+  ── 页面结构 ────────────────────────────────────────────────
+  - .hero：巨字 KINETIC（逐字 span，指针靠近按距离排斥）+ 三张可拖拽卡片
+    （拖动跟手，松手把指针速度注入弹簧，回位时自然超调回弹）
+  - .rail：300vh 滚动区 + 100vh sticky 视口，滚动进度映射成横向位移，
+    再过一层弹簧 —— 不劫持 wheel，iframe 内滚动行为保持正常
+  - footer：LET'S TALK 巨字 + 磁性圆钮（指针在 120px 内时按比例吸附）
+
+  ── 物理内核 ────────────────────────────────────────────────
+  Spring 类是半隐式欧拉：a = (target - x) * k - v * d，dt 钳在 1/30 秒防
+  切后台回来炸掉。全页 40+ 个弹簧（每个字母 1 个、每张卡 2 个、光标 2 个、
+  磁性元素 2 个、横轨 1 个）跑在同一个 rAF 里，一次 requestAnimationFrame
+  只做一遍 step + 一遍写样式。
+  reduced-motion 下：入场直接到位、grain 停摆、光标退回原生、排斥与磁性
+  全部关掉，只留横轨的直接映射（无弹簧）。
+-->
+<style>
+:root{
+  --paper:#efece4;      /* 暖纸白，不是纯白 —— 纯白配黑字太刺，暖白才有印刷感 */
+  --ink:#121110;
+  --red:#e0341f;        /* 全页唯一强调色 */
+  --muted:#8b877d;
+  --line:rgba(18,17,16,.14);
+  --sans:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Noto Sans SC",sans-serif;
+  --serif:"Times New Roman",Times,"Songti SC",serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+svg.i{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ── 纸纹噪点：feTurbulence 生成的 data URI，multiply 压在最上层 ───────── */
+.grain{
+  position:fixed;inset:-120px;z-index:90;pointer-events:none;opacity:.06;
+  mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>");
+  animation:grain 1.2s steps(6) infinite;
+}
+@keyframes grain{
+  0%{transform:translate(0,0)}     16%{transform:translate(-14px,9px)}
+  33%{transform:translate(11px,-13px)} 50%{transform:translate(-9px,-8px)}
+  66%{transform:translate(13px,12px)}  83%{transform:translate(-12px,5px)}
+}
+
+/* ── 自定义双层光标：dot 直接跟手，ring 慢一拍（弹簧），difference 混色 ── */
+.cur-dot,.cur-ring{position:fixed;z-index:95;top:0;left:0;pointer-events:none;border-radius:50%;mix-blend-mode:difference;will-change:transform}
+.cur-dot{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:#fff}
+.cur-ring{
+  width:38px;height:38px;margin:-19px 0 0 -19px;border:1px solid #fff;
+  display:grid;place-items:center;
+  font:600 8px/1 var(--mono);letter-spacing:1.4px;color:#fff;
+  transition:width .3s cubic-bezier(.2,.8,.2,1),height .3s cubic-bezier(.2,.8,.2,1),margin .3s cubic-bezier(.2,.8,.2,1);
+}
+.cur-ring.is-wide{width:82px;height:82px;margin:-41px 0 0 -41px}
+body.has-cursor{cursor:none}
+body.has-cursor a,body.has-cursor button{cursor:none}
+
+/* ── 顶栏 ─────────────────────────────────────────────────────────────── */
+.bar{
+  position:fixed;inset:0 0 auto;z-index:60;height:72px;padding:0 clamp(18px,3vw,44px);
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  border-bottom:1px solid var(--line);background:rgba(239,236,228,.72);backdrop-filter:blur(10px);
+}
+.brand{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:700;letter-spacing:-.4px}
+.brand svg{font-size:15px;color:var(--red);animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bar nav{display:flex;gap:30px;font:500 11px var(--mono);letter-spacing:1.6px;color:var(--muted)}
+.bar nav a{position:relative;padding-bottom:2px}
+.bar nav a:after{content:"";position:absolute;inset:auto 0 0;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:right;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.bar nav a:hover{color:var(--ink)}
+.bar nav a:hover:after{transform:scaleX(1);transform-origin:left}
+.clock{justify-self:end;display:flex;align-items:center;gap:9px;font:500 11px var(--mono);letter-spacing:1.4px;color:var(--muted)}
+.clock i{width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+
+/* ── HERO ─────────────────────────────────────────────────────────────── */
+.hero{position:relative;min-height:100vh;padding:130px clamp(18px,3vw,44px) 40px;overflow:hidden}
+/* 竖排侧标：实验排版的廉价高分项，成本一行 writing-mode */
+.rail-left{
+  position:absolute;left:clamp(6px,1.2vw,18px);top:52%;transform:translateY(-50%);
+  writing-mode:vertical-rl;font:500 10px var(--mono);letter-spacing:4px;color:var(--muted);
+}
+.hero-meta{display:flex;align-items:baseline;gap:22px;font:500 10px var(--mono);letter-spacing:2px;color:var(--muted);margin-bottom:clamp(20px,5vh,54px)}
+.hero-meta b{color:var(--ink);font-weight:600;font-size:11px}
+
+/* 巨字：负字距咬合 + 行高 .78，每个字母是独立 span（JS 拆的），
+   外层 .ch 做遮罩（overflow hidden），内层 .ch-in 负责入场与排斥位移 */
+.mega{
+  margin:0;font-size:clamp(64px,17.5vw,268px);font-weight:800;line-height:.78;
+  letter-spacing:-.055em;text-transform:uppercase;white-space:nowrap;
+}
+/* .ch 的 overflow:hidden 会连带裁掉负字距溢出的字形边缘和斜体的右倾部分 ——
+   用 padding 把遮罩框撑开、再用等量负 margin 抵消回来，版式一像素不动 */
+.ch{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .1em .16em;margin:0 -.1em -.16em}
+.ch-in{display:inline-block;transform:translateY(108%);transition:transform .95s cubic-bezier(.16,1,.3,1);transition-delay:calc(var(--i) * 55ms);will-change:transform}
+.is-ready .ch-in{transform:translateY(0)}
+/* 排斥位移单独占一层：JS 每帧写 inline transform，跟入场的 CSS transform
+   写在同一个元素上会互相覆盖 —— 两层分工，入场归 CSS，物理归 JS */
+.ch-rp{display:inline-block;will-change:transform}
+.mega .dot{color:var(--red)}
+/* 第二行故意右缩进并上提，与第一行底部咬住 —— 版式冲击力的来源 */
+.mega-2{
+  margin:-.06em 0 0;padding-left:clamp(40px,26vw,420px);
+  font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;letter-spacing:-.03em;
+  font-size:clamp(56px,14vw,220px);line-height:.82;
+}
+.mega-2 .cn{font-family:var(--sans);font-style:normal;font-weight:300;font-size:.22em;letter-spacing:.42em;vertical-align:.9em;margin-left:.5em;color:var(--muted)}
+
+.hero-foot{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:34px;margin-top:clamp(30px,7vh,78px)}
+.lede{max-width:34ch;margin:0;font-size:16px;line-height:1.9;color:#3b3833;font-weight:300}
+.lede em{font-family:var(--serif);font-size:18px}
+.cta{
+  display:inline-flex;align-items:center;gap:14px;height:58px;padding:0 10px 0 26px;
+  border:1px solid var(--ink);border-radius:40px;font-size:13px;font-weight:600;letter-spacing:.4px;
+  will-change:transform;
+}
+.cta u{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:15px;transition:background .3s,transform .45s cubic-bezier(.2,.8,.2,1)}
+.cta:hover u{background:var(--red);transform:rotate(45deg)}
+.scroll-hint{display:flex;align-items:center;gap:10px;font:500 10px var(--mono);letter-spacing:2.4px;color:var(--muted)}
+.scroll-hint svg{font-size:13px;animation:bob 1.9s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(5px)}}
+
+/* ── 可拖拽卡片：绝对定位漂在 hero 右上，pointer 拖动 + 松手弹簧回位 ──── */
+.cards{position:absolute;right:clamp(-40px,2vw,70px);top:96px;width:min(46vw,520px);height:340px;pointer-events:none}
+.card{
+  position:absolute;width:186px;padding:14px;background:var(--paper);border:1px solid var(--ink);
+  pointer-events:auto;touch-action:none;will-change:transform;
+  box-shadow:6px 6px 0 rgba(18,17,16,.09);
+}
+.card.is-held{box-shadow:14px 16px 0 rgba(18,17,16,.14);z-index:5}
+.card .sw{height:104px;border:1px solid var(--line)}
+.card:nth-child(1){left:2%;top:6%;transform:rotate(-6deg)}
+.card:nth-child(2){left:36%;top:34%}
+.card:nth-child(3){left:31%;top:56%;transform:rotate(4deg)}   /* 让开标题末尾的红点 */
+.card:nth-child(1) .sw{background:var(--red)}
+.card:nth-child(2) .sw{background:var(--ink)}
+.card:nth-child(3) .sw{background:repeating-linear-gradient(45deg,var(--ink) 0 3px,transparent 3px 8px)}
+.card-meta{display:flex;align-items:center;justify-content:space-between;margin-top:11px;font:500 9px var(--mono);letter-spacing:1.5px;color:var(--muted)}
+.card-meta svg{font-size:12px;color:var(--ink)}
+
+/* ── 横向作品轨：300vh 滚动 → 100vh sticky，进度映射 translateX ───────── */
+.rail{position:relative;height:300vh;border-top:1px solid var(--line)}
+.rail-vp{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden}
+.rail-head{position:absolute;left:clamp(18px,3vw,44px);top:96px;font:500 10px var(--mono);letter-spacing:2.6px;color:var(--muted)}
+.track{display:flex;align-items:center;gap:clamp(40px,7vw,110px);padding:0 12vw;will-change:transform}
+.work{display:flex;align-items:flex-start;gap:20px;white-space:nowrap}
+.work b{font:500 11px var(--mono);letter-spacing:1.4px;color:var(--red);padding-top:1.4em}
+.work h3{
+  margin:0;font-size:clamp(52px,10vw,146px);font-weight:800;letter-spacing:-.05em;line-height:.9;
+  text-transform:uppercase;color:transparent;-webkit-text-stroke:1px var(--ink);transition:color .45s,-webkit-text-stroke-color .45s;
+}
+.work:hover h3{color:var(--ink)}
+.work-sub{display:flex;flex-direction:column;gap:6px;padding-top:1.2em;font:500 10px var(--mono);letter-spacing:1.5px;color:var(--muted)}
+.work-sub svg{font-size:15px;color:var(--ink)}
+/* 底部刻度尺：滚动进度的物理反馈，比进度条更有仪表感 */
+.ruler{position:absolute;left:0;right:0;bottom:52px;height:26px;display:flex;align-items:flex-end;gap:0;padding:0 clamp(18px,3vw,44px);opacity:.45}
+.ruler span{flex:1;height:7px;border-left:1px solid var(--ink)}
+.ruler span:nth-child(5n+1){height:16px}
+.rail-bar{position:absolute;left:clamp(18px,3vw,44px);right:clamp(18px,3vw,44px);bottom:38px;height:1px;background:var(--line)}
+.rail-bar i{display:block;height:1px;background:var(--red);transform-origin:left;transform:scaleX(0)}
+
+/* ── 页脚 ─────────────────────────────────────────────────────────────── */
+footer{position:relative;padding:clamp(60px,12vh,130px) clamp(18px,3vw,44px) 34px;border-top:1px solid var(--line)}
+.talk{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:30px}
+.talk h2{margin:0;font-size:clamp(52px,11vw,180px);font-weight:800;letter-spacing:-.055em;line-height:.85;text-transform:uppercase}
+.talk h2 em{font-family:var(--serif);font-weight:400;font-style:italic;text-transform:none;color:var(--red)}  /* 大写无衬线 + 小写衬线斜体，一行里做两种字形的对撞 */
+.orb{display:grid;place-items:center;width:clamp(96px,13vw,142px);aspect-ratio:1;border:1px solid var(--ink);border-radius:50%;font-size:26px;will-change:transform;transition:background .35s,color .35s}
+.orb:hover{background:var(--red);border-color:var(--red);color:var(--paper)}
+.foot-line{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;margin-top:clamp(40px,9vh,96px);padding-top:16px;border-top:1px solid var(--line);font:500 10px var(--mono);letter-spacing:1.6px;color:var(--muted)}
+
+@media(max-width:900px){
+  .bar nav,.rail-left,.cards,.hero-meta .tip{display:none}   /* 卡片都藏了，别再提示拖动 */
+  .bar{grid-template-columns:1fr auto}
+  .mega{font-size:19vw}
+  .mega-2{padding-left:8vw;font-size:16vw}
+  .hero{min-height:auto;padding-top:112px}
+  .rail{height:240vh}
+  .track{gap:56px;padding:0 8vw}
+}
+@media(hover:none){.cur-dot,.cur-ring{display:none}body.has-cursor{cursor:auto}}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important}
+  html{scroll-behavior:auto}
+  .ch-in{transition:none;transform:none}
+  .grain{animation:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Lucide 图标：官方 24×24 stroke 轮廓手抄成 symbol，页内 <use> 复用。
+     全页零 emoji —— 状态点、分隔符、箭头一律走图标或 CSS 图形。 -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-asterisk" viewBox="0 0 24 24"><path d="M12 6v12"/><path d="M17.196 9 6.804 15"/><path d="m6.804 9 10.392 6"/></symbol>
+  <symbol id="i-arrow-ur" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol>
+  <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></symbol>
+  <symbol id="i-move" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="m15 19-3 3-3-3"/><path d="m19 9 3 3-3 3"/><path d="M2 12h20"/><path d="m5 9-3 3 3 3"/><path d="m9 5 3-3 3 3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+</svg>
+
+<div class="grain"></div>
+<div class="cur-ring" id="ring"><span id="ringLabel"></span></div>
+<div class="cur-dot" id="dot"></div>
+
+<header class="bar">
+  <a class="brand" href="#"><svg class="i"><use href="#i-asterisk"/></svg> ATELIER NULL</a>
+  <nav>
+    <a href="#rail">INDEX</a><a href="#rail">WORKS</a><a href="#talk">STUDIO</a><a href="#talk">CONTACT</a>
+  </nav>
+  <div class="clock"><i></i><span id="clock">--:--:--</span> GMT+8</div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="rail-left">EST. 2026 — KINETIC TYPOGRAPHY STUDIO</div>
+
+    <div class="hero-meta">
+      <span>(01) 精选作品</span>
+      <b>四件</b>
+      <svg class="i" style="font-size:11px"><use href="#i-plus"/></svg>
+      <span class="tip">拖动卡片 / 推开标题</span>
+    </div>
+
+    <h1 class="mega" data-split data-repel>KINETIC<span class="dot">.</span></h1>
+    <div class="mega mega-2" data-split data-repel>paper<span class="cn no-split">纸上动力学</span></div>
+
+    <div class="cards">
+      <div class="card" data-drag data-cursor="DRAG">
+        <div class="sw"></div>
+        <div class="card-meta"><span>SOLSTICE / 01</span><svg class="i"><use href="#i-move"/></svg></div>
+      </div>
+      <div class="card" data-drag data-cursor="DRAG">
+        <div class="sw"></div>
+        <div class="card-meta"><span>HALFTONE / 02</span><svg class="i"><use href="#i-move"/></svg></div>
+      </div>
+      <div class="card" data-drag data-cursor="DRAG">
+        <div class="sw"></div>
+        <div class="card-meta"><span>PAPERCUT / 03</span><svg class="i"><use href="#i-move"/></svg></div>
+      </div>
+    </div>
+
+    <div class="hero-foot">
+      <p class="lede">把浏览器当画布，把每一行字当作<em>有质量的物体</em> —— 它会被指针推开，也会自己弹回来。</p>
+      <a class="cta" href="#rail" data-magnetic data-cursor="ENTER">
+        进入作品索引 <u><svg class="i"><use href="#i-arrow-ur"/></svg></u>
+      </a>
+      <div class="scroll-hint">SCROLL <svg class="i"><use href="#i-arrow-down"/></svg></div>
+    </div>
+  </section>
+
+  <section class="rail" id="rail">
+    <div class="rail-vp">
+      <div class="rail-head">(02) 作品索引 — 向下滚动即横向推进</div>
+      <div class="track" id="track">
+        <a class="work" href="#" data-cursor="VIEW"><b>01</b><h3>Solstice</h3><span class="work-sub">品牌官网<span>2026</span><svg class="i"><use href="#i-arrow-ur"/></svg></span></a>
+        <a class="work" href="#" data-cursor="VIEW"><b>02</b><h3>Halftone</h3><span class="work-sub">交互装置<span>2025</span><svg class="i"><use href="#i-arrow-ur"/></svg></span></a>
+        <a class="work" href="#" data-cursor="VIEW"><b>03</b><h3>Papercut</h3><span class="work-sub">出版物<span>2025</span><svg class="i"><use href="#i-arrow-ur"/></svg></span></a>
+        <a class="work" href="#" data-cursor="VIEW"><b>04</b><h3>Volta</h3><span class="work-sub">产品发布<span>2024</span><svg class="i"><use href="#i-arrow-ur"/></svg></span></a>
+      </div>
+      <div class="ruler" id="ruler"></div>
+      <div class="rail-bar"><i id="railBar"></i></div>
+    </div>
+  </section>
+
+  <footer id="talk">
+    <div class="talk">
+      <h2>LET'S <em>talk</em></h2>
+      <a class="orb" href="#" data-magnetic data-cursor="MAIL"><svg class="i"><use href="#i-arrow-ur"/></svg></a>
+    </div>
+    <div class="foot-line">
+      <span>ATELIER NULL — 虚构工作室，仅作风格演示</span>
+      <span>提示词产物 / 弹簧驱动 / 零 EMOJI</span>
+    </div>
+  </footer>
+</main>
+
+<script>
+"use strict";
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const fine    = matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+/* ── 弹簧：半隐式欧拉。全页所有手感都出自这十行，不用 CSS transition 凑 ──
+   a = (target - x) * k - v * d；k 越大越急，d 越大越黏。 */
+class Spring {
+  constructor(k = 170, d = 20, x = 0) { this.k = k; this.d = d; this.x = x; this.v = 0; this.t = x; }
+  step(dt) {
+    const a = (this.t - this.x) * this.k - this.v * this.d;
+    this.v += a * dt;
+    this.x += this.v * dt;
+    return this.x;
+  }
+}
+
+/* ── 巨字拆字：每字三层 —— .ch 遮罩 / .ch-in 入场 / .ch-rp 排斥位移。
+      --i 是入场 stagger 的序号；带 no-split 的子元素原样跳过 ────────────── */
+const letters = [];
+const wrapChar = (content, i) => {
+  const wrap = document.createElement("span");
+  wrap.className = "ch";
+  wrap.style.setProperty("--i", i);
+  const inner = document.createElement("span");
+  inner.className = "ch-in";
+  const rp = document.createElement("span");
+  rp.className = "ch-rp";
+  rp.append(content);
+  inner.appendChild(rp);
+  wrap.appendChild(inner);
+  letters.push({ el: rp, sx: new Spring(150, 17), sy: new Spring(150, 17), cx: 0, cy: 0 });
+  return wrap;
+};
+document.querySelectorAll("[data-split]").forEach(host => {
+  let i = 0;
+  [...host.childNodes].forEach(node => {
+    if (node.nodeType === 3) {                                  // 文本 → 逐字拆
+      const frag = document.createDocumentFragment();
+      [...node.textContent].forEach(c => {
+        if (c === " ") { frag.append(" "); return; }
+        frag.appendChild(wrapChar(c, i++));
+      });
+      node.replaceWith(frag);
+    } else if (node.nodeType === 1 && !node.classList.contains("no-split")) {
+      const anchor = document.createTextNode("");               // 先占位再搬走：直接
+      node.replaceWith(anchor);                                 // replaceWith 会因为 node
+      anchor.replaceWith(wrapChar(node, i++));                  // 已成为新节点的后代而报错
+    }
+  });
+});
+void document.body.offsetWidth;                                 // 强制一次 reflow，让刚插入的
+document.body.classList.add("is-ready");                        // .ch-in 有初始状态可过渡
+
+/* ── 指针排斥：字母中心离指针越近推得越远，权重按距离平方衰减 ──────────── */
+const REPEL_R = 260, REPEL_F = 44;
+let px = -9999, py = -9999;
+addEventListener("pointermove", e => { px = e.clientX; py = e.clientY; }, { passive: true });
+
+/* ── 自定义光标：dot 直接跟手，ring 走弹簧慢一拍 ──────────────────────── */
+const dot = document.getElementById("dot"), ring = document.getElementById("ring"), ringLabel = document.getElementById("ringLabel");
+const rx = new Spring(190, 24, -50), ry = new Spring(190, 24, -50);
+if (fine && !reduced) {
+  document.body.classList.add("has-cursor");
+  document.querySelectorAll("[data-cursor]").forEach(el => {
+    el.addEventListener("pointerenter", () => { ring.classList.add("is-wide"); ringLabel.textContent = el.dataset.cursor; });
+    el.addEventListener("pointerleave", () => { ring.classList.remove("is-wide"); ringLabel.textContent = ""; });
+  });
+}
+
+/* ── 磁性元素：指针进入半径后按比例吸附，离开回 0 ────────────────────── */
+const MAG_R = 130;
+const magnets = [...document.querySelectorAll("[data-magnetic]")].map(el => ({
+  el, sx: new Spring(200, 22), sy: new Spring(200, 22)
+}));
+
+/* ── 拖拽卡片：拖动跟手（直接给弹簧改 target），松手把指针速度注入 v，
+      target 回 0 —— 于是回位会自然超调、来回摆几下再停 ───────────────── */
+const drags = [];
+document.querySelectorAll("[data-drag]").forEach(el => {
+  const sx = new Spring(120, 15), sy = new Spring(120, 15);
+  let dragging = false, id = null, ox = 0, oy = 0, lastX = 0, lastY = 0, lastT = 0, vx = 0, vy = 0;
+  el.addEventListener("pointerdown", e => {
+    dragging = true; id = e.pointerId; el.setPointerCapture(id); el.classList.add("is-held");
+    ox = e.clientX - sx.x; oy = e.clientY - sy.x;
+    lastX = e.clientX; lastY = e.clientY; lastT = e.timeStamp; vx = vy = 0;
+    e.preventDefault();
+  });
+  el.addEventListener("pointermove", e => {
+    if (!dragging || e.pointerId !== id) return;
+    sx.t = e.clientX - ox; sy.t = e.clientY - oy;
+    const dt = Math.max(8, e.timeStamp - lastT) / 1000;      // 至少 8ms，防除零炸速度
+    vx = (e.clientX - lastX) / dt; vy = (e.clientY - lastY) / dt;
+    lastX = e.clientX; lastY = e.clientY; lastT = e.timeStamp;
+  });
+  const release = () => {
+    if (!dragging) return;
+    dragging = false; el.classList.remove("is-held");
+    sx.t = sy.t = 0;
+    sx.v = Math.max(-2600, Math.min(2600, vx));              // 甩得再狠也钳住，否则飞出屏
+    sy.v = Math.max(-2600, Math.min(2600, vy));
+  };
+  el.addEventListener("pointerup", release);
+  el.addEventListener("pointercancel", release);
+  const base = getComputedStyle(el).transform;                 // CSS 里的初始旋转，matrix 形式
+  drags.push({ el, sx, sy, base: base === "none" ? "" : base });
+});
+
+/* ── 横向作品轨：滚动进度 → 目标位移 → 再过一层弹簧，得到惯性拖尾 ────── */
+const rail = document.getElementById("rail"), track = document.getElementById("track"), railBar = document.getElementById("railBar");
+const railSpring = new Spring(150, 26);
+document.getElementById("ruler").innerHTML = "<span></span>".repeat(41);
+
+/* ── 几何缓存：帧里交替「读 rect → 写 transform」会把浏览器逼进 layout
+      thrashing（40 个字母就是 40 次强制重排）。静止坐标只在布局真的变了
+      时候量一次，存成文档坐标；帧里只做纯算术 ───────────────────────── */
+let railRange = 1, railOver = 0;
+function measure() {
+  for (const L of letters) {
+    const r = L.el.getBoundingClientRect();
+    L.cx = r.left + scrollX + r.width / 2 - L.sx.x;            // 减掉当前位移 = 静止位置
+    L.cy = r.top + scrollY + r.height / 2 - L.sy.x;
+  }
+  for (const m of magnets) {
+    const r = m.el.getBoundingClientRect();
+    m.cx = r.left + scrollX + r.width / 2 - m.sx.x;
+    m.cy = r.top + scrollY + r.height / 2 - m.sy.x;
+    m.r = MAG_R + Math.max(r.width, r.height) / 2;
+  }
+  railRange = Math.max(1, rail.offsetHeight - innerHeight);
+  railOver = Math.max(0, track.scrollWidth - innerWidth);
+}
+measure();
+addEventListener("resize", measure);
+addEventListener("load", measure);
+if (document.fonts) document.fonts.ready.then(measure);        // 字体换掉后字宽会变
+setTimeout(measure, letters.length * 55 + 1200);               // 逐字入场落定后再量一次
+
+/* ── 单个 rAF 循环：一次 step 全部弹簧，一次写样式 ─────────────────────── */
+let prev = performance.now();
+function frame(now) {
+  const dt = Math.min((now - prev) / 1000, 1 / 30);            // dt 钳住：切后台回来不炸
+  prev = now;
+  const mx = px + scrollX, my = py + scrollY;                  // 指针转文档坐标
+
+  if (fine && !reduced) {
+    dot.style.transform = `translate(${px}px,${py}px)`;
+    rx.t = px; ry.t = py;
+    ring.style.transform = `translate(${rx.step(dt).toFixed(2)}px,${ry.step(dt).toFixed(2)}px)`;
+  }
+
+  if (!reduced) {
+    for (const L of letters) {                                 // 巨字排斥：权重按距离平方衰减
+      const dx = L.cx - mx, dy = L.cy - my;
+      const dist = Math.hypot(dx, dy);
+      if (dist < REPEL_R) {
+        const w = (1 - dist / REPEL_R) ** 2;
+        L.sx.t = (dx / (dist || 1)) * w * REPEL_F;
+        L.sy.t = (dy / (dist || 1)) * w * REPEL_F * .55;       // 纵向压一半，横向推开更像字被拨开
+      } else { L.sx.t = 0; L.sy.t = 0; }
+      L.el.style.transform = `translate(${L.sx.step(dt).toFixed(2)}px,${L.sy.step(dt).toFixed(2)}px)`;
+    }
+    for (const m of magnets) {                                 // 磁性吸附
+      const dx = mx - m.cx, dy = my - m.cy;
+      const near = Math.hypot(dx, dy) < m.r;
+      m.sx.t = near ? dx * .32 : 0; m.sy.t = near ? dy * .32 : 0;
+      m.el.style.transform = `translate(${m.sx.step(dt).toFixed(2)}px,${m.sy.step(dt).toFixed(2)}px)`;
+    }
+  }
+
+  for (const d of drags) {                                     // 卡片：base 是 CSS 里的初始旋转
+    d.el.style.transform = `translate(${d.sx.step(dt).toFixed(2)}px,${d.sy.step(dt).toFixed(2)}px) ${d.base}`;
+  }
+
+  const p = Math.max(0, Math.min(1, (scrollY - rail.offsetTop) / railRange));
+  railSpring.t = -p * railOver;
+  const x = reduced ? (railSpring.x = railSpring.t) : railSpring.step(dt);
+  track.style.transform = `translate3d(${x.toFixed(2)}px,0,0)`;
+  railBar.style.transform = `scaleX(${p.toFixed(3)})`;
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ── 顶栏时钟：等宽小字里的一点活气，纯装饰 ───────────────────────────── */
+const clock = document.getElementById("clock");
+setInterval(() => {
+  clock.textContent = new Date().toLocaleTimeString("en-GB", { hour12: false });
+}, 1000);
+</script>
+</body>
+</html>

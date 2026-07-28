@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lieflat Charts — G15 抖动条带图</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@6/dist/echarts.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#F0EFEB;--dark:#1C1C1A;--ink:#1C1C1A;--muted:#8F8E88;--faint:#C6C5BF;--grid:#DEDDD6}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--ink);padding:40px;-webkit-font-smoothing:antialiased}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1400px;margin:0 auto}
+  .card{background:var(--bg);border-radius:24px;padding:28px 28px 20px}
+  .card.dark{background:var(--dark);color:#F0EFEB}
+  .card.dark .sub{color:#8F8E88}
+  .card.dark .src{color:#55554F}
+  h2{font-weight:700;font-size:16.5px;letter-spacing:-.02em;margin-bottom:3px}
+  .sub{font-size:11.5px;color:var(--muted);margin-bottom:14px}
+  .src{font-size:9.5px;color:var(--faint);margin-top:10px;letter-spacing:.08em;font-weight:500}
+  .ch{height:320px}
+  .wrap{position:relative;height:320px}
+  svg text{font-family:'Inter',sans-serif}
+  .pop{transform-box:fill-box;transform-origin:center;animation:pop .5s cubic-bezier(.2,.7,.3,1.3) both}
+  @keyframes pop{from{transform:scale(0)}to{transform:none}}
+
+  .pagehead{max-width:1400px;margin:0 auto 26px;padding:0 4px}
+  .pagehead h1{font-size:22px;letter-spacing:-.02em;font-weight:800}
+  .pagehead p{font-size:12px;color:#8F8E88;margin-top:5px;line-height:1.7}
+  .pagehead .badge{margin:0 2px}
+  .badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.08em;
+    padding:3px 10px;border-radius:99px;margin-bottom:10px}
+  .badge.del{background:#1C1C1A;color:#F0EFEB}
+  .badge.pick{border:1.5px solid #1C1C1A;color:#1C1C1A}
+  .badge.pair{border:1px dashed #B0AFA9;color:#8F8E88}
+  .card.dark .badge.del{background:#F0EFEB;color:#1C1C1A}
+  .card.dark .badge.pick{border-color:#F0EFEB;color:#F0EFEB}
+  .card.dark .badge.pair{border-color:#55554F;color:#8F8E88}
+
+  html,body{min-height:100%;margin:0}
+  body{display:grid;place-items:center;padding:28px}
+  .pagehead{display:none}
+  .grid2{display:block;width:min(100%,920px);max-width:920px;margin:0 auto}
+  .card,.card.wide{display:block;width:100%;min-height:520px;padding:38px 42px 24px}
+  .card .split{grid-template-columns:minmax(190px,250px) 1fr}
+  .wiki-code{display:inline-block;margin-bottom:12px;padding:4px 11px;border:1px dashed #B0AFA9;border-radius:99px;color:#8F8E88;font-size:10px;font-weight:700;letter-spacing:.08em}
+  .card.dark .wiki-code{border-color:#55554F}
+  @media(max-width:620px){
+    body{padding:10px}
+    .card,.card.wide{min-height:500px;padding:26px 18px 20px}
+    .card .split{display:block}
+    .card .note,.card .legend{display:none}
+  }
+</style>
+
+</head>
+<body>
+<main class="grid2">
+<div class="card">
+    <span class="wiki-code">GLANCE 快读型 · G15</span>
+    <h2>响应时长的真实分布</h2>
+    <div class="sub">每个圆点代表一张工单 · 抖动展开重叠记录 · 按优先级分组</div>
+    <div class="ch" id="jitter"></div>
+    <div class="src">JITTER STRIP · MONO-FANCY3 · SUPPORT DESK</div>
+  </div>
+</main>
+<script>
+// ── shared Mono tokens ──
+const INK='#1C1C1A',PAPER='#F0EFEB',MUTED='#8F8E88',GRID='#DEDDD6';
+const L=['#1C1C1A','#4A4944','#6A6963','#8F8E88','#B0AFA9','#C6C5BF'];
+const LAD=['#1C1C1A','#4A4944','#8F8E88','#B0AFA9','#D8D7D1'];
+const tipLight={backgroundColor:INK,borderWidth:0,textStyle:{color:PAPER,fontFamily:'Inter',fontSize:12},padding:[10,14]};
+const tipDark={backgroundColor:PAPER,borderWidth:0,textStyle:{color:INK,fontFamily:'Inter',fontSize:12},padding:[10,14]};
+const rnd=(i,k)=>((i*73856093)^(k*19349663))%1000/1000; // deterministic
+
+// ── unified reveal: every chart waits to be scrolled into view; click replays.
+//    fn charts manage their own timers via keep(); they're cleared on replay.
+const timers={};
+const obsReveal=(id,fn)=>{
+  const el=document.getElementById(id);
+  const go=()=>{(timers[id]||[]).forEach(clearInterval);timers[id]=[];fn(el)};
+  const io=new IntersectionObserver(es=>{
+    if(es[0].isIntersecting){go();io.disconnect()}
+  },{threshold:.35});
+  io.observe(el);
+  el.style.cursor='pointer';
+  el.addEventListener('click',go);
+};
+const keep=(id,t)=>{(timers[id]=timers[id]||[]).push(t)};
+const eReveal=(id,opt)=>obsReveal(id,el=>{
+  const g=echarts.getInstanceByDom(el)||echarts.init(el);
+  g.clear();g.setOption(opt);
+});
+const cjs={};
+const cReveal=(id,mkCfg)=>obsReveal(id,el=>{
+  cjs[id]?.destroy();
+  cjs[id]=new Chart(el,mkCfg());
+});
+
+Chart.defaults.color=MUTED;
+Chart.defaults.font.family='Inter';
+Chart.defaults.font.size=10.5;
+Chart.defaults.borderColor=GRID;
+Chart.defaults.plugins.legend.display=false;
+Chart.defaults.plugins.tooltip.backgroundColor=INK;
+Chart.defaults.plugins.tooltip.titleColor='#F0EFEB';
+Chart.defaults.plugins.tooltip.bodyColor='#A5A49E';
+Chart.defaults.plugins.tooltip.padding=12;
+Chart.defaults.plugins.tooltip.cornerRadius=12;
+Chart.defaults.plugins.tooltip.displayColors=false;
+
+// ════ mono-fancy3 · 4: jitter strip ════
+(()=>{
+const cats=['P0 CRITICAL','P1 HIGH','P2 NORMAL','P3 LOW'];
+const mkPts=(ci,n,median,spread,outliers)=>{
+  const pts=[];
+  for(let i=0;i<n;i++){
+    const u=rnd(i+1,ci+1), v=rnd(i+7,ci+3);
+    let x=median+ (u-.5)*spread*2 + (v>.5?u*spread*.6:0);
+    if(i<outliers) x=median+spread*2.2+u*spread*3;
+    const jy=ci+ (rnd(i+13,ci+5)-.5)*.58;
+    pts.push([Math.max(.2,x),jy]);
+  }
+  return pts;
+};
+const groups=[
+  mkPts(0,38,.8,.5,2),
+  mkPts(1,64,2.4,1.1,3),
+  mkPts(2,110,6.5,2.4,4),
+  mkPts(3,72,14,4.5,3),
+];
+const flat=groups.flat();
+eReveal('jitter',{
+  animationDuration:450,animationEasing:'cubicOut',
+  animationDelay:i=>i<flat.length?Math.round(flat[i][1])*260+(i%37)*9:0,
+  tooltip:{...tipLight,formatter:p=>cats[Math.round(p.value[1])]+' — '+p.value[0].toFixed(1)+'h to resolve'},
+  grid:{left:86,right:16,top:14,bottom:30},
+  xAxis:{type:'value',name:'HOURS TO RESOLVE',nameTextStyle:{color:'#C6C5BF',fontSize:8.5},
+    splitLine:{lineStyle:{color:'#DEDDD6'}},
+    axisLine:{show:false},axisTick:{show:false},
+    axisLabel:{color:MUTED,fontFamily:'Inter',fontSize:9.5,formatter:v=>v+'h'}},
+  yAxis:{type:'value',min:-.6,max:3.6,inverse:true,
+    splitLine:{show:false},axisLine:{show:false},axisTick:{show:false},
+    axisLabel:{show:false}},
+  series:[{
+    type:'scatter',
+    data:flat,
+    symbolSize:7,
+    itemStyle:{color:p=>L[Math.round(p.value[1])],opacity:.62},
+  },{
+    type:'scatter',silent:true,symbolSize:0,
+    data:cats.map((c,i)=>({value:[0,i],label:{show:true,position:'left',offset:[-6,0],
+      color:'#6A6963',fontFamily:'Inter',fontSize:9,fontWeight:700,formatter:c}})),
+  }],
+});
+})();
+</script>
+</body>
+</html>

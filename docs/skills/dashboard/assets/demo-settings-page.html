@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：设置页</title>
+<!--
+  demo-settings-page.html —— 「设置页」形状的最小可玩实现（蓝本：open-dashboard 的 control-page + profile 双模板 + add-settings-page）。
+  复现的不变量：
+  - 分区保存：每个分区一份状态 + 一份已保存快照 + 各自的「保存 / 还原」按钮；仅在该分区脏时启用；保存后清脏 + toast
+  - 脏检测 = 当前值 vs 已保存快照的浅 diff；「还原」把当前值还原成已保存快照
+  - 破坏性操作双确认：先弹二次确认框，再让输入完整用户名精确匹配才启用「永久删除」
+  - 锚点导航：IntersectionObserver 观察四个 <section id="…">，滚过谁就高亮谁；点击锚点用 scrollIntoView 平滑跳转，并短暂锁定 IO 防止过渡帧覆盖点击目标
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .settings { display: grid; grid-template-columns: 130px 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 560px) { .settings { grid-template-columns: 1fr; } }
+  .anchors { position: sticky; top: 10px; display: flex; flex-direction: column; gap: 2px;
+             padding: 6px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+  .anchor { text-align: left; padding: 6px 10px; border-radius: 6px; border: 0; background: transparent;
+            color: var(--muted); font: inherit; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .anchor:hover { color: var(--fg); }
+  .anchor.on { background: color-mix(in srgb, var(--primary) 12%, transparent); color: var(--primary); font-weight: 550; }
+  .anchor .dot { color: var(--primary); font-size: 11px; }
+  .sections { display: flex; flex-direction: column; gap: 14px; }
+  .sec { padding: 14px 16px; scroll-margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .sec-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+  .sec-head h2 { margin: 0; font-size: 15px; }
+  .sec-hint { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+  .sec-actions { display: flex; gap: 6px; }
+  .fields { display: flex; flex-direction: column; gap: 10px; }
+  .field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+  .field input, .field select, .field textarea { color: var(--fg); }
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .toggle-text { display: flex; flex-direction: column; gap: 2px; }
+  .toggle-title { color: var(--fg); font-size: 13px; font-weight: 550; }
+  .toggle-desc { font-size: 12px; color: var(--muted); }
+  .toggle-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); }
+  .sec.danger-sec { border-color: var(--danger); }
+  .btn.danger-btn { color: var(--danger); border-color: var(--danger); }
+  .btn.danger-solid { background: var(--danger); border-color: var(--danger); color: #fff; }
+  .modal code { padding: 0 4px; background: var(--border); border-radius: 4px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+
+const SECTIONS = [
+  { id: "profile", label: "个人资料" },
+  { id: "account", label: "账号" },
+  { id: "notify",  label: "通知" },
+  { id: "danger",  label: "危险区" },
+];
+
+const INITIAL_PROFILE = {
+  fullName: "陈禾",
+  jobTitle: "产品设计师",
+  location: "上海",
+  bio: "沿海城市的一片瓦，做设计的一双手。",
+};
+const INITIAL_ACCOUNT = {
+  email: "chenhe@corp.cn",
+  language: "zh-CN",
+  timezone: "Asia/Shanghai",
+};
+const INITIAL_NOTIFY = {
+  emailAlerts: true,
+  pushAlerts: false,
+  digest: "weekly",
+};
+const USERNAME = "chenhe";  // 危险区二次确认要精确匹配的用户名
+
+// 分区脏 = 当前值对已保存快照的浅 diff。真实版脏由表单库 form.formState.isDirty 负责。
+function shallowDirty(a, b) { return Object.keys(a).some(k => a[k] !== b[k]); }
+
+// 每个分区：一份当前值、一份已保存快照、脏、保存、还原。保存成功后 saved := values，清脏。
+function useSection(initial) {
+  const [values, setValues] = useState(initial);
+  const [saved, setSaved]   = useState(initial);
+  return {
+    values, saved,
+    dirty: shallowDirty(values, saved),
+    set: (k, v) => setValues(vs => ({ ...vs, [k]: v })),
+    save: () => setSaved(values),
+    discard: () => setValues(saved),
+  };
+}
+
+function SectionActions({ dirty, onSave, onDiscard }) {
+  return html`
+    <div class="sec-actions">
+      <button type="button" class="btn sm" disabled=${!dirty} onClick=${onDiscard}>还原</button>
+      <button type="button" class="btn sm primary" disabled=${!dirty} onClick=${onSave}>保存</button>
+    </div>`;
+}
+
+// 双确认删除：第一层打开弹窗，第二层要求输入完整用户名精确匹配才启用主按钮。
+function DangerZone({ onDeleted }) {
+  const [open, setOpen] = useState(false);
+  const [typed, setTyped] = useState("");
+  const match = typed === USERNAME;
+  const close = () => { setOpen(false); setTyped(""); };
+  return html`
+    <section id="danger" class="card sec danger-sec">
+      <div class="sec-head">
+        <div>
+          <h2>危险区</h2>
+          <p class="sec-hint">这里的操作不可撤销，请三思。</p>
+        </div>
+      </div>
+      <div class="alert danger" role="alert">
+        <p><strong>删除账户</strong> —— 立即清除账号、订阅与全部历史记录。此操作无法撤销。</p>
+      </div>
+      <div class="sec-actions">
+        <button type="button" class="btn sm danger-btn" onClick=${() => setOpen(true)}>删除账户…</button>
+      </div>
+      ${open && html`
+        <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) close(); }}>
+          <div class="modal" role="dialog" aria-modal="true" aria-label="删除账户二次确认">
+            <h2>删除账户？</h2>
+            <p style=${{ margin: 0 }}>这将永久删除账户 <strong>${USERNAME}</strong> 及其全部数据。</p>
+            <label>
+              为确认删除，请输入用户名 <code>${USERNAME}</code>
+              <input value=${typed} placeholder=${USERNAME} autoFocus
+                     onChange=${e => setTyped(e.target.value)} />
+            </label>
+            ${typed && !match && html`<p class="err">用户名不匹配，无法删除</p>`}
+            <div class="actions">
+              <button type="button" class="btn" onClick=${close}>取消</button>
+              <button type="button" class="btn danger-solid" disabled=${!match}
+                      onClick=${() => { close(); onDeleted(); }}>永久删除</button>
+            </div>
+          </div>
+        </div>`}
+    </section>`;
+}
+
+function App() {
+  const profile = useSection(INITIAL_PROFILE);
+  const account = useSection(INITIAL_ACCOUNT);
+  const notify  = useSection(INITIAL_NOTIFY);
+  const [active, setActive] = useState("profile");
+  const [toast, setToast] = useState("");
+  const clickLockUntil = useRef(0);       // 点击锚点后短暂锁定 IO，防止平滑滚动的过渡帧覆盖目标
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  useEffect(() => {
+    const els = SECTIONS.map(s => document.getElementById(s.id)).filter(Boolean);
+    // rootMargin 圈住视口中间一条带；谁进带里谁就是当前分区
+    const io = new IntersectionObserver(entries => {
+      if (Date.now() < clickLockUntil.current) return;
+      const hit = entries.filter(e => e.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (hit) setActive(hit.target.id);
+    }, { rootMargin: "-30% 0px -55% 0px", threshold: 0 });
+    els.forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  const jump = id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    setActive(id);
+    clickLockUntil.current = Date.now() + 700;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const doSave = (sec, label) => { sec.save(); setToast(`${label}已保存`); };
+
+  const isDirty = id =>
+    (id === "profile" && profile.dirty) ||
+    (id === "account" && account.dirty) ||
+    (id === "notify"  && notify.dirty);
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>设置</h1>
+          <p class="sub">左侧锚点定位 · 逐区保存 · 危险区二次确认</p>
+        </div>
+      </header>
+
+      <div class="settings">
+        <aside class="anchors" aria-label="设置分区">
+          ${SECTIONS.map(s => html`
+            <button key=${s.id} type="button" class=${"anchor" + (active === s.id ? " on" : "")}
+                    onClick=${() => jump(s.id)}>
+              <span>${s.label}</span>
+              ${isDirty(s.id) && html`<span class="dot" aria-label="有未保存的改动">●</span>`}
+            </button>`)}
+        </aside>
+
+        <div class="sections">
+          <section id="profile" class="card sec">
+            <div class="sec-head">
+              <div><h2>个人资料</h2><p class="sec-hint">展示在你名字旁边的公开信息</p></div>
+              <${SectionActions} dirty=${profile.dirty}
+                  onSave=${() => doSave(profile, "个人资料")}
+                  onDiscard=${profile.discard} />
+            </div>
+            <div class="fields">
+              <label class="field">姓名
+                <input value=${profile.values.fullName}
+                       onChange=${e => profile.set("fullName", e.target.value)} />
+              </label>
+              <div class="row2">
+                <label class="field">职位
+                  <input value=${profile.values.jobTitle}
+                         onChange=${e => profile.set("jobTitle", e.target.value)} />
+                </label>
+                <label class="field">所在地
+                  <input value=${profile.values.location}
+                         onChange=${e => profile.set("location", e.target.value)} />
+                </label>
+              </div>
+              <label class="field">简介
+                <textarea rows="2" value=${profile.values.bio}
+                          onChange=${e => profile.set("bio", e.target.value)}></textarea>
+              </label>
+            </div>
+          </section>
+
+          <section id="account" class="card sec">
+            <div class="sec-head">
+              <div><h2>账号</h2><p class="sec-hint">邮箱、语言与时区</p></div>
+              <${SectionActions} dirty=${account.dirty}
+                  onSave=${() => doSave(account, "账号")}
+                  onDiscard=${account.discard} />
+            </div>
+            <div class="fields">
+              <label class="field">邮箱
+                <input type="email" value=${account.values.email}
+                       onChange=${e => account.set("email", e.target.value)} />
+              </label>
+              <div class="row2">
+                <label class="field">语言
+                  <select value=${account.values.language}
+                          onChange=${e => account.set("language", e.target.value)}>
+                    <option value="zh-CN">简体中文</option>
+                    <option value="en-US">English (US)</option>
+                    <option value="ja-JP">日本語</option>
+                  </select>
+                </label>
+                <label class="field">时区
+                  <select value=${account.values.timezone}
+                          onChange=${e => account.set("timezone", e.target.value)}>
+                    <option value="Asia/Shanghai">Asia/Shanghai (UTC+8)</option>
+                    <option value="Asia/Tokyo">Asia/Tokyo (UTC+9)</option>
+                    <option value="Europe/Berlin">Europe/Berlin (UTC+1)</option>
+                    <option value="America/Los_Angeles">America/Los_Angeles (UTC-8)</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section id="notify" class="card sec">
+            <div class="sec-head">
+              <div><h2>通知</h2><p class="sec-hint">决定我们能不能打扰你</p></div>
+              <${SectionActions} dirty=${notify.dirty}
+                  onSave=${() => doSave(notify, "通知")}
+                  onDiscard=${notify.discard} />
+            </div>
+            <div class="fields">
+              <div class="toggle-row">
+                <div class="toggle-text">
+                  <span class="toggle-title">邮件通知</span>
+                  <span class="toggle-desc">账号、账单与安全相关的邮件</span>
+                </div>
+                <input type="checkbox" aria-label="邮件通知" checked=${notify.values.emailAlerts}
+                       onChange=${e => notify.set("emailAlerts", e.target.checked)} />
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-text">
+                  <span class="toggle-title">推送通知</span>
+                  <span class="toggle-desc">桌面与移动端的实时提醒</span>
+                </div>
+                <input type="checkbox" aria-label="推送通知" checked=${notify.values.pushAlerts}
+                       onChange=${e => notify.set("pushAlerts", e.target.checked)} />
+              </div>
+              <label class="field">摘要频率
+                <select value=${notify.values.digest}
+                        onChange=${e => notify.set("digest", e.target.value)}>
+                  <option value="daily">每日</option>
+                  <option value="weekly">每周</option>
+                  <option value="never">从不</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <${DangerZone} onDeleted=${() => setToast(`账户 ${USERNAME} 已删除（demo）`)} />
+        </div>
+      </div>
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

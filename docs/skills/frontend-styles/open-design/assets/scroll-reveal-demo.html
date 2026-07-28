@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>data-reveal 滚动入场编排 — open-design.ai 全页体系复刻</title>
+<style>
+  /* Atelier Zero 令牌（open-design 官网 app/globals.css :root） */
+  :root {
+    --paper: #fafafa;
+    --paper-dark: #f0f0f0;
+    --ink: #262626;
+    --ink-soft: #434343;
+    --ink-mute: #595959;
+    --ink-faint: #8c8c8c;
+    --coral: #63fe13;      /* 名叫 coral 的荧光绿，全站唯一强调色 */
+    --coral-soft: #83ff3b;
+    --bone: #ffffff;
+    --line: #d9d9d9;
+    --shadow: 0 30px 60px -30px rgba(38, 38, 38, 0.16);
+    --sans: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans); }
+
+  /* ================================================================
+     data-reveal 体系 —— 照抄官网 globals.css 5349 行起的原始规则。
+     初始态：透明 + 位移；被 JS 翻成 data-revealed='true' 后过渡到位。
+     一条 900ms 的长过渡 + cubic-bezier(0.22,1,0.36,1)（快出缓收），
+     所以入场是"飘"进来而不是"弹"进来。
+     ================================================================ */
+  [data-reveal] {
+    opacity: 0;
+    translate: 0 28px;                     /* 默认：从下方 28px 升入 */
+    transition:
+      opacity 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+      translate 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+      scale 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+    will-change: opacity, translate, scale;
+  }
+  /* 四个方向/形态变体（官网原值）：属性值本身就是变体名 */
+  [data-reveal='left']    { translate: -36px 0; }
+  [data-reveal='right']   { translate: 36px 0; }
+  [data-reveal='scale']   { translate: 0 0; scale: 0.96; }
+  [data-reveal='rise-lg'] { translate: 0 64px; scale: 0.985; }
+  /* 终态：翻牌后归位，并把 will-change 交还给浏览器 */
+  [data-reveal][data-revealed='true'] {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    will-change: auto;
+  }
+  /* stagger 原语：不写 JS 排队，直接给兄弟元素按 nth-child 递增
+     --reveal-delay（官网 cards 用 90ms 间隔、hero-copy 80ms、partners 70ms）。
+     同一批元素同时进场，靠 delay 错开成波浪。 */
+  .cards > .card[data-reveal]:nth-child(1) { --reveal-delay: 0ms; }
+  .cards > .card[data-reveal]:nth-child(2) { --reveal-delay: 90ms; }
+  .cards > .card[data-reveal]:nth-child(3) { --reveal-delay: 180ms; }
+
+  /* 无障碍兜底（官网原样）：reduced-motion 下全部立即可见、零过渡 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1 !important;
+      translate: 0 0 !important;
+      scale: 1 !important;
+      transition: none !important;
+    }
+  }
+
+  /* ---------------- 以下是 demo 的页面骨架，与效果本身无关 ---------------- */
+  .intro {
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+    padding: 20px;
+  }
+  .intro h1 { font-size: clamp(26px, 5vw, 40px); font-weight: 800; letter-spacing: -0.02em; }
+  .intro h1 em { font-style: normal; background: var(--coral); padding: 0 8px; }
+  .intro p { color: var(--ink-mute); font-size: 15px; }
+  .intro .down { margin-top: 24px; font-size: 22px; color: var(--ink-faint); animation: bob 1.6s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(8px); } }
+  @media (prefers-reduced-motion: reduce) { .intro .down { animation: none; } }
+
+  section { max-width: 860px; margin: 0 auto; padding: 12vh 24px; }
+  .kicker { font-size: 13px; letter-spacing: 0.14em; color: var(--ink-mute); margin-bottom: 10px; }
+  .display { font-size: clamp(24px, 4vw, 36px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 14px; }
+  .lead { color: var(--ink-soft); line-height: 1.8; max-width: 56ch; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
+  @media (max-width: 640px) { .split { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--bone);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 26px;
+    box-shadow: var(--shadow);
+  }
+  .panel .num { font-size: 40px; font-weight: 800; color: var(--coral); -webkit-text-stroke: 1px var(--ink); }
+  .panel h3 { font-size: 17px; margin: 8px 0 6px; }
+  .panel p { font-size: 14px; color: var(--ink-mute); line-height: 1.7; }
+
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--bone);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  .card .dot { width: 10px; height: 10px; background: var(--coral); display: inline-block; margin-bottom: 12px; }
+  .card h4 { font-size: 15px; margin-bottom: 6px; }
+  .card p { font-size: 13px; color: var(--ink-mute); line-height: 1.7; }
+
+  .stage {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 20px;
+    padding: 48px 34px;
+    text-align: center;
+  }
+  .stage h3 { font-size: clamp(20px, 3.4vw, 30px); font-weight: 800; }
+  .stage h3 em { font-style: normal; color: var(--coral); }
+  .stage p { color: #bfbfbf; margin-top: 10px; font-size: 14px; }
+
+  .reset {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9;
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 9px 18px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bone);
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  .reset:hover { border-color: var(--coral); }
+  .tail { text-align: center; color: var(--ink-faint); font-size: 13px; padding: 0 0 10vh; }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>一个属性，<em>整页编排</em></h1>
+  <p>官网每个模块都只是挂了一个 data-reveal —— 往下滚，看它们逐一进场。</p>
+  <span class="down">↓</span>
+</div>
+
+<!-- 默认变体：从下方 28px 升入 -->
+<section>
+  <p class="kicker" data-reveal>模块 01 · 默认升入</p>
+  <h2 class="display" data-reveal>从下方 28px 飘入</h2>
+  <p class="lead" data-reveal>不带变体值的 data-reveal 就是这一种：opacity 0 → 1，translate 0 28px → 0，一条 900ms 的 cubic-bezier(0.22,1,0.36,1) 过渡。官网 hero 文案、各段标题全部用它。</p>
+</section>
+
+<!-- right 变体：左文右卡，卡片从右侧 36px 滑入 -->
+<section>
+  <div class="split">
+    <div>
+      <p class="kicker" data-reveal>模块 02 · 方向变体</p>
+      <h2 class="display" data-reveal>右栏从右侧滑入</h2>
+      <p class="lead" data-reveal>data-reveal="right" 初始位移换成 36px 0。官网"方法论"模块的右侧导语、地球模块的球体都是 right 入场，和左栏的默认升入形成对角线节奏。</p>
+    </div>
+    <div class="panel" data-reveal="right">
+      <div class="num">36px</div>
+      <h3>方向即属性值</h3>
+      <p>left / right / scale / rise-lg 四个变体只改初始 translate 或 scale，过渡曲线共用一条。</p>
+    </div>
+  </div>
+</section>
+
+<!-- stagger：三张卡片同批触发，靠 --reveal-delay 错峰 -->
+<section>
+  <p class="kicker" data-reveal>模块 03 · 波浪错峰</p>
+  <h2 class="display" data-reveal>兄弟元素 90ms 一个</h2>
+  <div class="cards">
+    <div class="card" data-reveal><span class="dot"></span><h4>零 JS 排队</h4><p>delay 由 CSS nth-child 递增 --reveal-delay 给出，JS 只管翻牌。</p></div>
+    <div class="card" data-reveal><span class="dot"></span><h4>同批进场</h4><p>三张卡在同一帧被翻成 revealed，波浪感全靠 delay。</p></div>
+    <div class="card" data-reveal><span class="dot"></span><h4>节奏令牌</h4><p>官网不同区块用 70 / 80 / 90 / 110ms 四档间隔。</p></div>
+  </div>
+</section>
+
+<!-- scale + rise-lg 变体 -->
+<section>
+  <p class="kicker" data-reveal>模块 04 · 形态变体</p>
+  <h2 class="display" data-reveal>大块面用 rise-lg</h2>
+  <div class="stage" data-reveal="rise-lg">
+    <h3>整块舞台从 <em>64px</em> 下方浮起</h3>
+    <p>rise-lg = translate 0 64px + scale 0.985，官网结尾 CTA 的桌面端窗口截图就是这么进场的；scale 变体则只做 0.96 → 1 的呼吸。</p>
+  </div>
+</section>
+
+<p class="tail">—— 到底了，点右下角可以重看一遍 ——</p>
+
+<button class="reset" type="button" id="reset">↺ 重置入场</button>
+
+<script>
+  (() => {
+    /* ================================================================
+       JS 侧照抄官网 home-enhancer.astro 的 IntersectionObserver 编排：
+       - 只选还没翻牌的 [data-reveal]:not([data-revealed])
+       - threshold: 0.12 —— 元素露出 12% 才算进场
+       - rootMargin: '0px 0px -8% 0px' —— 视口底部 8% 是缓冲带，
+         贴着底边的元素不算，要再滚一点才触发
+       - 翻完立刻 unobserve：每个元素一生只入场一次
+       鲁棒性契约（官网注释原话的意思）：没有这段 JS 页面全是 opacity:0
+       的"白板"，所以 reduced-motion 或没有 IO 时必须直接把所有元素
+       置为 revealed —— 动画是增强，内容可见是底线。
+       ================================================================ */
+    const arm = () => {
+      const elements = document.querySelectorAll('[data-reveal]:not([data-revealed])');
+      if (elements.length === 0) return;
+
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion || !('IntersectionObserver' in window)) {
+        for (const el of elements) el.dataset.revealed = 'true';
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.dataset.revealed = 'true';
+          observer.unobserve(entry.target);
+        }
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+      for (const el of elements) observer.observe(el);
+    };
+    arm();
+
+    /* demo 专属：摘掉全部 data-revealed、回到顶部、重新布防 */
+    document.getElementById('reset').addEventListener('click', () => {
+      for (const el of document.querySelectorAll('[data-revealed]')) delete el.dataset.revealed;
+      scrollTo({ top: 0, behavior: 'auto' });
+      requestAnimationFrame(arm);
+    });
+  })();
+</script>
+</body>
+</html>

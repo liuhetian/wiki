@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：i18n</title>
+<!--
+  demo-i18n.html —— 「i18n」形状的最小可玩实现（蓝本：open-dashboard 的 I18nProvider + useTranslation）。
+  复现的不变量：
+  - active locale 只放在组件 state（SSR-safe，模块加载时不碰 window）
+  - 字典 en/zh 键要对齐；缺译时回退到 defaultLocale 字典 → 再回退到 key 本身
+  - 插值只支持 {var}，值 String() 一下
+  - 日期 / 数字 / 货币走 Intl.*，不硬编码格式；locale 变了整页跟着刷新
+  - 用户偏好持久化到 localStorage，但读写都在 useState 初始化 / useEffect 里
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+  注：demo 的 defaultLocale 用了 zh，方便演示英文缺译回落到中文；真实版通常反过来（en 兜底）。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .miss { margin-left: 6px; padding: 1px 6px; border-radius: 999px;
+          background: var(--chip-off-bg); color: var(--chip-off-fg);
+          font-size: 11px; vertical-align: middle; }
+  code { background: var(--chip-off-bg); color: var(--chip-off-fg);
+         padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect, useCallback, useRef, createContext, useContext } = React;
+const html = htm.bind(React.createElement);
+
+const DEFAULT_LOCALE = "zh";
+const STORAGE_KEY = "demo-i18n.locale";
+
+const dictionaries = {
+  zh: {
+    "app.title": "商店后台",
+    "app.subtitle": "切右上角语言：日期 / 数字 / 货币会一起刷新",
+    "greeting.hello": "你好，{name}",
+    "greeting.welcome": "欢迎回到 {app}",
+    "stats.revenue": "本月营收",
+    "stats.orders": "订单数",
+    "stats.aov": "客单价",
+    "table.title": "最新订单",
+    "table.order": "订单号",
+    "table.customer": "客户",
+    "table.date": "下单时间",
+    "table.total": "金额",
+    "toast.switched": "语言已切换至 {label}",
+    "confirm.reset.title": "恢复默认语言？",
+    "confirm.reset.body": "本地保存的语言偏好会被清空，页面回到中文。",
+    "action.reset": "恢复默认",
+    "promo.tagline": "全场包邮 · 会员日双倍积分",
+  },
+  en: {
+    "app.title": "Store Admin",
+    "app.subtitle": "Switch language (top right): dates / numbers / currency refresh together",
+    "greeting.hello": "Hi, {name}",
+    "greeting.welcome": "Welcome back to {app}",
+    "stats.revenue": "Revenue MTD",
+    "stats.orders": "Orders",
+    "stats.aov": "AOV",
+    "table.title": "Recent orders",
+    "table.order": "Order",
+    "table.customer": "Customer",
+    "table.date": "Placed at",
+    "table.total": "Total",
+    "toast.switched": "Language switched to {label}",
+    "confirm.reset.title": "Reset language?",
+    "confirm.reset.body": "The saved language preference will be cleared and the page will fall back to Chinese.",
+    "action.reset": "Reset",
+    // promo.tagline 故意留空 —— 演示缺译回退到 defaultLocale (zh)
+  },
+};
+
+const LOCALES = [
+  { value: "zh", label: "中文",    currency: "CNY", bcp47: "zh-CN" },
+  { value: "en", label: "English", currency: "USD", bcp47: "en-US" },
+];
+// demo 用固定汇率演示货币格式差异；真实版走服务端拿现价
+const RATE = { CNY: 1, USD: 1 / 7.15 };
+
+const ORDERS = [
+  { id: "SO-24019", customer: "陈禾",   iso: "2026-07-06T09:14:00Z", cny: 1234.56 },
+  { id: "SO-24018", customer: "李慕白", iso: "2026-07-05T18:02:00Z", cny: 899.00  },
+  { id: "SO-24017", customer: "王小满", iso: "2026-07-05T11:47:00Z", cny: 4288.20 },
+  { id: "SO-24016", customer: "赵青",   iso: "2026-07-04T22:31:00Z", cny: 156.90  },
+  { id: "SO-24015", customer: "周芷",   iso: "2026-07-04T08:05:00Z", cny: 2020.00 },
+];
+
+function interpolate(tpl, vars) {
+  if (!vars) return tpl;
+  return tpl.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
+}
+
+const I18nCtx = createContext(null);
+
+function I18nProvider({ children }) {
+  // SSR-safe：初值函数里 typeof window 检查后再读；模块顶层不碰 window
+  const [locale, setLocale] = useState(() => {
+    try {
+      const saved = typeof window !== "undefined" && window.localStorage.getItem(STORAGE_KEY);
+      if (saved && dictionaries[saved]) return saved;
+    } catch (e) { /* localStorage 可能被禁 */ }
+    return DEFAULT_LOCALE;
+  });
+
+  // 持久化：副作用里写，SSR 期跳过
+  useEffect(() => {
+    try { window.localStorage.setItem(STORAGE_KEY, locale); } catch (e) { /* 忽略 */ }
+  }, [locale]);
+
+  const t = useCallback((key, vars) => {
+    const dict = dictionaries[locale];
+    const fb   = dictionaries[DEFAULT_LOCALE];
+    const tpl  = dict[key] ?? fb[key] ?? key;
+    return interpolate(tpl, vars);
+  }, [locale]);
+
+  // 判断某 key 当前是否走了回退（用于「缺译回退」小灰提示）
+  const missing = useCallback(
+    (key) => !(key in dictionaries[locale]) && (key in dictionaries[DEFAULT_LOCALE]),
+    [locale]);
+
+  const value = useMemo(() => ({ locale, setLocale, t, missing }), [locale, t, missing]);
+  return html`<${I18nCtx.Provider} value=${value}>${children}<//>`;
+}
+
+function useT() {
+  const ctx = useContext(I18nCtx);
+  if (!ctx) throw new Error("useT 必须在 I18nProvider 内使用");
+  return ctx;
+}
+
+function Confirm({ title, text, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>${title}</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" onClick=${onOk}>确认</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function LocaleSwitch() {
+  const { locale, setLocale } = useT();
+  return html`
+    <div class="seg" role="group" aria-label="语言">
+      ${LOCALES.map(L => html`
+        <button key=${L.value} class=${L.value === locale ? "on" : ""}
+                onClick=${() => setLocale(L.value)}>${L.label}</button>`)}
+    </div>`;
+}
+
+function App() {
+  const { locale, setLocale, t, missing } = useT();
+  const [toast, setToast]     = useState("");
+  const [confirm, setConfirm] = useState(null);
+  const prev = useRef(locale);
+
+  // locale 变化 → toast（首屏不出）
+  useEffect(() => {
+    if (prev.current !== locale) {
+      const label = LOCALES.find(L => L.value === locale)?.label ?? locale;
+      setToast(t("toast.switched", { label }));
+      prev.current = locale;
+    }
+  }, [locale, t]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const h = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(h);
+  }, [toast]);
+
+  const conf = LOCALES.find(L => L.value === locale);
+
+  // Intl formatter：locale 变了整套重建
+  const fmt = useMemo(() => ({
+    date:  new Intl.DateTimeFormat(conf.bcp47, {
+      year: "numeric",
+      month: locale === "zh" ? "long" : "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    money: new Intl.NumberFormat(conf.bcp47, { style: "currency", currency: conf.currency }),
+    num:   new Intl.NumberFormat(conf.bcp47),
+  }), [locale, conf.bcp47, conf.currency]);
+
+  const revenueCny = ORDERS.reduce((s, o) => s + o.cny, 0);
+  const revenue    = revenueCny * RATE[conf.currency];
+  const aov        = revenue / ORDERS.length;
+
+  const doReset = () => {
+    try { window.localStorage.removeItem(STORAGE_KEY); } catch (e) { /* 忽略 */ }
+    setLocale(DEFAULT_LOCALE);
+    setConfirm(null);
+  };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>${t("app.title")}</h1>
+          <p class="sub">${t("app.subtitle")}</p>
+        </div>
+        <${LocaleSwitch} />
+      </header>
+
+      <div class="card" style=${{ padding: "14px 16px" }}>
+        <h2 style=${{ margin: 0, fontSize: "16px" }}>${t("greeting.hello", { name: "Aria" })}</h2>
+        <p style=${{ margin: "4px 0 0", color: "var(--muted)" }}>
+          ${t("greeting.welcome", { app: t("app.title") })}
+        </p>
+        <p style=${{ margin: "10px 0 0" }}>
+          ${t("promo.tagline")}
+          ${missing("promo.tagline") && html`<span class="miss">缺译回退 · ${DEFAULT_LOCALE}</span>`}
+        </p>
+      </div>
+
+      <div class="stats">
+        <div class="stat card">
+          <p class="stat-label">${t("stats.revenue")}</p>
+          <p class="stat-value">${fmt.money.format(revenue)}</p>
+        </div>
+        <div class="stat card">
+          <p class="stat-label">${t("stats.orders")}</p>
+          <p class="stat-value">${fmt.num.format(ORDERS.length)}</p>
+        </div>
+        <div class="stat card">
+          <p class="stat-label">${t("stats.aov")}</p>
+          <p class="stat-value">${fmt.money.format(aov)}</p>
+        </div>
+      </div>
+
+      <h2 style=${{ margin: "18px 0 8px", fontSize: "15px" }}>${t("table.title")}</h2>
+      <table class="list">
+        <thead>
+          <tr>
+            <th>${t("table.order")}</th>
+            <th>${t("table.customer")}</th>
+            <th>${t("table.date")}</th>
+            <th class="num">${t("table.total")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${ORDERS.map(o => html`
+            <tr key=${o.id}>
+              <td style=${{ fontWeight: 550 }}>${o.id}</td>
+              <td>${o.customer}</td>
+              <td>${fmt.date.format(new Date(o.iso))}</td>
+              <td class="num">${fmt.money.format(o.cny * RATE[conf.currency])}</td>
+            </tr>`)}
+        </tbody>
+      </table>
+
+      <footer class="pager">
+        <span>已持久化：<code>localStorage["${STORAGE_KEY}"] = "${locale}"</code></span>
+        <div>
+          <button class="btn sm" onClick=${() => setConfirm({
+            title: t("confirm.reset.title"),
+            body:  t("confirm.reset.body"),
+          })}>${t("action.reset")}</button>
+        </div>
+      </footer>
+
+      ${confirm && html`<${Confirm} title=${confirm.title} text=${confirm.body}
+                                    onOk=${doReset} onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  html`<${I18nProvider}><${App} /><//>`
+);
+</script>
+</body>
+</html>

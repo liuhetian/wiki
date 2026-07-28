@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L3 · 数据驱动节点图 — JSON 进，图出，位置算法算</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif; display: flex; }
+
+  /* 左侧：数据面板 —— L3 的输入是数据，不是鼠标 */
+  .panel {
+    width: 250px; flex: 0 0 auto; background: #fff; border-right: 1px solid #e2e8f0;
+    display: flex; flex-direction: column; padding: 12px; gap: 8px;
+  }
+  .panel h3 { font-size: 13px; color: #0f172a; }
+  .panel textarea {
+    flex: 1; font: 11.5px/1.5 ui-monospace, Menlo, Consolas, monospace;
+    border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; resize: none; color: #334155;
+  }
+  .panel button {
+    font: inherit; font-size: 12px; padding: 6px 10px; cursor: pointer;
+    border: 1px solid #cbd5e1; border-radius: 7px; background: #f8fafc; color: #334155;
+  }
+  .panel button.primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+  .panel .err { font-size: 11px; color: #dc2626; min-height: 14px; }
+  .panel .meta { font-size: 11px; color: #94a3b8; }
+
+  .viewport {
+    position: relative; flex: 1; overflow: hidden;
+    background: #f7f8fa; cursor: grab; touch-action: none;
+  }
+  .viewport.panning { cursor: grabbing; }
+  .world { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
+
+  svg.wires { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; }
+  svg.wires path { fill: none; stroke: #cbd5e1; stroke-width: 1.5; transition: stroke .12s; }
+  svg.wires path.hot { stroke: #3b82f6; stroke-width: 2; }
+
+  .gnode {
+    position: absolute; padding: 6px 12px; border-radius: 8px; white-space: nowrap;
+    font-size: 12px; border: 1px solid; user-select: none; cursor: default;
+    background: #fff; box-shadow: 0 1px 4px rgba(15,23,42,.06);
+  }
+  .gnode .k { font-weight: 600; }
+  .gnode .v { color: #64748b; margin-left: 6px; }
+  .gnode.obj   { border-color: #93c5fd; }
+  .gnode.arr   { border-color: #fcd34d; }
+  .gnode.leaf  { border-color: #d1d5db; }
+  .gnode.stage { border-color: #86efac; font-weight: 600; color: #14532d; }
+  .gnode.hot { box-shadow: 0 0 0 2px rgba(59,130,246,.3); }
+
+  .tip {
+    position: absolute; right: 12px; top: 12px; z-index: 5;
+    font-size: 11.5px; color: #94a3b8; background: rgba(255,255,255,.85);
+    border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+<div class="panel">
+  <h3>数据（编辑后点渲染）</h3>
+  <textarea id="src" spellcheck="false"></textarea>
+  <div class="err" id="err"></div>
+  <button class="primary" id="render">渲染 JSON → 图</button>
+  <button id="demoDag">换示例：流水线 DAG</button>
+  <div class="meta" id="meta"></div>
+</div>
+<div class="viewport" id="viewport">
+  <div class="world" id="world">
+    <svg class="wires" id="wires" width="1" height="1"></svg>
+  </div>
+  <div class="tip">节点不可拖 —— 位置由布局算法计算<br/>悬停节点高亮其连线 · 滚轮缩放 · 拖空白平移</div>
+</div>
+
+<script>
+/* ============ 输入 1：JSON → 树状图（jsoncrack 模式） ============ */
+const SAMPLE_JSON = {
+  name: "订单 #1024",
+  status: "paid",
+  amount: 299,
+  customer: { name: "小王", vip: true },
+  items: [
+    { sku: "A-1", qty: 2 },
+    { sku: "B-7", qty: 1 }
+  ]
+};
+
+function jsonToGraph(value, label, nodes, edges, parent) {
+  const id = 'n' + nodes.length;
+  const kind = Array.isArray(value) ? 'arr' : (value && typeof value === 'object') ? 'obj' : 'leaf';
+  const text = kind === 'leaf' ? { k: label, v: JSON.stringify(value) }
+             : kind === 'arr'  ? { k: label, v: `[${value.length}]` }
+             :                    { k: label, v: '' };
+  nodes.push({ id, kind, ...text });
+  if (parent) edges.push({ from: parent, to: id });
+  if (kind === 'obj') for (const k of Object.keys(value)) jsonToGraph(value[k], k, nodes, edges, id);
+  if (kind === 'arr') value.forEach((v, i) => jsonToGraph(v, String(i), nodes, edges, id));
+  return { nodes, edges };
+}
+
+/* ============ 输入 2：非树 DAG（多入边，树布局搞不定的形状） ============ */
+const SAMPLE_DAG = {
+  nodes: [
+    { id: 'src',  k: '拉取代码', kind: 'stage' },
+    { id: 'lint', k: 'Lint',     kind: 'stage' },
+    { id: 'unit', k: '单元测试', kind: 'stage' },
+    { id: 'build',k: '构建产物', kind: 'stage' },
+    { id: 'e2e',  k: 'E2E 测试', kind: 'stage' },
+    { id: 'img',  k: '打镜像',   kind: 'stage' },
+    { id: 'dep',  k: '部署预发', kind: 'stage' },
+  ],
+  edges: [
+    { from: 'src', to: 'lint' }, { from: 'src', to: 'unit' }, { from: 'src', to: 'build' },
+    { from: 'build', to: 'e2e' }, { from: 'unit', to: 'e2e' },
+    { from: 'build', to: 'img' }, { from: 'lint', to: 'img' },
+    { from: 'img', to: 'dep' }, { from: 'e2e', to: 'dep' },
+  ],
+};
+
+/* ============ 布局：最长路径分层 + 重心排序（ELK/dagre 的迷你替身） ============ */
+function layout(nodes, edges, sizeOf) {
+  const GAP_X = 70, GAP_Y = 18;
+  const adj = {}, indeg = {};
+  nodes.forEach(n => { adj[n.id] = []; indeg[n.id] = 0; });
+  edges.forEach(e => { adj[e.from].push(e.to); indeg[e.to]++; });
+
+  // 1) 分层：layer = 距离根的最长路径（拓扑序推进）
+  const layer = {}, q = [];
+  nodes.forEach(n => { if (indeg[n.id] === 0) { layer[n.id] = 0; q.push(n.id); } });
+  const left = { ...indeg };
+  while (q.length) {
+    const id = q.shift();
+    for (const t of adj[id]) {
+      layer[t] = Math.max(layer[t] ?? 0, layer[id] + 1);
+      if (--left[t] === 0) q.push(t);
+    }
+  }
+  nodes.forEach(n => { if (layer[n.id] === undefined) layer[n.id] = 0; }); // 含环兜底
+
+  // 2) 按层分组，层内按父节点平均 y（重心）排序，减少交叉
+  const cols = [];
+  nodes.forEach(n => { (cols[layer[n.id]] ||= []).push(n); });
+  const pos = {};
+  const parents = {};
+  edges.forEach(e => (parents[e.to] ||= []).push(e.from));
+  cols.forEach((col, li) => {
+    if (li > 0) col.sort((a, b) => bary(a) - bary(b));
+    let y = 0;
+    for (const n of col) { pos[n.id] = { y }; y += sizeOf(n).h + GAP_Y; }
+    const totalH = y - GAP_Y;
+    col.forEach(n => pos[n.id].y -= totalH / 2);           // 每列垂直居中
+  });
+  function bary(n) {
+    const ps = parents[n.id] || [];
+    if (!ps.length) return 0;
+    return ps.reduce((s, p) => s + (pos[p]?.y ?? 0), 0) / ps.length;
+  }
+
+  // 3) x：每层宽度取本层最宽节点
+  let x = 0;
+  cols.forEach(col => {
+    const w = Math.max(...col.map(n => sizeOf(n).w));
+    col.forEach(n => { pos[n.id].x = x; });
+    x += w + GAP_X;
+  });
+  return pos;
+}
+
+/* ============ 渲染 ============ */
+const world = document.getElementById('world');
+const wiresSvg = document.getElementById('wires');
+const viewport = document.getElementById('viewport');
+let graph = { nodes: [], edges: [] };
+let els = {};
+
+function renderGraph(g) {
+  graph = g; els = {};
+  world.querySelectorAll('.gnode').forEach(el => el.remove());
+  // 先建 DOM 测量真实宽高，再布局
+  for (const n of g.nodes) {
+    const el = document.createElement('div');
+    el.className = 'gnode ' + n.kind;
+    el.innerHTML = `<span class="k">${esc(n.k)}</span>` + (n.v ? `<span class="v">${esc(n.v)}</span>` : '');
+    el.dataset.id = n.id;
+    world.appendChild(el);
+    els[n.id] = el;
+  }
+  const pos = layout(g.nodes, g.edges, n => ({ w: els[n.id].offsetWidth, h: els[n.id].offsetHeight }));
+  for (const n of g.nodes) {
+    els[n.id].style.left = pos[n.id].x + 'px';
+    els[n.id].style.top  = (pos[n.id].y + 300) + 'px';
+  }
+  drawWires();
+  document.getElementById('meta').textContent =
+    `${g.nodes.length} 节点 / ${g.edges.length} 边 · 布局 = 最长路径分层 + 重心排序`;
+  fitAll();
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function drawWires() {
+  wiresSvg.innerHTML = graph.edges.map((e, i) => {
+    const a = els[e.from], b = els[e.to];
+    const x1 = a.offsetLeft + a.offsetWidth, y1 = a.offsetTop + a.offsetHeight / 2;
+    const x2 = b.offsetLeft,                 y2 = b.offsetTop + b.offsetHeight / 2;
+    const mx = (x1 + x2) / 2;
+    return `<path data-i="${i}" d="M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}"/>`;
+  }).join('');
+}
+
+/* 悬停高亮相邻边 */
+world.addEventListener('mouseover', (e) => {
+  const el = e.target.closest('.gnode');
+  if (!el) return;
+  el.classList.add('hot');
+  graph.edges.forEach((ed, i) => {
+    if (ed.from === el.dataset.id || ed.to === el.dataset.id)
+      wiresSvg.querySelector(`[data-i="${i}"]`)?.classList.add('hot');
+  });
+});
+world.addEventListener('mouseout', (e) => {
+  if (!e.target.closest('.gnode')) return;
+  world.querySelectorAll('.hot').forEach(el => el.classList.remove('hot'));
+  wiresSvg.querySelectorAll('.hot').forEach(el => el.classList.remove('hot'));
+});
+
+/* ============ pan / zoom（与 L1 相同的三个数） ============ */
+let scale = 1, panX = 0, panY = 0;
+function applyTransform() {
+  world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+}
+viewport.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const rect = viewport.getBoundingClientRect();
+  const ax = e.clientX - rect.left, ay = e.clientY - rect.top;
+  const next = Math.min(3, Math.max(0.2, scale * Math.exp(e.deltaY * -0.002)));
+  const ratio = 1 - next / scale;
+  panX += (ax - panX) * ratio; panY += (ay - panY) * ratio; scale = next;
+  applyTransform();
+}, { passive: false });
+let panning = false, lx = 0, ly = 0;
+viewport.addEventListener('pointerdown', (e) => {
+  panning = true; lx = e.clientX; ly = e.clientY;
+  viewport.setPointerCapture(e.pointerId); viewport.classList.add('panning');
+});
+viewport.addEventListener('pointermove', (e) => {
+  if (!panning) return;
+  panX += e.clientX - lx; panY += e.clientY - ly; lx = e.clientX; ly = e.clientY;
+  applyTransform();
+});
+const stopPan = () => { panning = false; viewport.classList.remove('panning'); };
+viewport.addEventListener('pointerup', stopPan);
+viewport.addEventListener('pointercancel', stopPan);
+
+function fitAll() {
+  const nodes = Object.values(els);
+  if (!nodes.length) return;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const el of nodes) {
+    minX = Math.min(minX, el.offsetLeft); minY = Math.min(minY, el.offsetTop);
+    maxX = Math.max(maxX, el.offsetLeft + el.offsetWidth);
+    maxY = Math.max(maxY, el.offsetTop + el.offsetHeight);
+  }
+  const pad = 50;
+  scale = Math.min(1.6, Math.min(
+    viewport.clientWidth  / (maxX - minX + pad * 2),
+    viewport.clientHeight / (maxY - minY + pad * 2)));
+  panX = (viewport.clientWidth  - (maxX - minX) * scale) / 2 - minX * scale;
+  panY = (viewport.clientHeight - (maxY - minY) * scale) / 2 - minY * scale;
+  applyTransform();
+}
+
+/* ============ 面板 ============ */
+const src = document.getElementById('src');
+const err = document.getElementById('err');
+src.value = JSON.stringify(SAMPLE_JSON, null, 2);
+
+document.getElementById('render').onclick = () => {
+  try {
+    err.textContent = '';
+    const obj = JSON.parse(src.value);   // 生产用 jsonc-parser：容错注释/尾逗号
+    renderGraph(jsonToGraph(obj, 'root', [], [], null));
+  } catch (e) { err.textContent = 'JSON 解析失败：' + e.message; }
+};
+document.getElementById('demoDag').onclick = () => {
+  err.textContent = '';
+  src.value = '// 当前展示内置 DAG 示例（多入边非树结构）\n// 左侧编辑区仅对「渲染 JSON → 图」生效';
+  renderGraph({ nodes: SAMPLE_DAG.nodes.map(n => ({ ...n, v: '' })), edges: SAMPLE_DAG.edges });
+};
+
+document.getElementById('render').click();
+</script>
+</body>
+</html>

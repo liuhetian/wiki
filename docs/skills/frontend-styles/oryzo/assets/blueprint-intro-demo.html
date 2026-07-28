@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>蓝图开场动画 · ORYZO loader 意译复刻</title>
+<style>
+  /* oryzo.ai 开场：橄榄绿制图桌上，一枚杯垫先以"CAD 蓝图"的形态被画出来，
+     再材质化成实物。这里用 SVG + CSS 过渡意译整段时序（原站此阶段兼任 loader）。 */
+  :root {
+    --bg: #47523a;
+    --ink: #f2e8d5;
+    --accent: #f08c2e;         /* 选择手柄的蓝图橙 */
+    --dash: rgba(242, 232, 213, .85);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); }
+  .stage { position: fixed; inset: 0; display: grid; place-items: center; }
+  svg { width: min(92vmin, 640px); height: auto; display: block; overflow: visible; }
+
+  .hud, .pct, .replay {
+    position: fixed; color: var(--ink);
+    font: 12px/1.7 "DM Mono", ui-monospace, monospace; letter-spacing: .08em;
+  }
+  .hud { left: 16px; bottom: 14px; opacity: .85; }
+  .hud em { font-style: normal; color: var(--accent); }
+  .pct { right: 16px; top: 12px; font-size: 20px; }
+  .replay {
+    right: 16px; bottom: 12px; background: none; border: 1px solid var(--ink);
+    color: var(--ink); padding: 5px 14px; border-radius: 99px; cursor: pointer;
+    letter-spacing: .12em; opacity: 0; transition: opacity .4s; pointer-events: none;
+  }
+  .replay.on { opacity: .9; pointer-events: auto; }
+  .replay:hover { background: var(--ink); color: var(--bg); }
+
+  /* —— 时序全靠 body 上的 phase-N class 推进，纯 CSS 过渡吃状态 —— */
+
+  /* 点阵网格：制图桌的底 */
+  #grid { opacity: 0; transition: opacity 1s; }
+  .phase-1 #grid, .phase-2 #grid, .phase-3 #grid, .phase-4 #grid { opacity: .5; }
+  .phase-5 #grid { opacity: .15; }
+
+  /* 虚线圆的"画出来"：真身是虚线圆，套一个 dashoffset 递减的粗描边圆当遮罩，
+     露出的部分沿圆周推进 —— 虚线感和 draw-on 感两不误 */
+  .reveal { stroke-dasharray: 100; stroke-dashoffset: 100; }
+  .phase-2 #revealOuter { transition: stroke-dashoffset 1.4s cubic-bezier(.6,0,.3,1); stroke-dashoffset: 0; }
+  .phase-2 #revealInner { transition: stroke-dashoffset 1.2s cubic-bezier(.6,0,.3,1) .5s; stroke-dashoffset: 0; }
+  .phase-3 #revealOuter, .phase-4 #revealOuter, .phase-5 #revealOuter,
+  .phase-3 #revealInner, .phase-4 #revealInner, .phase-5 #revealInner { stroke-dashoffset: 0; }
+  .phase-5 #circles { opacity: 0; transition: opacity .9s .2s; }
+
+  /* 选择手柄：设计工具味道的橙色控制条，逐个弹出 */
+  .handle { opacity: 0; transform: scale(.4); transform-origin: center; transform-box: fill-box; }
+  .phase-3 .handle, .phase-4 .handle {
+    opacity: 1; transform: scale(1);
+    transition: opacity .3s, transform .45s cubic-bezier(.2,1.6,.4,1);
+  }
+  .phase-3 .handle:nth-of-type(2), .phase-4 .handle:nth-of-type(2) { transition-delay: .08s; }
+  .phase-3 .handle:nth-of-type(3), .phase-4 .handle:nth-of-type(3) { transition-delay: .16s; }
+  .phase-3 .handle:nth-of-type(4), .phase-4 .handle:nth-of-type(4) { transition-delay: .24s; }
+  .phase-3 .handle:nth-of-type(5), .phase-4 .handle:nth-of-type(5) { transition-delay: .32s; }
+  .phase-3 .handle:nth-of-type(6), .phase-4 .handle:nth-of-type(6) { transition-delay: .40s; }
+  .phase-3 .handle:nth-of-type(7), .phase-4 .handle:nth-of-type(7) { transition-delay: .48s; }
+  .phase-3 .handle:nth-of-type(8), .phase-4 .handle:nth-of-type(8) { transition-delay: .56s; }
+  .phase-5 .handle { opacity: 0; transform: scale(.6); transition: all .5s; }
+
+  /* 尺寸标注 */
+  #dim { opacity: 0; transition: opacity .5s .6s; }
+  .phase-3 #dim, .phase-4 #dim { opacity: .9; }
+  .phase-5 #dim { opacity: 0; transition: opacity .4s; }
+
+  /* 材质化：软木环淡入（fractalNoise 当软木颗粒），蓝图线稿退场 */
+  #cork { opacity: 0; transform: scale(.97); transform-origin: center; transform-box: fill-box; }
+  .phase-5 #cork { opacity: 1; transform: scale(1); transition: opacity 1.2s .3s, transform 1.2s .3s cubic-bezier(.2,1,.3,1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { stroke-dashoffset: 0 !important; }
+    #cork { opacity: 1 !important; transform: none !important; }
+    #circles, .handle, #dim { opacity: 0 !important; }
+    #grid { opacity: .15 !important; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+<svg viewBox="0 0 640 520" aria-label="蓝图开场动画">
+  <defs>
+    <!-- 点阵网格 pattern -->
+    <pattern id="dots" width="52" height="52" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="26" x2="52" y2="26" stroke="rgba(242,232,213,.28)" stroke-width="1" stroke-dasharray="1.5 6"/>
+      <line x1="26" y1="0" x2="26" y2="52" stroke="rgba(242,232,213,.28)" stroke-width="1" stroke-dasharray="1.5 6"/>
+    </pattern>
+    <!-- 遮罩：粗描边圆 dashoffset 从 100→0，把下面的虚线圆沿圆周"画"出来 -->
+    <mask id="mOuter">
+      <circle id="revealOuter" class="reveal" cx="320" cy="250" r="150" fill="none"
+              stroke="#fff" stroke-width="16" pathLength="100"
+              transform="rotate(-90 320 250)"/>
+    </mask>
+    <mask id="mInner">
+      <circle id="revealInner" class="reveal" cx="320" cy="250" r="84" fill="none"
+              stroke="#fff" stroke-width="16" pathLength="100"
+              transform="rotate(-90 320 250)"/>
+    </mask>
+    <!-- 软木材质：径向渐变打底 + fractalNoise 颗粒 -->
+    <radialGradient id="corkGrad" cx="42%" cy="38%" r="75%">
+      <stop offset="0%" stop-color="#d9a266"/>
+      <stop offset="60%" stop-color="#c98d4e"/>
+      <stop offset="100%" stop-color="#a76f38"/>
+    </radialGradient>
+    <filter id="corkNoise" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="3" seed="7" result="n"/>
+      <feColorMatrix in="n" type="matrix"
+        values="0 0 0 0 0.25  0 0 0 0 0.15  0 0 0 0 0.07  0 0 0 .55 0" result="speck"/>
+      <feComposite in="speck" in2="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+
+  <rect id="grid" x="0" y="0" width="640" height="520" fill="url(#dots)"/>
+
+  <!-- 成品：软木环（外 150 / 内 84，同蓝图尺寸），颗粒噪声叠在上面 -->
+  <g id="cork">
+    <circle cx="320" cy="250" r="117" fill="none" stroke="url(#corkGrad)" stroke-width="66"/>
+    <circle cx="320" cy="250" r="117" fill="none" stroke="#c98d4e" stroke-width="66" filter="url(#corkNoise)"/>
+  </g>
+
+  <!-- 蓝图线稿：两个虚线圆 -->
+  <g id="circles">
+    <circle cx="320" cy="250" r="150" fill="none" stroke="var(--dash)" stroke-width="1.6"
+            stroke-dasharray="5 7" mask="url(#mOuter)"/>
+    <circle cx="320" cy="250" r="84" fill="none" stroke="var(--dash)" stroke-width="1.6"
+            stroke-dasharray="5 7" mask="url(#mInner)"/>
+  </g>
+
+  <!-- 选择手柄：外圆上下 + 左右，内圆上下 + 左右（横条带方端点，设计工具选中态的味道） -->
+  <g stroke="var(--accent)" stroke-width="2" fill="var(--accent)">
+    <g class="handle"><line x1="230" y1="100" x2="410" y2="100"/><rect x="315" y="95" width="10" height="10"/><circle cx="230" cy="100" r="4"/><circle cx="410" cy="100" r="4"/></g>
+    <g class="handle"><line x1="230" y1="400" x2="410" y2="400"/><rect x="315" y="395" width="10" height="10"/><circle cx="230" cy="400" r="4"/><circle cx="410" cy="400" r="4"/></g>
+    <g class="handle"><line x1="170" y1="160" x2="170" y2="340"/><rect x="165" y="245" width="10" height="10"/><circle cx="170" cy="160" r="4"/><circle cx="170" cy="340" r="4"/></g>
+    <g class="handle"><line x1="470" y1="160" x2="470" y2="340"/><rect x="465" y="245" width="10" height="10"/><circle cx="470" cy="160" r="4"/><circle cx="470" cy="340" r="4"/></g>
+    <g class="handle"><line x1="270" y1="166" x2="370" y2="166"/><rect x="315" y="161" width="10" height="10"/></g>
+    <g class="handle"><line x1="270" y1="334" x2="370" y2="334"/><rect x="315" y="329" width="10" height="10"/></g>
+    <g class="handle"><line x1="236" y1="205" x2="236" y2="295"/><rect x="231" y="245" width="10" height="10"/></g>
+    <g class="handle"><line x1="404" y1="205" x2="404" y2="295"/><rect x="399" y="245" width="10" height="10"/></g>
+  </g>
+
+  <!-- 尺寸标注：CAD 引线 -->
+  <g id="dim" stroke="var(--ink)" fill="var(--ink)" stroke-width="1">
+    <line x1="435" y1="135" x2="505" y2="88"/>
+    <line x1="505" y1="88" x2="560" y2="88"/>
+    <text x="508" y="80" font-family="DM Mono, monospace" font-size="13" stroke="none" letter-spacing="1">Ø 90 mm</text>
+  </g>
+</svg>
+</div>
+
+<div class="hud">ORYZO-1 · <em id="phaseLabel">BLUEPRINT</em></div>
+<div class="pct" id="pct">0%</div>
+<button class="replay" id="replay">REPLAY ⟳</button>
+
+<script>
+/* 时序推进：body.phase-N 驱动上面的 CSS 过渡。
+ * 原站这段动画兼任加载器（进度喂真实资源加载）；demo 里用假进度替。
+ * 相位表：1 网格淡入 → 2 虚线圆画出 → 3 手柄弹出+标注 → 4 停留 → 5 材质化成软木环
+ */
+const phases = [
+  [0,    1, 'BLUEPRINT'],
+  [500,  2, 'DRAFTING'],
+  [2300, 3, 'DIMENSIONING'],
+  [3600, 4, 'REVIEW'],
+  [4400, 5, 'MATERIALIZE'],
+];
+const label = document.getElementById('phaseLabel');
+const pct = document.getElementById('pct');
+const replay = document.getElementById('replay');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let timers = [];
+
+function run() {
+  timers.forEach(clearTimeout); timers = [];
+  document.body.className = '';
+  replay.classList.remove('on');
+  if (reduce) {  // 直接落到终态，不放动画
+    document.body.className = 'phase-5';
+    label.textContent = 'MATERIALIZE'; pct.textContent = '100%';
+    replay.classList.add('on');
+    return;
+  }
+  // 强制 reflow，让 reveal 圆回到 dashoffset:100 再重新过渡
+  void document.querySelector('svg').getBoundingClientRect();
+  requestAnimationFrame(() => {
+    phases.forEach(([t, n, name]) => timers.push(setTimeout(() => {
+      document.body.classList.add('phase-' + n);   // 叠加而非替换：保留已完成的过渡终态
+      label.textContent = name;
+      if (n === 5) timers.push(setTimeout(() => replay.classList.add('on'), 1600));
+    }, t)));
+    // 假进度：loader 的百分比读数
+    const t0 = performance.now(), DUR = 4400;
+    (function tick() {
+      const p = Math.min(1, (performance.now() - t0) / DUR);
+      pct.textContent = Math.round(p * 100) + '%';
+      if (p < 1) requestAnimationFrame(tick);
+    })();
+  });
+}
+replay.addEventListener('click', run);
+run();
+</script>
+</body>
+</html>

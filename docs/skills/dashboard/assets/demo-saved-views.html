@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：保存视图</title>
+<!--
+  demo-saved-views.html —— 「保存视图」形状的最小可玩实现（蓝本：open-dashboard 的 add-saved-views + SavedViews 模板）。
+  复现的不变量：
+  - 视图是快照：保存 / 更新 / 套用都对 { search, filters, sort } 深拷贝（structuredClone），之后改页面条件动不到已存视图
+  - localStorage 读写带守卫（typeof window + try/catch），视图在挂载后的 useEffect 里水合，首帧渲染前后一致
+  - storageKey 按资源命名空间（saved-views:demo-products），持久化写回读取用的同一个 key
+  - 附加交互：当前条件偏离活跃视图时 chip 标「已修改」，可一键更新或另存为；删除视图先过确认弹窗，操作后 toast
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .views { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 9px 12px;
+           margin-bottom: 10px; background: var(--card); border: 1px solid var(--border);
+           border-radius: 10px; font-size: 13px; }
+  .views .cap { color: var(--muted); }
+  .vchip { display: inline-flex; align-items: center; gap: 2px; padding: 2px 4px 2px 11px;
+           border: 1px solid var(--border); border-radius: 999px; background: var(--bg); }
+  .vchip.on { border-color: var(--primary); }
+  .vname { border: 0; background: none; font: inherit; color: var(--fg); cursor: pointer; padding: 1px 2px; }
+  .vchip.on .vname { color: var(--primary); font-weight: 600; }
+  .vdirty { padding: 0 7px; border-radius: 999px; font-size: 11px;
+            background: var(--chip-warn-bg); color: var(--chip-warn-fg); }
+  .vdel { border: 0; background: none; color: var(--muted); cursor: pointer;
+          font: inherit; font-size: 14px; line-height: 1; padding: 2px 6px; border-radius: 999px; }
+  .vdel:hover { color: var(--danger); }
+  .namebox { display: inline-flex; gap: 6px; align-items: center; }
+  .namebox input { padding: 4px 9px; width: 150px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const STORAGE_KEY = "saved-views:demo-products"; // 按资源命名空间，别的页面用别的 key
+
+const PRODUCTS = [
+  { id: 1, name: "曙光台灯", category: "家居", price: 79,  stock: 34, status: "在售" },
+  { id: 2, name: "云雀耳机", category: "音频", price: 199, stock: 8,  status: "在售" },
+  { id: 3, name: "脉冲手表", category: "穿戴", price: 249, stock: 15, status: "草稿" },
+  { id: 4, name: "雪松书桌", category: "家居", price: 420, stock: 3,  status: "下架" },
+  { id: 5, name: "回声音箱", category: "音频", price: 129, stock: 42, status: "在售" },
+  { id: 6, name: "帆影键盘", category: "配件", price: 89,  stock: 18, status: "在售" },
+  { id: 7, name: "轨道鼠标", category: "配件", price: 49,  stock: 12, status: "草稿" },
+  { id: 8, name: "潮汐耳塞", category: "音频", price: 149, stock: 55, status: "在售" },
+  { id: 9, name: "光环指环", category: "穿戴", price: 179, stock: 6,  status: "在售" },
+];
+
+const SORTS = [
+  { key: "name-asc",   label: "名称 A→Z",  by: "name",  dir: "asc"  },
+  { key: "price-desc", label: "价格 高→低", by: "price", dir: "desc" },
+  { key: "price-asc",  label: "价格 低→高", by: "price", dir: "asc"  },
+  { key: "stock-asc",  label: "库存 少→多", by: "stock", dir: "asc"  },
+  { key: "stock-desc", label: "库存 多→少", by: "stock", dir: "desc" },
+];
+
+// 出厂预设：首次打开（storage 里还没有这个 key）时播种一次，之后与用户视图一视同仁
+const FACTORY_VIEWS = [
+  { id: "factory-low-stock", name: "低库存",
+    state: { search: "", filters: { status: "在售", stock: "紧张" }, sort: { by: "stock", dir: "asc" } } },
+  { id: "factory-high-price", name: "高价在售",
+    state: { search: "", filters: { status: "在售", stock: "全部库存" }, sort: { by: "price", dir: "desc" } } },
+];
+
+// localStorage 读写：带守卫、读写同一个 key（复刻蓝本 readViews / writeViews 的姿势）
+function readViews() {
+  if (typeof window === "undefined") return null; // SSR 守卫；demo 纯客户端，姿势保留
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (raw === null) return null;                // 从未初始化 → 交给调用方播种出厂预设
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+function writeViews(views) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(views));
+  } catch {
+    // 忽略配额 / 禁用存储的报错
+  }
+}
+
+function Confirm({ text, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>确认操作</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" onClick=${onOk}>确认</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function App() {
+  const [q, setQ] = useState("");
+  const [status, setStatus] = useState("全部状态");
+  const [stockF, setStockF] = useState("全部库存");
+  const [sort, setSort] = useState({ by: "name", dir: "asc" });
+
+  const [views, setViews] = useState([]);        // 挂载后才从 localStorage 水合
+  const [activeId, setActiveId] = useState(null); // 活跃视图：瞬态 UI 状态，不持久
+  const [naming, setNaming] = useState(false);
+  const [name, setName] = useState("");
+  const [confirm, setConfirm] = useState(null);   // { text, onOk }
+  const [toast, setToast] = useState("");
+
+  // 水合：挂载后再读 storage，首帧渲染前后一致（蓝本不变量）
+  useEffect(() => {
+    const stored = readViews();
+    if (stored === null) {
+      setViews(FACTORY_VIEWS);
+      writeViews(FACTORY_VIEWS);
+    } else {
+      setViews(stored);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  // 页面拥有的视图状态：一个可快照、可比较的 { search, filters, sort }
+  const current = { search: q, filters: { status, stock: stockF }, sort: { by: sort.by, dir: sort.dir } };
+  const active = views.find(v => v.id === activeId) || null;
+  const dirty = !!active && JSON.stringify(current) !== JSON.stringify(active.state);
+
+  const persist = next => { setViews(next); writeViews(next); };
+
+  const applyView = v => {
+    const s = structuredClone(v.state); // 套用也拷贝：页面后续修改摸不到已存视图
+    setQ(s.search);
+    setStatus(s.filters.status ?? "全部状态");
+    setStockF(s.filters.stock ?? "全部库存");
+    setSort(s.sort ?? { by: "name", dir: "asc" });
+    setActiveId(v.id);
+  };
+
+  const saveAs = e => {
+    e.preventDefault();
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const view = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name: trimmed,
+      state: structuredClone(current), // 保存 = 快照，不是别名
+    };
+    persist([...views, view]);
+    setActiveId(view.id);
+    setNaming(false);
+    setName("");
+    setToast(`已保存视图「${trimmed}」`);
+  };
+
+  const updateActive = () => {
+    persist(views.map(v => (v.id === activeId ? { ...v, state: structuredClone(current) } : v)));
+    setToast(`已更新视图「${active.name}」`);
+  };
+
+  const removeView = v =>
+    setConfirm({
+      text: `删除视图「${v.name}」？删除后不可恢复。`,
+      onOk: () => {
+        persist(views.filter(x => x.id !== v.id));
+        if (activeId === v.id) setActiveId(null);
+        setConfirm(null);
+        setToast(`已删除视图「${v.name}」`);
+      },
+    });
+
+  const list = useMemo(() => {
+    const kw = q.trim().toLowerCase();
+    const rows = PRODUCTS.filter(r =>
+      (status === "全部状态" || r.status === status) &&
+      (stockF === "全部库存" || (stockF === "紧张") === (r.stock < 20)) &&
+      (r.name.toLowerCase().includes(kw) || r.category.toLowerCase().includes(kw)));
+    const mul = sort.dir === "asc" ? 1 : -1;
+    return [...rows].sort((a, b) => (a[sort.by] < b[sort.by] ? -1 : a[sort.by] > b[sort.by] ? 1 : 0) * mul);
+  }, [q, status, stockF, sort]);
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>商品列表</h1>
+          <p class="sub">调好搜索 / 筛选 / 排序后存成命名视图；点视图一键套用，改动后可更新或另存</p>
+        </div>
+      </header>
+
+      <div class="views">
+        <span class="cap">视图：</span>
+        ${views.map(v => html`
+          <span key=${v.id} class=${"vchip" + (v.id === activeId ? " on" : "")}>
+            <button class="vname" aria-pressed=${v.id === activeId}
+                    onClick=${() => applyView(v)}>${v.name}</button>
+            ${v.id === activeId && dirty && html`<span class="vdirty">已修改</span>`}
+            <button class="vdel" aria-label=${"删除视图 " + v.name}
+                    onClick=${() => removeView(v)}>×</button>
+          </span>`)}
+        ${views.length === 0 && html`<span class="cap">（还没有视图）</span>`}
+        ${naming
+          ? html`
+            <form class="namebox" onSubmit=${saveAs}>
+              <input autoFocus placeholder="视图名称…" value=${name}
+                     onChange=${e => setName(e.target.value)} />
+              <button class="btn sm primary" type="submit" disabled=${!name.trim()}>保存</button>
+              <button class="btn sm" type="button"
+                      onClick=${() => { setNaming(false); setName(""); }}>取消</button>
+            </form>`
+          : dirty
+            ? html`
+              <button class="btn sm primary" onClick=${updateActive}>更新「${active.name}」</button>
+              <button class="btn sm" onClick=${() => setNaming(true)}>另存为…</button>`
+            : html`<button class="btn sm" onClick=${() => setNaming(true)}>＋ 保存当前视图</button>`}
+      </div>
+
+      <div class="toolbar">
+        <input class="grow" placeholder="搜索商品或分类…" value=${q}
+               onChange=${e => setQ(e.target.value)} />
+        <select value=${status} onChange=${e => setStatus(e.target.value)}>
+          <option>全部状态</option><option>在售</option><option>草稿</option><option>下架</option>
+        </select>
+        <select value=${stockF} onChange=${e => setStockF(e.target.value)}>
+          <option>全部库存</option><option>充足</option><option>紧张</option>
+        </select>
+        <select value=${sort.by + "-" + sort.dir} aria-label="排序"
+                onChange=${e => {
+                  const s = SORTS.find(x => x.key === e.target.value);
+                  if (s) setSort({ by: s.by, dir: s.dir });
+                }}>
+          ${SORTS.map(s => html`<option key=${s.key} value=${s.key}>${s.label}</option>`)}
+        </select>
+      </div>
+
+      <table class="list">
+        <thead>
+          <tr><th>商品</th><th>分类</th><th class="num">价格</th><th class="num">库存</th><th>状态</th></tr>
+        </thead>
+        <tbody>
+          ${list.map(r => html`
+            <tr key=${r.id}>
+              <td style=${{ fontWeight: 550 }}>${r.name}</td>
+              <td>${r.category}</td>
+              <td class="num">¥${r.price}</td>
+              <td class="num" style=${{ color: r.stock < 20 ? "var(--danger)" : undefined }}>${r.stock}</td>
+              <td><span class=${"chip " + (r.status === "在售" ? "chip-on" : r.status === "草稿" ? "chip-warn" : "chip-off")}>${r.status}</span></td>
+            </tr>`)}
+          ${list.length === 0 && html`<tr><td class="empty" colSpan="5">当前视图下没有匹配的商品</td></tr>`}
+        </tbody>
+      </table>
+
+      <footer class="pager">
+        <span>共 ${list.length} / ${PRODUCTS.length} 件商品 · 视图存于 localStorage（${STORAGE_KEY}），刷新仍在</span>
+      </footer>
+
+      ${confirm && html`<${Confirm} text=${confirm.text} onOk=${confirm.onOk} onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

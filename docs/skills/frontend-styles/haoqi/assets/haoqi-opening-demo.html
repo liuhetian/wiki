@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HAOQI 3D 开屏拆解 Demo</title>
+<script type="importmap">
+{"imports":{"three":"/vendor/three/three.module.min.js"}}
+</script>
+<style>
+  :root{--night:#07114a;--line:rgba(139,175,248,.15);--paper:#f7f3e9;--yellow:#ffd21f;--cyan:#64c3ff}
+  *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--night);color:var(--paper)}
+  body{font-family:Arial,"PingFang SC",sans-serif;background:radial-gradient(circle at 53% 56%,#132b7b 0,var(--night) 55%,#050c38 100%)}
+  .grid{position:fixed;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:8.333vw 8.333vw;pointer-events:none}
+  header{position:fixed;z-index:5;inset:0 0 auto;height:56px;padding:0 16px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;border-bottom:1px solid rgba(139,175,248,.28);font:700 9px ui-monospace,SFMono-Regular,monospace;letter-spacing:.05em}
+  header nav{display:flex;gap:42px}header small{justify-self:end;color:#93a9d1}
+  .copy{position:fixed;z-index:1;left:16px;top:76px;pointer-events:none}.copy p{font:700 9px ui-monospace,SFMono-Regular,monospace;letter-spacing:.05em}
+  h1{margin:6vh 0 0;font-size:clamp(62px,10vw,142px);line-height:.76;letter-spacing:-.075em;font-weight:700}h1 em{font-style:normal;color:var(--yellow)}
+  canvas{position:fixed;z-index:3;inset:0;width:100%;height:100%;touch-action:none}
+  .intro{position:fixed;z-index:5;left:16px;bottom:18px;font:700 9px/1.6 ui-monospace,SFMono-Regular,monospace;pointer-events:none}
+  .status{position:fixed;z-index:5;right:16px;top:72px;display:flex;align-items:center;gap:8px;font:700 8px ui-monospace,SFMono-Regular,monospace;color:#9bb1d8}.status i{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px var(--cyan)}
+  .target{position:fixed;z-index:6;right:16px;bottom:16px;width:230px;height:46px;padding:0 13px;display:flex;align-items:center;justify-content:space-between;border:1px solid rgba(100,195,255,.8);background:rgba(7,17,74,.58);backdrop-filter:blur(8px);font:700 9px ui-monospace,SFMono-Regular,monospace;transition:.2s}.target:hover{background:#009dff;color:#04103d}.target b{font-size:18px}
+  .cursor{position:fixed;z-index:8;width:13px;height:13px;border:2px solid var(--cyan);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 0 18px var(--cyan);transition:width .18s,height .18s,background .18s}.cursor.hot{width:56px;height:56px;background:rgba(0,157,255,.18)}
+  .loading{position:fixed;z-index:10;inset:0;display:grid;place-items:center;background:var(--night);font:700 9px ui-monospace,monospace;letter-spacing:.14em;transition:opacity .45s}.loading.done{opacity:0;pointer-events:none}
+  @media(max-width:700px){header{grid-template-columns:1fr auto}header nav{display:none}.copy h1{margin-top:11vh;font-size:17vw}.intro{bottom:76px;max-width:270px}.target{left:16px;right:16px;width:auto}.status,.cursor{display:none}}
+  @media(prefers-reduced-motion:reduce){.status,.cursor{display:none}}
+</style>
+</head>
+<body>
+<div class="grid"></div>
+<header><strong>HETIAN.LAB</strong><nav><span>WORK</span><span>ABOUT</span><span>CONTACT</span></nav><small>HAOQI STUDY · 01</small></header>
+<div class="copy"><p>ALGORITHM / SYSTEMS / CRAFT</p><h1>BUILDING<br><em>INTELLIGENCE</em><br>INTO SYSTEMS.</h1></div>
+<div class="intro">牛合天，算法工程师。<br>TURNING UNCERTAIN SIGNALS INTO WORKING SYSTEMS.</div>
+<div class="status"><i></i> POINTER / PARALLAX ACTIVE</div>
+<div class="target"><span>MOVE THROUGH THE MODEL</span><b>↘</b></div>
+<div class="cursor"></div><div class="loading">LOADING BANANA.GLB</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from '/vendor/three/addons/loaders/GLTFLoader.js';
+
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const coarse=matchMedia('(hover: none), (pointer: coarse)').matches;
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,premultipliedAlpha:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);renderer.outputColorSpace=THREE.SRGBColorSpace;
+document.body.append(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.1,100);camera.position.set(0,0,22);
+const pointer=new THREE.Vector2(),damped=new THREE.Vector2(),worldPointer=new THREE.Vector3();
+const pixelPointer=new THREE.Vector2(-1,-1),pixelDelta=new THREE.Vector2();let previousClient=null,effectUntil=0;
+let inside=false,mesh=null,material=null,start=performance.now();
+
+const fullVertex=`varying vec2 vUv;void main(){vUv=position.xy*.5+.5;gl_Position=vec4(position.xy,0.,1.);}`;
+const passMaterial=(fragment,uniforms={})=>new THREE.ShaderMaterial({vertexShader:fullVertex,fragmentShader:fragment,uniforms,depthTest:false,depthWrite:false,transparent:true,toneMapped:false});
+const makeTarget=(depth=false)=>new THREE.WebGLRenderTarget(1,1,{depthBuffer:depth,stencilBuffer:false,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,format:THREE.RGBAFormat,type:THREE.HalfFloatType});
+
+class FluidPush{
+  constructor(){
+    this.simW=160;this.simH=160;this.viewport=new THREE.Vector2(1,1);this.simSize=new THREE.Vector2(160,160);this.texel=new THREE.Vector2(1/160,1/160);
+    this.sceneTarget=makeTarget(true);this.velocityA=makeTarget();this.velocityB=makeTarget();this.curlTarget=makeTarget();this.vortTarget=makeTarget();this.divTarget=makeTarget();this.pressureA=makeTarget();this.pressureB=makeTarget();this.projected=makeTarget();
+    this.passScene=new THREE.Scene();this.passCamera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);this.quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2));this.passScene.add(this.quad);
+    this.curl=passMaterial(`uniform sampler2D v;uniform vec2 px;varying vec2 vUv;void main(){float l=texture2D(v,vUv-vec2(px.x,0.)).y,r=texture2D(v,vUv+vec2(px.x,0.)).y,t=texture2D(v,vUv+vec2(0.,px.y)).x,b=texture2D(v,vUv-vec2(0.,px.y)).x;gl_FragColor=vec4(.5*(r-l-t+b),0.,0.,1.);}`,{v:{value:null},px:{value:this.texel}});
+    this.vorticity=passMaterial(`uniform sampler2D v;uniform sampler2D curl;uniform vec2 px;uniform vec2 resolution;uniform vec2 pointer;uniform vec2 delta;varying vec2 vUv;void main(){float l=abs(texture2D(curl,vUv-vec2(px.x,0.)).x),r=abs(texture2D(curl,vUv+vec2(px.x,0.)).x),t=abs(texture2D(curl,vUv+vec2(0.,px.y)).x),b=abs(texture2D(curl,vUv-vec2(0.,px.y)).x);vec2 force=vec2(t-b,r-l);float fl=length(force);if(fl>.0001)force/=fl;else force=vec2(0.);vec2 vel=texture2D(v,vUv).xy;vec2 mouse=pointer/max(resolution,vec2(.0001));vec2 d=vUv-mouse;d.x*=resolution.x/max(resolution.y,.0001);float mask=exp(-dot(d,d)/.003);vel+=(delta/max(resolution,vec2(.0001)))*mask*3000.;gl_FragColor=vec4(clamp(vel,vec2(-1000.),vec2(1000.)),0.,1.);}`,{v:{value:null},curl:{value:null},px:{value:this.texel},resolution:{value:this.viewport},pointer:{value:pixelPointer},delta:{value:pixelDelta}});
+    this.divergence=passMaterial(`uniform sampler2D v;uniform vec2 px;varying vec2 vUv;void main(){float l=texture2D(v,vUv-vec2(px.x,0.)).x,r=texture2D(v,vUv+vec2(px.x,0.)).x,t=texture2D(v,vUv+vec2(0.,px.y)).y,b=texture2D(v,vUv-vec2(0.,px.y)).y;gl_FragColor=vec4(.5*(r-l+t-b),0.,0.,1.);}`,{v:{value:null},px:{value:this.texel}});
+    this.clear=passMaterial(`void main(){gl_FragColor=vec4(0.);}`);
+    this.pressure=passMaterial(`uniform sampler2D p;uniform sampler2D d;uniform vec2 px;varying vec2 vUv;void main(){float l=texture2D(p,vUv-vec2(px.x,0.)).x,r=texture2D(p,vUv+vec2(px.x,0.)).x,t=texture2D(p,vUv+vec2(0.,px.y)).x,b=texture2D(p,vUv-vec2(0.,px.y)).x;gl_FragColor=vec4((l+r+t+b-texture2D(d,vUv).x)*.25,0.,0.,1.);}`,{p:{value:null},d:{value:null},px:{value:this.texel}});
+    this.gradient=passMaterial(`uniform sampler2D v;uniform sampler2D p;uniform vec2 px;varying vec2 vUv;void main(){float l=texture2D(p,vUv-vec2(px.x,0.)).x,r=texture2D(p,vUv+vec2(px.x,0.)).x,t=texture2D(p,vUv+vec2(0.,px.y)).x,b=texture2D(p,vUv-vec2(0.,px.y)).x;gl_FragColor=vec4(texture2D(v,vUv).xy-vec2(r-l,t-b),0.,1.);}`,{v:{value:null},p:{value:null},px:{value:this.texel}});
+    this.advect=passMaterial(`uniform sampler2D v;uniform vec2 px;varying vec2 vUv;void main(){vec2 vel=texture2D(v,vUv).xy;vec2 coord=clamp(vUv-vel*px*.016,vec2(0.),vec2(1.));gl_FragColor=vec4(texture2D(v,coord).xy/(1.+3.*.016),0.,1.);}`,{v:{value:null},px:{value:this.texel}});
+    this.composite=passMaterial(`uniform sampler2D image;uniform sampler2D velocity;uniform vec2 simSize;uniform float enabled;varying vec2 vUv;vec3 spectrum(float x){return cos((x-vec3(0.,.5,1.))*vec3(.6,1.,.5)*3.14);}void main(){vec2 vel=texture2D(velocity,vUv).xy,disp=vel/max(simSize,vec2(1.))*step(.5,enabled);float mag=length(disp);vec4 c=vec4(0.);vec3 sum=vec3(0.);for(int i=0;i<4;i++){float t=float(i)/3.;vec3 w=max(vec3(0.),cos((t-vec3(0.,.5,1.))*3.14159*.5));vec4 s=texture2D(image,clamp(vUv-disp*.3*(t+.3)*mag,vec2(0.),vec2(1.)));c.rgb+=s.rgb*w;c.a+=s.a*(w.r+w.g+w.b)/3.;sum+=w;}c.rgb/=max(sum,vec3(.0001));c.a/=max((sum.r+sum.g+sum.b)/3.,.0001);c.rgb+=spectrum(sin(mag*2.)*.4+.6)*smoothstep(.2,.8,mag)*.25*step(.5,enabled);if(c.a>.001)c.rgb/=c.a;gl_FragColor=c;}`,{image:{value:null},velocity:{value:null},simSize:{value:this.simSize},enabled:{value:0}});
+  }
+  resize(w,h,dpr){const rw=Math.max(1,Math.floor(w*dpr)),rh=Math.max(1,Math.floor(h*dpr)),aspect=rw/rh;this.viewport.set(rw,rh);this.simW=aspect>=1?Math.round(160*aspect):160;this.simH=aspect>=1?160:Math.round(160/aspect);this.simSize.set(this.simW,this.simH);this.texel.set(1/this.simW,1/this.simH);this.sceneTarget.setSize(rw,rh);for(const t of[this.velocityA,this.velocityB,this.curlTarget,this.vortTarget,this.divTarget,this.pressureA,this.pressureB,this.projected])t.setSize(this.simW,this.simH)}
+  draw(mat,out){this.quad.material=mat;renderer.setRenderTarget(out);renderer.clear();renderer.render(this.passScene,this.passCamera)}
+  render(scene,camera,enabled){renderer.setRenderTarget(this.sceneTarget);renderer.setClearColor(0,0);renderer.clear();renderer.render(scene,camera);if(enabled){this.curl.uniforms.v.value=this.velocityA.texture;this.draw(this.curl,this.curlTarget);this.vorticity.uniforms.v.value=this.velocityA.texture;this.vorticity.uniforms.curl.value=this.curlTarget.texture;this.draw(this.vorticity,this.vortTarget);this.divergence.uniforms.v.value=this.vortTarget.texture;this.draw(this.divergence,this.divTarget);this.draw(this.clear,this.pressureA);let read=this.pressureA,write=this.pressureB;for(let i=0;i<4;i++){this.pressure.uniforms.p.value=read.texture;this.pressure.uniforms.d.value=this.divTarget.texture;this.draw(this.pressure,write);[read,write]=[write,read]}this.gradient.uniforms.v.value=this.vortTarget.texture;this.gradient.uniforms.p.value=read.texture;this.draw(this.gradient,this.projected);this.advect.uniforms.v.value=this.projected.texture;this.draw(this.advect,this.velocityB);[this.velocityA,this.velocityB]=[this.velocityB,this.velocityA]}
+    this.composite.uniforms.image.value=this.sceneTarget.texture;this.composite.uniforms.velocity.value=this.velocityA.texture;this.composite.uniforms.enabled.value=enabled?1:0;this.quad.material=this.composite;renderer.setRenderTarget(null);renderer.clear();renderer.render(this.passScene,this.passCamera);pixelDelta.set(0,0)}
+}
+const fluid=new FluidPush();
+
+const vertex=`varying vec3 vN;varying vec3 vEye;varying vec3 vP;void main(){vec4 world=modelMatrix*vec4(position,1.);vN=normalize(mat3(modelMatrix)*normal);vEye=normalize(world.xyz-cameraPosition);vP=position;gl_Position=projectionMatrix*viewMatrix*world;}`;
+const fragment=`uniform vec3 uLight;uniform float uTime;varying vec3 vN;varying vec3 vEye;varying vec3 vP;void main(){vec3 n=normalize(vN);vec3 eye=normalize(vEye);float facing=abs(dot(n,eye));float rim=pow(1.-facing,3.);float side=dot(n,normalize(vec3(-1.,.3,1.)))*.5+.5;float wet=pow(max(0.,dot(n,normalize(uLight))),30.);float inner=pow(facing,1.6);vec3 body=mix(vec3(.05,.20,.72),vec3(.22,.72,1.),inner*.55);vec3 color=body+vec3(.28,.66,1.)*rim*.45+vec3(.48,.22,1.)*rim*side*.20+wet*vec3(.95,.98,1.)*.65;color+=vec3(.04,.32,.8)*(.5+.5*sin(vP.x*1.7+vP.y*2.+uTime*.3))*rim*.06;float alpha=.72+rim*.20+wet*.04;gl_FragColor=vec4(color,min(alpha,.96));}`;
+
+new GLTFLoader().load('./banana-tube.glb',gltf=>{
+  let geometry=null;gltf.scene.updateMatrixWorld(true);gltf.scene.traverse(o=>{if(!geometry&&o.isMesh){geometry=o.geometry.clone();geometry.applyMatrix4(o.matrixWorld)}});
+  geometry.computeBoundingBox();const box=geometry.boundingBox,center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());
+  geometry.translate(-center.x,-center.y,-center.z);const visibleHeight=2*Math.tan(THREE.MathUtils.degToRad(camera.fov*.5))*camera.position.z;const visibleWidth=visibleHeight*camera.aspect;const displayWidth=visibleWidth*(innerWidth<700?.78:.66);const scale=displayWidth/size.x;geometry.scale(scale,scale,scale);geometry.computeVertexNormals();
+  material=new THREE.ShaderMaterial({vertexShader:vertex,fragmentShader:fragment,transparent:true,depthWrite:false,uniforms:{uLight:{value:new THREE.Vector3(4,9,.5)},uTime:{value:0}}});
+  mesh=new THREE.Mesh(geometry,material);mesh.rotation.y=THREE.MathUtils.degToRad(240);scene.add(mesh);document.querySelector('.loading').classList.add('done');
+});
+
+function resize(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();fluid.resize(innerWidth,innerHeight,Math.min(devicePixelRatio,2))}
+addEventListener('resize',resize);resize();
+const cursor=document.querySelector('.cursor'),target=document.querySelector('.target');
+addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;inside=true;pointer.set(e.clientX/innerWidth*2-1,1-e.clientY/innerHeight*2);pixelPointer.set(e.clientX*renderer.getPixelRatio(),(innerHeight-e.clientY)*renderer.getPixelRatio());if(previousClient){pixelDelta.set((e.clientX-previousClient.x)*renderer.getPixelRatio(),-(e.clientY-previousClient.y)*renderer.getPixelRatio());if(pixelDelta.lengthSq()>1)effectUntil=performance.now()+600}else pixelDelta.set(0,0);previousClient={x:e.clientX,y:e.clientY};cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';cursor.classList.toggle('hot',target.matches(':hover'))},{passive:true});
+document.documentElement.addEventListener('mouseout',e=>{if(!e.relatedTarget){inside=false;previousClient=null;pixelDelta.set(0,0);effectUntil=0}});
+
+const clock=new THREE.Clock();
+function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;damped.lerp(inside&&!coarse?pointer:new THREE.Vector2(),inside?.18:.05);
+  const strength=reduced?.22:1.4,x=-damped.x*strength,y=-damped.y*strength*.6;
+  camera.position.x=THREE.MathUtils.damp(camera.position.x,x,9,dt);camera.position.y=THREE.MathUtils.damp(camera.position.y,y,9,dt);camera.lookAt(-x*.12,-y*.12,0);
+  if(mesh){const progress=Math.min(1,(performance.now()-start)/1500),smooth=progress*progress*(3-2*progress);const rest=THREE.MathUtils.degToRad(4);mesh.rotation.y=THREE.MathUtils.damp(mesh.rotation.y,THREE.MathUtils.lerp(THREE.MathUtils.degToRad(240),rest,smooth)+damped.x*.055,6,dt);mesh.rotation.x=THREE.MathUtils.damp(mesh.rotation.x,-damped.y*.035,6,dt);mesh.position.y=reduced?0:.18*Math.sin(1.2*t)+.06*Math.sin(.6*t);material.uniforms.uLight.value.set(damped.x*6,damped.y*5+4,.5);material.uniforms.uTime.value=t}
+  fluid.render(scene,camera,inside&&!coarse&&!reduced&&performance.now()<effectUntil)
+}frame();
+</script>
+</body>
+</html>

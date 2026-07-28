@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L4 · 迷你白板 — 撤销/框选/序列化的最小实现</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif; }
+
+  .viewport {
+    position: relative; width: 100%; height: 100vh; overflow: hidden;
+    background: #f7f8fa; touch-action: none;
+  }
+  .viewport[data-tool="hand"]   { cursor: grab; }
+  .viewport[data-tool="hand"].panning { cursor: grabbing; }
+  .viewport[data-tool="note"],
+  .viewport[data-tool="rect"]   { cursor: crosshair; }
+  .grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(30,41,59,.16) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .world { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
+
+  .shape { position: absolute; user-select: none; }
+  .shape.selected { outline: 2px solid #3b82f6; outline-offset: 2px; }
+  .shape.note {
+    padding: 10px 12px; font-size: 13px; line-height: 1.5; color: #493d1e;
+    border-radius: 4px; box-shadow: 0 3px 10px rgba(15,23,42,.14);
+    min-width: 120px; max-width: 220px; cursor: grab;
+  }
+  .shape.note[contenteditable="true"] { cursor: text; outline: 2px solid #f59e0b; }
+  .shape.rect {
+    border: 2px solid #64748b; border-radius: 8px;
+    background: rgba(148,163,184,.10); cursor: grab;
+  }
+
+  .marquee {
+    position: absolute; border: 1px solid #3b82f6;
+    background: rgba(59,130,246,.08); pointer-events: none; z-index: 4;
+  }
+
+  .toolbar {
+    position: absolute; left: 50%; transform: translateX(-50%); top: 12px; z-index: 6;
+    display: flex; gap: 4px; padding: 5px;
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(15,23,42,.10);
+  }
+  .toolbar button {
+    font: inherit; font-size: 12.5px; padding: 6px 11px; cursor: pointer;
+    border: 1px solid transparent; border-radius: 8px; background: none; color: #334155;
+  }
+  .toolbar button:hover { background: #f1f5f9; }
+  .toolbar button.active { background: #dbeafe; color: #1d4ed8; }
+  .toolbar button:disabled { opacity: .35; cursor: default; }
+  .toolbar .sep { width: 1px; background: #e2e8f0; margin: 2px 3px; }
+
+  .hud {
+    position: absolute; left: 12px; bottom: 12px; z-index: 5;
+    font-size: 12px; color: #475569; display: flex; gap: 8px;
+  }
+  .hud span {
+    background: rgba(255,255,255,.9); border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 5px 10px; font-variant-numeric: tabular-nums;
+  }
+  .tip {
+    position: absolute; right: 12px; top: 12px; z-index: 5;
+    font-size: 11.5px; color: #94a3b8; background: rgba(255,255,255,.85);
+    border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+<div class="viewport" id="viewport" data-tool="select">
+  <div class="grid" id="grid"></div>
+  <div class="world" id="world"></div>
+  <div class="toolbar">
+    <button data-tool="select" class="active" title="V">选择</button>
+    <button data-tool="hand" title="H">平移</button>
+    <button data-tool="note" title="N">便签</button>
+    <button data-tool="rect" title="R">矩形</button>
+    <div class="sep"></div>
+    <button id="undo" disabled title="Ctrl+Z">撤销</button>
+    <button id="redo" disabled title="Ctrl+Shift+Z">重做</button>
+    <div class="sep"></div>
+    <button id="dup" title="Ctrl+D">复制</button>
+    <button id="del" title="Delete">删除</button>
+    <button id="export">导出 JSON</button>
+  </div>
+  <div class="tip">V 选择 · N 便签 · R 矩形 · H 平移<br/>
+    框选空白多选 · Shift 加选 · 双击便签编辑文字<br/>
+    Ctrl+Z / Ctrl+Shift+Z 撤销重做 · Delete 删除</div>
+  <div class="hud">
+    <span id="statShapes">0 个形状</span>
+    <span id="statHistory">历史 0 / 0</span>
+    <span id="statZoom">100%</span>
+  </div>
+</div>
+
+<script>
+/* ============ 文档态 ============ */
+let shapes = [
+  { id: 's1', type: 'note', x: 160, y: 150, color: '#fef3c7', text: '双击我改文字' },
+  { id: 's2', type: 'note', x: 420, y: 240, color: '#dcfce7', text: '拖拽移动，Shift 点我加选' },
+  { id: 's3', type: 'rect', x: 130, y: 300, w: 220, h: 120 },
+];
+let selection = new Set();
+let uid = 4;
+const NOTE_COLORS = ['#fef3c7', '#dcfce7', '#e0e7ff', '#fce7f3', '#cffafe'];
+
+/* ============ 历史引擎：快照栈（做一步，先存旧世界） ============ */
+const undoStack = [], redoStack = [];
+const serialize = () => JSON.stringify(shapes);
+function commit(prev) {                 // prev = 变更前的序列化快照
+  undoStack.push(prev);
+  redoStack.length = 0;
+  updateHud();
+}
+function undo() {
+  if (!undoStack.length) return;
+  redoStack.push(serialize());
+  shapes = JSON.parse(undoStack.pop());
+  selection.clear(); render();
+}
+function redo() {
+  if (!redoStack.length) return;
+  undoStack.push(serialize());
+  shapes = JSON.parse(redoStack.pop());
+  selection.clear(); render();
+}
+
+/* ============ 视口 ============ */
+let scale = 1, panX = 60, panY = 40;
+const GRID = 28;
+const viewport = document.getElementById('viewport');
+const world = document.getElementById('world');
+const grid = document.getElementById('grid');
+
+function applyTransform() {
+  world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+  grid.style.backgroundSize = `${GRID * scale}px ${GRID * scale}px`;
+  grid.style.backgroundPosition = `${panX % (GRID * scale)}px ${panY % (GRID * scale)}px`;
+  document.getElementById('statZoom').textContent = Math.round(scale * 100) + '%';
+}
+const screenToWorld = (sx, sy) => ({ x: (sx - panX) / scale, y: (sy - panY) / scale });
+
+viewport.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const rect = viewport.getBoundingClientRect();
+  const ax = e.clientX - rect.left, ay = e.clientY - rect.top;
+  const next = Math.min(3, Math.max(0.2, scale * Math.exp(e.deltaY * -0.002)));
+  const ratio = 1 - next / scale;
+  panX += (ax - panX) * ratio; panY += (ay - panY) * ratio; scale = next;
+  applyTransform();
+}, { passive: false });
+
+/* ============ 渲染（全量重建，形状少时足够） ============ */
+function render() {
+  world.innerHTML = '';
+  for (const s of shapes) {
+    const el = document.createElement('div');
+    el.className = `shape ${s.type}` + (selection.has(s.id) ? ' selected' : '');
+    el.dataset.id = s.id;
+    el.style.left = s.x + 'px';
+    el.style.top  = s.y + 'px';
+    if (s.type === 'note') {
+      el.style.background = s.color;
+      el.textContent = s.text;
+    } else {
+      el.style.width = s.w + 'px';
+      el.style.height = s.h + 'px';
+    }
+    world.appendChild(el);
+  }
+  updateHud();
+}
+function updateHud() {
+  document.getElementById('statShapes').textContent = `${shapes.length} 个形状`;
+  document.getElementById('statHistory').textContent = `历史 ${undoStack.length} / ${redoStack.length}`;
+  document.getElementById('undo').disabled = !undoStack.length;
+  document.getElementById('redo').disabled = !redoStack.length;
+}
+
+/* ============ 工具切换 ============ */
+let tool = 'select';
+function setTool(t) {
+  tool = t;
+  viewport.dataset.tool = t;
+  document.querySelectorAll('.toolbar [data-tool]').forEach(b =>
+    b.classList.toggle('active', b.dataset.tool === t));
+}
+document.querySelectorAll('.toolbar [data-tool]').forEach(b =>
+  b.addEventListener('click', () => setTool(b.dataset.tool)));
+
+/* ============ 指针交互 ============ */
+let action = null;   // {kind:'pan'|'move'|'marquee'|'draw', ...}
+
+viewport.addEventListener('pointerdown', (e) => {
+  if (e.target.closest('.toolbar')) return;
+  if (e.target.isContentEditable) return;
+  viewport.setPointerCapture(e.pointerId);
+  const shapeEl = e.target.closest('.shape');
+  const w = screenToWorld(e.clientX - viewport.getBoundingClientRect().left,
+                          e.clientY - viewport.getBoundingClientRect().top);
+
+  if (tool === 'hand' || e.button === 1) {
+    action = { kind: 'pan', lastX: e.clientX, lastY: e.clientY };
+    viewport.classList.add('panning');
+    return;
+  }
+  if (tool === 'note' || tool === 'rect') {
+    const prev = serialize();
+    const s = tool === 'note'
+      ? { id: 's' + uid++, type: 'note', x: w.x, y: w.y,
+          color: NOTE_COLORS[shapes.length % NOTE_COLORS.length], text: '新便签' }
+      : { id: 's' + uid++, type: 'rect', x: w.x, y: w.y, w: 180, h: 110 };
+    shapes.push(s); commit(prev);
+    selection = new Set([s.id]);
+    setTool('select'); render();
+    return;
+  }
+  // select 工具
+  if (shapeEl) {
+    const id = shapeEl.dataset.id;
+    if (e.shiftKey) { selection.has(id) ? selection.delete(id) : selection.add(id); }
+    else if (!selection.has(id)) selection = new Set([id]);
+    render();
+    action = {
+      kind: 'move', start: w, moved: false, prev: serialize(),
+      origins: [...selection].map(sid => {
+        const s = shapes.find(x => x.id === sid);
+        return { s, x: s.x, y: s.y };
+      }),
+    };
+  } else {
+    if (!e.shiftKey) { selection.clear(); render(); }
+    const box = document.createElement('div');
+    box.className = 'marquee';
+    viewport.appendChild(box);
+    action = { kind: 'marquee', start: w, box, base: new Set(selection) };
+  }
+});
+
+viewport.addEventListener('pointermove', (e) => {
+  if (!action) return;
+  const rect = viewport.getBoundingClientRect();
+  const w = screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
+
+  if (action.kind === 'pan') {
+    panX += e.clientX - action.lastX; panY += e.clientY - action.lastY;
+    action.lastX = e.clientX; action.lastY = e.clientY;
+    applyTransform();
+  } else if (action.kind === 'move') {
+    const dx = w.x - action.start.x, dy = w.y - action.start.y;
+    if (Math.abs(dx) + Math.abs(dy) > 0.5) action.moved = true;
+    for (const o of action.origins) { o.s.x = o.x + dx; o.s.y = o.y + dy; }
+    // 拖拽中只改被拖元素的 style，不整树重渲
+    for (const o of action.origins) {
+      const el = world.querySelector(`[data-id="${o.s.id}"]`);
+      el.style.left = o.s.x + 'px'; el.style.top = o.s.y + 'px';
+    }
+  } else if (action.kind === 'marquee') {
+    const x1 = Math.min(action.start.x, w.x), y1 = Math.min(action.start.y, w.y);
+    const x2 = Math.max(action.start.x, w.x), y2 = Math.max(action.start.y, w.y);
+    // marquee 画在 viewport 层（screen 坐标）
+    action.box.style.left   = (x1 * scale + panX) + 'px';
+    action.box.style.top    = (y1 * scale + panY) + 'px';
+    action.box.style.width  = ((x2 - x1) * scale) + 'px';
+    action.box.style.height = ((y2 - y1) * scale) + 'px';
+    // world 坐标命中检测
+    selection = new Set(action.base);
+    for (const s of shapes) {
+      const el = world.querySelector(`[data-id="${s.id}"]`);
+      const sw = s.w ?? el.offsetWidth, sh = s.h ?? el.offsetHeight;
+      if (s.x < x2 && s.x + sw > x1 && s.y < y2 && s.y + sh > y1) selection.add(s.id);
+    }
+    world.querySelectorAll('.shape').forEach(el =>
+      el.classList.toggle('selected', selection.has(el.dataset.id)));
+  }
+});
+
+function endAction() {
+  if (!action) return;
+  if (action.kind === 'move' && action.moved) commit(action.prev);  // 一次拖拽 = 一步历史
+  if (action.kind === 'marquee') action.box.remove();
+  viewport.classList.remove('panning');
+  action = null;
+  updateHud();
+}
+viewport.addEventListener('pointerup', endAction);
+viewport.addEventListener('pointercancel', endAction);
+
+/* 双击便签 → 行内编辑 */
+viewport.addEventListener('dblclick', (e) => {
+  const el = e.target.closest('.shape.note');
+  if (!el) return;
+  const s = shapes.find(x => x.id === el.dataset.id);
+  const prev = serialize();
+  el.contentEditable = 'true';
+  el.focus();
+  document.getSelection().selectAllChildren(el);
+  el.addEventListener('blur', () => {
+    el.contentEditable = 'false';
+    const text = el.textContent.trim() || '（空）';
+    if (text !== s.text) { s.text = text; commit(prev); }
+    render();
+  }, { once: true });
+});
+
+/* ============ 命令 ============ */
+function deleteSelection() {
+  if (!selection.size) return;
+  const prev = serialize();
+  shapes = shapes.filter(s => !selection.has(s.id));
+  selection.clear(); commit(prev); render();
+}
+function duplicateSelection() {
+  if (!selection.size) return;
+  const prev = serialize();
+  const clones = shapes.filter(s => selection.has(s.id))
+    .map(s => ({ ...s, id: 's' + uid++, x: s.x + 24, y: s.y + 24 }));
+  shapes.push(...clones);
+  selection = new Set(clones.map(c => c.id));
+  commit(prev); render();
+}
+document.getElementById('undo').onclick = undo;
+document.getElementById('redo').onclick = redo;
+document.getElementById('del').onclick = deleteSelection;
+document.getElementById('dup').onclick = duplicateSelection;
+document.getElementById('export').onclick = () => {
+  const blob = new Blob([JSON.stringify({ version: 1, shapes }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'whiteboard.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+window.addEventListener('keydown', (e) => {
+  if (e.target.isContentEditable) return;
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
+  else if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
+  else if (mod && e.key.toLowerCase() === 'd') { e.preventDefault(); duplicateSelection(); }
+  else if (e.key === 'Delete' || e.key === 'Backspace') deleteSelection();
+  else if (e.key.toLowerCase() === 'v') setTool('select');
+  else if (e.key.toLowerCase() === 'h') setTool('hand');
+  else if (e.key.toLowerCase() === 'n') setTool('note');
+  else if (e.key.toLowerCase() === 'r') setTool('rect');
+});
+
+applyTransform();
+render();
+</script>
+</body>
+</html>

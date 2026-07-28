@@ -1,0 +1,112 @@
+/*
+ * demo.css —— Dashboard 形状 demo 共用样式 kit（本 skill 各 demo-*.html 相对路径引用）。
+ * 设计令牌亮暗两套，跟随系统 prefers-color-scheme；各 demo 只在自己文件里补形状特有样式。
+ * 组件清单：page/head/card/stat/toolbar/table/chip/btn/link/pager/overlay+modal/toast/
+ *          seg(分段控制)/selbar(批量操作条)/skeleton(骨架屏)/alert(横幅)/empty(空状态)
+ */
+:root {
+  --bg: #f6f7f9; --card: #ffffff; --fg: #1f2328; --muted: #6a737d;
+  --border: #e4e7eb; --primary: #3564d7; --primary-fg: #ffffff; --danger: #c4372c;
+  --chip-on-bg: #e3f4e8; --chip-on-fg: #176e34;
+  --chip-off-bg: #f0f1f3; --chip-off-fg: #6a737d;
+  --chip-warn-bg: #fdf1d8; --chip-warn-fg: #8a5a00;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15181c; --card: #1e2227; --fg: #e6e9ec; --muted: #8b949e;
+    --border: #333a42; --primary: #5b8bf0; --danger: #e5695f;
+    --chip-on-bg: #12351f; --chip-on-fg: #5fca86;
+    --chip-off-bg: #2a2f36; --chip-off-fg: #8b949e;
+    --chip-warn-bg: #3a2e10; --chip-warn-fg: #e0b45c;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg);
+       font: 14px/1.6 system-ui, "PingFang SC", "Microsoft YaHei", sans-serif; }
+.page { max-width: 880px; margin: 0 auto; padding: 18px 16px 26px; }
+
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+.head h1 { margin: 0; font-size: 19px; }
+.sub { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 12px 0; }
+.stat { padding: 10px 14px; }
+.stat-label { margin: 0; color: var(--muted); font-size: 12px; }
+.stat-value { margin: 2px 0 0; font-size: 20px; font-weight: 650; }
+.stat-delta { margin: 0; font-size: 12px; }
+
+.toolbar { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; }
+.grow { flex: 1; }
+input, select, textarea {
+  padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--card); color: var(--fg); font: inherit;
+}
+input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--primary); outline-offset: -1px; }
+
+table.list { width: 100%; border-collapse: collapse; background: var(--card);
+             border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.list thead th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 500;
+                 padding: 9px 12px; border-bottom: 1px solid var(--border); }
+.list tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+.list tbody tr:last-child td { border-bottom: 0; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.ops { text-align: right; white-space: nowrap; }
+.empty { text-align: center; color: var(--muted); padding: 26px 12px; }
+
+.chip { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 12px; }
+.chip-on { background: var(--chip-on-bg); color: var(--chip-on-fg); }
+.chip-off { background: var(--chip-off-bg); color: var(--chip-off-fg); }
+.chip-warn { background: var(--chip-warn-bg); color: var(--chip-warn-fg); }
+
+.btn { padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px;
+       background: var(--card); color: var(--fg); font: inherit; cursor: pointer; }
+.btn:hover:not(:disabled) { border-color: var(--primary); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-fg); }
+.btn.sm { padding: 4px 9px; font-size: 13px; }
+.link { border: 0; background: none; color: var(--primary); font: inherit; cursor: pointer; padding: 0 5px; }
+.link:disabled { color: var(--muted); cursor: not-allowed; }
+.link.danger { color: var(--danger); }
+
+.pager { display: flex; justify-content: space-between; align-items: center;
+         margin-top: 10px; color: var(--muted); font-size: 13px; }
+.pager div { display: flex; gap: 8px; }
+
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.42);
+           display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 20; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+         padding: 18px 20px; width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; }
+.modal h2 { margin: 0 0 2px; font-size: 16px; }
+.modal label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.modal input, .modal select, .modal textarea { width: 100%; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.err { margin: 0; color: var(--danger); font-size: 12px; }
+.actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
+.toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+         background: var(--fg); color: var(--bg); padding: 8px 16px; border-radius: 999px;
+         font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,.25); z-index: 30; white-space: nowrap; }
+
+/* 分段控制（状态/角色/区间切换） */
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: var(--card); color: var(--muted); padding: 6px 12px;
+              font: inherit; cursor: pointer; border-right: 1px solid var(--border); }
+.seg button:last-child { border-right: 0; }
+.seg button.on { background: var(--primary); color: var(--primary-fg); }
+
+/* 批量操作条：选中 ≥1 行时出现 */
+.selbar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin-bottom: 10px;
+          background: var(--card); border: 1px solid var(--primary); border-radius: 10px; font-size: 13px; }
+.selbar .count { color: var(--primary); font-weight: 650; }
+
+/* 骨架屏 */
+.skel { height: 14px; border-radius: 6px; background: var(--border); margin: 12px;
+        animation: skel 1.1s ease-in-out infinite alternate; }
+@keyframes skel { from { opacity: .55; } to { opacity: 1; } }
+
+/* 横幅提示 */
+.alert { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px;
+         border: 1px solid var(--border); border-radius: 10px; background: var(--card); font-size: 13px; }
+.alert.danger { border-color: var(--danger); color: var(--danger); }
+.alert p { margin: 0; }

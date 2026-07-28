@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：数据展示件</title>
+<!--
+  demo-data-display.html —— 「数据展示件」形状的最小可玩实现
+  （蓝本：open-dashboard 的 add-data-display —— TagList / MetadataList / ProgressTile / UserCell）。
+  复现的不变量：
+  - 纯展示，无数据获取：所有原子只吃 props / 子节点；demo 内存数据陈列，真实版由上层页面喂
+  - 颜色全走 CSS 变量：Chip / Progress / Stat 的语义色（good / warn / danger / muted）绑令牌，
+    切主题时同一份 JSX 直接跟随，不硬编码颜色
+  - 语义色 status → 颜色映射统一：
+    活跃 / <80% / 涨 → --chip-on-*；警告 / 80–95% → --chip-warn-*；停用 / ≥95% / 跌 → --danger
+  - 空槽给占位：TagList 空数组渲染空态块，从不塌陷；数字用 tabular-nums 对齐
+  额外：demo 提供亮/暗主题按钮，通过 <html data-theme="…"> 覆盖 demo.css 的系统跟随，
+  演示所有展示件在两种主题下都干净。
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  /* data-theme 覆盖 demo.css 的 prefers-color-scheme，供本页主题按钮切换 */
+  :root[data-theme="light"] {
+    --bg: #f6f7f9; --card: #ffffff; --fg: #1f2328; --muted: #6a737d;
+    --border: #e4e7eb; --primary: #3564d7; --primary-fg: #ffffff; --danger: #c4372c;
+    --chip-on-bg: #e3f4e8; --chip-on-fg: #176e34;
+    --chip-off-bg: #f0f1f3; --chip-off-fg: #6a737d;
+    --chip-warn-bg: #fdf1d8; --chip-warn-fg: #8a5a00;
+  }
+  :root[data-theme="dark"] {
+    --bg: #15181c; --card: #1e2227; --fg: #e6e9ec; --muted: #8b949e;
+    --border: #333a42; --primary: #5b8bf0; --primary-fg: #ffffff; --danger: #e5695f;
+    --chip-on-bg: #12351f; --chip-on-fg: #5fca86;
+    --chip-off-bg: #2a2f36; --chip-off-fg: #8b949e;
+    --chip-warn-bg: #3a2e10; --chip-warn-fg: #e0b45c;
+  }
+
+  .wall { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .wall { grid-template-columns: 1fr; } }
+  .block { padding: 12px 14px; }
+  .block h3 { margin: 0 0 4px; font-size: 13px; }
+  .block .hint { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
+
+  /* Chip 陈列 —— 变体一览 + 交互式 TagList */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .chip.chip-primary { background: color-mix(in srgb, var(--primary) 16%, transparent); color: var(--primary); }
+  .chip.chip-danger { background: color-mix(in srgb, var(--danger) 16%, transparent); color: var(--danger); }
+  .chip.removable { padding-right: 4px; display: inline-flex; align-items: center; gap: 3px; }
+  .chip .x { border: 0; background: transparent; color: inherit; cursor: pointer;
+             padding: 0 3px; font-size: 12px; line-height: 1; opacity: .7; }
+  .chip .x:hover { opacity: 1; }
+  .tag-add { display: flex; gap: 6px; margin-top: 8px; }
+  .tag-add input { flex: 1; }
+  .empty-slot { padding: 14px; text-align: center; color: var(--muted);
+                border: 1px dashed var(--border); border-radius: 10px; font-size: 12px; }
+
+  /* MetadataList —— 键值网格 */
+  dl.meta { display: grid; grid-template-columns: minmax(72px, auto) 1fr;
+            gap: 6px 14px; margin: 0; font-size: 13px; }
+  dl.meta dt { color: var(--muted); }
+  dl.meta dd { margin: 0; color: var(--fg); font-weight: 550; font-variant-numeric: tabular-nums; }
+
+  /* Progress bar */
+  .prog-item { margin-bottom: 10px; }
+  .prog-item:last-child { margin-bottom: 0; }
+  .prog-head { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+  .prog-head .l { color: var(--fg); }
+  .prog-head .r { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { height: 6px; border-radius: 999px; background: var(--chip-off-bg); overflow: hidden; }
+  .bar > i { display: block; height: 100%; border-radius: inherit; transition: width .35s ease; }
+  .bar > i.tone-on { background: var(--chip-on-fg); }
+  .bar > i.tone-warn { background: var(--chip-warn-fg); }
+  .bar > i.tone-danger { background: var(--danger); }
+
+  /* Stat 瓦片 + sparkline */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-tile { padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; }
+  .stat-tile .row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .stat-tile .v { margin: 2px 0 0; font-size: 18px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .delta-up { color: var(--chip-on-fg); font-size: 12px; }
+  .delta-down { color: var(--danger); font-size: 12px; }
+  svg.spark { display: block; }
+
+  /* 分隔线 */
+  .divider { height: 1px; background: var(--border); margin: 12px 0; border: 0; }
+
+  /* 主题按钮 */
+  .theme-btn { display: inline-flex; align-items: center; gap: 6px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect, useMemo } = React;
+const html = htm.bind(React.createElement);
+
+const INITIAL_TAGS = [
+  { text: "设计",     tone: "on" },
+  { text: "前端",     tone: "on" },
+  { text: "紧急",     tone: "warn" },
+  { text: "Q3 目标",  tone: "primary" },
+  { text: "计费",     tone: "off" },
+  { text: "内部",     tone: "off" },
+];
+
+const META = [
+  { label: "状态",    valueChip: { text: "运行中", tone: "on" } },
+  { label: "套餐",    value: "企业版" },
+  { label: "席位",    value: "48 / 50" },
+  { label: "区域",    value: "cn-east-1" },
+  { label: "创建于",  value: "2024-11-02" },
+  { label: "责任人",  value: "陈禾" },
+];
+
+const INITIAL_PROGRESS = [
+  { label: "存储用量",       value: 320,  total: 512 },
+  { label: "API 配额 (月)",  value: 7300, total: 10000 },
+  { label: "任务完成",       value: 18,   total: 24 },
+  { label: "带宽用量",       value: 96,   total: 100 },
+];
+
+const STATS = [
+  { label: "本月新增用户", display: "1,284",     delta: +12.4, spark: [10, 18, 14, 22, 26, 24, 30] },
+  { label: "本周收入",     display: "¥ 128,940", delta: +4.7,  spark: [40, 42, 38, 45, 50, 48, 54] },
+  { label: "退款率",       display: "1.8%",      delta: -0.3,  spark: [3.2, 2.8, 2.5, 2.1, 2.0, 1.9, 1.8] },
+  { label: "平均响应",     display: "182 ms",    delta: -8.1,  spark: [240, 226, 218, 210, 202, 190, 182] },
+];
+
+// 阈值 → 语义色：<80% 绿 / 80–95% 橙 / ≥95% 红
+function progressTone(pct) {
+  if (pct >= 95) return "danger";
+  if (pct >= 80) return "warn";
+  return "on";
+}
+
+// sparkline：折线 + 尾点，按涨跌上色
+function Spark({ points, up }) {
+  const w = 64, h = 18;
+  const min = Math.min.apply(null, points);
+  const max = Math.max.apply(null, points);
+  const range = max - min || 1;
+  const step = w / (points.length - 1);
+  const coords = points.map((v, i) => [
+    (i * step),
+    h - ((v - min) / range) * (h - 2) - 1,
+  ]);
+  const d = coords.map((p, i) => (i === 0 ? "M" : "L") + p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
+  const last = coords[coords.length - 1];
+  const color = up ? "var(--chip-on-fg)" : "var(--danger)";
+  return html`
+    <svg class="spark" viewBox=${"0 0 " + w + " " + h} width=${w} height=${h} aria-hidden="true">
+      <path d=${d} fill="none" stroke=${color} stroke-width="1.5"
+            stroke-linejoin="round" stroke-linecap="round" />
+      <circle cx=${last[0].toFixed(1)} cy=${last[1].toFixed(1)} r="1.6" fill=${color} />
+    </svg>`;
+}
+
+function Confirm({ text, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>确认操作</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" onClick=${onOk}>确认</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function initialTheme() {
+  if (typeof window === "undefined" || !window.matchMedia) return "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function App() {
+  const [theme, setTheme] = useState(initialTheme);
+  const [tags, setTags] = useState(INITIAL_TAGS);
+  const [tagInput, setTagInput] = useState("");
+  const [progress, setProgress] = useState(INITIAL_PROGRESS);
+  const [confirm, setConfirm] = useState(null);
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const removeTag = (idx) => {
+    const removed = tags[idx];
+    setTags(ts => ts.filter((_, i) => i !== idx));
+    setToast("已移除标签「" + removed.text + "」");
+  };
+
+  const addTag = () => {
+    const v = tagInput.trim();
+    if (!v) return;
+    if (tags.some(t => t.text === v)) {
+      setToast("标签「" + v + "」已存在");
+      return;
+    }
+    setTags(ts => ts.concat([{ text: v, tone: "primary" }]));
+    setTagInput("");
+    setToast("已添加标签「" + v + "」");
+  };
+
+  const clearTags = () => setConfirm({
+    text: "清空当前所有标签？此操作只影响 demo 本地状态。",
+    onOk: () => {
+      setTags([]);
+      setConfirm(null);
+      setToast("已清空全部标签");
+    },
+  });
+
+  const resample = () => {
+    setProgress(ps => ps.map(p => {
+      const v = Math.max(0, Math.min(p.total, Math.round(p.total * (0.2 + Math.random() * 0.8))));
+      return { ...p, value: v };
+    }));
+    setToast("已重新采样进度值");
+  };
+
+  const themeLabel = theme === "dark" ? "亮色" : "暗色";
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    setToast("已切换到" + (next === "dark" ? "暗色" : "亮色") + "主题");
+  };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>数据展示件陈列</h1>
+          <p class="sub">Chip / 元数据 / 进度 / 统计瓦片 —— 一屏看清所有原子在亮暗两态的样子</p>
+        </div>
+        <button class="btn theme-btn" onClick=${toggleTheme} aria-label="切换主题">
+          <span>${theme === "dark" ? "🌙" : "☀️"}</span>
+          <span>切到${themeLabel}</span>
+        </button>
+      </header>
+
+      <div class="wall">
+        <!-- 1. Chip / Badge / Tag 变体 + 交互 TagList -->
+        <section class="card block">
+          <h3>Chip / Badge / Tag</h3>
+          <p class="hint">语义变体（一览）+ 可增删的标签列表</p>
+          <div class="chip-row">
+            <span class="chip chip-on">活跃</span>
+            <span class="chip chip-warn">警告</span>
+            <span class="chip chip-off">停用</span>
+            <span class="chip chip-primary">主色</span>
+            <span class="chip chip-danger">危险</span>
+          </div>
+          <hr class="divider" />
+          ${tags.length === 0
+            ? html`<div class="empty-slot">还没有标签 —— 从下方输入框加一个</div>`
+            : html`
+              <div class="chip-row">
+                ${tags.map((t, i) => html`
+                  <span key=${t.text} class=${"chip removable chip-" + t.tone}>
+                    ${t.text}
+                    <button class="x" aria-label=${"移除 " + t.text}
+                            onClick=${() => removeTag(i)}>×</button>
+                  </span>`)}
+              </div>`}
+          <div class="tag-add">
+            <input placeholder="新标签名…" value=${tagInput}
+                   onChange=${e => setTagInput(e.target.value)}
+                   onKeyDown=${e => { if (e.key === "Enter") addTag(); }} />
+            <button class="btn sm" onClick=${addTag}>添加</button>
+            <button class="btn sm" style=${{ color: "var(--danger)" }}
+                    onClick=${clearTags} disabled=${tags.length === 0}>清空</button>
+          </div>
+        </section>
+
+        <!-- 2. MetadataList -->
+        <section class="card block">
+          <h3>Metadata List（键值元数据）</h3>
+          <p class="hint">label 灰色定宽，value 加粗跟随 tabular-nums</p>
+          <dl class="meta">
+            ${META.map(m => html`
+              <${React.Fragment} key=${m.label}>
+                <dt>${m.label}</dt>
+                <dd>${m.valueChip
+                  ? html`<span class=${"chip chip-" + m.valueChip.tone}>${m.valueChip.text}</span>`
+                  : m.value}</dd>
+              <//>`)}
+          </dl>
+        </section>
+
+        <!-- 3. Progress -->
+        <section class="card block">
+          <h3>Progress（配额 / 百分比）</h3>
+          <p class="hint">阈值 → 语义色：&lt;80% 绿 / 80–95% 橙 / ≥95% 红</p>
+          ${progress.map(p => {
+            const pct = p.total > 0 ? Math.min(100, Math.max(0, Math.round((p.value / p.total) * 100))) : 0;
+            const tone = progressTone(pct);
+            return html`
+              <div key=${p.label} class="prog-item">
+                <div class="prog-head">
+                  <span class="l">${p.label}</span>
+                  <span class="r">${p.value.toLocaleString()} / ${p.total.toLocaleString()} · ${pct}%</span>
+                </div>
+                <div class="bar"><i class=${"tone-" + tone} style=${{ width: pct + "%" }}></i></div>
+              </div>`;
+          })}
+          <hr class="divider" />
+          <button class="btn sm" onClick=${resample}>重新采样</button>
+        </section>
+
+        <!-- 4. Stat 瓦片 + sparkline -->
+        <section class="card block">
+          <h3>Stat 瓦片（指标 + 涨跌 + sparkline）</h3>
+          <p class="hint">涨跌决定 delta / sparkline 颜色</p>
+          <div class="stat-grid">
+            ${STATS.map(s => {
+              const up = s.delta >= 0;
+              return html`
+                <div key=${s.label} class="stat-tile">
+                  <p class="stat-label">${s.label}</p>
+                  <div class="row">
+                    <p class="v">${s.display}</p>
+                    <${Spark} points=${s.spark} up=${up} />
+                  </div>
+                  <p class=${up ? "delta-up" : "delta-down"}>
+                    ${up ? "↑" : "↓"} ${Math.abs(s.delta).toFixed(1)}% vs 上周
+                  </p>
+                </div>`;
+            })}
+          </div>
+        </section>
+      </div>
+
+      ${confirm && html`<${Confirm} text=${confirm.text} onOk=${confirm.onOk} onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>镜像泼溅假反射 · ORYZO table_reflection 手法教学复刻</title>
+<style>
+  /* 深色亚克力"产品摄影桌"：反射不是算出来的，是叠出来的 */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden;
+    background: radial-gradient(120% 90% at 50% 12%, #33363a 0%, #1d1f22 55%, #121315 100%); }
+  canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  canvas:active { cursor: grabbing; }
+  .hud {
+    position: fixed; left: 16px; top: 14px; color: #f2e8d5;
+    font: 12px/1.7 "DM Mono", ui-monospace, monospace; letter-spacing: .06em;
+    pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,.5);
+  }
+  .hud b { font-size: 14px; letter-spacing: .12em; }
+  .panel {
+    position: fixed; right: 16px; top: 14px; color: #f2e8d5;
+    font: 12px/2 "DM Mono", ui-monospace, monospace; letter-spacing: .05em;
+    display: grid; gap: 2px; user-select: none;
+  }
+  .panel label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .panel input[type=range] { width: 110px; accent-color: #f08c2e; }
+  .panel input[type=checkbox] { accent-color: #f08c2e; }
+  .hint {
+    position: fixed; left: 16px; bottom: 14px; color: #f2e8d5; opacity: .7;
+    font: 11px/1.6 "DM Mono", ui-monospace, monospace; pointer-events: none;
+  }
+  .err { position: fixed; inset: 0; display: none; place-items: center; color: #f2e8d5; font: 14px system-ui; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="hud"><b>FAKE REFLECTION</b><br>正身画一遍 · 镜像再画一遍（调暗调透明）</div>
+<div class="panel">
+  <label>反射强度 <input type="range" id="refA" min="0" max="80" value="40"></label>
+  <label><input type="checkbox" id="fade" checked> 离面越远越淡（demo 加料）</label>
+</div>
+<div class="hint">拖拽旋转 · oryzo 的桌面倒影 = 第二份镜像泼溅（table_reflection.sog）opacity 0.5 叠画，不是实时反射</div>
+<div class="err" id="err">需要 WebGL2 支持。</div>
+
+<script>
+/* ============================================================================
+ * 镜像泼溅假反射 —— oryzo.ai 桌面倒影手法的教学复刻
+ *
+ * 原站真相（来自线上 bundle）：倒影是独立加载的第二份泼溅资产
+ * table_reflection.sog（0.5MB），onLoad 后设 opacity=0.5 叠画在主场景之下。
+ * 没有任何实时反射计算 —— 就是"把物体沿桌面翻个面、调暗调透明再画一遍"，
+ * 产品摄影里的黑亚克力反光，用 15 行渲染顺序换掉一整套 SSR。
+ *
+ * demo 做法：同一份程序化杯垫高斯，画两遍——
+ *   pass A（先画）：uZSign=-1 沿 z=0 镜像 + 全局透明度/亮度衰减 → 倒影
+ *   pass B（后画）：原样 → 正身
+ * 相机限制在桌面以上，所以"倒影永远画在正身之前"就是正确的遮挡序。
+ * 泼溅管线本身（协方差投影/conic/排序）与本合集《高斯泼溅光栅化》一文相同。
+ * ========================================================================== */
+
+const canvas = document.getElementById('gl');
+// premultipliedAlpha:false —— 让画布直接以 straight alpha 叠到 CSS 的"桌面"渐变上
+const gl = canvas.getContext('webgl2', { antialias: false, alpha: true, premultipliedAlpha: false });
+if (!gl) { document.getElementById('err').style.display = 'grid'; throw new Error('no webgl2'); }
+
+/* ---------- 场景：悬浮在桌面上方的软木杯垫（只有杯垫，桌面交给 CSS） ---------- */
+
+const splats = [];
+const rand = (a, b) => a + Math.random() * (b - a);
+const Z0 = 0.34;                     // 杯垫悬浮高度：留出空隙让倒影读得出来
+
+function quatFromNormal(n) {
+  const d = n[2];
+  if (d > 0.9999) return [0, 0, 0, 1];
+  if (d < -0.9999) return [1, 0, 0, 0];
+  const ax = [-n[1], n[0], 0];       // cross((0,0,1), n)
+  const l = Math.hypot(...ax), a = Math.acos(d), s = Math.sin(a / 2) / l;
+  return [ax[0] * s, ax[1] * s, ax[2] * s, Math.cos(a / 2)];
+}
+/* 数据造法同《高斯泼溅渲染系统》主 demo：连贯软木纹理 + 车削轮廓黄金角采样 + 法线。
+ * 倒影里主要看到的是底面，所以底面用足密度。 */
+function makeCorkSampler() {
+  const S = 512, c = document.createElement('canvas');
+  c.width = c.height = S;
+  const g = c.getContext('2d');
+  g.fillStyle = '#c99a5f'; g.fillRect(0, 0, S, S);
+  const shades = ['#e0b67c', '#c78f54', '#b67e45', '#d8ab70', '#a8703a', '#d1a066', '#bd8a50', '#e6c08a'];
+  for (let i = 0; i < 3200; i++) {
+    g.fillStyle = shades[Math.random() * shades.length | 0];
+    g.globalAlpha = rand(0.35, 0.85);
+    g.beginPath();
+    g.ellipse(Math.random() * S, Math.random() * S, rand(2, 8), rand(1.5, 5), Math.random() * Math.PI, 0, 7);
+    g.fill();
+  }
+  g.globalAlpha = 0.06;
+  for (let i = 0; i < 46; i++) {
+    g.fillStyle = Math.random() < 0.5 ? '#8a5c2e' : '#eec48d';
+    g.beginPath();
+    g.ellipse(Math.random() * S, Math.random() * S, rand(40, 110), rand(30, 90), Math.random() * Math.PI, 0, 7);
+    g.fill();
+  }
+  g.globalAlpha = 1;
+  for (let i = 0; i < 320; i++) {
+    g.fillStyle = '#4a2f18';
+    g.globalAlpha = rand(0.5, 0.85);
+    g.beginPath();
+    g.ellipse(Math.random() * S, Math.random() * S, rand(0.8, 2.4), rand(0.8, 2), Math.random() * Math.PI, 0, 7);
+    g.fill();
+  }
+  const d = g.getImageData(0, 0, S, S).data;
+  return (x, y) => {
+    const u = Math.min(S - 1, Math.max(0, (x * 0.48 + 0.5) * S | 0));
+    const v = Math.min(S - 1, Math.max(0, (y * 0.48 + 0.5) * S | 0));
+    const i = (v * S + u) * 4;
+    return [d[i] / 255, d[i + 1] / 255, d[i + 2] / 255];
+  };
+}
+const corkTex = makeCorkSampler();
+const GA = Math.PI * (3 - Math.sqrt(5));
+
+function revolve({ N, pos, nrm, ao, sMul = 1 }) {
+  for (let k = 0; k < N; k++) {
+    const t = (k + 0.5) / N, th = k * GA;
+    const [r, z] = pos(t), n2 = nrm(t);
+    const cx = r * Math.cos(th), cy = r * Math.sin(th);
+    const n = [n2[0] * Math.cos(th), n2[0] * Math.sin(th), n2[1]];
+    const col = corkTex(cx, cy), shade = ao(t) * rand(0.97, 1.03);
+    const s = 0.0135 * sMul * rand(0.85, 1.15);
+    splats.push({
+      center: [cx, cy, Z0 + z],
+      scale: [s, s, 0.005],
+      quat: quatFromNormal(n),
+      color: [col[0] * shade, col[1] * shade, col[2] * shade],
+      alpha: 1,
+      normal: n,
+    });
+  }
+}
+// 凹面 / 内坡 / 平沿 / 圆唇 / 外壁 / 底面
+revolve({ N: 6000, pos: t => [0.74 * Math.sqrt(t), 0.10], nrm: () => [0, 1], ao: () => 0.88 });
+revolve({ N: 1500, pos: t => [0.74 + t * 0.08, 0.10 + t * 0.055], nrm: () => [-0.566, 0.824], ao: t => 0.8 + t * 0.16 });
+revolve({ N: 2300, pos: t => [Math.sqrt(0.82 ** 2 + t * (0.94 ** 2 - 0.82 ** 2)), 0.155], nrm: () => [0, 1], ao: () => 1.0 });
+revolve({ N: 1700, pos: t => { const a = t * Math.PI / 2; return [0.94 + 0.05 * Math.sin(a), 0.105 + 0.05 * Math.cos(a)]; },
+          nrm: t => { const a = t * Math.PI / 2; return [Math.sin(a), Math.cos(a)]; }, ao: t => 0.98 - t * 0.1 });
+revolve({ N: 1900, pos: t => [0.99, 0.105 - t * 0.09], nrm: () => [1, 0], ao: t => 0.86 - t * 0.18 });
+revolve({ N: 4600, pos: t => [0.97 * Math.sqrt(t), 0.008], nrm: () => [0, -1], ao: () => 0.72, sMul: 1.2 });
+const COUNT = splats.length;
+
+/* ---------- 着色器：与主文管线一致，多了 uZSign / uAlphaMul / uColorMul / uFadeK ---------- */
+
+const VS = `#version 300 es
+precision highp float;
+in vec3 iCenter; in vec3 iScale; in vec4 iQuat; in vec4 iColorA;
+in vec3 iNormal;           // 表面法线：方向光着色，镜像 pass 跟着翻面
+uniform mat4 uView, uProj;
+uniform vec2 uViewport, uFocal;
+uniform float uZSign;      // 1 正身；-1 沿 z=0 镜像
+uniform float uAlphaMul;   // 倒影全局透明度
+uniform float uColorMul;   // 倒影调暗
+uniform float uFadeK;      // 离面衰减系数（0 = 关）
+uniform vec3 uLight;       // 世界空间方向光（已归一化）
+out vec4 vColor; out vec3 vConic; out vec2 vPixPos;
+
+mat3 quatToMat3(vec4 q){float x=q.x,y=q.y,z=q.z,w=q.w;
+  return mat3(1.-2.*(y*y+z*z),2.*(x*y+w*z),2.*(x*z-w*y),
+              2.*(x*y-w*z),1.-2.*(x*x+z*z),2.*(y*z+w*x),
+              2.*(x*z+w*y),2.*(y*z-w*x),1.-2.*(x*x+y*y));}
+
+void main(){
+  vec2 corner = vec2(float(gl_VertexID % 2), float(gl_VertexID / 2)) * 2. - 1.;
+  vec3 center = vec3(iCenter.xy, iCenter.z * uZSign);       // 镜像：z 取反
+  vec4 viewC = uView * vec4(center, 1.);
+  if (viewC.z > -0.3) { gl_Position = vec4(0.,0.,2.,1.); return; }   // 近平面剔除
+
+  mat3 R = quatToMat3(iQuat);
+  mat3 M = R * mat3(iScale.x,0.,0., 0.,iScale.y,0., 0.,0.,iScale.z);
+  // 镜像下协方差要跟着变：Σ' = FΣF^T，F=diag(1,1,-1) ⇔ 把 M 的第三行取反
+  if (uZSign < 0.) { M[0].z = -M[0].z; M[1].z = -M[1].z; M[2].z = -M[2].z; }
+  mat3 Sigma = M * transpose(M);
+
+  float invZ = 1. / viewC.z, invZ2 = invZ * invZ;
+  mat3 J = mat3(uFocal.x*invZ,0.,0., 0.,uFocal.y*invZ,0.,
+                -uFocal.x*viewC.x*invZ2, -uFocal.y*viewC.y*invZ2, 0.);
+  mat3 T = J * mat3(uView);
+  mat3 S2 = T * Sigma * transpose(T);
+  float a = S2[0][0]+0.3, b = S2[1][0], c = S2[1][1]+0.3;
+  float det = a*c - b*b;
+  if (det <= 0.) { gl_Position = vec4(0.,0.,2.,1.); return; }
+  vConic = vec3(c, -b, a) / det;
+  float mid = 0.5*(a+c), rad = sqrt(max(0., mid*mid - det));
+  float l1 = mid+rad, l2 = max(mid-rad, 1e-4);
+  vec2 e1 = (abs(b)<1e-9) ? ((a>=c)?vec2(1.,0.):vec2(0.,1.)) : normalize(vec2(b, l1-a));
+  vec2 e2 = vec2(e1.y, -e1.x);
+  vec2 radiusPx = min(3.*sqrt(vec2(l1,l2)), 512.);
+  vec2 offsetPx = corner.x*e1*radiusPx.x + corner.y*e2*radiusPx.y;
+  vPixPos = offsetPx;
+  vec4 clip = uProj * viewC;
+  clip.xy += offsetPx / uViewport * 2. * clip.w;
+  gl_Position = clip;
+
+  // demo 加料：倒影随"离桌面深度"指数衰减（真反光桌也这样，因为反射路径变长）
+  float fade = (uZSign < 0.) ? exp(-uFadeK * iCenter.z) : 1.;
+  // 方向光：镜像 pass 里法线随 Σ' = FΣF^T 一起翻面，倒影的明暗才是"镜子里的"
+  vec3 n = vec3(iNormal.xy, iNormal.z * uZSign);
+  float lam = 0.62 + 0.38 * max(0., dot(n, uLight));
+  vColor = vec4(iColorA.rgb * lam * uColorMul, iColorA.a * uAlphaMul * fade);
+}`;
+
+const FS = `#version 300 es
+precision highp float;
+in vec4 vColor; in vec3 vConic; in vec2 vPixPos;
+out vec4 frag;
+void main(){
+  float power = 0.5*(vConic.x*vPixPos.x*vPixPos.x + vConic.z*vPixPos.y*vPixPos.y)
+              + vConic.y*vPixPos.x*vPixPos.y;
+  float alpha = vColor.a * exp(-power);
+  if (alpha < 1./255.) discard;
+  frag = vec4(vColor.rgb, alpha);
+}`;
+
+function compile(type, srcCode) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, srcCode); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog);
+if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+gl.useProgram(prog);
+{ // 方向光：左前上方"棚灯"，固定在世界空间
+  const L = [0.45, -0.3, 0.85], l = Math.hypot(...L);
+  gl.uniform3f(gl.getUniformLocation(prog, 'uLight'), L[0] / l, L[1] / l, L[2] / l);
+}
+
+/* ---------- 双实例缓冲：正身 / 镜像各自按视深排序 ---------- */
+
+const FLOATS = 17;   // center 3 + scale 3 + quat 4 + colorA 4 + normal 3
+const src = new Float32Array(COUNT * FLOATS);
+splats.forEach((s, i) => {
+  src.set(s.center, i * FLOATS);
+  src.set(s.scale, i * FLOATS + 3);
+  src.set(s.quat, i * FLOATS + 6);
+  src.set([...s.color, s.alpha], i * FLOATS + 10);
+  src.set(s.normal, i * FLOATS + 14);
+});
+
+function makeVAO() {
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  const vbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, COUNT * FLOATS * 4, gl.DYNAMIC_DRAW);
+  [['iCenter',3,0],['iScale',3,12],['iQuat',4,24],['iColorA',4,40],['iNormal',3,56]].forEach(([n,sz,off]) => {
+    const loc = gl.getAttribLocation(prog, n);
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, sz, gl.FLOAT, false, FLOATS*4, off);
+    gl.vertexAttribDivisor(loc, 1);
+  });
+  return { vao, vbo, buf: new Float32Array(COUNT * FLOATS) };
+}
+const passMain = makeVAO();      // 正身
+const passMirr = makeVAO();      // 镜像
+const depths = new Float32Array(COUNT), order = new Uint32Array(COUNT);
+
+function sortInto(pass, view, zSign) {
+  for (let i = 0; i < COUNT; i++) {
+    const o = i * FLOATS;
+    depths[i] = view[2]*src[o] + view[6]*src[o+1] + view[10]*(src[o+2]*zSign);
+    order[i] = i;
+  }
+  order.sort((A, B) => depths[A] - depths[B]);
+  for (let k = 0; k < COUNT; k++)
+    pass.buf.set(src.subarray(order[k]*FLOATS, (order[k]+1)*FLOATS), k*FLOATS);
+  gl.bindBuffer(gl.ARRAY_BUFFER, pass.vbo);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, pass.buf);
+}
+
+/* ---------- 相机与主循环 ---------- */
+
+function perspective(fovY, aspect, near, far) {
+  const f = 1/Math.tan(fovY/2), nf = 1/(near-far);
+  return new Float32Array([f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0]);
+}
+const sub3=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const cross3=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const norm3=a=>{const l=Math.hypot(...a);return[a[0]/l,a[1]/l,a[2]/l]};
+function lookAt(eye, at, up) {
+  const z = norm3(sub3(eye,at)), x = norm3(cross3(up,z)), y = cross3(z,x);
+  return new Float32Array([x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0,
+    -dot3(x,eye),-dot3(y,eye),-dot3(z,eye),1]);
+}
+
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let theta = 0.7, phi = 0.35, vT = 0, vP = 0, dragging = false, px = 0, py = 0;
+canvas.addEventListener('pointerdown', e => { dragging = true; px = e.clientX; py = e.clientY; canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  vT = (e.clientX-px)*0.005; vP = (e.clientY-py)*0.004;
+  theta -= vT; phi += vP; px = e.clientX; py = e.clientY;
+});
+canvas.addEventListener('pointerup', () => dragging = false);
+
+gl.disable(gl.DEPTH_TEST);
+gl.enable(gl.BLEND);
+// alpha 通道单独累积，保证与 CSS 背景的最终合成正确
+gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+gl.clearColor(0, 0, 0, 0);
+
+const U = n => gl.getUniformLocation(prog, n);
+const refA = document.getElementById('refA'), fadeBox = document.getElementById('fade');
+
+function frame() {
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const w = canvas.clientWidth*dpr|0, h = canvas.clientHeight*dpr|0;
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+  gl.viewport(0, 0, w, h);
+
+  if (!dragging) {
+    theta -= vT; phi += vP; vT *= 0.94; vP *= 0.94;
+    if (!reduceMotion) theta += 0.0016;
+  }
+  phi = Math.max(0.12, Math.min(1.1, phi));   // 相机永远在桌面之上 → 倒影先画即正确遮挡
+
+  const eye = [3.6*Math.cos(phi)*Math.cos(theta), 3.6*Math.cos(phi)*Math.sin(theta), 3.6*Math.sin(phi)+Z0];
+  const view = lookAt(eye, [0, 0, Z0*0.7], [0, 0, 1]);
+  const fovY = 38*Math.PI/180;
+  const proj = perspective(fovY, w/h, 0.1, 100);
+  const focalY = h/(2*Math.tan(fovY/2));
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.uniformMatrix4fv(U('uView'), false, view);
+  gl.uniformMatrix4fv(U('uProj'), false, proj);
+  gl.uniform2f(U('uViewport'), w, h);
+  gl.uniform2f(U('uFocal'), focalY, focalY);
+
+  // pass A：倒影（先画 = 永远垫底，oryzo 的 renderOrder 干的就是这件事）
+  sortInto(passMirr, view, -1);
+  gl.bindVertexArray(passMirr.vao);
+  gl.uniform1f(U('uZSign'), -1);
+  gl.uniform1f(U('uAlphaMul'), refA.value / 100);
+  gl.uniform1f(U('uColorMul'), 0.62);
+  gl.uniform1f(U('uFadeK'), fadeBox.checked ? 1.6 : 0);
+  gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, COUNT);
+
+  // pass B：正身
+  sortInto(passMain, view, 1);
+  gl.bindVertexArray(passMain.vao);
+  gl.uniform1f(U('uZSign'), 1);
+  gl.uniform1f(U('uAlphaMul'), 1);
+  gl.uniform1f(U('uColorMul'), 1);
+  gl.uniform1f(U('uFadeK'), 0);
+  gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, COUNT);
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

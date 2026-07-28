@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>迷你高斯泼溅 · ORYZO 核心渲染管线教学复刻</title>
+<style>
+  /* 配色取自 oryzo.ai：橄榄绿切割垫 + 软木暖棕 + 米白文字 + 蓝图橙 */
+  :root {
+    --bg: #3f4a32;
+    --ink: #f2e8d5;
+    --accent: #f08c2e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); }
+  canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  canvas:active { cursor: grabbing; }
+  .hud {
+    position: fixed; left: 16px; top: 14px; color: var(--ink);
+    font: 12px/1.7 "DM Mono", ui-monospace, monospace; letter-spacing: .06em;
+    pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+  .hud b { font-size: 14px; letter-spacing: .12em; }
+  .hint {
+    position: fixed; left: 16px; bottom: 14px; color: var(--ink); opacity: .75;
+    font: 11px/1.6 "DM Mono", ui-monospace, monospace; letter-spacing: .06em;
+    pointer-events: none;
+  }
+  label.quads {
+    position: fixed; right: 16px; top: 14px; color: var(--ink);
+    font: 12px/1.6 "DM Mono", ui-monospace, monospace; letter-spacing: .05em;
+    user-select: none; cursor: pointer; display: flex; gap: 6px; align-items: center;
+  }
+  label.quads input { accent-color: var(--accent); }
+  .err {
+    position: fixed; inset: 0; display: none; place-items: center; color: var(--ink);
+    font: 14px/1.8 system-ui; padding: 2em; text-align: center;
+  }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="hud"><b>GAUSSIAN SPLATTING</b><br><span id="stat">–</span></div>
+<label class="quads"><input type="checkbox" id="showQuads"> 显示每个 splat 的包围四边形</label>
+<div class="hint">拖拽旋转 · 每帧 CPU 按视深排序后重传实例缓冲（oryzo 用 Rust→wasm 排序器在 Worker 里做同一件事）</div>
+<div class="err" id="err">需要 WebGL2 支持才能运行这个 demo。</div>
+
+<script>
+/* ============================================================================
+ * 迷你高斯泼溅（3D Gaussian Splatting）—— ORYZO 官网核心渲染路线的教学版
+ *
+ * 场景致敬 oryzo.ai 的 hero：一枚软木杯垫摆在橄榄绿切割垫上。
+ * 原站加载的是 SOG 压缩的真实扫描资产（约 3.6MB 两份 .sog）；
+ * 这里为了自包含，用程序化生成的 ~1400 个各向异性高斯代替。
+ *
+ * 管线与原站一致（算法出自 Kerbl et al. 2023《3D Gaussian Splatting
+ * for Real-Time Radiance Field Rendering》，属公开发表的方法）：
+ *   1. 每个高斯 = 中心 μ + 缩放 S + 旋转 R(四元数) + 颜色 + 不透明度
+ *   2. 3D 协方差 Σ = (RS)(RS)^T
+ *   3. 顶点着色器用透视投影的雅可比 J 把 Σ 投到屏幕：Σ' = J W Σ W^T J^T
+ *   4. 对 2×2 的 Σ' 做特征分解 → 两条主轴 → 把 4 顶点 quad 撑成贴屏椭圆
+ *   5. 片元用 conic（Σ'⁻¹）算高斯衰减 exp(-½ dᵀΣ'⁻¹d)，半透明混合
+ *   6. 混合正确性靠"从远到近"排序 —— 本 demo 每帧在 CPU 上 argsort
+ *      后重传实例缓冲；oryzo 则把索引写进纹理，由 wasm 排序器异步产出
+ *
+ * 与原站的刻意差异（教学取舍）：
+ *   - 属性走 per-instance attribute（易读）；原站全部打包进整数纹理，
+ *     顶点着色器里 texelFetch + 手写 unpack（省显存带宽，配合 SOG 量化）
+ *   - 颜色只用常数色；原站是球谐系数（SH_C0..C3）按视角方向求值
+ *   - 排序在主线程；原站在 Worker + Rust wasm，结果 transferable 回传
+ * ========================================================================== */
+
+const canvas = document.getElementById('gl');
+const gl = canvas.getContext('webgl2', { antialias: false, alpha: false });
+if (!gl) { document.getElementById('err').style.display = 'grid'; throw new Error('no webgl2'); }
+
+/* ---------- 1. 程序化生成"软木杯垫 + 切割垫"的高斯云 ---------- */
+
+const splats = [];   // {center:[3], scale:[3], quat:[4], color:[3], alpha}
+const rand = (a, b) => a + Math.random() * (b - a);
+
+// 从"z 轴对齐到法线 n"构造四元数（x,y,z,w）——扁平 splat 贴着表面长
+function quatFromNormal(n) {
+  const z = [0, 0, 1];
+  const d = z[0]*n[0] + z[1]*n[1] + z[2]*n[2];
+  if (d > 0.9999) return [0, 0, 0, 1];
+  if (d < -0.9999) return [1, 0, 0, 0];          // 180°：绕 x 轴翻
+  const ax = [z[1]*n[2]-z[2]*n[1], z[2]*n[0]-z[0]*n[2], z[0]*n[1]-z[1]*n[0]];
+  const l = Math.hypot(...ax), a = Math.acos(d);
+  const s = Math.sin(a/2) / l;
+  return [ax[0]*s, ax[1]*s, ax[2]*s, Math.cos(a/2)];
+}
+
+/* —— 为什么这样造数据 ——
+ * 原站的杯垫是"训练出来的资产"：对实物多视角拍摄后用 3DGS 优化管线
+ * 摆好几十万个高斯，照片感全在数据里。程序化没法训练，但可以逼近
+ * 训练资产的三个性质：① 颜色有空间相关性（来自同一张纹理，而不是
+ * 每粒各自随机）；② 粒子贴在光滑曲面上、分布均匀（车削轮廓 + 黄金角
+ * 螺旋采样，轮廓才干净）；③ 光照是方向性的（法线 N·L + 分区 AO +
+ * 接触阴影）。三者缺一，就会退化成"随机噪声堆"。 */
+
+// 软木纹理：离屏 canvas 画一张（颗粒团聚 + 深色气孔 + 低频起伏），按位置采样
+function makeCorkSampler() {
+  const S = 512, c = document.createElement('canvas');
+  c.width = c.height = S;
+  const g = c.getContext('2d');
+  g.fillStyle = '#c99a5f'; g.fillRect(0, 0, S, S);
+  const shades = ['#e0b67c', '#c78f54', '#b67e45', '#d8ab70', '#a8703a', '#d1a066', '#bd8a50', '#e6c08a'];
+  for (let i = 0; i < 3200; i++) {           // 软木碎粒压合的团聚感
+    g.fillStyle = shades[Math.random() * shades.length | 0];
+    g.globalAlpha = rand(0.35, 0.85);
+    g.beginPath();
+    g.ellipse(Math.random() * S, Math.random() * S, rand(2, 8), rand(1.5, 5), Math.random() * Math.PI, 0, 7);
+    g.fill();
+  }
+  g.globalAlpha = 0.06;                       // 低频明暗起伏
+  for (let i = 0; i < 46; i++) {
+    g.fillStyle = Math.random() < 0.5 ? '#8a5c2e' : '#eec48d';
+    g.beginPath();
+    g.ellipse(Math.random() * S, Math.random() * S, rand(40, 110), rand(30, 90), Math.random() * Math.PI, 0, 7);
+    g.fill();
+  }
+  g.globalAlpha = 1;
+  for (let i = 0; i < 320; i++) {             // 深色气孔（小而稀）
+    g.fillStyle = '#4a2f18';
+    g.globalAlpha = rand(0.5, 0.85);
+    g.beginPath();
+    g.ellipse(Math.random() * S, Math.random() * S, rand(0.8, 2.4), rand(0.8, 2), Math.random() * Math.PI, 0, 7);
+    g.fill();
+  }
+  const d = g.getImageData(0, 0, S, S).data;
+  return (x, y) => {                          // 世界坐标平面映射（0.48 保证不越界回卷）
+    const u = Math.min(S - 1, Math.max(0, (x * 0.48 + 0.5) * S | 0));
+    const v = Math.min(S - 1, Math.max(0, (y * 0.48 + 0.5) * S | 0));
+    const i = (v * S + u) * 4;
+    return [d[i] / 255, d[i + 1] / 255, d[i + 2] / 255];
+  };
+}
+const corkTex = makeCorkSampler();
+const GA = Math.PI * (3 - Math.sqrt(5));      // 黄金角：螺旋采样零聚团
+
+// 杯垫 = 车削轮廓（凹面 / 内坡 / 平沿 / 圆唇 / 外壁），每段独立均匀采样。
+// spacing = sqrt(段面积/N)，σ = 0.85×spacing —— σ 咬住间距，既无缝也不糊
+function revolve({ N, pos, nrm, ao }) {
+  for (let k = 0; k < N; k++) {
+    const t = (k + 0.5) / N, th = k * GA;
+    const [r, z] = pos(t), n2 = nrm(t);
+    const cx = r * Math.cos(th), cy = r * Math.sin(th);
+    const n = [n2[0] * Math.cos(th), n2[0] * Math.sin(th), n2[1]];
+    const col = corkTex(cx, cy), shade = ao(t) * rand(0.97, 1.03);
+    const s = 0.0135 * rand(0.85, 1.15);
+    splats.push({
+      center: [cx, cy, z],
+      scale: [s, s, 0.005],
+      quat: quatFromNormal(n),
+      color: [col[0] * shade, col[1] * shade, col[2] * shade],
+      alpha: 1,
+      normal: n,
+    });
+  }
+}
+// 凹陷的内盘面（r 0→0.74，sqrt 均匀）
+revolve({ N: 6800, pos: t => [0.74 * Math.sqrt(t), 0.10], nrm: () => [0, 1], ao: () => 0.88 });
+// 内坡（面 → 沿）
+revolve({ N: 1700, pos: t => [0.74 + t * 0.08, 0.10 + t * 0.055], nrm: () => [-0.566, 0.824], ao: t => 0.8 + t * 0.16 });
+// 平沿（环带）
+revolve({ N: 2600, pos: t => [Math.sqrt(0.82 ** 2 + t * (0.94 ** 2 - 0.82 ** 2)), 0.155], nrm: () => [0, 1], ao: () => 1.0 });
+// 圆唇（四分之一圆弧过渡到外壁）
+revolve({ N: 1900, pos: t => { const a = t * Math.PI / 2; return [0.94 + 0.05 * Math.sin(a), 0.105 + 0.05 * Math.cos(a)]; },
+          nrm: t => { const a = t * Math.PI / 2; return [Math.sin(a), Math.cos(a)]; }, ao: t => 0.98 - t * 0.1 });
+// 外壁（垂直）
+revolve({ N: 2100, pos: t => [0.99, 0.105 - t * 0.09], nrm: () => [1, 0], ao: t => 0.86 - t * 0.18 });
+
+// 接触阴影：垫子上一摊柔和的暗斑把杯垫"放"到地上（略朝光的反方向偏）
+{
+  for (let i = 0; i < 170; i++) {
+    const th = Math.random() * Math.PI * 2, rr = 1.12 * Math.sqrt(Math.random());
+    const s = rand(0.08, 0.16);
+    splats.push({
+      center: [rr * Math.cos(th) - 0.10, rr * Math.sin(th) + 0.07, -0.015],
+      scale: [s, s, 0.01],
+      quat: quatFromNormal([0, 0, 1]),
+      color: [0.16, 0.20, 0.12],
+      alpha: 0.4,
+      normal: [0, 0, 1],
+    });
+  }
+}
+
+// ③ 切割垫：扁平深绿高斯铺地。刻意用"小而密"而不是"大而稀"——
+//    大 σ 的高斯在斜视/近景时会被雅可比摊成几百像素的低 alpha 长条，
+//    几十片叠起来就是一层洗掉前景的雾（真实 3DGS 场景靠百万级小高斯避开这坑）
+{
+  const N = 2400;
+  for (let i = 0; i < N; i++) {
+    const t = Math.random() * Math.PI * 2;
+    const rr = 1.02 + 1.7 * Math.pow(Math.random(), 0.7);   // 半径压在相机水平距离以内，防止 splat 跑到镜头跟前
+    const g = rand(-0.025, 0.025);
+    splats.push({
+      center: [rr * Math.cos(t), rr * Math.sin(t), -0.02],
+      scale: [rand(0.05, 0.1), rand(0.05, 0.1), 0.012],
+      quat: quatFromNormal([0, 0, 1]),
+      color: [0.27 + g, 0.33 + g, 0.20 + g],
+      alpha: rand(0.95, 1),
+      normal: [0, 0, 1],
+    });
+  }
+  // 垫子中央（杯垫正下方）补一层，防止缝隙漏出背景色
+  for (let i = 0; i < 300; i++) {
+    const t = Math.random() * Math.PI * 2, rr = Math.sqrt(Math.random()) * 1.08;
+    splats.push({
+      center: [rr * Math.cos(t), rr * Math.sin(t), -0.03],
+      scale: [rand(0.06, 0.11), rand(0.06, 0.11), 0.012],
+      quat: quatFromNormal([0, 0, 1]),
+      color: [0.25, 0.31, 0.19],
+      alpha: 1,
+      normal: [0, 0, 1],
+    });
+  }
+}
+
+const COUNT = splats.length;
+document.getElementById('stat').textContent =
+  COUNT.toLocaleString() + ' 个各向异性高斯 · 程序化生成 · WebGL2 实例化';
+
+/* ---------- 2. 着色器：3DGS 光栅化的最小完整实现 ---------- */
+
+const VS = `#version 300 es
+precision highp float;
+// 每实例一份的高斯参数（oryzo 用整数纹理 texelFetch + 位运算 unpack 取同样的数据）
+in vec3 iCenter;
+in vec3 iScale;
+in vec4 iQuat;      // (x,y,z,w)
+in vec4 iColorA;    // rgb + alpha
+in vec3 iNormal;    // 表面法线：方向光着色用（训练资产靠球谐，这里用 N·L 近似）
+
+uniform mat4 uView;
+uniform mat4 uProj;
+uniform vec2 uViewport;   // 物理像素
+uniform vec2 uFocal;      // 投影焦距（像素）
+uniform vec3 uLight;      // 世界空间方向光（已归一化）
+
+out vec4 vColor;
+out vec3 vConic;    // 2D 协方差的逆（conic）：x=A, y=B, z=C
+out vec2 vPixPos;   // 当前顶点相对椭圆中心的像素偏移
+out vec2 vCorner;   // quad 角坐标 ∈ [-1,1]，画边界用
+flat out float vQuad;
+
+uniform float uShowQuads;
+
+mat3 quatToMat3(vec4 q) {
+  float x=q.x, y=q.y, z=q.z, w=q.w;
+  return mat3(
+    1.-2.*(y*y+z*z), 2.*(x*y+w*z),   2.*(x*z-w*y),
+    2.*(x*y-w*z),    1.-2.*(x*x+z*z),2.*(y*z+w*x),
+    2.*(x*z+w*y),    2.*(y*z-w*x),   1.-2.*(x*x+y*y));
+}
+
+void main() {
+  // 4 顶点 TRIANGLE_STRIP 摊出一个 quad；oryzo 用 gl_VertexID/4 一次画完全部
+  vec2 corner = vec2(float(gl_VertexID % 2), float(gl_VertexID / 2)) * 2. - 1.;
+  vCorner = corner;
+  vQuad = uShowQuads;
+
+  vec4 viewC = uView * vec4(iCenter, 1.);
+  // 近平面剔除：splat 贴近相机时雅可比 ~focal/z 会爆炸，把单个高斯摊成全屏雾，
+  // 必须剔掉。oryzo 把 nearPlane 传进 wasm 排序器，由排序阶段吐出 validCount 完成同一件事
+  if (viewC.z > -0.3) { gl_Position = vec4(0., 0., 2., 1.); return; }
+
+  // Σ = (R·S)(R·S)^T —— 各向异性 3D 协方差
+  mat3 R = quatToMat3(iQuat);
+  mat3 M = R * mat3(iScale.x,0.,0., 0.,iScale.y,0., 0.,0.,iScale.z);
+  mat3 Sigma = M * transpose(M);
+
+  // 透视投影在 μ 处的一阶泰勒（雅可比）：EWA splatting 的核心一步
+  float invZ = 1. / viewC.z;
+  float invZ2 = invZ * invZ;
+  mat3 J = mat3(
+    uFocal.x * invZ, 0.,              0.,
+    0.,              uFocal.y * invZ, 0.,
+    -uFocal.x * viewC.x * invZ2, -uFocal.y * viewC.y * invZ2, 0.);
+  mat3 W = mat3(uView);
+  mat3 T = J * W;
+  mat3 Sigma2 = T * Sigma * transpose(T);
+
+  // 取左上 2×2，对角加 0.3px²：给每个 splat 一个最小屏幕footprint（抗锯齿膨胀）
+  float a = Sigma2[0][0] + 0.3, b = Sigma2[1][0], c = Sigma2[1][1] + 0.3;
+
+  // conic = 2×2 协方差的逆，供片元算高斯衰减
+  float det = a * c - b * b;
+  if (det <= 0.) { gl_Position = vec4(0., 0., 2., 1.); return; }
+  vConic = vec3(c, -b, a) / det;
+
+  // 特征分解：λ = mid ± sqrt(((a-c)/2)² + b²)，主轴 = 椭圆的长短轴方向
+  float mid = 0.5 * (a + c);
+  float rad = sqrt(max(0., mid * mid - det));
+  float l1 = mid + rad, l2 = max(mid - rad, 1e-4);
+  vec2 e1 = (abs(b) < 1e-9) ? ((a >= c) ? vec2(1., 0.) : vec2(0., 1.))
+                            : normalize(vec2(b, l1 - a));
+  vec2 e2 = vec2(e1.y, -e1.x);
+
+  // quad 半径取 3σ（99.7% 能量），并给个上限防近距离爆屏
+  vec2 radiusPx = min(3. * sqrt(vec2(l1, l2)), 512.);
+  vec2 offsetPx = corner.x * e1 * radiusPx.x + corner.y * e2 * radiusPx.y;
+  vPixPos = offsetPx;
+
+  vec4 clip = uProj * viewC;
+  clip.xy += offsetPx / uViewport * 2. * clip.w;   // 像素偏移换算回 NDC（乘 w 抵消透视除）
+  gl_Position = clip;
+  // 方向光：0.62 环境底 + 0.38 漫反射。训练资产的光照烤在球谐系数里，
+  // 程序化资产用 N·L 近似出同一件事 —— "面朝光的地方亮"
+  float lam = 0.62 + 0.38 * max(0., dot(iNormal, uLight));
+  vColor = vec4(iColorA.rgb * lam, iColorA.a);
+}`;
+
+const FS = `#version 300 es
+precision highp float;
+in vec4 vColor;
+in vec3 vConic;
+in vec2 vPixPos;
+in vec2 vCorner;
+flat in float vQuad;
+out vec4 frag;
+
+void main() {
+  // 高斯衰减：exp(-½ dᵀ Σ'⁻¹ d)，d 为到椭圆中心的像素偏移
+  float power = 0.5 * (vConic.x * vPixPos.x * vPixPos.x
+                     + vConic.z * vPixPos.y * vPixPos.y)
+                     + vConic.y * vPixPos.x * vPixPos.y;
+  float alpha = vColor.a * exp(-power);
+
+  // 教学开关：把撑起椭圆的包围 quad 描出来（配色学原站蓝图橙）
+  if (vQuad > 0.5) {
+    float edge = max(abs(vCorner.x), abs(vCorner.y));
+    if (edge > 0.96) { frag = vec4(0.94, 0.55, 0.18, 0.85); return; }
+  }
+  if (alpha < 1. / 255.) discard;
+  frag = vec4(vColor.rgb, alpha);
+}`;
+
+function compile(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+    throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog);
+if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+gl.useProgram(prog);
+
+/* ---------- 3. 实例缓冲：17 float/实例，每帧按排序结果重写 ---------- */
+
+const FLOATS = 17;  // center 3 + scale 3 + quat 4 + colorA 4 + normal 3
+const src = new Float32Array(COUNT * FLOATS);      // 原始顺序
+splats.forEach((s, i) => {
+  src.set(s.center, i * FLOATS);
+  src.set(s.scale, i * FLOATS + 3);
+  src.set(s.quat, i * FLOATS + 6);
+  src.set([...s.color, s.alpha], i * FLOATS + 10);
+  src.set(s.normal, i * FLOATS + 14);
+});
+const sorted = new Float32Array(COUNT * FLOATS);   // 排序后写入这里再上传
+
+const vao = gl.createVertexArray();
+gl.bindVertexArray(vao);
+const vbo = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+gl.bufferData(gl.ARRAY_BUFFER, sorted.byteLength, gl.DYNAMIC_DRAW);
+const stride = FLOATS * 4;
+[['iCenter', 3, 0], ['iScale', 3, 12], ['iQuat', 4, 24], ['iColorA', 4, 40], ['iNormal', 3, 56]]
+  .forEach(([name, size, off]) => {
+    const loc = gl.getAttribLocation(prog, name);
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, size, gl.FLOAT, false, stride, off);
+    gl.vertexAttribDivisor(loc, 1);                // 每实例前进一步
+  });
+
+const depths = new Float32Array(COUNT);
+const order = new Uint32Array(COUNT);
+
+/* ---------- 4. 相机（轨道 + 惯性）与矩阵小工具 ---------- */
+
+function perspective(fovY, aspect, near, far) {
+  const f = 1 / Math.tan(fovY / 2), nf = 1 / (near - far);
+  return new Float32Array([f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0]);
+}
+function lookAt(eye, at, up) {
+  const z = norm3(sub3(eye, at)), x = norm3(cross3(up, z)), y = cross3(z, x);
+  return new Float32Array([
+    x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0,
+    -dot3(x,eye), -dot3(y,eye), -dot3(z,eye), 1]);
+}
+const sub3=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const cross3=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const norm3=a=>{const l=Math.hypot(...a);return[a[0]/l,a[1]/l,a[2]/l]};
+
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let theta = 0.9, phi = 0.95;          // 方位角 / 仰角（初始接近原站 hero 的俯视）
+let vTheta = 0, vPhi = 0;             // 惯性速度
+let dragging = false, px = 0, py = 0;
+
+canvas.addEventListener('pointerdown', e => {
+  dragging = true; px = e.clientX; py = e.clientY;
+  canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  vTheta = (e.clientX - px) * 0.005;
+  vPhi = (e.clientY - py) * 0.004;
+  theta -= vTheta; phi += vPhi;
+  px = e.clientX; py = e.clientY;
+});
+canvas.addEventListener('pointerup', () => dragging = false);
+
+/* ---------- 5. 主循环：排序 → 上传 → 实例化绘制 ---------- */
+
+gl.disable(gl.DEPTH_TEST);
+gl.enable(gl.BLEND);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);   // 从远到近的经典 alpha 混合
+gl.clearColor(0.247, 0.29, 0.196, 1);
+
+const uView = gl.getUniformLocation(prog, 'uView');
+const uProj = gl.getUniformLocation(prog, 'uProj');
+const uViewport = gl.getUniformLocation(prog, 'uViewport');
+const uFocal = gl.getUniformLocation(prog, 'uFocal');
+// 方向光：左前上方的"棚灯"，固定在世界空间（相机转、光不转）
+{
+  const L = [0.45, -0.3, 0.85], l = Math.hypot(...L);
+  gl.uniform3f(gl.getUniformLocation(prog, 'uLight'), L[0] / l, L[1] / l, L[2] / l);
+}
+const uShowQuads = gl.getUniformLocation(prog, 'uShowQuads');
+const quadsBox = document.getElementById('showQuads');
+
+function frame() {
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const w = canvas.clientWidth * dpr | 0, h = canvas.clientHeight * dpr | 0;
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+  gl.viewport(0, 0, w, h);
+
+  // 惯性 + 缓慢自转（尊重 prefers-reduced-motion）
+  if (!dragging) {
+    theta -= vTheta; phi += vPhi;
+    vTheta *= 0.94; vPhi *= 0.94;
+    if (!reduceMotion) theta += 0.0018;
+  }
+  phi = Math.max(0.35, Math.min(1.25, phi));   // 仰角下限抬高：不让视线擦着垫子平面走
+
+  const eye = [4.1 * Math.cos(phi) * Math.cos(theta),
+               4.1 * Math.cos(phi) * Math.sin(theta),
+               4.1 * Math.sin(phi)];
+  const view = lookAt(eye, [0, 0, 0.05], [0, 0, 1]);
+  const fovY = 38 * Math.PI / 180;
+  const proj = perspective(fovY, w / h, 0.1, 100);
+  const focalY = h / (2 * Math.tan(fovY / 2));
+
+  // —— 排序：视空间 z 越小（越远）越先画。oryzo 把这一步丢给 wasm Worker，
+  //    并用"排序索引纹理"间接寻址；这里 1400 个点直接每帧 argsort + 重排上传
+  for (let i = 0; i < COUNT; i++) {
+    const o = i * FLOATS;
+    depths[i] = view[2] * src[o] + view[6] * src[o+1] + view[10] * src[o+2];
+    order[i] = i;
+  }
+  order.sort((A, B) => depths[A] - depths[B]);       // 最远（z 最负）在前
+  for (let k = 0; k < COUNT; k++)
+    sorted.set(src.subarray(order[k] * FLOATS, (order[k] + 1) * FLOATS), k * FLOATS);
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, sorted);
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.uniformMatrix4fv(uView, false, view);
+  gl.uniformMatrix4fv(uProj, false, proj);
+  gl.uniform2f(uViewport, w, h);
+  gl.uniform2f(uFocal, focalY, focalY);              // 方像素：fx = fy
+  gl.uniform1f(uShowQuads, quadsBox.checked ? 1 : 0);
+  gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, COUNT);
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

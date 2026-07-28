@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：图表页</title>
+<!--
+  demo-charts.html —— 「图表页 / 总览」形状的最小可玩实现（蓝本：open-dashboard 的 add-chart-page）。
+  复现的不变量 + 本 wiki dataviz 口径：
+  - 过滤器一行、在所有图之上，圈住下面全部内容：切「近 7 天 / 近 30 天」，KPI 和两张图同时重算
+  - KPI 行是 stat 瓦片（不是一根柱子的柱状图）：值 + 相对上一期的 delta（涨跌色 = 方向 × 涨是否为好）
+  - 趋势 = 单系列折线（2px 圆角）+ 10% 面积水洗；单系列不放图例，标题即图例；十字线 tooltip 找 X
+  - 分类对比 = 条形，名义类目一律同一个系列色（不按大小上色阶、不一类一色）；逐柱 hover tooltip + 提亮
+  - 每张图带「表」切换 —— tooltip 只锦上添花，数值不靠悬浮也能读到（表格孪生）
+  - 图表色用经校验的参考色板（series-1 蓝，亮暗两档），文字一律用文字色而非系列色
+  数据为确定性伪数据（按下标计算，无随机），演示用。
+  运行时：/vendor 的 React 18 UMD + htm，样式共用 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  /* dataviz 令牌（参考色板实例，亮暗分档；图表表面即卡片表面） */
+  :root {
+    --series-1: #2a78d6; --grid: #e1e0d9; --axis-ink: #898781;
+    --delta-good: #006300; --delta-bad: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --series-1: #3987e5; --grid: #2c2c2a; --delta-good: #0ca30c; --delta-bad: #e5695f; }
+  }
+  .chartcard { padding: 14px 16px; margin-bottom: 12px; position: relative; }
+  .chartcard h2 { margin: 0; font-size: 14px; }
+  .chartcard .chead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  svg { display: block; width: 100%; height: auto; }
+  .gridline { stroke: var(--grid); stroke-width: 1; }
+  .axis-label { fill: var(--axis-ink); font-size: 10px; }
+  .bar { fill: var(--series-1); }
+  .bar:hover, .bar:focus { filter: brightness(1.12); outline: none; }
+  .tip { position: absolute; pointer-events: none; background: var(--card); border: 1px solid var(--border);
+         border-radius: 8px; padding: 5px 9px; font-size: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.18);
+         white-space: nowrap; z-index: 5; }
+  .tip b { font-size: 13px; }
+  .tip .k { color: var(--muted); }
+  .mini { font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+
+// ---- 确定性伪数据：60 天（当期窗口 + 等长上一期，用来算 delta）----
+const DAYS = 60;
+const BASE = new Date(2026, 4, 9);                    // 2026-05-09 起，最后一天 2026-07-07
+function fmtDate(i) { const d = new Date(BASE.getFullYear(), BASE.getMonth(), BASE.getDate() + i);
+                      return `${d.getMonth() + 1}-${String(d.getDate()).padStart(2, "0")}`; }
+const REVENUE = Array.from({ length: DAYS }, (_, i) =>
+  Math.round(8200 + 2600 * Math.sin(i / 4.7) + 1400 * Math.sin(i / 1.9) + i * 55));
+const ORDERS = Array.from({ length: DAYS }, (_, i) =>
+  Math.round(92 + 24 * Math.sin(i / 3.1) + i * 0.7));
+const CATS = [
+  { name: "数码", v: 186 }, { name: "服饰", v: 342 }, { name: "食品", v: 251 },
+  { name: "家居", v: 128 }, { name: "图书", v: 74 },
+];
+
+const sum = a => a.reduce((s, x) => s + x, 0);
+const money = n => "¥ " + Math.round(n).toLocaleString("zh-CN");
+const pct = n => (n >= 0 ? "+" : "") + (n * 100).toFixed(1) + "%";
+function niceTicks(max) {                              // y 轴取整刻度：0 与 3 个干净数
+  const raw = max / 3, mag = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s * 3 >= max);
+  return [0, step, step * 2, step * 3];
+}
+
+function StatCard({ label, value, delta, goodWhenUp = true }) {
+  const good = delta == null ? true : (delta >= 0) === goodWhenUp;
+  return html`
+    <div class="card stat">
+      <p class="stat-label">${label}</p>
+      <p class="stat-value">${value}</p>
+      ${delta != null && html`
+        <p class="stat-delta" style=${{ color: good ? "var(--delta-good)" : "var(--delta-bad)" }}>
+          ${delta >= 0 ? "↑" : "↓"} ${pct(Math.abs(delta))} <span style=${{ color: "var(--muted)" }}>vs 上一期</span>
+        </p>`}
+    </div>`;
+}
+
+// 折线：十字线找 X，一个 tooltip 报当日值；单系列 → 无图例
+function LineChart({ data, labels }) {
+  const [hover, setHover] = useState(null);   // {i, px, py}
+  const ref = useRef(null);
+  const W = 640, H = 230, L = 48, R = 16, T = 14, B = 26;
+  const ticks = niceTicks(Math.max(...data));
+  const yMax = ticks[3];
+  const x = i => L + (i * (W - L - R)) / (data.length - 1);
+  const y = v => T + (1 - v / yMax) * (H - T - B);
+  const path = data.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  const area = `${path} L${x(data.length - 1).toFixed(1)},${y(0)} L${x(0).toFixed(1)},${y(0)} Z`;
+  const every = Math.ceil(data.length / 7);
+
+  const onMove = e => {
+    const box = ref.current.getBoundingClientRect();
+    const vx = ((e.clientX - box.left) / box.width) * W;
+    const i = Math.max(0, Math.min(data.length - 1,
+      Math.round(((vx - L) / (W - L - R)) * (data.length - 1))));
+    setHover({ i, px: (x(i) / W) * box.width, py: (y(data[i]) / H) * box.height });
+  };
+
+  return html`
+    <div style=${{ position: "relative" }}>
+      <svg ref=${ref} viewBox=${`0 0 ${W} ${H}`} onPointerMove=${onMove} onPointerLeave=${() => setHover(null)}>
+        ${ticks.map(t => html`
+          <line key=${t} class="gridline" x1=${L} x2=${W - R} y1=${y(t)} y2=${y(t)} />
+          <text key=${"t" + t} class="axis-label" x=${L - 6} y=${y(t) + 3} text-anchor="end">${t.toLocaleString("zh-CN")}</text>`)}
+        ${labels.map((d, i) => (i % every === 0 ? html`
+          <text key=${d} class="axis-label" x=${x(i)} y=${H - 8} text-anchor="middle">${d}</text>` : null))}
+        <path d=${area} fill="var(--series-1)" opacity="0.1" />
+        <path d=${path} fill="none" stroke="var(--series-1)" stroke-width="2"
+              stroke-linejoin="round" stroke-linecap="round" />
+        ${hover && html`
+          <line x1=${x(hover.i)} x2=${x(hover.i)} y1=${T} y2=${H - B} stroke="var(--axis-ink)" stroke-width="1" />
+          <circle cx=${x(hover.i)} cy=${y(data[hover.i])} r="4.5" fill="var(--series-1)"
+                  stroke="var(--card)" stroke-width="2" />`}
+      </svg>
+      ${hover && html`
+        <div class="tip" style=${{ left: Math.min(hover.px + 12, 520) + "px", top: hover.py - 8 + "px" }}>
+          <b>${money(data[hover.i])}</b> <span class="k">${labels[hover.i]}</span>
+        </div>`}
+    </div>`;
+}
+
+// 条形：名义类目一律同一系列色；逐柱 hover/focus tooltip；只给最大值直接标数
+function BarChart({ data }) {
+  const [hover, setHover] = useState(null);   // {i, px, py}
+  const ref = useRef(null);
+  const W = 640, H = 200, L = 48, R = 16, T = 12, B = 26;
+  const ticks = niceTicks(Math.max(...data.map(d => d.v)));
+  const yMax = ticks[3];
+  const band = (W - L - R) / data.length;
+  const bw = Math.min(24, band * 0.5);
+  const y = v => T + (1 - v / yMax) * (H - T - B);
+  const maxV = Math.max(...data.map(d => d.v));
+
+  const show = (i, e) => {
+    const box = ref.current.getBoundingClientRect();
+    const cx = L + i * band + band / 2;
+    setHover({ i, px: (cx / W) * box.width, py: (y(data[i].v) / H) * box.height });
+  };
+
+  return html`
+    <div style=${{ position: "relative" }}>
+      <svg ref=${ref} viewBox=${`0 0 ${W} ${H}`} onPointerLeave=${() => setHover(null)}>
+        ${ticks.map(t => html`
+          <line key=${t} class="gridline" x1=${L} x2=${W - R} y1=${y(t)} y2=${y(t)} />
+          <text key=${"t" + t} class="axis-label" x=${L - 6} y=${y(t) + 3} text-anchor="end">${t}</text>`)}
+        ${data.map((d, i) => {
+          const cx = L + i * band + band / 2, h = y(0) - y(d.v);
+          return html`
+            <g key=${d.name}>
+              <path class="bar" tabIndex="0" role="img" aria-label=${`${d.name} ${d.v} 件`}
+                    d=${`M${cx - bw / 2},${y(0)} v${-(h - 4)} q0,-4 4,-4 h${bw - 8} q4,0 4,4 v${h - 4} z`}
+                    onPointerEnter=${e => show(i, e)} onFocus=${e => show(i, e)} onBlur=${() => setHover(null)} />
+              ${d.v === maxV && html`
+                <text class="axis-label" x=${cx} y=${y(d.v) - 5} text-anchor="middle"
+                      style=${{ fill: "var(--fg)", fontWeight: 600 }}>${d.v}</text>`}
+              <text class="axis-label" x=${cx} y=${H - 8} text-anchor="middle">${d.name}</text>
+            </g>`;
+        })}
+      </svg>
+      ${hover && html`
+        <div class="tip" style=${{ left: Math.min(hover.px + 12, 520) + "px", top: hover.py - 8 + "px" }}>
+          <b>${data[hover.i].v} 件</b> <span class="k">${data[hover.i].name}</span>
+        </div>`}
+    </div>`;
+}
+
+function ChartCard({ title, table, children }) {
+  const [mode, setMode] = useState("chart");   // 表格孪生：数值不靠 tooltip 也读得到
+  return html`
+    <div class="card chartcard">
+      <div class="chead">
+        <h2>${title}</h2>
+        <div class="seg mini">
+          <button class=${mode === "chart" ? "on" : ""} onClick=${() => setMode("chart")}>图</button>
+          <button class=${mode === "table" ? "on" : ""} onClick=${() => setMode("table")}>表</button>
+        </div>
+      </div>
+      ${mode === "chart" ? children : table}
+    </div>`;
+}
+
+function App() {
+  const [range, setRange] = useState(7);   // 过滤器圈住下面一切：KPI + 两张图同时重算
+
+  const view = useMemo(() => {
+    const rev = REVENUE.slice(DAYS - range), prevRev = REVENUE.slice(DAYS - 2 * range, DAYS - range);
+    const ord = ORDERS.slice(DAYS - range),  prevOrd = ORDERS.slice(DAYS - 2 * range, DAYS - range);
+    const labels = Array.from({ length: range }, (_, i) => fmtDate(DAYS - range + i));
+    const aov = sum(rev) / sum(ord), prevAov = sum(prevRev) / sum(prevOrd);
+    return {
+      rev, labels,
+      revTotal: sum(rev),   revDelta: sum(rev) / sum(prevRev) - 1,
+      ordTotal: sum(ord),   ordDelta: sum(ord) / sum(prevOrd) - 1,
+      aov,                  aovDelta: aov / prevAov - 1,
+      refund: 0.032,        refundDelta: -0.004,   // 演示值：退款率降了（降是好事）
+    };
+  }, [range]);
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>经营总览</h1>
+          <p class="sub">过滤器一行圈住全部 —— 切区间，KPI 与两张图一起重算；每张图可切「表」</p>
+        </div>
+        <div class="seg">
+          <button class=${range === 7 ? "on" : ""} onClick=${() => setRange(7)}>近 7 天</button>
+          <button class=${range === 30 ? "on" : ""} onClick=${() => setRange(30)}>近 30 天</button>
+        </div>
+      </header>
+
+      <div class="stats">
+        <${StatCard} label="总收入" value=${money(view.revTotal)} delta=${view.revDelta} />
+        <${StatCard} label="订单数" value=${view.ordTotal.toLocaleString("zh-CN")} delta=${view.ordDelta} />
+        <${StatCard} label="客单价" value=${money(view.aov)} delta=${view.aovDelta} />
+        <${StatCard} label="退款率" value=${(view.refund * 100).toFixed(1) + "%"} delta=${view.refundDelta} goodWhenUp=${false} />
+      </div>
+
+      <${ChartCard} title=${`收入趋势（近 ${range} 天）`}
+        table=${html`
+          <table class="list mini"><thead><tr><th>日期</th><th class="num">收入</th></tr></thead><tbody>
+            ${view.labels.map((d, i) => html`
+              <tr key=${d}><td>${d}</td><td class="num">${money(view.rev[i])}</td></tr>`)}
+          </tbody></table>`}>
+        <${LineChart} data=${view.rev} labels=${view.labels} />
+      <//>
+
+      <${ChartCard} title="分类销量（当期）"
+        table=${html`
+          <table class="list mini"><thead><tr><th>分类</th><th class="num">销量</th></tr></thead><tbody>
+            ${CATS.map(c => html`<tr key=${c.name}><td>${c.name}</td><td class="num">${c.v} 件</td></tr>`)}
+          </tbody></table>`}>
+        <${BarChart} data=${CATS} />
+      <//>
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

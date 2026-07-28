@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：表格（CRUD 列表 + 批量操作）</title>
+<!--
+  demo-table.html —— 「表格」形状的最小可玩实现（蓝本：open-dashboard 的 DataTable 契约 + add-bulk-actions）。
+  复现的不变量：
+  - 列表参数一个形状：{ page, pageSize, search, filters(status), sortBy, sortDir } → { rows, total }
+  - 选择是瞬态 UI 状态（局部 state，不进 URL）；行 id 稳定，翻页后选择仍在
+  - 批量条只在选中 ≥1 行时出现，作用于精确的选中 id 集；操作成功后清空选择 + toast
+  - 破坏性批量操作先过确认弹窗
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--fg); }
+  .arrow { font-size: 10px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const PAGE_SIZE = 6;
+const SEED = [
+  { id: 1,  name: "陈禾",   email: "chenhe@corp.cn",    plan: "专业版", joined: "2026-03-14", active: true  },
+  { id: 2,  name: "李慕白", email: "mubai@corp.cn",     plan: "免费版", joined: "2026-05-02", active: true  },
+  { id: 3,  name: "王小满", email: "xiaoman@corp.cn",   plan: "团队版", joined: "2025-11-20", active: false },
+  { id: 4,  name: "赵青",   email: "zhaoqing@corp.cn",  plan: "专业版", joined: "2026-01-08", active: true  },
+  { id: 5,  name: "周芷",   email: "zhouzhi@corp.cn",   plan: "免费版", joined: "2026-06-17", active: true  },
+  { id: 6,  name: "吴限",   email: "wuxian@corp.cn",    plan: "团队版", joined: "2025-09-30", active: true  },
+  { id: 7,  name: "郑舟",   email: "zhengzhou@corp.cn", plan: "专业版", joined: "2026-02-25", active: false },
+  { id: 8,  name: "冯霁",   email: "fengji@corp.cn",    plan: "免费版", joined: "2026-04-11", active: true  },
+  { id: 9,  name: "褚遂",   email: "chusui@corp.cn",    plan: "团队版", joined: "2026-05-29", active: true  },
+  { id: 10, name: "卫疏",   email: "weishu@corp.cn",    plan: "专业版", joined: "2025-12-05", active: false },
+  { id: 11, name: "蒋声",   email: "jiangsheng@corp.cn",plan: "免费版", joined: "2026-06-01", active: true  },
+  { id: 12, name: "沈砚",   email: "shenyan@corp.cn",   plan: "团队版", joined: "2026-03-03", active: true  },
+  { id: 13, name: "韩澈",   email: "hanche@corp.cn",    plan: "专业版", joined: "2026-01-22", active: true  },
+  { id: 14, name: "杨湜",   email: "yangshi@corp.cn",   plan: "免费版", joined: "2025-10-18", active: false },
+];
+
+function Confirm({ text, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>确认操作</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" onClick=${onOk}>确认</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function App() {
+  const [rows, setRows] = useState(SEED);
+  const [q, setQ] = useState("");
+  const [status, setStatus] = useState("全部");
+  const [sort, setSort] = useState({ by: "joined", dir: "desc" });
+  const [page, setPage] = useState(1);
+  const [sel, setSel] = useState({});          // 选择：瞬态局部 state，key 为稳定 id
+  const [confirm, setConfirm] = useState(null); // { text, onOk }
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const filtered = useMemo(() => {
+    const kw = q.trim().toLowerCase();
+    const list = rows.filter(r =>
+      (status === "全部" || (status === "活跃") === r.active) &&
+      (r.name.toLowerCase().includes(kw) || r.email.toLowerCase().includes(kw)));
+    const mul = sort.dir === "asc" ? 1 : -1;
+    return [...list].sort((a, b) => (a[sort.by] < b[sort.by] ? -1 : a[sort.by] > b[sort.by] ? 1 : 0) * mul);
+  }, [rows, q, status, sort]);
+
+  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const cur = Math.min(page, pages);
+  const view = filtered.slice((cur - 1) * PAGE_SIZE, cur * PAGE_SIZE);
+
+  const selIds = Object.keys(sel).filter(k => sel[k]).map(Number);
+  const pageAllChecked = view.length > 0 && view.every(r => sel[r.id]);
+
+  const toggleSort = by =>
+    setSort(s => ({ by, dir: s.by === by && s.dir === "asc" ? "desc" : "asc" }));
+  const togglePageAll = () => {
+    const next = { ...sel };
+    view.forEach(r => { next[r.id] = !pageAllChecked; });
+    setSel(next);
+  };
+  const applyBulk = (label, fn) => {
+    setRows(rs => rs.map(r => (selIds.includes(r.id) ? fn(r) : r)).filter(Boolean));
+    setToast(`已${label} ${selIds.length} 名成员`);
+    setSel({});
+  };
+
+  const SortTh = ({ by, children }) => html`
+    <th class="sortable" onClick=${() => toggleSort(by)}>
+      ${children} <span class="arrow">${sort.by === by ? (sort.dir === "asc" ? "▲" : "▼") : ""}</span>
+    </th>`;
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>成员管理</h1>
+          <p class="sub">搜索 / 筛选 / 点表头排序 / 勾选行出现批量操作条</p>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <input class="grow" placeholder="搜索姓名或邮箱…" value=${q}
+               onChange=${e => { setQ(e.target.value); setPage(1); }} />
+        <select value=${status} onChange=${e => { setStatus(e.target.value); setPage(1); }}>
+          <option>全部</option><option>活跃</option><option>停用</option>
+        </select>
+      </div>
+
+      ${selIds.length > 0 && html`
+        <div class="selbar">
+          <span>已选 <span class="count">${selIds.length}</span> 项</span>
+          <button class="btn sm" onClick=${() => applyBulk("启用", r => ({ ...r, active: true }))}>批量启用</button>
+          <button class="btn sm" onClick=${() => applyBulk("停用", r => ({ ...r, active: false }))}>批量停用</button>
+          <button class="btn sm" style=${{ color: "var(--danger)" }}
+                  onClick=${() => setConfirm({
+                    text: `删除选中的 ${selIds.length} 名成员？此操作不可撤销。`,
+                    onOk: () => { applyBulk("删除", () => null); setConfirm(null); },
+                  })}>批量删除</button>
+          <button class="link" onClick=${() => setSel({})}>取消选择</button>
+        </div>`}
+
+      <table class="list">
+        <thead>
+          <tr>
+            <th><input type="checkbox" aria-label="全选本页" checked=${pageAllChecked} onChange=${togglePageAll} /></th>
+            <${SortTh} by="name">姓名<//>
+            <th>邮箱</th>
+            <th>套餐</th>
+            <${SortTh} by="joined">加入日期<//>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${view.map(r => html`
+            <tr key=${r.id}>
+              <td><input type="checkbox" aria-label=${"选择 " + r.name} checked=${!!sel[r.id]}
+                         onChange=${() => setSel({ ...sel, [r.id]: !sel[r.id] })} /></td>
+              <td style=${{ fontWeight: 550 }}>${r.name}</td>
+              <td>${r.email}</td>
+              <td>${r.plan}</td>
+              <td class="num">${r.joined}</td>
+              <td><span class=${"chip " + (r.active ? "chip-on" : "chip-off")}>${r.active ? "活跃" : "停用"}</span></td>
+            </tr>`)}
+          ${view.length === 0 && html`<tr><td class="empty" colSpan="6">没有匹配的成员</td></tr>`}
+        </tbody>
+      </table>
+
+      <footer class="pager">
+        <span>共 ${filtered.length} 名 · 第 ${cur} / ${pages} 页 · 选择跨页保留</span>
+        <div>
+          <button class="btn" disabled=${cur <= 1} onClick=${() => setPage(cur - 1)}>上一页</button>
+          <button class="btn" disabled=${cur >= pages} onClick=${() => setPage(cur + 1)}>下一页</button>
+        </div>
+      </footer>
+
+      ${confirm && html`<${Confirm} text=${confirm.text} onOk=${confirm.onOk} onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

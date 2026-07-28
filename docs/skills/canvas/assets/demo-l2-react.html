@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L2 · React 手写画布 — useRef 持有 transform</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif; }
+
+  .viewport {
+    position: relative; width: 100%; height: 100vh; overflow: hidden;
+    background: #f7f8fa; cursor: grab; touch-action: none;
+  }
+  .viewport.panning { cursor: grabbing; }
+  .grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(30,41,59,.18) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .world { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
+
+  .node {
+    position: absolute; width: 230px; background: #fff;
+    border: 1px solid #dbe1ea; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(15,23,42,.08); user-select: none;
+  }
+  .node.selected { border-color: #5b8def; box-shadow: 0 0 0 2px rgba(91,141,239,.25); }
+  .node header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 12px; border-bottom: 1px solid #eef1f6; cursor: grab;
+    font-size: 13px; font-weight: 600; color: #0f172a;
+  }
+  .node header .renders { font-size: 10px; font-weight: normal; color: #94a3b8; font-variant-numeric: tabular-nums; }
+  .node .body { padding: 10px 12px; display: grid; gap: 8px; }
+  .node .body p { font-size: 12px; color: #64748b; line-height: 1.5; }
+  .node input {
+    font: inherit; font-size: 12px; padding: 5px 8px;
+    border: 1px solid #cbd5e1; border-radius: 6px; width: 100%;
+  }
+  .node button {
+    font: inherit; font-size: 12px; padding: 5px 10px; cursor: pointer;
+    border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; color: #334155;
+  }
+  .node button:hover { background: #eef2f7; }
+
+  .hud {
+    position: absolute; left: 12px; bottom: 12px; z-index: 5;
+    display: flex; gap: 10px; align-items: center; font-size: 12px; color: #475569;
+  }
+  .hud .stat {
+    background: rgba(255,255,255,.9); border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 5px 10px; font-variant-numeric: tabular-nums;
+  }
+  .hud .stat b { color: #16a34a; }
+  .tip {
+    position: absolute; right: 12px; top: 12px; z-index: 5;
+    font-size: 11.5px; color: #94a3b8; background: rgba(255,255,255,.85);
+    border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+const html = htm.bind(React.createElement);
+const { useState, useRef, useEffect, useCallback } = React;
+
+/* ============ viewport.ts：坐标转换 + 锚点缩放（<30 行） ============ */
+const screenToWorld = (t, sx, sy) => ({ x: (sx - t.x) / t.scale, y: (sy - t.y) / t.scale });
+function applyZoom(t, ax, ay, adjust, min = 0.2, max = 3) {
+  const next = Math.min(max, Math.max(min, t.scale * Math.exp(adjust)));
+  if (next === t.scale) return t;
+  const ratio = 1 - next / t.scale;
+  return { x: t.x + (ax - t.x) * ratio, y: t.y + (ay - t.y) * ratio, scale: next };
+}
+
+/* ============ 业务节点：真正的 React 组件（表单/计数器） ============ */
+/* 右上角 renders 徽标 = 本组件累计渲染次数。拖画布平移/缩放时它不动 —— 因为
+   transform 走 ref 直写 DOM，没有触发 React 渲染。 */
+function TaskNode({ node, selected, onPointerDown, onPatch }) {
+  const renders = useRef(0);
+  renders.current++;
+  return html`
+    <div class="node ${selected ? 'selected' : ''}"
+         style=${{ left: node.x + 'px', top: node.y + 'px' }}
+         data-id=${node.id}>
+      <header onPointerDown=${(e) => onPointerDown(e, node.id)}>
+        <span>${node.title}</span>
+        <span class="renders">renders: ${renders.current}</span>
+      </header>
+      <div class="body">
+        <p>${node.desc}</p>
+        <input value=${node.note} placeholder="备注（受控输入，状态在 store）"
+               onPointerDown=${(e) => e.stopPropagation()}
+               onChange=${(e) => onPatch(node.id, { note: e.target.value })} />
+        <button onPointerDown=${(e) => e.stopPropagation()}
+                onClick=${() => onPatch(node.id, { count: node.count + 1 })}>
+          业务动作 × ${node.count}
+        </button>
+      </div>
+    </div>`;
+}
+
+function App() {
+  /* 文档态：节点数组走 React 状态（不可变更新） */
+  const [nodes, setNodes] = useState([
+    { id: 'n1', x: 110, y: 90,  title: '调研竞品', desc: '节点是完整的 React 业务组件：受控输入、按钮、任意状态。', note: '', count: 0 },
+    { id: 'n2', x: 450, y: 200, title: '写原型',   desc: '拖标题栏移动我；拖空白平移画布，对比两侧 renders 计数。', note: '', count: 0 },
+    { id: 'n3', x: 180, y: 360, title: '排期评审', desc: '平移/缩放期间 renders 不涨 —— transform 没进 React。', note: '', count: 0 },
+  ]);
+  const [selectedId, setSelectedId] = useState(null);
+  /* 视口态：走 ref，不进 React —— 本 demo 的核心示范 */
+  const transformRef = useRef({ x: 0, y: 0, scale: 1 });
+  const worldRef = useRef(null);
+  const gridRef = useRef(null);
+  const viewportRef = useRef(null);
+  const zoomStatRef = useRef(null);
+  const drag = useRef(null); // { kind:'pan'|'node', ... }
+
+  const applyTransform = useCallback(() => {
+    const t = transformRef.current, GRID = 28;
+    if (worldRef.current)
+      worldRef.current.style.transform = `translate(${t.x}px, ${t.y}px) scale(${t.scale})`;
+    if (gridRef.current) {
+      gridRef.current.style.backgroundSize = `${GRID * t.scale}px ${GRID * t.scale}px`;
+      gridRef.current.style.backgroundPosition = `${t.x % (GRID * t.scale)}px ${t.y % (GRID * t.scale)}px`;
+    }
+    if (zoomStatRef.current)
+      zoomStatRef.current.textContent = Math.round(t.scale * 100) + '%';
+  }, []);
+
+  const patchNode = useCallback((id, patch) =>
+    setNodes(ns => ns.map(n => n.id === id ? { ...n, ...patch } : n)), []);
+
+  /* 节点拖拽：高频 move 直写 DOM，pointerup 才 sync 回 React 状态 */
+  const onNodePointerDown = useCallback((e, id) => {
+    e.stopPropagation();
+    viewportRef.current.setPointerCapture(e.pointerId);
+    setSelectedId(id);
+    const t = transformRef.current;
+    const el = e.currentTarget.parentElement;
+    drag.current = {
+      kind: 'node', id, el,
+      startWorld: screenToWorld(t, e.clientX, e.clientY),
+      origin: { x: el.offsetLeft, y: el.offsetTop },
+      last: null,
+    };
+  }, []);
+
+  const onPointerDown = useCallback((e) => {
+    if (e.target.closest('.node')) return; // 节点自己处理
+    viewportRef.current.setPointerCapture(e.pointerId);
+    viewportRef.current.classList.add('panning');
+    setSelectedId(null);
+    drag.current = { kind: 'pan', lastX: e.clientX, lastY: e.clientY };
+  }, []);
+
+  const onPointerMove = useCallback((e) => {
+    const d = drag.current;
+    if (!d) return;
+    if (d.kind === 'pan') {
+      const t = transformRef.current;
+      t.x += e.clientX - d.lastX; t.y += e.clientY - d.lastY;
+      d.lastX = e.clientX; d.lastY = e.clientY;
+      applyTransform();                    // 直写 DOM，零 React 渲染
+    } else {
+      const t = transformRef.current;
+      const w = screenToWorld(t, e.clientX, e.clientY);
+      const x = d.origin.x + (w.x - d.startWorld.x);
+      const y = d.origin.y + (w.y - d.startWorld.y);
+      d.el.style.left = x + 'px'; d.el.style.top = y + 'px';   // 拖拽中同样直写
+      d.last = { x, y };
+    }
+  }, [applyTransform]);
+
+  const onPointerUp = useCallback(() => {
+    const d = drag.current;
+    if (d && d.kind === 'node' && d.last)
+      patchNode(d.id, d.last);            // 松手才 sync 到状态（触发一次渲染）
+    viewportRef.current.classList.remove('panning');
+    drag.current = null;
+  }, [patchNode]);
+
+  /* wheel 必须 passive:false 才能 preventDefault，React 合成事件做不到 → 原生绑定 */
+  useEffect(() => {
+    const vp = viewportRef.current;
+    const onWheel = (e) => {
+      e.preventDefault();
+      const rect = vp.getBoundingClientRect();
+      transformRef.current = applyZoom(
+        transformRef.current,
+        e.clientX - rect.left, e.clientY - rect.top,
+        e.deltaY * -0.002,
+      );
+      applyTransform();
+    };
+    vp.addEventListener('wheel', onWheel, { passive: false });
+    applyTransform();
+    return () => vp.removeEventListener('wheel', onWheel);
+  }, [applyTransform]);
+
+  return html`
+    <div class="viewport" ref=${viewportRef}
+         onPointerDown=${onPointerDown} onPointerMove=${onPointerMove}
+         onPointerUp=${onPointerUp} onPointerCancel=${onPointerUp}>
+      <div class="grid" ref=${gridRef}></div>
+      <div class="world" ref=${worldRef}>
+        ${nodes.map(n => html`
+          <${TaskNode} key=${n.id} node=${n} selected=${n.id === selectedId}
+                       onPointerDown=${onNodePointerDown} onPatch=${patchNode} />`)}
+      </div>
+      <div class="tip">拖空白平移 · 滚轮缩放 · 拖节点标题移动<br/>盯住各节点的 renders 计数</div>
+      <div class="hud">
+        <span class="stat">缩放 <b ref=${zoomStatRef}>100%</b></span>
+        <span class="stat">平移/缩放期间 React 渲染次数：<b>0</b>（transform 在 ref 里）</span>
+      </div>
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：计费</title>
+<!--
+  demo-billing.html —— 「计费（订阅套餐 + 发票）」形状的最小可玩实现（蓝本：open-dashboard 的 add-billing：billing.tsx + PlanCard.tsx）。
+  复现的不变量：
+  - 展示层只吃已成型的 props（价格/特性/当前档标记），不做数据抓取；真实版由页面容器把套餐清单和当前订阅传下来
+  - 当前档 CTA 禁用并标注「当前」，其他档按方向给出「升级到 X」/「降级到 X」（方向来自 rank 比较，而不是价格数字）
+  - 破坏性方向（降级）按钮走 destructive 语义；两个方向都要过一次确认（真实版是跳 Stripe checkout / Billing portal）
+  - 发票下载按钮只发 toast；真实版换成打开服务端签发的短时签名 URL，前端不接触对象存储凭证
+  - 变更成功后 toast
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .bill-status { display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+                 padding: 14px 16px; flex-wrap: wrap; margin-bottom: 14px; }
+  .bill-status .name { font-size: 18px; font-weight: 650; }
+  .bill-status .price { color: var(--muted); font-size: 13px; margin-left: 6px; }
+  .bill-status .meta { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+  .plan { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+          padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .plan.on { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary) inset; }
+  .plan .head-row { display: flex; align-items: center; gap: 8px; }
+  .plan .h { margin: 0; font-size: 15px; font-weight: 650; }
+  .plan .desc { margin: -4px 0 0; color: var(--muted); font-size: 12px; }
+  .plan .price-row { display: flex; align-items: baseline; gap: 2px; }
+  .plan .price-num { font-size: 22px; font-weight: 650; }
+  .plan .price-cad { color: var(--muted); font-size: 12px; }
+  .plan ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .plan li { display: flex; gap: 6px; font-size: 13px; }
+  .plan li::before { content: "✓"; color: var(--primary); font-weight: 700; }
+  .plan .cta { margin-top: auto; }
+  .btn.danger { border-color: var(--danger); color: var(--danger); background: var(--card); }
+  .btn.danger:hover:not(:disabled) { background: var(--danger); color: var(--primary-fg); border-color: var(--danger); }
+  @media (max-width: 719px) {
+    .plans { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const PLANS = [
+  { id: "personal",   rank: 1, name: "个人版", price: 19,  cadence: "月",
+    desc: "自用 / 独立开发者",
+    features: ["1 个项目", "2 GB 存储", "社区支持"] },
+  { id: "team",       rank: 2, name: "团队版", price: 99,  cadence: "月",
+    desc: "中小团队协作",
+    features: ["无限项目", "100 GB 存储", "优先邮件支持", "使用分析"], featured: true },
+  { id: "enterprise", rank: 3, name: "企业版", price: 299, cadence: "月",
+    desc: "企业级支持",
+    features: ["含团队版全部", "无限存储", "SSO / SAML", "专属客户成功经理", "99.9% SLA"] },
+];
+
+const INVOICES = [
+  { id: "INV-2026-0007", date: "2026-07-01", amount: 99, status: "待支付" },
+  { id: "INV-2026-0006", date: "2026-06-01", amount: 99, status: "已支付" },
+  { id: "INV-2026-0005", date: "2026-05-01", amount: 99, status: "已支付" },
+  { id: "INV-2026-0004", date: "2026-04-01", amount: 99, status: "已支付" },
+  { id: "INV-2026-0003", date: "2026-03-01", amount: 19, status: "已作废" },
+];
+
+function invoiceChipClass(s) {
+  if (s === "已支付") return "chip-on";
+  if (s === "待支付") return "chip-warn";
+  return "chip-off"; // 已作废
+}
+
+function Confirm({ text, danger, okText, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>确认操作</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class=${danger ? "btn danger" : "btn primary"} onClick=${onOk}>${okText || "确认"}</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function PlanCard({ plan, current, onSelect }) {
+  const isCur = plan.id === current.id;
+  const direction = isCur ? null : (plan.rank > current.rank ? "up" : "down");
+  const ctaLabel = isCur
+    ? "当前套餐"
+    : direction === "up" ? `升级到 ${plan.name}` : `降级到 ${plan.name}`;
+  const ctaClass = "btn cta " + (isCur ? "" : direction === "up" ? "primary" : "danger");
+  return html`
+    <div class=${"plan " + (isCur ? "on" : "")}>
+      <div class="head-row">
+        <h3 class="h">${plan.name}</h3>
+        ${isCur && html`<span class="chip chip-on">当前</span>`}
+        ${!isCur && plan.featured && html`<span class="chip chip-warn">推荐</span>`}
+      </div>
+      <p class="desc">${plan.desc}</p>
+      <div class="price-row">
+        <span class="price-num">¥${plan.price}</span>
+        <span class="price-cad">/${plan.cadence}</span>
+      </div>
+      <ul>
+        ${plan.features.map(f => html`<li key=${f}>${f}</li>`)}
+      </ul>
+      <button class=${ctaClass}
+              disabled=${isCur}
+              onClick=${() => onSelect(plan)}>${ctaLabel}</button>
+    </div>`;
+}
+
+function App() {
+  const [currentId, setCurrentId] = useState("team");
+  const [renewsAt] = useState("2026-08-01");
+  const [confirm, setConfirm] = useState(null);
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const current = useMemo(() => PLANS.find(p => p.id === currentId), [currentId]);
+
+  const changePlan = (plan) => {
+    if (plan.id === current.id) return;
+    const isUp = plan.rank > current.rank;
+    const verb = isUp ? "升级" : "降级";
+    const lost = isUp ? [] : current.features.filter(f => !plan.features.includes(f));
+    const text = isUp
+      ? `确认${verb}到「${plan.name}」（¥${plan.price}/${plan.cadence}）？变更立即生效，下次账期按新套餐计费。`
+      : `确认${verb}到「${plan.name}」（¥${plan.price}/${plan.cadence}）？将失去：${lost.slice(0, 3).join("、") || "部分高级特性"}${lost.length > 3 ? "…" : ""}`;
+    setConfirm({
+      text,
+      danger: !isUp,
+      okText: `确认${verb}`,
+      // 真实版：这里跳 Stripe Checkout / Subscription update，回调页 + webhook 落库
+      onOk: () => {
+        setCurrentId(plan.id);
+        setToast(`已${verb}到 ${plan.name}`);
+        setConfirm(null);
+      },
+    });
+  };
+
+  // 真实版：换成 window.open(signedUrl)，URL 由服务端签名后短时有效
+  const download = (inv) => setToast(`开始下载 ${inv.id}.pdf`);
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>订阅与账单</h1>
+          <p class="sub">当前套餐 · 三档对比 · 近 5 期发票</p>
+        </div>
+      </header>
+
+      <div class="card bill-status">
+        <div>
+          <div>
+            <span class="name">${current.name}</span>
+            <span class="price">¥${current.price}/${current.cadence}</span>
+          </div>
+          <p class="meta">下次续费 ${renewsAt} · 自动续订</p>
+        </div>
+        <span class="chip chip-on">续订中</span>
+      </div>
+
+      <div class="plans">
+        ${PLANS.map(p => html`<${PlanCard} key=${p.id} plan=${p} current=${current} onSelect=${changePlan} />`)}
+      </div>
+
+      <table class="list">
+        <thead>
+          <tr>
+            <th>发票号</th>
+            <th>日期</th>
+            <th class="num">金额</th>
+            <th>状态</th>
+            <th class="ops">下载</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${INVOICES.map(inv => html`
+            <tr key=${inv.id}>
+              <td style=${{ fontWeight: 550 }}>${inv.id}</td>
+              <td class="num">${inv.date}</td>
+              <td class="num">¥${inv.amount.toFixed(2)}</td>
+              <td><span class=${"chip " + invoiceChipClass(inv.status)}>${inv.status}</span></td>
+              <td class="ops">
+                <button class="btn sm"
+                        disabled=${inv.status === "已作废"}
+                        onClick=${() => download(inv)}>下载</button>
+              </td>
+            </tr>`)}
+        </tbody>
+      </table>
+
+      ${confirm && html`<${Confirm}
+          text=${confirm.text}
+          danger=${confirm.danger}
+          okText=${confirm.okText}
+          onOk=${confirm.onOk}
+          onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

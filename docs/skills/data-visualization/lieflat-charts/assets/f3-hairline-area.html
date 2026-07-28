@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lieflat Charts — F3 发丝面积图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#F0EFEB;--ink:#1C1C1A;--muted:#8F8E88;--faint:#C6C5BF;--grid:#DEDDD6}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--ink);padding:40px;-webkit-font-smoothing:antialiased}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1100px;margin:0 auto}
+  .card{background:var(--bg);border-radius:24px;padding:28px 28px 20px}
+  h2{font-weight:700;font-size:16.5px;letter-spacing:-.02em;margin-bottom:3px}
+  .sub{font-size:11.5px;color:var(--muted);margin-bottom:14px}
+  .src{font-size:9.5px;color:var(--faint);margin-top:10px;letter-spacing:.08em;font-weight:500}
+  .badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.08em;
+    padding:3px 10px;border-radius:99px;margin-bottom:10px;border:1px dashed #B0AFA9;color:#8F8E88}
+  svg{width:100%;max-height:330px;display:block;margin:0 auto}
+  svg text{font-family:'Inter',sans-serif}
+  .pop{transform-box:fill-box;transform-origin:center;animation:pop .5s cubic-bezier(.2,.7,.3,1.3) both}
+  @keyframes pop{from{transform:scale(0)}to{transform:none}}
+  .fade{animation:fade .9s ease both}
+  @keyframes fade{from{opacity:0}}
+  .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1s cubic-bezier(.4,0,.2,1) both}
+  @keyframes draw{to{stroke-dashoffset:0}}
+
+  .pagehead{max-width:1100px;margin:0 auto 26px;padding:0 4px}
+  .pagehead h1{font-size:22px;letter-spacing:-.02em;font-weight:800}
+  .pagehead p{font-size:12px;color:#8F8E88;margin-top:5px;line-height:1.7}
+
+  html,body{min-height:100%;margin:0}
+  body{display:grid;place-items:center;padding:28px}
+  .pagehead{display:none}
+  .grid2{display:block;width:min(100%,920px);max-width:920px;margin:0 auto}
+  .card,.card.wide{display:block;width:100%;min-height:520px;padding:38px 42px 24px}
+  .card .split{grid-template-columns:minmax(190px,250px) 1fr}
+  .wiki-code{display:inline-block;margin-bottom:12px;padding:4px 11px;border:1px dashed #B0AFA9;border-radius:99px;color:#8F8E88;font-size:10px;font-weight:700;letter-spacing:.08em}
+  .card.dark .wiki-code{border-color:#55554F}
+  @media(max-width:620px){
+    body{padding:10px}
+    .card,.card.wide{min-height:500px;padding:26px 18px 20px}
+    .card .split{display:block}
+    .card .note,.card .legend{display:none}
+  }
+</style>
+
+</head>
+<body>
+<main class="grid2">
+<div class="card">
+    <span class="wiki-code">LUPI 基础型 · F3</span>
+    <span class="badge">LUPI 基础型 · 面积</span>
+    <h2>每一天填满并发曲线</h2>
+    <div class="sub">一根发丝线代表一天，从底部延伸到峰值 · 面积由日子组成，不是色块</div>
+    <svg id="hairarea" viewBox="0 0 400 320" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="src">HAIRLINE AREA · MONO-BASIC · LIVE OPS</div>
+  </div>
+</main>
+<script>
+// ── shared Mono tokens（与 lupi-gallery 同源） ──
+const INK='#1C1C1A',PAPER='#F0EFEB',MUTED='#8F8E88',GRID='#DEDDD6';
+const NS='http://www.w3.org/2000/svg';
+const el=(p,t,a)=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);p.appendChild(n);return n};
+const txt=(p,a,s)=>{const n=el(p,'text',a);n.textContent=s;return n};
+const tip=(n,s)=>{const t=document.createElementNS(NS,'title');t.textContent=s;n.appendChild(t)};
+const rnd=(i,k)=>Math.abs(((i*73856093)^(k*19349663))%1000)/1000;
+const D2R=Math.PI/180;
+const pol=(cx,cy,r,deg)=>[cx+r*Math.cos(deg*D2R),cy+r*Math.sin(deg*D2R)];
+const obsReveal=(id,fn)=>{
+  const n=document.getElementById(id);
+  const go=()=>{n.innerHTML='';fn(n)};
+  const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){go();io.disconnect()}},{threshold:.3});
+  io.observe(n);
+  n.style.cursor='pointer';
+  n.addEventListener('click',go);
+};
+
+// ════ B3 · hairline area ════
+// 面积图的 Lupi 化：填充不是色块，是一天一根发丝立到自己的峰值。
+// 面积由日子组成。顶边一根细线收轮廓，峰值日加点标数。
+(()=>{
+const N=45;
+const val=d=>34+26*Math.sin(d/7.2)+12*Math.sin(d/2.8)+rnd(d+1,3)*16;
+obsReveal('hairarea',s=>{
+  const x=d=>28+d*7.75,base=262,map=v=>base-v*2.35;
+  el(s,'line',{x1:22,y1:base,x2:378,y2:base,stroke:GRID,'stroke-width':.8,class:'fade'});
+  const vs=Array.from({length:N},(_,d)=>val(d));
+  const peak=vs.indexOf(Math.max(...vs));
+  vs.forEach((v,d)=>{
+    el(s,'line',{x1:x(d),y1:base,x2:x(d),y2:map(v),
+      stroke:d===peak?INK:'#8F8E88','stroke-width':d===peak?1.1:.55,
+      opacity:d===peak?1:.5+rnd(d+1,7)*.45,
+      class:'fade',style:`animation-delay:${d*.014}s`});
+  });
+  const pts=vs.map((v,d)=>`${x(d)} ${map(v)}`).join(' L ');
+  el(s,'path',{d:'M'+pts,fill:'none',stroke:INK,'stroke-width':1.2,pathLength:1,
+    class:'draw',style:'animation-delay:.4s;animation-duration:1.2s'});
+  const pd=el(s,'circle',{cx:x(peak),cy:map(vs[peak]),r:4.2,fill:INK,
+    class:'pop',style:'animation-delay:1.2s'});
+  tip(pd,`Day ${peak+1} — ${Math.round(vs[peak])}k peak`);
+  txt(s,{x:x(peak),y:map(vs[peak])-11,'font-size':9.5,'font-weight':800,fill:INK,'text-anchor':'middle',
+    style:`paint-order:stroke;stroke:${PAPER};stroke-width:3px;animation-delay:1.3s`,
+    class:'fade'},Math.round(vs[peak])+'k');
+  [[0,'MAY'],[22,'JUN'],[44,'JUL']].forEach(([d,m])=>
+    txt(s,{x:x(d),y:base+18,'font-size':7.5,'font-weight':600,fill:MUTED,'text-anchor':'middle',
+      'letter-spacing':'.1em',class:'fade'},m));
+  txt(s,{x:200,y:306,'font-size':7,'font-weight':600,fill:'#B0AFA9','text-anchor':'middle',
+    'letter-spacing':'.12em',class:'fade',style:'animation-delay:1.3s'},
+    'ONE HAIRLINE = ONE DAY, FLOOR TO PEAK');
+});
+})();
+</script>
+</body>
+</html>

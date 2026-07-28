@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：全局搜索</title>
+<!--
+  demo-global-search.html —— 「全局搜索」形状的最小可玩实现（蓝本：open-dashboard 的 GlobalSearch + global-search 画廊）。
+  复现的不变量：
+  - ⌘K / Ctrl-K 唤起居中命令面板（输入框 + 分组结果 + 底部快捷键栏）
+  - 一个 SearchSource 一个契约：{ label, items, toResult } → 面板在内存里过滤 title/subtitle，按 label 分组；给 search(query) 是自定义匹配
+  - 组件自己过滤（shouldFilter=false）：让 subtitle 也参与匹配、分组头显示精确条数；每组按 limitPerGroup 截断
+  - 键盘可达：↑↓ 移动高亮、Enter 触发所选项、Esc 关闭；焦点始终在输入框，aria-activedescendant 指向高亮项
+  - 空关键字显示「最近访问」（存 localStorage，命中即推到最前、去重、Cap 长度）
+  - 破坏性操作先过确认弹窗；变更完成 toast；点面板外也关闭
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .kbd { display: inline-flex; align-items: center; padding: 1px 6px; font-size: 12px;
+         font-family: ui-monospace, SFMono-Regular, monospace; color: var(--fg);
+         background: var(--card); border: 1px solid var(--border); border-radius: 5px;
+         min-width: 20px; justify-content: center; }
+  .head .kbd { margin: 0 1px; }
+  .launcher { display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+              padding: 20px 20px 22px; background: var(--card); border: 1px solid var(--border);
+              border-radius: 12px; color: var(--muted); font-size: 13px; }
+  .launcher h2 { color: var(--fg); margin: 0; font-size: 15px; font-weight: 600; }
+  .launcher .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  /* 命令面板 */
+  .pal-wrap { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-start; justify-content: center;
+              padding: 12vh 16px 16px; background: rgba(0,0,0,.42); }
+  .pal { width: 100%; max-width: 540px; background: var(--card); border: 1px solid var(--border);
+         border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,.35); overflow: hidden;
+         display: flex; flex-direction: column; max-height: min(72vh, 480px); }
+  .pal-search { display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+                border-bottom: 1px solid var(--border); color: var(--muted); }
+  .pal-search input { flex: 1; border: 0; padding: 3px 0; background: none; border-radius: 0;
+                      font-size: 14px; color: var(--fg); }
+  .pal-search input:focus { outline: none; }
+  .pal-list { flex: 1; overflow-y: auto; padding: 4px; }
+  .pal-group-head { padding: 8px 10px 4px; font-size: 11px; color: var(--muted);
+                    letter-spacing: .06em; text-transform: uppercase; }
+  .pal-item { display: flex; width: 100%; align-items: flex-start; justify-content: space-between; gap: 10px;
+              border: 0; background: none; color: var(--fg); font: inherit; text-align: left;
+              padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+  .pal-item.on { background: var(--chip-off-bg); }
+  .pal-item .title { font-weight: 550; }
+  .pal-item .title.danger { color: var(--danger); }
+  .pal-item .sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .pal-item .tag { font-size: 11px; color: var(--muted); white-space: nowrap; padding-top: 2px; }
+  .pal-empty { padding: 32px 12px; text-align: center; color: var(--muted); font-size: 13px; }
+  .pal-foot { display: flex; gap: 10px; align-items: center; padding: 8px 12px;
+              border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+  .pal-foot .hint { display: inline-flex; align-items: center; gap: 4px; }
+  .pal-foot .spacer { flex: 1; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+
+const LIMIT_PER_GROUP = 5;
+const RECENT_MAX = 5;
+const RECENT_KEY = "demo-global-search:recent";
+
+const PRODUCTS = [
+  { id: "p01", name: "陶瓷保温杯 600ml",  sku: "PC-6001", price: 89 },
+  { id: "p02", name: "亚麻拼色手提袋",     sku: "PC-3210", price: 45 },
+  { id: "p03", name: "竹纤维毛巾套装",     sku: "PC-2088", price: 128 },
+  { id: "p04", name: "香薰蜡烛 · 森林",    sku: "PC-4412", price: 79 },
+  { id: "p05", name: "亚麻收纳篮 大号",    sku: "PC-5501", price: 168 },
+  { id: "p06", name: "手工陶瓷餐盘 6 件",  sku: "PC-5502", price: 108 },
+  { id: "p07", name: "旅行洗漱包",         sku: "PC-3311", price: 66 },
+];
+const ORDERS = [
+  { id: "o01", ref: "SO-20260701-001", customer: "陈禾",   total: 289 },
+  { id: "o02", ref: "SO-20260701-002", customer: "李慕白", total: 458 },
+  { id: "o03", ref: "SO-20260702-001", customer: "王小满", total: 1298 },
+  { id: "o04", ref: "SO-20260702-002", customer: "赵青",   total: 89 },
+  { id: "o05", ref: "SO-20260703-001", customer: "周芷",   total: 640 },
+  { id: "o06", ref: "SO-20260704-001", customer: "吴限",   total: 210 },
+];
+const CUSTOMERS = [
+  { id: "c01", name: "陈禾",   email: "chenhe@corp.cn",   plan: "专业版" },
+  { id: "c02", name: "李慕白", email: "mubai@corp.cn",    plan: "免费版" },
+  { id: "c03", name: "王小满", email: "xiaoman@corp.cn",  plan: "团队版" },
+  { id: "c04", name: "赵青",   email: "zhaoqing@corp.cn", plan: "专业版" },
+  { id: "c05", name: "周芷",   email: "zhouzhi@corp.cn",  plan: "免费版" },
+];
+const ACTIONS = [
+  { id: "a01", title: "新建订单",     subtitle: "开一张空白订单" },
+  { id: "a02", title: "导出本月销售", subtitle: "生成 CSV 并下载" },
+  { id: "a03", title: "刷新所有列表", subtitle: "失效缓存重新拉取" },
+  { id: "a04", title: "打开设置页",   subtitle: "跳转到 /settings" },
+  { id: "a05", title: "清空最近访问", subtitle: "破坏性操作，不可撤销", destructive: true },
+];
+
+// 一份 SearchSource：给 items + toResult 就走内存过滤，group 头显示 label 和精确条数。
+// 真实版可以把某一组换成 search: q => rows —— 父层 debounce 后调服务端跨资源接口，结果喂回同一契约。
+const SOURCES = [
+  { label: "产品", items: PRODUCTS,  toResult: p => ({ id: p.id, title: p.name, subtitle: "SKU " + p.sku + " · ￥" + p.price, tag: "产品" }) },
+  { label: "订单", items: ORDERS,    toResult: o => ({ id: o.id, title: o.ref,  subtitle: o.customer + " · ￥" + o.total.toLocaleString(), tag: "订单" }) },
+  { label: "客户", items: CUSTOMERS, toResult: c => ({ id: c.id, title: c.name, subtitle: c.email + " · " + c.plan, tag: "客户" }) },
+  { label: "操作", items: ACTIONS,   toResult: a => ({ id: a.id, title: a.title, subtitle: a.subtitle, tag: "操作", destructive: !!a.destructive, action: true }) },
+];
+
+function defaultMatch(result, query) {
+  const kw = query.trim().toLowerCase();
+  if (!kw) return true;
+  const hay = (result.title + " " + (result.subtitle || "")).toLowerCase();
+  return hay.includes(kw);
+}
+
+function groupResults(sources, query, limit) {
+  const groups = [];
+  for (const s of sources) {
+    const mapped = (s.items || []).map(s.toResult);
+    const filtered = query ? mapped.filter(r => defaultMatch(r, query)) : mapped;
+    if (filtered.length > 0) groups.push({ label: s.label, results: filtered.slice(0, limit) });
+  }
+  return groups;
+}
+
+function loadRecent() {
+  try {
+    const raw = localStorage.getItem(RECENT_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr.slice(0, RECENT_MAX) : [];
+  } catch (_) { return []; }
+}
+function saveRecent(list) {
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, RECENT_MAX))); } catch (_) {}
+}
+
+function Palette({ query, setQuery, groups, activeIdx, setActiveIdx, onSelect, onClose }) {
+  const inputRef = useRef(null);
+  const listRef = useRef(null);
+
+  // 展平：全局索引 = 用于键盘 activeIdx 与 aria-activedescendant 的稳定编号
+  const flat = [];
+  for (const g of groups) for (const r of g.results) flat.push({ group: g.label, result: r });
+
+  useEffect(() => { inputRef.current && inputRef.current.focus(); }, []);
+  // 过滤收窄后高亮越界 → 回到顶部
+  useEffect(() => {
+    if (activeIdx > flat.length - 1) setActiveIdx(0);
+  }, [flat.length, activeIdx, setActiveIdx]);
+  // 高亮移动时滚到可见处
+  useEffect(() => {
+    if (!listRef.current) return;
+    const el = listRef.current.querySelector('[data-active="true"]');
+    if (el) el.scrollIntoView({ block: "nearest" });
+  }, [activeIdx, groups]);
+
+  const onKeyDown = e => {
+    if (e.key === "ArrowDown") { e.preventDefault(); setActiveIdx(i => Math.min(i + 1, flat.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActiveIdx(i => Math.max(i - 1, 0)); }
+    else if (e.key === "Enter") { e.preventDefault(); const cur = flat[activeIdx]; if (cur) onSelect(cur.result, cur.group); }
+    else if (e.key === "Escape") { e.preventDefault(); onClose(); }
+  };
+
+  let running = -1; // 高亮索引在扁平列表中的全局编号，跨组连续
+  return html`
+    <div class="pal-wrap" role="presentation" onClick=${e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div class="pal" role="dialog" aria-modal="true" aria-label="全局搜索">
+        <div class="pal-search">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input ref=${inputRef} value=${query}
+                 placeholder="搜索产品 / 订单 / 客户 / 操作…"
+                 role="combobox" aria-expanded="true" aria-controls="pal-listbox" aria-autocomplete="list"
+                 aria-activedescendant=${flat[activeIdx] ? "pal-opt-" + activeIdx : undefined}
+                 onChange=${e => { setQuery(e.target.value); setActiveIdx(0); }}
+                 onKeyDown=${onKeyDown} />
+          <span class="kbd">Esc</span>
+        </div>
+        <div class="pal-list" id="pal-listbox" role="listbox" ref=${listRef}>
+          ${flat.length === 0 && html`
+            <div class="pal-empty">
+              ${query.trim() ? "没有匹配的结果" : "开始键入以搜索，或稍后回来看看最近访问"}
+            </div>`}
+          ${groups.map(g => html`
+            <div key=${g.label}>
+              <div class="pal-group-head">${g.label} · ${g.results.length}</div>
+              ${g.results.map(r => {
+                running += 1;
+                const i = running;
+                return html`
+                  <button type="button" key=${g.label + ":" + r.id} id=${"pal-opt-" + i} role="option"
+                          aria-selected=${i === activeIdx}
+                          data-active=${i === activeIdx ? "true" : "false"}
+                          class=${"pal-item" + (i === activeIdx ? " on" : "")}
+                          onMouseEnter=${() => setActiveIdx(i)}
+                          onClick=${() => onSelect(r, g.label)}>
+                    <span>
+                      <div class=${"title" + (r.destructive ? " danger" : "")}>${r.title}</div>
+                      ${r.subtitle && html`<div class="sub">${r.subtitle}</div>`}
+                    </span>
+                    <span class="tag">${r.tag}</span>
+                  </button>`;
+              })}
+            </div>`)}
+        </div>
+        <div class="pal-foot">
+          <span class="hint"><span class="kbd">↑</span><span class="kbd">↓</span> 导航</span>
+          <span class="hint"><span class="kbd">↵</span> 选中</span>
+          <span class="hint"><span class="kbd">Esc</span> 关闭</span>
+          <span class="spacer"></span>
+          <span>${flat.length} 条结果</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function Confirm({ text, onOk, onCancel }) {
+  return html`
+    <div class="overlay" style=${{ zIndex: 60 }} onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>确认操作</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" onClick=${onOk}>确认</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function App() {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [recent, setRecent] = useState(loadRecent);
+  const [confirm, setConfirm] = useState(null);
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  // ⌘K / Ctrl-K 唤起（当输入框获焦时 Esc 由 palette 内部处理）
+  useEffect(() => {
+    const onKey = e => {
+      if ((e.metaKey || e.ctrlKey) && e.key && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setOpen(o => !o);
+        setQuery("");
+        setActiveIdx(0);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // 空关键字 → 显示「最近访问」；否则跨资源过滤 + 分组截断
+  const groups = useMemo(() => {
+    if (!query.trim()) {
+      return recent.length > 0 ? [{ label: "最近访问", results: recent }] : [];
+    }
+    return groupResults(SOURCES, query, LIMIT_PER_GROUP);
+  }, [query, recent]);
+
+  const pushRecent = r => {
+    setRecent(prev => {
+      const next = [r, ...prev.filter(x => x.id !== r.id)].slice(0, RECENT_MAX);
+      saveRecent(next);
+      return next;
+    });
+  };
+
+  const close = () => { setOpen(false); setQuery(""); setActiveIdx(0); };
+
+  const trigger = (r, groupLabel) => {
+    if (r.destructive) {
+      setConfirm({
+        text: r.title + "？此操作不可撤销。",
+        onOk: () => {
+          if (r.id === "a05") { setRecent([]); saveRecent([]); setToast("已清空最近访问"); }
+          setConfirm(null);
+          close();
+        },
+      });
+      return;
+    }
+    if (r.action || groupLabel === "操作") {
+      setToast("已触发：" + r.title);
+    } else {
+      setToast("已跳转到 " + groupLabel + "：" + r.title);
+      pushRecent(r);
+    }
+    close();
+  };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>命令面板 / 全局搜索</h1>
+          <p class="sub">按 <span class="kbd">⌘</span><span class="kbd">K</span>（或 <span class="kbd">Ctrl</span><span class="kbd">K</span>）唤起 · 跨产品 / 订单 / 客户 / 操作 检索 · ↑↓ / Enter / Esc 全键盘</p>
+        </div>
+        <button class="btn primary" onClick=${() => { setOpen(true); setQuery(""); setActiveIdx(0); }}>
+          打开搜索
+        </button>
+      </header>
+
+      <div class="launcher">
+        <h2>四个分组 · 键盘可达 · 空关键字回显最近访问</h2>
+        <div class="row">
+          <span>命中项按 <b>产品 / 订单 / 客户 / 操作</b> 分组显示，每组最多 ${LIMIT_PER_GROUP} 条；</span>
+          <span>「操作」组里带红字的「清空最近访问」是<b>破坏性操作</b>，会先弹确认。</span>
+        </div>
+        <div class="row">
+          <span>当前「最近访问」共 <b>${recent.length}</b> 条${recent.length > 0 ? "（存在 localStorage，刷新页面仍在）" : "（选中任意资源即写入）"}</span>
+        </div>
+      </div>
+
+      ${open && html`<${Palette}
+        query=${query} setQuery=${setQuery} groups=${groups}
+        activeIdx=${activeIdx} setActiveIdx=${setActiveIdx}
+        onSelect=${trigger} onClose=${close} />`}
+
+      ${confirm && html`<${Confirm} text=${confirm.text} onOk=${confirm.onOk} onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

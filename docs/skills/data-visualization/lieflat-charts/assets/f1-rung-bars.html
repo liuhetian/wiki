@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lieflat Charts — F1 梯级柱状图</title>
+<style>
+  :root {
+    --paper: #F0EFEB;
+    --ink: #1C1C1A;
+    --muted: #8F8E88;
+    --faint: #C6C5BF;
+    --grid: #DEDDD6;
+  }
+  * { box-sizing: border-box; }
+  html, body { min-height: 100%; margin: 0; }
+  body {
+    display: grid;
+    place-items: center;
+    padding: 28px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .card {
+    width: min(100%, 760px);
+    min-height: 520px;
+    padding: 38px 42px 24px;
+    border-radius: 24px;
+    background: var(--paper);
+  }
+  .badge {
+    display: inline-block;
+    margin-bottom: 13px;
+    padding: 4px 11px;
+    border: 1px dashed #B0AFA9;
+    border-radius: 99px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+  }
+  h2 {
+    margin: 0 0 5px;
+    font-size: clamp(19px, 3vw, 27px);
+    font-weight: 700;
+    letter-spacing: -.03em;
+  }
+  .sub {
+    margin-bottom: 18px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    max-height: 350px;
+    margin: 0 auto;
+  }
+  svg text { font-family: inherit; }
+  .src {
+    margin-top: 10px;
+    color: var(--faint);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: .1em;
+  }
+  .hint {
+    float: right;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: .04em;
+  }
+  .fade { animation: fade .9s cubic-bezier(.165,.84,.44,1) both; }
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(5px); }
+  }
+  @media (max-width: 560px) {
+    body { padding: 10px; }
+    .card { min-height: 500px; padding: 26px 18px 20px; }
+    .hint { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fade { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<main class="card">
+  <span class="badge">LUPI BASICS · F1</span>
+  <h2>免费版仍是收入升级的最大入口</h2>
+  <div class="sub">一根横档 = $1k MRR · 侧边圆点标记每第五档 · 2026 Q2</div>
+  <svg id="rungs" viewBox="0 0 400 320" role="img"
+       aria-label="六种方案的月度经常性收入梯级柱状图"></svg>
+  <div class="src">
+    RUNG BARS · MONO-BASIC · BILLING
+    <span class="hint">点击图表重播</span>
+  </div>
+</main>
+<script>
+const DATA = [
+  ['FREE', 38],
+  ['STARTER', 27],
+  ['PRO', 22],
+  ['TEAM', 16],
+  ['SCALE', 11],
+  ['ENT', 7]
+];
+
+const INK = '#1C1C1A';
+const MUTED = '#8F8E88';
+const GRID = '#DEDDD6';
+const NS = 'http://www.w3.org/2000/svg';
+
+const el = (parent, tag, attrs) => {
+  const node = document.createElementNS(NS, tag);
+  for (const key in attrs) node.setAttribute(key, attrs[key]);
+  parent.appendChild(node);
+  return node;
+};
+
+const txt = (parent, attrs, value) => {
+  const node = el(parent, 'text', attrs);
+  node.textContent = value;
+  return node;
+};
+
+const tip = (node, value) => {
+  const title = document.createElementNS(NS, 'title');
+  title.textContent = value;
+  node.appendChild(title);
+};
+
+const rnd = (i, k) =>
+  Math.abs(((i * 73856093) ^ (k * 19349663)) % 1000) / 1000;
+
+function render(svg) {
+  svg.innerHTML = '';
+  const x0 = i => 56 + i * 56;
+  const base = 266;
+  const step = 5.6;
+  const halfWidth = 14;
+
+  DATA.forEach(([name, value], i) => {
+    const x = x0(i);
+
+    for (let k = 0; k < value; k++) {
+      const y = base - k * step;
+      const width = halfWidth - 1.5 + rnd(k + 1, i + 2) * 3;
+      el(svg, 'line', {
+        x1: x - width,
+        y1: y,
+        x2: x + width,
+        y2: y,
+        stroke: INK,
+        'stroke-width': 1,
+        opacity: .5 + rnd(k + 2, i + 4) * .5,
+        class: 'fade',
+        style: `animation-delay:${i * .08 + k * .012}s`
+      });
+
+      if (k % 5 === 4) {
+        el(svg, 'circle', {
+          cx: x + halfWidth + 4.5,
+          cy: y,
+          r: .8,
+          fill: '#C6C5BF',
+          class: 'fade',
+          style: `animation-delay:${i * .08 + k * .012}s`
+        });
+      }
+    }
+
+    const topY = base - (value - 1) * step;
+    const number = txt(svg, {
+      x,
+      y: topY - 10,
+      'font-size': 11,
+      'font-weight': 800,
+      fill: INK,
+      'text-anchor': 'middle',
+      class: 'fade',
+      style: `animation-delay:${.4 + i * .08}s`
+    }, value);
+    tip(number, `${name} — $${value}k MRR`);
+
+    txt(svg, {
+      x,
+      y: base + 18,
+      'font-size': 7.5,
+      'font-weight': 700,
+      fill: MUTED,
+      'text-anchor': 'middle',
+      'letter-spacing': '.08em',
+      class: 'fade',
+      style: `animation-delay:${i * .08}s`
+    }, name);
+  });
+
+  el(svg, 'line', {
+    x1: 28,
+    y1: base + 4,
+    x2: 372,
+    y2: base + 4,
+    stroke: GRID,
+    'stroke-width': .8,
+    class: 'fade'
+  });
+
+  txt(svg, {
+    x: 200,
+    y: 306,
+    'font-size': 7,
+    'font-weight': 600,
+    fill: '#B0AFA9',
+    'text-anchor': 'middle',
+    'letter-spacing': '.12em',
+    class: 'fade',
+    style: 'animation-delay:.9s'
+  }, 'ONE RUNG = $1K · DOT MARKS EVERY FIFTH');
+}
+
+const chart = document.getElementById('rungs');
+const observer = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) {
+    render(chart);
+    observer.disconnect();
+  }
+}, { threshold: .3 });
+
+observer.observe(chart);
+chart.style.cursor = 'pointer';
+chart.addEventListener('click', () => render(chart));
+</script>
+</body>
+</html>

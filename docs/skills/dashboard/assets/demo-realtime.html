@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：实时刷新</title>
+<!--
+  demo-realtime.html —— 「实时刷新」形状的最小可玩实现（蓝本：open-dashboard 的 useLiveQuery + realtime.tsx）。
+  复现的不变量：
+  - 实时刷新是「取数节奏」的差异，不改数据层：demo 用 setInterval 模拟服务端推送，
+    真实版换 refetchInterval / EventSource / WebSocket，UI 绑定和数据 shape 不变
+  - 连接状态显式：绿灯+「已连接」/ 灰灯+「已暂停」；暂停必须真的停订阅（refetchInterval:false 或 es.close()）
+  - 新数据合并进现有列表最前，不整体覆盖当前视图（真实版用 queryClient.setQueryData 走同一份缓存）
+  - 列表最多保留 20 条，超出上限的旧行自动丢弃；新行入场用 CSS 动画短暂高亮再淡出
+  - 「手动注入一条」不依赖轮询节奏就能演示效果；用户显式动作要 toast
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 999px; background: var(--chip-off-fg); }
+  .dot.on { background: var(--chip-on-fg); animation: rt-pulse 1.6s ease-out infinite; }
+  @keyframes rt-pulse {
+    0%   { box-shadow: 0 0 0 0    rgba(95, 202, 134, .55); }
+    100% { box-shadow: 0 0 0 7px  rgba(95, 202, 134, 0); }
+  }
+  .feed { list-style: none; margin: 0; padding: 0; }
+  .feedrow { display: grid; grid-template-columns: 70px 1fr 92px 96px 76px;
+             align-items: center; gap: 10px; padding: 9px 12px;
+             border-bottom: 1px solid var(--border); background: transparent;
+             animation: rt-freshfade 1.6s ease-out; }
+  .feedrow:last-child { border-bottom: 0; }
+  @keyframes rt-freshfade {
+    0%   { background: var(--chip-on-bg); }
+    100% { background: transparent; }
+  }
+  .oid { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; }
+  .who { font-weight: 550; }
+  .plan { color: var(--muted); font-size: 12px; }
+  .amt { text-align: right; font-variant-numeric: tabular-nums; font-weight: 550; }
+  .when { text-align: right; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .ctrl { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const MAX_ROWS = 20;
+const TICK_MS = 2500; // 每 2.5 秒模拟一次服务端推送
+
+const WHO = ["林之远", "沈照澜", "顾轻舟", "陆望舒", "叶南絮", "秦知微",
+             "江晚晴", "苏既白", "孟疏影", "裴青梧", "温晏辞", "霍砚舟"];
+const PLAN = ["专业版", "团队版", "免费版"];
+
+let seq = 1042;
+function makeOrder() {
+  seq += 1;
+  return {
+    id: seq,
+    who: WHO[Math.floor(Math.random() * WHO.length)],
+    plan: PLAN[Math.floor(Math.random() * PLAN.length)],
+    amount: Math.round(30 + Math.random() * 470),
+    at: Date.now(),
+  };
+}
+
+function ago(from, now) {
+  const s = Math.max(0, Math.round((now - from) / 1000));
+  if (s < 5) return "刚刚";
+  if (s < 60) return s + " 秒前";
+  const m = Math.round(s / 60);
+  return m + " 分前";
+}
+
+function App() {
+  const [rows, setRows] = useState([]);
+  const [live, setLive] = useState(true);
+  const [received, setReceived] = useState(0);
+  const [toast, setToast] = useState("");
+  const [now, setNow] = useState(Date.now());
+
+  // 「服务端推送」：demo 用 setInterval 模拟。真实版换 EventSource / WebSocket，
+  // onmessage 里走 queryClient.setQueryData 合并进同一份缓存，UI 绑定不变。
+  useEffect(() => {
+    if (!live) return;
+    const t = setInterval(pushOne, TICK_MS);
+    return () => clearInterval(t);
+  }, [live]);
+
+  // 「Ns 前」标签靠 1 秒心跳重渲染，不依赖新数据到达。
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 1800);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  function pushOne() {
+    const o = makeOrder();
+    setRows(prev => [o, ...prev].slice(0, MAX_ROWS));  // 前插 + 尾部丢弃
+    setReceived(n => n + 1);
+  }
+
+  function toggleLive() {
+    const next = !live;
+    setLive(next);
+    setToast(next ? "已恢复订阅" : "已暂停订阅");
+  }
+
+  function inject() {
+    pushOne();
+    setToast("已手动注入一条");
+  }
+
+  const lastAt = rows.length > 0 ? rows[0].at : null;
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>订单实时流</h1>
+          <p class="sub">demo 用 setInterval 每 ${TICK_MS / 1000} 秒推送一条 · 真实版换 SSE / WebSocket，UI 绑定不变</p>
+        </div>
+        <div class="ctrl">
+          <span class="status">
+            <span class=${"dot" + (live ? " on" : "")}></span>
+            ${live ? "已连接" : "已暂停"}
+          </span>
+          <button class="btn sm" onClick=${toggleLive}>${live ? "暂停" : "恢复"}</button>
+          <button class="btn sm" onClick=${inject}>手动注入一条</button>
+        </div>
+      </header>
+
+      <div class="stats">
+        <div class="card stat">
+          <p class="stat-label">累计接收</p>
+          <p class="stat-value">${received}</p>
+          <p class="stat-delta">${live ? "订阅活跃" : "订阅已暂停"}</p>
+        </div>
+        <div class="card stat">
+          <p class="stat-label">当前列表</p>
+          <p class="stat-value">${rows.length} / ${MAX_ROWS}</p>
+          <p class="stat-delta">超过上限的旧行自动丢弃</p>
+        </div>
+        <div class="card stat">
+          <p class="stat-label">最新一条</p>
+          <p class="stat-value" style=${{ fontSize: 17 }}>${lastAt ? ago(lastAt, now) : "—"}</p>
+          <p class="stat-delta">${lastAt ? new Date(lastAt).toLocaleTimeString("zh-CN") : "等待推送…"}</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <ul class="feed">
+          ${rows.length === 0 && html`<li class="empty">等待推送…（或点右上「手动注入一条」立即演示）</li>`}
+          ${rows.map(r => html`
+            <li key=${r.id} class="feedrow">
+              <span class="oid">#${r.id}</span>
+              <span>
+                <span class="who">${r.who}</span>
+                <span class="plan"> · ${r.plan}</span>
+              </span>
+              <span class="chip chip-on">新订单</span>
+              <span class="amt">¥${r.amount}</span>
+              <span class="when">${ago(r.at, now)}</span>
+            </li>`)}
+        </ul>
+      </div>
+
+      <footer class="pager">
+        <span>连接状态：${live ? "已连接（每 " + (TICK_MS / 1000) + " 秒一条）" : "已暂停 —— 暂停时真实版会 es.close() / refetchInterval:false"}</span>
+        <span>累计接收 ${received} 条</span>
+      </footer>
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+/* ============================================================
+   报纸版设计系统 (newspaper-style)
+   暖米纸面 · 粗黑分割线 · 宋体大标题 · 强对比 · 可打印
+   用法：<link rel="stylesheet" href=".../newspaper.css">
+   配合 newspaper.js 可启用自定义下拉 / 复制链接 / 加载遮罩组件。
+   ============================================================ */
+
+/* ---- 设计令牌 ---- */
+:root {
+    --paper: #f3efe4;  /* 暖米色纸张背景 */
+    --ink: #151515;    /* 主文字与粗线 */
+    --muted: #595247;  /* 报头元信息、栏目 kicker */
+    --body: #2e2a24;   /* 正文色，比纯黑柔和 */
+    --accent: #8a2f1b; /* 强调色（章节编号 / 少量重点） */
+}
+
+/* ---- 基础 ---- */
+* { box-sizing: border-box; }
+
+html,
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Songti SC", "Noto Serif CJK SC", "STSong", Georgia, serif;
+}
+
+/* 列向 flex，配合 .page 的四向 auto margin 实现版心上下居中 */
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---- 版心 ---- */
+.page {
+    width: min(1120px, calc(100% - 40px));
+    /* 四向 auto：内容比视口短时上下左右居中，超高时也不裁切顶部 */
+    margin: auto;
+    padding: 24px 0 36px;
+}
+
+/* ---- 报头 ---- */
+.masthead {
+    border-top: 4px solid var(--ink);
+    border-bottom: 4px solid var(--ink);
+    padding: 22px 0 24px;
+}
+
+.masthead .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+}
+
+.masthead h1 {
+    margin: 24px 0 0;
+    max-width: 900px;
+    font-size: clamp(40px, 8vw, 88px);
+    line-height: 0.95;
+    font-weight: 900;
+    letter-spacing: 0;
+}
+
+.masthead .subtitle {
+    margin: 16px 0 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--body);
+}
+
+/* ---- 栏目条 ---- */
+.kicker {
+    margin: 28px 0 20px;
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    padding: 8px 0;
+    color: var(--muted);
+    text-align: center;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.26em;
+}
+
+/* ---- 区块分割线 ---- */
+.section-rule { border-bottom: 4px solid var(--ink); padding: 26px 0; }
+.part { border-bottom: 4px solid var(--ink); padding-bottom: 24px; }
+.part-number { color: var(--accent); font-size: 14px; font-weight: 900; letter-spacing: 0.24em; }
+
+/* ---- 社论摘句 ---- */
+.core-left {
+    margin-top: 22px;
+    border-left: 8px solid var(--ink);
+    padding-left: 16px;
+    font-size: 22px;
+    line-height: 1.55;
+    font-weight: 900;
+}
+.core-invert {
+    margin-top: 22px;
+    border: 2px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 16px;
+    font-size: 22px;
+    line-height: 1.55;
+    font-weight: 900;
+}
+
+/* ---- 按钮（padding/font-size 可在使用处覆盖）---- */
+.btn {
+    border: 2px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    padding: 9px 18px;
+    font-size: 15px;
+    font-weight: 900;
+    font-family: inherit;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.btn:hover { background: var(--ink); color: var(--paper); }
+.btn-solid { background: var(--ink); color: var(--paper); }
+.btn-solid:hover { background: var(--paper); color: var(--ink); }
+.btn.disabled {
+    background: var(--paper);
+    color: var(--muted);
+    border-color: var(--muted);
+    cursor: not-allowed;
+}
+
+/* ---- 徽标 ---- */
+.badge {
+    display: inline-block;
+    border: 2px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2px 10px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    margin-left: 8px;
+}
+
+/* ---- 信息框（不是现代卡片：方角、无阴影）---- */
+.card { border: 2px solid var(--ink); padding: 16px 18px; }
+
+/* ---- 空状态 ---- */
+.no-data {
+    border: 2px solid var(--ink);
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 18px;
+    font-weight: 800;
+}
+.no-data .hint { font-size: 15px; font-weight: 800; color: var(--muted); margin-top: 10px; }
+
+/* ============================================================
+   组件 1：复制提示 toast（配合 newspaper.js）
+   ============================================================ */
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 32px;
+    transform: translateX(-50%);
+    border: 2px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1000;
+}
+.toast.show { opacity: 1; }
+
+/* ============================================================
+   组件 2：自定义下拉（配合 newspaper.js）
+   原生 <select class="np-select"> 作为数据源与无 JS 兜底；
+   JS 启用后隐藏它、生成 .custom-select 列表。
+   需在 <head> 尽早执行 document.documentElement.className += ' js'。
+   ============================================================ */
+.js select.np-select { display: none; }
+
+.custom-select { position: relative; width: 100%; }
+
+.custom-select .cs-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    text-align: left;
+    cursor: pointer;
+}
+.custom-select.open .cs-trigger { border-color: var(--accent); }
+
+.custom-select .cs-arrow {
+    flex: none;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 7px solid var(--ink);
+}
+.custom-select.open .cs-arrow { transform: rotate(180deg); }
+
+.custom-select .cs-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% - 2px);
+    z-index: 30;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 2px solid var(--ink);
+    background: var(--paper);
+    max-height: 280px;
+    overflow-y: auto;
+    display: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ink) var(--paper);
+}
+.custom-select.open .cs-menu { display: block; }
+
+.custom-select .cs-menu::-webkit-scrollbar { width: 12px; }
+.custom-select .cs-menu::-webkit-scrollbar-track { background: var(--paper); border-left: 2px solid var(--ink); }
+.custom-select .cs-menu::-webkit-scrollbar-thumb { background: var(--ink); border: 2px solid var(--paper); }
+.custom-select .cs-menu::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+.custom-select .cs-option {
+    padding: 10px 12px;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--body);
+    cursor: pointer;
+    border-bottom: 1px solid rgba(21, 21, 21, 0.15);
+}
+.custom-select .cs-option:last-child { border-bottom: none; }
+.custom-select .cs-option.selected { color: var(--accent); }
+.custom-select .cs-option:hover,
+.custom-select .cs-option.active { background: var(--ink); color: var(--paper); }
+
+/* ============================================================
+   组件 3：加载遮罩（配合 newspaper.js）
+   把内容放进 .np-loading-region（相对定位容器），
+   内置一个 .loading-overlay，切换/提交时加 .show。
+   ============================================================ */
+.np-loading-region { position: relative; min-height: 160px; }
+
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(243, 239, 228, 0.88);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+.loading-overlay.show { display: flex; }
+
+.loading-box { border: 2px solid var(--ink); background: var(--paper); padding: 24px 32px; text-align: center; }
+.loading-box .label { font-size: 18px; font-weight: 900; letter-spacing: 0.2em; color: var(--ink); margin-bottom: 14px; }
+.loading-bar { width: 220px; height: 10px; border: 2px solid var(--ink); overflow: hidden; }
+.loading-bar::before {
+    content: "";
+    display: block;
+    width: 40%;
+    height: 100%;
+    background: var(--ink);
+    animation: loading-slide 1s linear infinite;
+}
+@keyframes loading-slide {
+    0% { transform: translateX(-110%); }
+    100% { transform: translateX(275%); }
+}
+
+/* ---- 响应式：860px 断点，多列变单列、保留粗线 ---- */
+@media (max-width: 860px) {
+    .page { width: calc(100% - 28px); }
+}

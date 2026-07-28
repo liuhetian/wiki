@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：搜索下拉</title>
+<!--
+  demo-combobox.html —— 「搜索下拉」形状的最小可玩实现（蓝本：open-dashboard 的 ComboboxField + form-combobox）。
+  复现的不变量：
+  - 字段契约与 TextField/SelectField 一致：label / 错误位 / 值一个形状；选中即写值并关闭弹层
+  - 弹出层 = 过滤输入框 + 选项列表；键盘可达：↑↓ 移动高亮、Enter 选中、Esc 关闭并归还焦点
+  - 高亮（aria-activedescendant）与选中（表单值）是两回事：高亮随过滤收窄自动回位，打开时停在当前选中项
+  - 点弹层外任意处关闭；无匹配有空态；已选项在触发器回显、可一键清除
+  - 异步变体：过滤词驱动请求（300ms 定时器兼作防抖与模拟延迟，新键入丢弃过期响应），加载中有 loading 态
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .form-card { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field > label { font-size: 12px; color: var(--muted); }
+  .req { color: var(--danger); }
+
+  .cb { position: relative; }
+  .cb-trigger { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px;
+                padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px;
+                background: var(--card); color: var(--fg); font: inherit; cursor: pointer; text-align: left; }
+  .cb-trigger:focus-visible { outline: 2px solid var(--primary); outline-offset: -1px; }
+  .cb-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cb-value.muted { color: var(--muted); }
+  .cb-caret { color: var(--muted); font-size: 11px; }
+  .cb-clear { position: absolute; top: 50%; right: 30px; transform: translateY(-50%);
+              border: 0; background: none; color: var(--muted); font-size: 15px; line-height: 1;
+              cursor: pointer; padding: 2px 5px; border-radius: 6px; }
+  .cb-clear:hover { color: var(--fg); }
+  .cb-pop { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 10;
+            background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.16); overflow: hidden; }
+  .cb-search { display: flex; align-items: center; gap: 6px; padding: 7px 10px;
+               border-bottom: 1px solid var(--border); color: var(--muted); }
+  .cb-search input { flex: 1; border: 0; padding: 0; background: none; border-radius: 0; }
+  .cb-search input:focus { outline: none; }
+  .cb-list { max-height: 186px; overflow-y: auto; padding: 4px; }
+  .cb-option { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px;
+               border: 0; background: none; color: var(--fg); font: inherit; text-align: left;
+               padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+  .cb-option.active { background: var(--chip-off-bg); }
+  .cb-check { color: var(--primary); font-size: 12px; }
+  .cb-empty { padding: 18px 10px; text-align: center; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+
+const COUNTRIES = [
+  { value: "cn", label: "中国" },      { value: "jp", label: "日本" },
+  { value: "kr", label: "韩国" },      { value: "sg", label: "新加坡" },
+  { value: "th", label: "泰国" },      { value: "in", label: "印度" },
+  { value: "id", label: "印度尼西亚" },{ value: "de", label: "德国" },
+  { value: "fr", label: "法国" },      { value: "gb", label: "英国" },
+  { value: "it", label: "意大利" },    { value: "es", label: "西班牙" },
+  { value: "us", label: "美国" },      { value: "ca", label: "加拿大" },
+  { value: "mx", label: "墨西哥" },    { value: "br", label: "巴西" },
+  { value: "au", label: "澳大利亚" },  { value: "za", label: "南非" },
+];
+const OWNERS = [
+  { value: "u01", label: "陈禾（增长组）" },   { value: "u02", label: "李慕白（增长组）" },
+  { value: "u03", label: "王小满（渠道组）" }, { value: "u04", label: "赵青（渠道组）" },
+  { value: "u05", label: "周芷（大客户组）" }, { value: "u06", label: "吴限（大客户组）" },
+  { value: "u07", label: "郑舟（增长组）" },   { value: "u08", label: "冯霁（客服组）" },
+  { value: "u09", label: "褚遂（客服组）" },   { value: "u10", label: "卫疏（渠道组）" },
+  { value: "u11", label: "蒋声（大客户组）" }, { value: "u12", label: "沈砚（增长组）" },
+  { value: "u13", label: "韩澈（渠道组）" },   { value: "u14", label: "杨湜（客服组）" },
+];
+// 「服务端」查询：按关键字过滤成员，真实版换成数据请求
+const searchOwners = q => {
+  const kw = q.trim().toLowerCase();
+  return OWNERS.filter(o => !kw || o.label.toLowerCase().includes(kw));
+};
+
+// 可搜索单选。同步模式传 options（内存过滤）；异步模式传 searchFn（模拟 300ms 请求）。
+// 高亮（activeIndex，即 aria-activedescendant）与选中（selected，写回表单的值）是两回事。
+function Combobox({ name, placeholder, selected, onChange, options, searchFn, emptyText = "没有匹配项" }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [remote, setRemote] = useState({ items: [], loading: false });
+  const rootRef = useRef(null);
+  const triggerRef = useRef(null);
+  const listRef = useRef(null);
+
+  const isAsync = !!searchFn;
+  const localItems = useMemo(() => {
+    const kw = query.trim().toLowerCase();
+    return (options || []).filter(o => !kw || o.label.toLowerCase().includes(kw));
+  }, [options, query]);
+  const items = isAsync ? remote.items : localItems;
+  const loading = isAsync && remote.loading;
+
+  // 异步加载：300ms 定时器既是模拟网络延迟也是防抖——新键入清掉上一次，天然丢弃过期响应
+  useEffect(() => {
+    if (!isAsync || !open) return;
+    setRemote(r => ({ items: r.items, loading: true }));
+    const t = setTimeout(() => {
+      const list = searchFn(query);
+      setRemote({ items: list, loading: false });
+      if (!query && selected) { // 初次打开：高亮停在已选项上
+        const i = list.findIndex(o => o.value === selected.value);
+        if (i >= 0) setActiveIndex(i);
+      }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [isAsync, open, query]);
+
+  // 过滤收窄后高亮越界则回到顶部；高亮移动时滚到可见处
+  useEffect(() => {
+    if (activeIndex > items.length - 1) setActiveIndex(0);
+  }, [items.length, activeIndex]);
+  useEffect(() => {
+    if (!open || !listRef.current) return;
+    const el = listRef.current.querySelector('[data-active="true"]');
+    if (el) el.scrollIntoView({ block: "nearest" });
+  }, [activeIndex, open, items]);
+
+  const close = refocus => {
+    setOpen(false);
+    setQuery("");
+    if (refocus && triggerRef.current) triggerRef.current.focus();
+  };
+  const openPop = () => {
+    setQuery("");
+    const i = (options || []).findIndex(o => selected && o.value === selected.value);
+    setActiveIndex(i >= 0 ? i : 0);
+    setOpen(true);
+  };
+  const select = option => { onChange(option); close(true); }; // 选中即写值并关闭
+
+  // 点弹层外任意处关闭
+  useEffect(() => {
+    if (!open) return;
+    const onDown = e => { if (rootRef.current && !rootRef.current.contains(e.target)) close(false); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  const onInputKeyDown = e => {
+    if (e.key === "ArrowDown") { e.preventDefault(); setActiveIndex(i => Math.min(i + 1, items.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActiveIndex(i => Math.max(i - 1, 0)); }
+    else if (e.key === "Enter") { e.preventDefault(); const o = items[activeIndex]; if (o) select(o); }
+    else if (e.key === "Escape") { e.preventDefault(); close(true); }
+    else if (e.key === "Tab") close(false);
+  };
+
+  const listboxId = name + "-listbox";
+  const optionId = i => name + "-option-" + i;
+
+  return html`
+    <div class="cb" ref=${rootRef}>
+      <button type="button" class="cb-trigger" id=${name} ref=${triggerRef}
+              aria-haspopup="listbox" aria-expanded=${open}
+              onClick=${() => (open ? close(false) : openPop())}
+              onKeyDown=${e => {
+                if (!open && e.key === "ArrowDown") { e.preventDefault(); openPop(); }
+                else if (open && e.key === "Escape") { e.preventDefault(); close(true); }
+              }}>
+        <span class=${"cb-value" + (selected ? "" : " muted")}>${selected ? selected.label : placeholder}</span>
+        <span class="cb-caret" aria-hidden="true">▾</span>
+      </button>
+      ${selected && html`
+        <button type="button" class="cb-clear" aria-label="清除已选"
+                onClick=${() => { onChange(null); if (triggerRef.current) triggerRef.current.focus(); }}>×</button>`}
+      ${open && html`
+        <div class="cb-pop">
+          <div class="cb-search">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <input autoFocus value=${query} placeholder="输入关键字过滤…"
+                   role="combobox" aria-expanded=${open} aria-controls=${listboxId} aria-autocomplete="list"
+                   aria-activedescendant=${items[activeIndex] ? optionId(activeIndex) : undefined}
+                   onChange=${e => { setQuery(e.target.value); setActiveIndex(0); }}
+                   onKeyDown=${onInputKeyDown} />
+          </div>
+          <div class="cb-list" id=${listboxId} role="listbox" ref=${listRef}>
+            ${loading && html`<div class="cb-empty">加载中…</div>`}
+            ${!loading && items.length === 0 && html`<div class="cb-empty">${emptyText}</div>`}
+            ${!loading && items.map((o, i) => html`
+              <button type="button" key=${o.value} id=${optionId(i)} role="option"
+                      aria-selected=${!!selected && o.value === selected.value}
+                      data-active=${i === activeIndex ? "true" : "false"}
+                      class=${"cb-option" + (i === activeIndex ? " active" : "")}
+                      onClick=${() => select(o)} onMouseEnter=${() => setActiveIndex(i)}>
+                <span class="cb-value">${o.label}</span>
+                ${!!selected && o.value === selected.value && html`<span class="cb-check" aria-hidden="true">✓</span>`}
+              </button>`)}
+          </div>
+        </div>`}
+    </div>`;
+}
+
+function App() {
+  const [country, setCountry] = useState(null);
+  const [owner, setOwner] = useState(null);
+  const [errs, setErrs] = useState({});
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const submit = () => {
+    const e = {};
+    if (!country) e.country = "请选择国家 / 地区";
+    if (!owner) e.owner = "请选择负责人";
+    setErrs(e);
+    if (Object.keys(e).length > 0) return;
+    setToast(`已保存：${country.label} · ${owner.label}`);
+  };
+  const reset = () => { setCountry(null); setOwner(null); setErrs({}); };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>新建客户</h1>
+          <p class="sub">两个可搜索单选：左侧同步选项（内存过滤），右侧模拟 300ms 异步加载</p>
+        </div>
+      </header>
+
+      <div class="card form-card">
+        <div class="row2">
+          <div class="field">
+            <label htmlFor="country">国家 / 地区 <span class="req">*</span></label>
+            <${Combobox} name="country" placeholder="选择国家 / 地区…" options=${COUNTRIES}
+                         selected=${country} onChange=${o => { setCountry(o); setErrs(s => ({ ...s, country: null })); }} />
+            ${errs.country && html`<p class="err">${errs.country}</p>`}
+          </div>
+          <div class="field">
+            <label htmlFor="owner">负责人（异步） <span class="req">*</span></label>
+            <${Combobox} name="owner" placeholder="搜索并选择负责人…" searchFn=${searchOwners}
+                         emptyText="没有匹配的成员"
+                         selected=${owner} onChange=${o => { setOwner(o); setErrs(s => ({ ...s, owner: null })); }} />
+            ${errs.owner && html`<p class="err">${errs.owner}</p>`}
+          </div>
+        </div>
+        <p class="sub">当前表单值：country = ${country ? country.value : "—"} · owner = ${owner ? owner.value : "—"}</p>
+        <div class="actions">
+          <button class="btn" onClick=${reset}>重置</button>
+          <button class="btn primary" onClick=${submit}>保存</button>
+        </div>
+      </div>
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

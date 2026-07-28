@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LINE//SYSTEM — 工业线性视觉提示词实验室</title>
+  <style>
+    :root {
+      --bg:#e7e6df; --ink:#151916; --muted:#687068; --accent:#ff4d23;
+      --panel:rgba(255,255,255,.14); --hair:rgba(21,25,22,.62);
+      --shadow:rgba(21,25,22,.12); --radius:0px;
+      --mono:"SFMono-Regular","Roboto Mono","IBM Plex Mono","Noto Sans Mono",monospace;
+      --sans:Inter,"Helvetica Neue","Noto Sans SC",Arial,sans-serif;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:#111;color:#eee;font-family:var(--mono);font-size:12px}
+    button{font:inherit}
+    .shell{min-height:100vh;background:#111}
+    .topbar{height:52px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #343434;position:sticky;top:0;background:rgba(17,17,17,.94);backdrop-filter:blur(16px);z-index:20}
+    .brand{display:flex;gap:12px;align-items:center;letter-spacing:.14em;font-weight:700}
+    .brand-mark{width:16px;height:16px;border:1px solid #a7ff21;position:relative;transform:rotate(45deg)}
+    .brand-mark:after{content:"";position:absolute;inset:4px;background:#a7ff21}
+    .top-meta{color:#858585;font-size:10px;letter-spacing:.12em}
+    .topnav{display:flex;gap:4px}.topnav a{color:#999;text-decoration:none;padding:7px 10px;border:1px solid transparent;font-size:8px;letter-spacing:.12em}.topnav a:hover{color:#a7ff21;border-color:#3b3b3b}
+    .layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.65fr);min-height:calc(100vh - 52px)}
+    .workspace{padding:30px;background:#181818;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+    .workspace:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#242424 1px,transparent 1px),linear-gradient(90deg,#242424 1px,transparent 1px);background-size:32px 32px;opacity:.7}
+    .artboard{--pad:5.5%;aspect-ratio:1/1;width:min(100%,780px);background:var(--bg);color:var(--ink);position:relative;overflow:hidden;box-shadow:0 24px 80px #0008;transition:background .35s,color .35s;isolation:isolate}
+    .grain{pointer-events:none;position:absolute;inset:0;z-index:10;opacity:.12;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E")}
+    .scan{position:absolute;z-index:9;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 12px var(--accent);animation:scan 5s linear infinite;opacity:.45}
+    @keyframes scan{from{top:-2%}to{top:102%}}
+    .corner{position:absolute;width:22px;height:22px;z-index:2}
+    .corner:before,.corner:after{content:"";position:absolute;background:var(--hair)}
+    .corner:before{width:22px;height:1px}.corner:after{width:1px;height:22px}
+    .c1{top:var(--pad);left:var(--pad)}.c2{top:var(--pad);right:var(--pad);transform:rotate(90deg)}
+    .c3{bottom:var(--pad);right:var(--pad);transform:rotate(180deg)}.c4{bottom:var(--pad);left:var(--pad);transform:rotate(270deg)}
+    .poster{position:absolute;inset:var(--pad);padding:4.8% 4.6%;display:grid;grid-template-rows:auto 1fr auto;gap:5%;border:1px solid color-mix(in srgb,var(--hair) 70%,transparent)}
+    .poster-head{display:grid;grid-template-columns:1fr auto;align-items:start;border-bottom:1px solid var(--hair);padding-bottom:10px}
+    .eyebrow{font-size:9px;letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+    .eyebrow i{display:inline-block;width:8px;height:8px;border:1px solid currentColor;transform:rotate(45deg)}
+    .status{border:1px solid var(--hair);padding:2px 6px;border-radius:20px;font-size:8px}
+    .ruler{grid-column:1/-1;display:grid;grid-template-columns:repeat(18,1fr);margin-top:9px;color:var(--muted);font-size:6px;letter-spacing:0}
+    .ruler span{border-left:1px solid var(--hair);padding-top:5px;text-align:center}
+    .hero{display:grid;grid-template-columns:1.12fr .88fr;gap:8%;align-items:center;min-height:0}
+    .title-kicker{font-size:8px;letter-spacing:.46em;margin-bottom:3%;color:var(--muted)}
+    h1{font-family:var(--sans);font-weight:650;margin:0;font-size:clamp(38px,8vw,78px);letter-spacing:-.055em;line-height:.84;text-transform:uppercase}
+    h1 small{font-family:var(--mono);display:block;font-size:10px;letter-spacing:.24em;font-weight:400;margin-bottom:12px}
+    .accent-word{color:var(--accent)}
+    .hero-sub{margin:18px 0 0;max-width:32em;font-size:9px;line-height:1.6;color:var(--muted)}
+    .data-stack{display:grid;gap:8px;align-content:center}
+    .module{border:1px solid var(--hair);padding:10px;background:var(--panel);position:relative;min-height:62px}
+    .module-label{font-size:7px;letter-spacing:.12em;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:7px}
+    .big-code{font-family:var(--sans);font-size:30px;font-weight:700;letter-spacing:-.05em;line-height:1}
+    .micro-table{width:100%;border-collapse:collapse;font-size:6px;margin-top:8px}
+    .micro-table td{border-top:1px solid color-mix(in srgb,var(--hair) 60%,transparent);padding:3px 0}
+    .micro-table td:last-child{text-align:right}
+    .wave{width:100%;height:48px;display:block;overflow:visible}
+    .wave path{fill:none;stroke:currentColor;stroke-width:1.1;vector-effect:non-scaling-stroke;stroke-dasharray:360;animation:draw 3s ease-in-out infinite alternate}
+    .wave line{stroke:var(--hair);stroke-width:.5;vector-effect:non-scaling-stroke}
+    @keyframes draw{from{stroke-dashoffset:360}to{stroke-dashoffset:0}}
+    .poster-foot{display:grid;grid-template-columns:1.35fr .65fr;gap:7%;align-items:end;border-top:1px solid var(--hair);padding-top:11px}
+    .barcode{height:28px;display:flex;gap:2px;align-items:stretch;overflow:hidden}
+    .barcode i{display:block;background:currentColor;flex:0 0 auto}
+    .footnote{font-size:6px;line-height:1.5;color:var(--muted);text-align:right}
+    .radar{width:42px;height:42px;border:1px solid var(--hair);border-radius:50%;position:absolute;right:4.6%;bottom:13%;opacity:.7}
+    .radar:before,.radar:after{content:"";position:absolute;background:var(--hair)}
+    .radar:before{width:1px;top:-5px;bottom:-5px;left:50%}.radar:after{height:1px;left:-5px;right:-5px;top:50%}
+    .radar b{position:absolute;width:50%;height:50%;left:50%;top:0;border-left:1px solid var(--accent);transform-origin:left bottom;animation:radar 2.8s linear infinite}
+    @keyframes radar{to{transform:rotate(360deg)}}
+    .sidebar{background:#efeee8;color:#161916;border-left:1px solid #343434;display:flex;flex-direction:column;min-height:0}
+    .side-head{padding:25px;border-bottom:1px solid #bebdb7}
+    .side-head .num{font-size:10px;color:#797a75;letter-spacing:.14em}
+    .side-head h2{font-family:var(--sans);font-size:23px;letter-spacing:-.03em;margin:9px 0 6px}
+    .side-head p{margin:0;color:#6c6d68;line-height:1.55;font-size:10px}
+    .tabs{display:flex;border-bottom:1px solid #bebdb7;padding:0 16px}
+    .tab{border:0;background:transparent;padding:13px 10px;font-size:9px;letter-spacing:.12em;color:#767772;cursor:pointer;border-bottom:2px solid transparent}
+    .tab.active{color:#151915;border-bottom-color:#151915}
+    .pane{display:none;padding:20px 24px;overflow:auto;flex:1}.pane.active{display:block}
+    .section-label{font-size:8px;letter-spacing:.18em;color:#777872;margin:0 0 9px;text-transform:uppercase}
+    .prompt{white-space:pre-wrap;background:#191b19;color:#dedfd8;padding:16px;line-height:1.7;font-size:10px;min-height:190px;position:relative;border-left:3px solid var(--accent)}
+    .actions{display:flex;gap:8px;margin:12px 0 22px}
+    .btn{border:1px solid #aaa;background:transparent;color:#191b19;padding:9px 12px;cursor:pointer;letter-spacing:.08em;font-size:9px;transition:.2s}
+    .btn:hover{background:#191b19;color:#fff}.btn.primary{background:#191b19;color:#fff;border-color:#191b19}.btn.primary:hover{background:var(--accent);border-color:var(--accent);color:var(--ink)}
+    .themes{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:24px}
+    .swatch{height:42px;border:1px solid #aaa;cursor:pointer;position:relative;background:var(--sw)}
+    .swatch:after{content:"";position:absolute;left:7px;right:7px;bottom:7px;height:2px;background:var(--si)}
+    .swatch.active{outline:2px solid #111;outline-offset:2px}
+    .recipe{display:grid;grid-template-columns:25px 1fr;gap:10px;margin-bottom:14px;align-items:start}
+    .recipe b{width:25px;height:25px;border:1px solid #aaa;border-radius:50%;display:grid;place-items:center;font-size:8px}
+    .recipe h3{font-size:10px;margin:1px 0 5px;letter-spacing:.08em}.recipe p{font-size:9px;margin:0;line-height:1.55;color:#656660}
+    .tokens{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #bbb;border-left:1px solid #bbb}
+    .token{padding:12px;border-right:1px solid #bbb;border-bottom:1px solid #bbb}
+    .token b{display:block;font-size:15px;font-family:var(--sans);margin-top:5px}.token span{font-size:7px;color:#74756f;letter-spacing:.12em}
+    .toast{position:fixed;right:26px;bottom:26px;background:#a7ff21;color:#101310;padding:10px 14px;font-size:9px;letter-spacing:.1em;transform:translateY(70px);opacity:0;transition:.3s;z-index:30}.toast.show{transform:none;opacity:1}
+    .catalog{background:#e9e8e1;color:#181b18;padding:80px max(24px,5vw);border-top:1px solid #333}
+    .catalog.dark{background:#171917;color:#e9e9e2}
+    .catalog-head{display:grid;grid-template-columns:1fr minmax(260px,480px);gap:50px;align-items:end;margin-bottom:42px}
+    .catalog-index{font-size:9px;letter-spacing:.2em;color:#777;margin-bottom:12px}.catalog h2{font:650 clamp(34px,5vw,70px)/.95 var(--sans);letter-spacing:-.055em;margin:0}.catalog-lead{font-size:10px;line-height:1.75;color:#6d706a;margin:0}.dark .catalog-lead{color:#9da09b}
+    .asset-frame{border:1px solid currentColor;padding:10px;position:relative}.asset-frame:before{content:"SOURCE / ORIGINAL IMAGEGEN";position:absolute;top:-20px;left:0;font-size:7px;letter-spacing:.15em;color:#777}.asset-frame img{display:block;width:100%;height:auto}
+    .case-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:24px}.case-notes{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#aaa;border:1px solid #aaa}.case-note{background:#e9e8e1;padding:20px;min-height:150px}.case-note small{font-size:7px;letter-spacing:.15em;color:#777}.case-note h3{font:650 20px var(--sans);margin:10px 0}.case-note p{font-size:9px;line-height:1.6;color:#666;margin:0}
+    .atlas-layout{display:grid;grid-template-columns:.95fr 1.05fr;gap:35px;align-items:start}.dark .asset-frame{border-color:#555}
+    .component-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#494c49;border:1px solid #494c49}
+    .component-card{background:#202320;min-height:190px;padding:17px;position:relative;overflow:hidden}.component-card:after{content:attr(data-code);position:absolute;right:12px;top:12px;color:#777;font-size:7px}.component-card h3{font:500 11px var(--mono);letter-spacing:.1em;margin:0 0 18px}.component-card p{font-size:8px;line-height:1.5;color:#929690;position:absolute;left:17px;bottom:14px;margin:0;max-width:80%}
+    .mini-bar{height:48px;display:flex;gap:2px}.mini-bar i{background:#dfe1d8;width:var(--w)}
+    .mini-radar{width:82px;height:82px;border:1px solid #c6c9c1;border-radius:50%;position:relative;margin:auto}.mini-radar i{position:absolute;border:1px solid #777;border-radius:50%;inset:18px}.mini-radar:before,.mini-radar:after{content:"";position:absolute;background:#777}.mini-radar:before{height:1px;left:-8px;right:-8px;top:50%}.mini-radar:after{width:1px;top:-8px;bottom:-8px;left:50%}
+    .mini-wave{width:100%;height:70px}.mini-wave path{stroke:#a7ff21;fill:none;stroke-width:1}.mini-wave line{stroke:#515551;stroke-width:.5}
+    .mini-table{width:100%;border-collapse:collapse;font-size:6px}.mini-table td{border:1px solid #686c68;padding:4px}.mini-table td:last-child{color:#a7ff21;text-align:right}
+    .mini-ruler{height:70px;border-top:1px solid #ddd;margin-top:34px;display:flex;justify-content:space-between}.mini-ruler i{height:14px;border-left:1px solid #ddd;position:relative}.mini-ruler i:nth-child(3n){height:24px}.mini-ruler i:after{content:attr(data-n);position:absolute;top:28px;left:-4px;font-size:6px;color:#999}
+    .matrix{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;width:82px;height:82px}.matrix i{background:#dfe1d8}.matrix i.off{opacity:.08}
+    .symbols{display:flex;gap:14px;align-items:center;margin-top:34px}.symbols i{width:24px;height:24px;border:1px solid #dfe1d8}.symbols i:nth-child(1){border-radius:50%}.symbols i:nth-child(2){transform:rotate(45deg)}.symbols i:nth-child(3){clip-path:polygon(50% 0,100% 100%,0 100%);background:#dfe1d8;border:0}
+    .status-pill{border:1px solid #dfe1d8;border-radius:30px;display:grid;grid-template-columns:auto 1fr;margin-top:32px;overflow:hidden}.status-pill b{background:#dfe1d8;color:#1e211e;padding:12px}.status-pill span{padding:12px;color:#a7ff21}
+    .coords{height:82px;border-left:1px solid #888;border-bottom:1px solid #888;position:relative;margin:6px 10px}.coords:before{content:"";position:absolute;inset:8px;background:linear-gradient(135deg,transparent 49%,#a7ff21 50%,transparent 52%)}.coords i{position:absolute;width:5px;height:5px;border-radius:50%;background:#e8e8df}.coords i:nth-child(1){left:18%;bottom:24%}.coords i:nth-child(2){left:52%;bottom:68%}.coords i:nth-child(3){left:78%;bottom:40%}
+    .prompt-library{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.prompt-card{border:1px solid #babbb5;padding:20px;background:#eeede6;display:flex;flex-direction:column;min-height:250px}.prompt-card small{font-size:7px;color:#777;letter-spacing:.15em}.prompt-card h3{font:650 21px var(--sans);margin:14px 0}.prompt-card p{font-size:9px;line-height:1.65;color:#666;flex:1}.prompt-card button{align-self:start}
+    .reveal{animation:reveal .46s cubic-bezier(.2,.8,.2,1)}
+    @keyframes reveal{from{opacity:.2;transform:scale(.985);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}.workspace{padding:16px;min-height:auto}.artboard{width:min(100%,680px)}.sidebar{border-left:0;border-top:1px solid #333}.top-meta{display:none}.case-grid,.atlas-layout{grid-template-columns:1fr}.component-grid,.prompt-library{grid-template-columns:repeat(2,1fr)}.catalog-head{grid-template-columns:1fr}.topnav{display:none}}
+    @media(max-width:520px){.topbar{padding:0 14px}.workspace{padding:8px}.poster{padding:5%}.hero{grid-template-columns:1fr;gap:3%}.data-stack{grid-template-columns:1fr 1fr}.data-stack .module:last-child{display:none}h1{font-size:40px}.radar{display:none}.pane{padding:18px}.sidebar{min-height:620px}.catalog{padding:56px 16px}.component-grid,.prompt-library,.case-notes{grid-template-columns:1fr}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark"></span>LINE//SYSTEM LAB</div>
+      <nav class="topnav"><a href="#lab">实验台</a><a href="#cases">原创案例</a><a href="#atlas">组件图鉴</a><a href="#prompts">提示词库</a></nav>
+      <div class="top-meta">VISUAL REVERSE ENGINEERING · CASE 0079 · 2026</div>
+    </header>
+    <div class="layout">
+      <section class="workspace" id="lab" aria-label="工业线性海报预览">
+        <div class="artboard" id="artboard">
+          <div class="grain"></div><div class="scan"></div>
+          <i class="corner c1"></i><i class="corner c2"></i><i class="corner c3"></i><i class="corner c4"></i>
+          <article class="poster">
+            <header class="poster-head">
+              <div class="eyebrow"><i></i><span id="labName">ORBITAL WORKS / PROMPT LAB</span></div>
+              <span class="status">ONLINE</span>
+              <div class="ruler" id="ruler"></div>
+            </header>
+            <div class="hero">
+              <div>
+                <div class="title-kicker">ACCESS // GENERATIVE DESIGN</div>
+                <h1><small>INPUT VERIFIED / OUTPUT READY</small><span class="accent-word" id="heroCode">0079</span><br><span id="heroTitle">PROMPT</span></h1>
+                <p class="hero-sub">工业线性视觉不是“加几根线”，而是把内容组织成可信的系统界面：编号、状态、测量、异常与操作痕迹共同构成叙事。</p>
+              </div>
+              <div class="data-stack">
+                <section class="module"><div class="module-label"><span>CONTROL UNIT</span><span>SYS–A</span></div><div class="big-code" id="unitCode">V6</div><table class="micro-table"><tr><td>INPUT VERIFIED</td><td>98.4%</td></tr><tr><td>LINE WEIGHT</td><td>0.75 PX</td></tr><tr><td>GRID LOCK</td><td>ACTIVE</td></tr></table></section>
+                <section class="module"><div class="module-label"><span>SIGNAL CURVE</span><span>CH–03</span></div><svg class="wave" viewBox="0 0 240 48" preserveAspectRatio="none"><line x1="0" y1="12" x2="240" y2="12"/><line x1="0" y1="36" x2="240" y2="36"/><path d="M0 27 C22 27 22 9 46 13 S80 41 106 27 S145 8 168 21 S205 40 240 15"/></svg></section>
+                <section class="module"><div class="module-label"><span>DESIGN DNA</span><span>LOT 19</span></div><div class="barcode" id="barcode"></div></section>
+              </div>
+            </div>
+            <footer class="poster-foot"><div><div class="module-label"><span>STYLE VECTOR / TEACHING EDITION</span><span id="serial">66–27 / 85.6</span></div><div class="barcode" id="barcode2"></div></div><div class="footnote">SOURCE: VIDEO FRAME STUDY<br>MODE: VISUAL RECONSTRUCTION<br>STATUS: READY TO MODIFY</div></footer>
+            <div class="radar"><b></b></div>
+          </article>
+        </div>
+      </section>
+      <aside class="sidebar">
+        <div class="side-head"><div class="num">LESSON / 01—04</div><h2>工业线性视觉提示词实验室</h2><p>从视频中提取的设计 DNA，已经变成可操作、可复制、可随机生成的网页效果。</p></div>
+        <nav class="tabs"><button class="tab active" data-tab="prompt">PROMPT</button><button class="tab" data-tab="recipe">拆解</button><button class="tab" data-tab="tokens">参数</button></nav>
+        <section class="pane active" id="prompt">
+          <p class="section-label">01 / 生成提示词</p>
+          <div class="prompt" id="promptText"></div>
+          <div class="actions"><button class="btn primary" id="copyBtn">复制提示词</button><button class="btn" id="randomBtn">随机生成效果</button></div>
+          <p class="section-label">02 / 色彩预设</p>
+          <div class="themes" id="themes"></div>
+          <p class="section-label">用法建议</p>
+          <p style="font-size:9px;line-height:1.65;color:#666">适合 AI 图片生成、品牌 KV、唱片封面、科技展览海报、产品启动页。把方括号里的主题替换为自己的内容，保留“版式约束”段即可稳定复用。</p>
+        </section>
+        <section class="pane" id="recipe">
+          <p class="section-label">风格技能 / STYLE SKILLS</p>
+          <div class="recipe"><b>01</b><div><h3>信息层级工程</h3><p>一个大编号或短词做视觉锚点；其余信息降到 6–10px，形成“大声主标题 + 低声系统注释”。</p></div></div>
+          <div class="recipe"><b>02</b><div><h3>工业语义组件</h3><p>条码、刻度尺、波形、参数表、校准十字、边角定位符。每个元素都像“有用途”，避免纯装饰。</p></div></div>
+          <div class="recipe"><b>03</b><div><h3>单色信号系统</h3><p>底色 + 墨色 + 1 个强调色。荧光绿代表运行，橙红代表警报，灰紫代表实验档案。</p></div></div>
+          <div class="recipe"><b>04</b><div><h3>受控的不完美</h3><p>叠加 6–12% 纸张颗粒，线条保持 0.5–1px，拒绝渐变与厚重阴影，获得印刷/档案质感。</p></div></div>
+          <div class="recipe"><b>05</b><div><h3>多语种科技感</h3><p>英文等宽体承担系统标签，中文/日文做视觉事件，数字使用紧凑无衬线粗体。</p></div></div>
+        </section>
+        <section class="pane" id="tokens">
+          <p class="section-label">设计令牌 / DESIGN TOKENS</p>
+          <div class="tokens"><div class="token"><span>LINE</span><b>0.75px</b></div><div class="token"><span>GRID</span><b>8 / 32</b></div><div class="token"><span>TYPE RATIO</span><b>1 : 7.5</b></div><div class="token"><span>NOISE</span><b>10%</b></div><div class="token"><span>COLORS</span><b>2 + 1</b></div><div class="token"><span>RADIUS</span><b>0px</b></div></div>
+          <p class="section-label" style="margin-top:22px">负面提示词</p>
+          <div class="prompt" style="min-height:0">3D render, glossy glassmorphism, soft gradient, rounded SaaS cards, cartoon icon, photorealistic object, excessive neon glow, decorative clutter, thick border, drop shadow, centered everything</div>
+        </section>
+      </aside>
+    </div>
+    <section class="catalog" id="cases">
+      <header class="catalog-head"><div><div class="catalog-index">SECTION / 02 · IMAGEGEN ORIGINALS</div><h2>不是一张，<br>是四种构图路径。</h2></div><p class="catalog-lead">这里的四张成品由生图能力重新生成，没有使用视频截图。它们分别验证：巨型编号档案、暗色控制面板、中文实验标签、信号橙现场终端。右侧同时解释每个方向真正可迁移的价值。</p></header>
+      <div class="case-grid">
+        <figure class="asset-frame"><img src="assets/poster-cases.png" alt="四张原创工业线性海报案例：档案编号、暗色控制面板、中文解析标签与橙色现场终端"></figure>
+        <div class="case-notes">
+          <article class="case-note"><small>A / ARCHIVE</small><h3>巨号压场</h3><p>让编号承担图片角色；辅助信息沿基线组织，适合品牌编号、产品版本、年份主题。</p></article>
+          <article class="case-note"><small>B / CONTROL</small><h3>密集模块</h3><p>重复卡片不是装饰，而是制造“系统正在工作”的可信度，适合科技产品与数据叙事。</p></article>
+          <article class="case-note"><small>C / ANALYSIS</small><h3>中文事件</h3><p>一个汉字词组成为视觉事故点，英语小字负责秩序，两者形成尺度反差。</p></article>
+          <article class="case-note"><small>D / FIELD</small><h3>反相信号</h3><p>高饱和底色配浅色技术线稿，适合警报、发布、现场行动等高能语义。</p></article>
+        </div>
+      </div>
+    </section>
+    <section class="catalog dark" id="atlas">
+      <header class="catalog-head"><div><div class="catalog-index">SECTION / 03 · MICRO COMPONENTS</div><h2>小图案，才是<br>风格的语法。</h2></div><p class="catalog-lead">视频里的小图并非无意义填充。它们分别承担识别、测量、状态、时间、定位、分组与可信度。左侧为生成式图鉴，右侧为可实时渲染的 HTML/SVG 组件。</p></header>
+      <div class="atlas-layout">
+        <figure class="asset-frame"><img src="assets/component-atlas.png" alt="九宫格原创工业微型组件图鉴"></figure>
+        <div class="component-grid" id="componentGrid">
+          <article class="component-card" data-code="01 / ID"><h3>BARCODE / SERIAL</h3><div class="mini-bar" id="miniBarcode"></div><p>身份、批次、可追溯性</p></article>
+          <article class="component-card" data-code="02 / CAL"><h3>CALIBRATION</h3><div class="mini-radar"><i></i></div><p>定位、瞄准、精度语义</p></article>
+          <article class="component-card" data-code="03 / SIG"><h3>OSCILLOSCOPE</h3><svg class="mini-wave" viewBox="0 0 180 70"><line x1="0" y1="35" x2="180" y2="35"/><path d="M0 35 C12 2 24 68 36 35 S60 2 72 35 S96 68 108 35 S132 2 144 35 S168 68 180 35"/></svg><p>时间、变化、活动状态</p></article>
+          <article class="component-card" data-code="04 / DATA"><h3>PARAMETER TABLE</h3><table class="mini-table"><tr><td>VOLT</td><td>24.0</td></tr><tr><td>FREQ</td><td>125.0</td></tr><tr><td>TEMP</td><td>36.5</td></tr><tr><td>LOAD</td><td>78.2%</td></tr></table><p>证据、精密、可比较性</p></article>
+          <article class="component-card" data-code="05 / MM"><h3>MEASUREMENT</h3><div class="mini-ruler" id="miniRuler"></div><p>比例、边界、工程感</p></article>
+          <article class="component-card" data-code="06 / MX"><h3>MATRIX ID</h3><div class="matrix" id="matrix"></div><p>机器可读、访问入口</p></article>
+          <article class="component-card" data-code="07 / ST"><h3>STATUS CAPSULE</h3><div class="status-pill"><b>SYS</b><span>INPUT OK</span></div><p>结论先行、状态确认</p></article>
+          <article class="component-card" data-code="08 / GEO"><h3>GEOMETRIC SYMBOLS</h3><div class="symbols"><i></i><i></i><i></i></div><p>分类、图例、模块身份</p></article>
+          <article class="component-card" data-code="09 / XY"><h3>VECTOR PATH</h3><div class="coords"><i></i><i></i><i></i></div><p>路径、空间、过程叙事</p></article>
+        </div>
+      </div>
+    </section>
+    <section class="catalog" id="prompts">
+      <header class="catalog-head"><div><div class="catalog-index">SECTION / 04 · PROMPT RECIPES</div><h2>从“像”到<br>可稳定复用。</h2></div><p class="catalog-lead">不要只写“科技感海报”。一个稳定提示词至少要锁定：信息主角、网格类型、组件清单、色彩数量、线宽、材质与明确排除项。</p></header>
+      <div class="prompt-library">
+        <article class="prompt-card"><small>PROMPT / A</small><h3>档案编号型</h3><p>方形工业科研档案海报，超大编号 0079 占画面 45%，暖灰纸张，黑色墨线，单一信号橙；右侧设备线稿，下方索引表和条码；瑞士网格，0.75px 线条，丝网印刷颗粒。</p><button class="btn copy-mini">复制</button></article>
+        <article class="prompt-card"><small>PROMPT / B</small><h3>控制面板型</h3><p>石墨黑航天控制面板，酸性荧光绿为唯一强调色，12 个不等宽数据模块，雷达、飞机线框、波形与日志；密集等宽微字，冷静精确，零圆角，无渐变。</p><button class="btn copy-mini">复制</button></article>
+        <article class="prompt-card"><small>PROMPT / C</small><h3>实验标签型</h3><p>淡灰紫实验室分析标签，巨大中文“解析”作为视觉锚点，橙红频谱波形，四角校准标记，参数表格与刻度尺；大面积留白，未来复古技术档案风。</p><button class="btn copy-mini">复制</button></article>
+      </div>
+    </section>
+    <div class="toast" id="toast">PROMPT COPIED / 已复制</div>
+  </main>
+  <script>
+    const palettes = [
+      {name:'ARCHIVE',bg:'#e7e6df',ink:'#151916',muted:'#687068',accent:'#ff4d23'},
+      {name:'GRAPHITE',bg:'#3d4244',ink:'#e7e8df',muted:'#a5aaa5',accent:'#a7ff21'},
+      {name:'ACID',bg:'#a7ed36',ink:'#172013',muted:'#405539',accent:'#172013'},
+      {name:'LAVENDER',bg:'#cbc8d0',ink:'#242823',muted:'#646862',accent:'#ff4d23'},
+      {name:'SIGNAL',bg:'#e75a36',ink:'#f2efdf',muted:'#f6dfd2',accent:'#f6ef65'}
+    ];
+    const titles=['PROMPT','SYSTEM','VECTOR','SIGNAL','解析','接続','CORE'];
+    const labs=['ORBITAL WORKS / PROMPT LAB','DELTA ENGINEERING / VECTOR UNIT','NOVA INDUSTRIES / FIELD STATION','SUMMIT LABS / CONTROL ARRAY'];
+    const prompt = `为「[你的主题]」设计一张方形工业科研系统海报，\n风格：瑞士国际主义 + 航天控制台 + 复古技术档案 + 极简信息设计。\n\n版式约束：\n— 大面积留白，严格模块化网格，非对称排版\n— 1 个超大编号或短标题作为主视觉锚点\n— 使用超细线框、四角定位符、刻度尺、参数表、条码、波形图、校准十字\n— 英文等宽小字与少量中文/日文混排，密集但清晰的信息层级\n— 底色 [暖灰/石墨黑/荧光绿]，深色墨线，仅 1 个高饱和信号色\n— 0.5–1px 线条，零圆角，轻微纸张颗粒，丝网印刷质感\n— 视觉气质：冷静、精确、实验性、可信、未来复古\n\n画面内容：编号 0079，CONTROL UNIT，INPUT VERIFIED / OUTPUT OK，数据波形与状态参数。\n高分辨率平面设计，不要实物场景，不要 3D，不要玻璃拟态，不要渐变，不要厚阴影。`;
+    const root=document.documentElement, board=document.querySelector('#artboard');
+    const promptText=document.querySelector('#promptText'); promptText.textContent=prompt;
+    const ruler=document.querySelector('#ruler');
+    for(let i=0;i<18;i++){const s=document.createElement('span');s.textContent=String(i+1).padStart(2,'0');ruler.appendChild(s)}
+    function makeBarcode(el,seed=7){el.innerHTML='';for(let i=0;i<42;i++){const b=document.createElement('i');const n=((i*seed)%5)+1;b.style.width=n+'px';b.style.opacity=.6+((i*3)%4)/10;el.appendChild(b)}}
+    makeBarcode(document.querySelector('#barcode'),7);makeBarcode(document.querySelector('#barcode2'),11);
+    const miniBar=document.querySelector('#miniBarcode');for(let i=0;i<34;i++){const b=document.createElement('i');b.style.setProperty('--w',((i*7)%5+1)+'px');miniBar.appendChild(b)}
+    const miniRuler=document.querySelector('#miniRuler');for(let i=0;i<15;i++){const t=document.createElement('i');t.dataset.n=i%3===0?i:'';miniRuler.appendChild(t)}
+    const matrix=document.querySelector('#matrix');for(let i=0;i<81;i++){const q=document.createElement('i');if((i*7+i%5)%4===0)q.className='off';matrix.appendChild(q)}
+    const themeWrap=document.querySelector('#themes');
+    palettes.forEach((p,i)=>{const b=document.createElement('button');b.className='swatch'+(i===0?' active':'');b.title=p.name;b.style.setProperty('--sw',p.bg);b.style.setProperty('--si',p.accent);b.onclick=()=>setTheme(i);themeWrap.appendChild(b)});
+    function setTheme(i){const p=palettes[i];['bg','ink','muted','accent'].forEach(k=>root.style.setProperty('--'+k,p[k]));[...themeWrap.children].forEach((n,j)=>n.classList.toggle('active',j===i));restart()}
+    function restart(){board.classList.remove('reveal');void board.offsetWidth;board.classList.add('reveal')}
+    document.querySelectorAll('.tab').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.tab,.pane').forEach(n=>n.classList.remove('active'));btn.classList.add('active');document.querySelector('#'+btn.dataset.tab).classList.add('active')});
+    document.querySelector('#randomBtn').onclick=()=>{setTheme(Math.floor(Math.random()*palettes.length));document.querySelector('#heroCode').textContent=String(Math.floor(Math.random()*999)).padStart(3,'0');document.querySelector('#unitCode').textContent=['V2','V6','SYS','0XB3','CFG'][Math.floor(Math.random()*5)];document.querySelector('#heroTitle').textContent=titles[Math.floor(Math.random()*titles.length)];document.querySelector('#labName').textContent=labs[Math.floor(Math.random()*labs.length)];document.querySelector('#serial').textContent=`${10+Math.floor(Math.random()*80)}–${20+Math.floor(Math.random()*70)} / ${(Math.random()*99).toFixed(1)}`;makeBarcode(document.querySelector('#barcode'),3+Math.floor(Math.random()*13));makeBarcode(document.querySelector('#barcode2'),3+Math.floor(Math.random()*13));restart()};
+    document.querySelector('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(prompt)}catch(e){const t=document.createElement('textarea');t.value=prompt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}const toast=document.querySelector('#toast');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1800)};
+    document.querySelectorAll('.copy-mini').forEach(btn=>btn.onclick=async()=>{const text=btn.previousElementSibling.textContent;try{await navigator.clipboard.writeText(text)}catch(e){}const toast=document.querySelector('#toast');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1800)});
+  </script>
+</body>
+</html>

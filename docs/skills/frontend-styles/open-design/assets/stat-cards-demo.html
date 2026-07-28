@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>贴纸统计卡与数字滚动 — open-design.ai Selected Work 模块拆解</title>
+<style>
+  /* ================================================================
+     Atelier Zero 令牌（抄自 open-design 仓库 apps/landing-page/app/globals.css :root）
+     纸白底 + 黑墨字 + 荧光绿唯一强调色。
+     ================================================================ */
+  :root {
+    --paper: #fafafa;
+    --paper-dark: #f0f0f0;
+    --ink: #262626;
+    --ink-soft: #434343;
+    --ink-mute: #595959;
+    --ink-faint: #8c8c8c;
+    --coral: #63fe13;        /* 官网变量名叫 coral，值其实是荧光绿 */
+    --coral-soft: #83ff3b;
+    --bone: #ffffff;
+    --line: #d9d9d9;
+    --shadow: 0 30px 60px -30px rgba(38, 38, 38, 0.16);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: var(--paper); color: var(--ink); }
+  body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+    padding: 34px clamp(18px, 4vw, 44px) 44px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- 模块头：小字眉题 + 重播按钮 ---- */
+  .head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+  .head .kicker {
+    font-size: 12px;
+    letter-spacing: .22em;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+  .head h1 {
+    font-size: clamp(22px, 3.4vw, 30px);
+    font-weight: 800;
+    letter-spacing: -.02em;
+  }
+  .replay {
+    flex: 0 0 auto;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bone);
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color .16s ease, background .16s ease;
+  }
+  .replay:hover { border-color: var(--ink); background: var(--paper-dark); }
+
+  /* ================================================================
+     贴纸统计卡（官网 .work-stat-card，globals.css）
+     贴纸感的全部来源：每张卡带一个自己的 --tilt 微旋转 +
+     一坨"离得很远、几乎全黑"的大阴影 —— 阴影浓（.72）但
+     负扩散（-42px）收得极窄，只剩卡底一条深影，像纸片悬空。
+     hover 只是在保留 rotate 的前提下加 translateY(-4px) 并把
+     阴影推深推远（.86 / 76px），260ms ease，一步到位。
+     ================================================================ */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px; /* 官网同值 */
+  }
+  .card {
+    min-height: 208px;              /* 官网同值 */
+    padding: 28px;
+    border-radius: 18px;
+    background: var(--bone);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    text-decoration: none;
+    display: flex;
+    align-items: flex-end;          /* 数字坐在卡片底部，杂志排版感 */
+    position: relative;
+    transform: rotate(var(--tilt, 0deg));
+    box-shadow: 0 28px 60px -42px rgba(0, 0, 0, 0.72);   /* 官网同值 */
+    transition: transform 260ms ease, box-shadow 260ms ease;
+  }
+  .card:hover {
+    transform: rotate(var(--tilt, 0deg)) translateY(-4px); /* rotate 必须重写一遍，否则被覆盖 */
+    box-shadow: 0 36px 76px -42px rgba(0, 0, 0, 0.86);     /* 官网同值 */
+  }
+  /* 大数字（荧光绿）+ 标签（黑墨），官网 .work-stat-card h3 同款排版 */
+  .card h3 {
+    font-size: clamp(34px, 4vw, 58px);  /* 官网同值 */
+    font-weight: 800;
+    line-height: .96;
+    letter-spacing: -.028em;
+  }
+  .card h3 .num { display: block; color: var(--coral); margin-bottom: 10px; font-style: normal; }
+  .card h3 em   { display: block; color: var(--ink); font-style: normal; font-size: .42em; letter-spacing: -.01em; }
+  /* 右上角出走箭头：默认藏着，hover 才浮现 */
+  .card .arrow {
+    position: absolute;
+    top: 18px; right: 20px;
+    font-size: 18px;
+    color: var(--ink-faint);
+    opacity: 0;
+    transform: translate(-4px, 4px);
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .card:hover .arrow { opacity: 1; transform: translate(0, 0); }
+  /* 最后一张卡反转成荧光绿底当 CTA（官网 .work-stat-card-cta） */
+  .card.cta { background: var(--coral); border-color: transparent; }
+  .card.cta h3 .txt { display: block; color: var(--ink); font-size: .52em; line-height: 1.15; }
+  .card.cta .arrow { color: var(--ink); opacity: 1; transform: none; }
+
+  @media (max-width: 720px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { min-height: 168px; padding: 22px; }
+  }
+
+  /* reduced-motion：贴纸不再浮动（数字滚动在 JS 里一并跳过） */
+  @media (prefers-reduced-motion: reduce) {
+    .card, .card:hover { transition: none; transform: rotate(var(--tilt, 0deg)); box-shadow: 0 28px 60px -42px rgba(0,0,0,.72); }
+  }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div>
+    <p class="kicker">SELECTED WORK · 数据一览</p>
+    <h1>一组会自报家门的歪贴纸</h1>
+  </div>
+  <button class="replay" id="replay" type="button">↻ 重播数字</button>
+</div>
+
+<!-- ================================================================
+     六张卡的 --tilt 用官网原序列 [-1.2, 1.4, -0.6, 0.9, -1, 1.1]deg。
+     正负交替、幅度都在 ±1.5° 内 —— 歪得出"随手贴上去"的味道，
+     又不至于乱。数字卡的 data-countup 契约见页尾脚本注释。
+     ================================================================ -->
+<main class="grid">
+  <a class="card" href="#" style="--tilt: -1.2deg">
+    <span class="arrow">↗</span>
+    <h3><span class="num" data-countup data-countup-to="74" data-countup-suffix="K+">74K+</span><em>GitHub Stars</em></h3>
+  </a>
+  <a class="card" href="#" style="--tilt: 1.4deg">
+    <span class="arrow">↗</span>
+    <h3><span class="num" data-countup data-countup-to="340" data-countup-suffix="+">340+</span><em>贡献者</em></h3>
+  </a>
+  <a class="card" href="#" style="--tilt: -0.6deg">
+    <span class="arrow">↗</span>
+    <h3><span class="num" data-countup data-countup-to="217" data-countup-suffix="+">217+</span><em>插件</em></h3>
+  </a>
+  <a class="card" href="#" style="--tilt: 0.9deg">
+    <span class="arrow">↗</span>
+    <h3><span class="num" data-countup data-countup-to="128" data-countup-suffix="+">128+</span><em>设计系统</em></h3>
+  </a>
+  <a class="card" href="#" style="--tilt: -1deg">
+    <span class="arrow">↗</span>
+    <h3><span class="num" data-countup data-countup-to="21">21</span><em>Coding Agent</em></h3>
+  </a>
+  <a class="card cta" href="#" style="--tilt: 1.1deg">
+    <span class="arrow">↗</span>
+    <h3><span class="txt">喜欢？<br>去点亮一颗星</span></h3>
+  </a>
+</main>
+
+<script>
+/* ================================================================
+   CountUp 数字滚动 —— 抄自官网 index.astro 的 enhanceCountups。
+
+   官网注释里管这套叫 robustness contract（健壮性契约）：
+   ① 静态 HTML 里【直接渲染终值】（上面每个 [data-countup] 的
+      文本就是 74K+ / 340+ …），滚动只是锦上添花的增强；
+   ② 归零这个动作【只发生在元素进入视口的那一刻】（run() 内部），
+      观察器永不触发（reduced-motion / 老浏览器没 IO / 用户一屏
+      滚过头没相交）时终值原样留着 —— 数字永远不可能卡在 0 或空白。
+   这一条是"渐进增强"数字动画和劣化版最大的区别。
+
+   参数全部同官网：
+   - IO: threshold 0, rootMargin '0px 0px -8% 0px'（底边收 8%，
+     元素露出下沿一点点才算进场，避免贴边就开滚看不见前半程）
+   - 缓动 ease(t) = 1 - (1-t)^4，前快后慢的甩尾
+   - 时长 data-countup-duration 秒，默认 2s
+   - Intl.NumberFormat：小数位数从 data-countup-to 的字符串推断
+     （'7.4' → 1 位小数），data-countup-separator 存在才开千分组
+   - data-countup-suffix（K+ / +）纯文本拼在格式化结果后
+   ================================================================ */
+(() => {
+  const nodes = document.querySelectorAll('[data-countup]');
+  if (nodes.length === 0) return;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* 官网此处直接 return：终值已经在 HTML 里，什么都不做就是正确结果 */
+  if (reduceMotion || !('IntersectionObserver' in window)) return;
+
+  const decimalsOf = (value) => {
+    const str = String(value);
+    return str.includes('.') ? str.split('.')[1].length : 0;
+  };
+  const makeFormatter = (el, to) => {
+    const suffix = el.dataset.countupSuffix || '';
+    const separator = el.dataset.countupSeparator || '';
+    const decimals = decimalsOf(to);
+    return (value) => {
+      const formatted = new Intl.NumberFormat('en-US', {
+        useGrouping: Boolean(separator),
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      }).format(value);
+      return (separator ? formatted.replace(/,/g, separator) : formatted) + suffix;
+    };
+  };
+  const ease = (t) => 1 - Math.pow(1 - t, 4);
+
+  const done = new Set(); /* 官网用 WeakSet；demo 要支持重播，换成可清空的 Set */
+  const run = (el) => {
+    if (done.has(el)) return;
+    done.add(el);
+    const to = Number(el.dataset.countupTo);
+    if (!Number.isFinite(to)) return;
+    const from = Number(el.dataset.countupFrom || '0');
+    const duration = Math.max(0, Number(el.dataset.countupDuration || '2')) * 1000;
+    const format = makeFormatter(el, to);
+    let startTs = null;
+    const tick = (ts) => {
+      if (startTs === null) startTs = ts;
+      const progress = Math.min(1, (ts - startTs) / duration);
+      el.textContent = format(from + (to - from) * ease(progress));
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = format(to); /* 收尾强制精确终值，杜绝浮点尾巴 */
+    };
+    requestAnimationFrame(tick);
+  };
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        run(entry.target);
+        io.unobserve(entry.target); /* 一次性动画，滚回来不重播 */
+      }
+    },
+    { threshold: 0, rootMargin: '0px 0px -8% 0px' },
+  );
+  for (const el of nodes) io.observe(el);
+
+  /* demo 加的重播按钮：清掉 done 记录直接重跑（不走 IO） */
+  document.getElementById('replay').addEventListener('click', () => {
+    done.clear();
+    for (const el of nodes) run(el);
+  });
+})();
+</script>
+</body>
+</html>

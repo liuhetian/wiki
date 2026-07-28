@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RGB 呼吸光边 · ORYZO 电竞灯效玩梗复现</title>
+<style>
+  /* oryzo.ai 手持杯垫那幕：整个视口被一圈流动的 RGB 光边框住 ——
+     "AI 硬件"就得有电竞灯（页面下文正好是 "Runs on RTX 3090" 的玩梗卡）。
+     复现手法：conic-gradient 做彩虹环，mask 抠成"只剩边框"，再 blur 成辉光。 */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: #17110c; }
+  body { font-family: "DM Mono", ui-monospace, monospace; color: #f2e8d5; }
+
+  @property --rgbA {                 /* 注册成可动画的自定义属性：conic 起始角 */
+    syntax: '<angle>'; initial-value: 0deg; inherits: false;
+  }
+
+  .frame, .frame-sharp {
+    position: fixed; inset: 0; pointer-events: none;
+    background: conic-gradient(from var(--rgbA),
+      #ff3b30, #ff9500, #ffe14d, #34e07a, #38d1ff, #4d6bff, #c44dff, #ff3b30);
+    /* 两层 mask 异或：整框减去内容盒 = 只留 padding 那一圈 */
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+    animation: spin 6s linear infinite;
+  }
+  .frame       { padding: 34px; filter: blur(26px); opacity: var(--glow, .75); }  /* 辉光层 */
+  .frame-sharp { padding: 5px;  filter: blur(1px);  opacity: calc(var(--glow, .75) * .9); } /* 锐边层 */
+  @keyframes spin { to { --rgbA: 360deg; } }
+
+  /* 呼吸：整体亮度慢波动（乘在 --glow 上由 JS 驱动更简单，这里给纯 CSS 兜底） */
+  .breath { animation: breath 3.4s ease-in-out infinite; }
+  @keyframes breath { 50% { opacity: .55; } }
+
+  /* 中央展品：CSS 画的软木杯垫（radial-gradient 立体感 + 噪点用重复渐变近似） */
+  .stage { position: fixed; inset: 0; display: grid; place-items: center; }
+  .coaster {
+    width: min(38vmin, 300px); aspect-ratio: 1; border-radius: 50%; cursor: pointer;
+    background:
+      radial-gradient(circle at 38% 32%, #d9a266 0%, #c98d4e 45%, #8a5a2b 78%, #6e441f 100%);
+    box-shadow: inset 0 0 0 6px #00000022, inset 0 -14px 30px #00000055,
+      0 30px 80px #000000aa;
+    position: relative; transition: transform .5s cubic-bezier(.2,1.4,.4,1);
+  }
+  .coaster::after {                       /* 凹陷内盘 */
+    content: ''; position: absolute; inset: 14%; border-radius: 50%;
+    background: radial-gradient(circle at 42% 36%, #b57f42, #8f5f2e 70%, #7a4e24);
+    box-shadow: inset 0 10px 24px #00000066;
+  }
+  .coaster:hover { transform: scale(1.05) rotate(-3deg); }
+
+  h2 { position: fixed; left: 50%; top: 12%; translate: -50% 0; font-size: clamp(26px, 4.5vw, 52px);
+    font-family: system-ui, sans-serif; font-weight: 650; letter-spacing: .02em; }
+  .hud { position: fixed; left: 16px; top: 14px; font-size: 12px; line-height: 1.7; letter-spacing: .06em; }
+  .hud b { font-size: 14px; letter-spacing: .12em; }
+  .hint { position: fixed; left: 50%; bottom: 16px; translate: -50% 0; font-size: 11px;
+    letter-spacing: .26em; opacity: .8; }
+  .tag { position: fixed; right: 16px; top: 14px; font-size: 11px; letter-spacing: .14em;
+    border: 1px solid #f2e8d566; border-radius: 99px; padding: 5px 12px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .frame, .frame-sharp { animation: none; }
+    .breath { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="frame breath" id="glowLayer"></div>
+<div class="frame-sharp"></div>
+
+<div class="stage"><div class="coaster" id="coaster" title="hover 试试"></div></div>
+<h2>Powered by AI*</h2>
+
+<div class="hud"><b>RGB MODE</b><br>视口级电竞灯效 · conic-gradient 彩虹环</div>
+<div class="tag">RUNS ON RTX 3090</div>
+<div class="hint">TRY TO HOVER THE COASTER</div>
+
+<script>
+/* 交互：hover 展品时灯效增压（原站 hover 手部有反馈，"TRY TO HOVER HAND" 同款提示）。
+ * --rgbA 靠 @property 注册后才能被 CSS 动画插值；不支持的浏览器退化为静态彩虹边。
+ * hover 增压走 JS 调 --glow：CSS 变量一改，辉光层/锐边层一起吃到。 */
+const coaster = document.getElementById('coaster');
+const root = document.documentElement;
+let boost = 0, target = 0;
+coaster.addEventListener('pointerenter', () => target = 1);
+coaster.addEventListener('pointerleave', () => target = 0);
+(function tick() {
+  boost += (target - boost) * 0.12;
+  root.style.setProperty('--glow', (0.72 + boost * 0.55).toFixed(3));
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

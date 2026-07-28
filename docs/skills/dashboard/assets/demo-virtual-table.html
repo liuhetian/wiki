@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：虚拟表格</title>
+<!--
+  demo-virtual-table.html —— 「虚拟表格」形状的最小可玩实现（蓝本：open-dashboard 的 add-virtual-table + table-virtual.tsx 模板）。
+  复现的不变量：
+  - 行高固定（ROW_HEIGHT）：scrollTop → 起始下标的窗口化数学全靠它；保留少量 OVERSCAN（上下各 8 行）
+  - 上下 spacer 行撑起总滚动高度（过滤后行数变了随之重算），表头 position: sticky 不随行滚走
+  - 顶部常驻总行数 + 当前渲染区间与 DOM 行节点数，随滚动实时变化，随时可验证「只渲染了一小片」
+  - 零第三方依赖 —— 窗口化自实现（几行算术），与蓝本一致；另加「关闭虚拟化」对照开关演示全量渲染的代价
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--fg); }
+  .arrow { font-size: 10px; }
+  .viewport { height: 400px; overflow: auto; background: var(--card);
+              border: 1px solid var(--border); border-radius: 10px; }
+  .vtable { width: 100%; border-collapse: separate; border-spacing: 0; }
+  .vtable thead th { position: sticky; top: 0; z-index: 2; background: var(--card);
+                     text-align: left; font-size: 12px; color: var(--muted); font-weight: 500;
+                     padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  .vtable tbody td { padding: 0 12px; border-bottom: 1px solid var(--border);
+                     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .vtable tbody tr.row { cursor: pointer; }
+  .vtable tbody tr.row:hover td { background: color-mix(in srgb, var(--primary) 7%, var(--card)); }
+  .vtable tbody tr.sel td { background: color-mix(in srgb, var(--primary) 15%, var(--card)); }
+  .meter { margin-bottom: 8px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .meter b { color: var(--fg); font-weight: 650; }
+  .toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
+            color: var(--muted); cursor: pointer; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+
+const ROW_COUNT = 5000;
+const ROW_HEIGHT = 36;        // 不变量：行高固定，窗口化数学全靠它
+const VIEWPORT_HEIGHT = 400;  // 滚动容器高度，与 .viewport 的 height 一致
+const OVERSCAN = 8;           // 可视区外上下各多渲染 8 行，消除快速滚动的白屏
+
+const SURNAMES = ["陈", "李", "王", "赵", "周", "吴", "郑", "冯", "褚", "卫", "蒋", "沈", "韩", "杨", "朱", "秦", "许", "何", "吕", "施"];
+const GIVENS = ["禾", "慕白", "小满", "青", "芷", "限", "舟", "霁", "遂", "疏", "声", "砚", "澈", "湜", "望舒", "云谏", "知行", "以宁"];
+const DEPTS = ["研发部", "市场部", "运营部", "财务部", "设计部"];
+
+// 由下标确定性地推导 5000 行数据（无随机数，刷新后完全一致）
+const ROWS = Array.from({ length: ROW_COUNT }, (_, i) => ({
+  id: i + 1,
+  name: SURNAMES[i % SURNAMES.length] + GIVENS[(i * 7) % GIVENS.length],
+  email: `user${String(i + 1).padStart(4, "0")}@corp.cn`,
+  dept: DEPTS[(i * 13) % DEPTS.length],
+  amount: 1000 + ((i * 37) % 9000) + (i % 100),
+}));
+
+const fmt = new Intl.NumberFormat("zh-CN", { style: "currency", currency: "CNY", maximumFractionDigits: 0 });
+
+function App() {
+  const [q, setQ] = useState("");
+  const [sort, setSort] = useState({ by: "id", dir: "asc" });
+  const [virtual, setVirtual] = useState(true); // 对照开关：false = 全量渲染
+  const [scrollTop, setScrollTop] = useState(0);
+  const [selId, setSelId] = useState(null);     // 行高亮挂在稳定 id 上，不挂在 DOM 上
+  const [renderMs, setRenderMs] = useState(null);
+  const [toast, setToast] = useState("");
+  const viewportRef = useRef(null);
+  const toggleT = useRef(0);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2600);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const filtered = useMemo(() => {
+    const kw = q.trim().toLowerCase();
+    const list = kw
+      ? ROWS.filter(r => r.name.includes(kw) || r.email.includes(kw) || r.dept.includes(kw))
+      : ROWS;
+    const mul = sort.dir === "asc" ? 1 : -1;
+    return [...list].sort((a, b) => (a[sort.by] < b[sort.by] ? -1 : a[sort.by] > b[sort.by] ? 1 : 0) * mul);
+  }, [q, sort]);
+
+  // 过滤 / 排序变化后回到顶部，避免 scrollTop 指向已不存在的区间
+  useEffect(() => {
+    if (viewportRef.current) viewportRef.current.scrollTop = 0;
+    setScrollTop(0);
+  }, [q, sort]);
+
+  // ===== 窗口化核心：scrollTop → 可视切片 =====
+  const total = filtered.length;
+  const visibleCount = Math.ceil(VIEWPORT_HEIGHT / ROW_HEIGHT);
+  const start = virtual
+    ? Math.min(Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN), Math.max(0, total - 1))
+    : 0;
+  const end = virtual ? Math.min(total, start + visibleCount + OVERSCAN * 2) : total;
+  const slice = filtered.slice(start, end);
+  const topPad = start * ROW_HEIGHT;              // 上 spacer：撑起已滚过的高度
+  const bottomPad = (total - end) * ROW_HEIGHT;   // 下 spacer：撑起未到达的高度
+
+  const toggleSort = by =>
+    setSort(s => ({ by, dir: s.by === by && s.dir === "asc" ? "desc" : "asc" }));
+
+  const toggleVirtual = () => {
+    toggleT.current = performance.now();
+    const next = !virtual;
+    setVirtual(next);
+    setToast(next ? "已恢复窗口化渲染" : `警告：已关闭虚拟化，${total} 行全部进入 DOM`);
+  };
+  // 记一次切换后的渲染耗时，作为对照组的性能证据
+  useEffect(() => {
+    if (toggleT.current) {
+      setRenderMs(Math.round(performance.now() - toggleT.current));
+      toggleT.current = 0;
+    }
+  }, [virtual]);
+
+  const SortTh = ({ by, right, children }) => html`
+    <th class=${"sortable" + (right ? " num" : "")} onClick=${() => toggleSort(by)}>
+      ${children} <span class="arrow">${sort.by === by ? (sort.dir === "asc" ? "▲" : "▼") : ""}</span>
+    </th>`;
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>交易流水（5000 行）</h1>
+          <p class="sub">滚动看顶部计数 / 搜索过滤 / 点表头排序 / 点行高亮 / 对照开关关闭虚拟化</p>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <input class="grow" placeholder="搜索姓名、邮箱或部门…" value=${q}
+               onChange=${e => setQ(e.target.value)} />
+        <label class="toggle">
+          <input type="checkbox" checked=${!virtual} onChange=${toggleVirtual} />
+          关闭虚拟化（对照）
+        </label>
+      </div>
+
+      ${!virtual && html`
+        <div class="alert danger" style=${{ marginBottom: "10px" }}>
+          <p>对照组：虚拟化已关闭，${total} 个行节点全部进入 DOM${
+            renderMs != null ? `（本次全量渲染约 ${renderMs} ms）` : ""
+          }，滚动与重渲染明显变卡 —— 这正是窗口化要解决的问题。</p>
+        </div>`}
+
+      <div class="meter">
+        共 <b>${ROW_COUNT}</b> 行${q.trim() ? html` · 匹配 <b>${total}</b> 行` : ""} ·
+        当前渲染第 <b>${total === 0 ? 0 : start + 1}–${end}</b> 行
+        （<b>${slice.length}</b> 个 DOM 行节点）
+      </div>
+
+      <div class="viewport" ref=${viewportRef}
+           onScroll=${e => setScrollTop(e.currentTarget.scrollTop)}>
+        <table class="vtable">
+          <thead>
+            <tr>
+              <${SortTh} by="id">ID<//>
+              <${SortTh} by="name">姓名<//>
+              <th>邮箱</th>
+              <th>部门</th>
+              <${SortTh} by="amount" right>金额<//>
+            </tr>
+          </thead>
+          <tbody>
+            ${topPad > 0 && html`
+              <tr aria-hidden="true" style=${{ height: topPad + "px" }}><td colSpan="5"></td></tr>`}
+            ${slice.map(r => html`
+              <tr key=${r.id} class=${"row" + (selId === r.id ? " sel" : "")}
+                  style=${{ height: ROW_HEIGHT + "px" }}
+                  onClick=${() => setSelId(id => (id === r.id ? null : r.id))}>
+                <td style=${{ color: "var(--muted)", fontVariantNumeric: "tabular-nums", width: "70px" }}>${r.id}</td>
+                <td style=${{ fontWeight: 550 }}>${r.name}</td>
+                <td style=${{ color: "var(--muted)" }}>${r.email}</td>
+                <td>${r.dept}</td>
+                <td class="num">${fmt.format(r.amount)}</td>
+              </tr>`)}
+            ${total === 0 && html`<tr><td class="empty" colSpan="5">没有匹配的行</td></tr>`}
+            ${bottomPad > 0 && html`
+              <tr aria-hidden="true" style=${{ height: bottomPad + "px" }}><td colSpan="5"></td></tr>`}
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="pager">
+        <span>行高固定 ${ROW_HEIGHT}px · overscan 上下各 ${OVERSCAN} 行 · 点击行高亮，再点取消</span>
+        <span>${selId ? `已高亮 #${selId}` : "未高亮任何行"}</span>
+      </footer>
+
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：通知中心</title>
+<!--
+  demo-notifications.html —— 「通知中心」形状的最小可玩实现（蓝本：open-dashboard 的 NotificationCenter + useNotifications）。
+  复现的不变量：
+  - Controlled：面板只渲染传入的 notifications 数组，读态由 owner 持有；组件内不做二次副本
+  - 未读徽标 = 计 !read 条数；超过 badgeCap 显示 "9+"；无未读时徽标隐藏
+  - 类型 → 图标 + 语义色一处集中（KIND_ICON / .noti-icon.<kind>），加类型不改渲染
+  - Popover 契约：点铃铛外任意处关闭；列表限高滚动；空态一图一句 CTA
+  - 变更必 toast；破坏性操作（"清空所有"）先过确认弹窗
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  :root { --noti-msg-bg: #e7edfa; }
+  @media (prefers-color-scheme: dark) { :root { --noti-msg-bg: #1e2c48; } }
+
+  /* mock app header，把铃铛放右上角 —— 真实版就落在这里 */
+  .appbar { display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 14px; background: var(--card); border: 1px solid var(--border);
+            border-radius: 10px; margin-bottom: 12px; }
+  .appbar-title { font-size: 13px; font-weight: 550; }
+
+  .bell-wrap { position: relative; }
+  .bell-btn { position: relative; width: 34px; height: 34px; border-radius: 8px;
+              border: 1px solid var(--border); background: var(--card); color: var(--fg);
+              cursor: pointer; display: grid; place-items: center; }
+  .bell-btn:hover { border-color: var(--primary); }
+  .bell-badge { position: absolute; top: -5px; right: -5px; min-width: 16px; height: 16px;
+                padding: 0 4px; border-radius: 999px; background: var(--primary);
+                color: var(--primary-fg); font-size: 10px; font-weight: 650; line-height: 16px;
+                text-align: center; font-variant-numeric: tabular-nums; }
+
+  .noti-pop { position: absolute; top: calc(100% + 6px); right: 0; z-index: 20;
+              width: 320px; background: var(--card); border: 1px solid var(--border);
+              border-radius: 12px; box-shadow: 0 10px 28px rgba(0,0,0,.22); overflow: hidden; }
+  .noti-head { display: flex; align-items: center; justify-content: space-between;
+               gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border);
+               font-size: 13px; }
+  .noti-list { max-height: 260px; overflow-y: auto; list-style: none; margin: 0; padding: 0; }
+  .noti-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+               border-bottom: 1px solid var(--border); }
+  .noti-item:last-child { border-bottom: 0; }
+  .noti-item.read .noti-title { color: var(--muted); font-weight: 400; }
+  .noti-item.read .noti-icon { opacity: .55; }
+
+  .noti-icon { flex-shrink: 0; width: 28px; height: 28px; border-radius: 999px;
+               display: grid; place-items: center; }
+  .noti-icon.mention { background: var(--chip-on-bg); color: var(--chip-on-fg); }
+  .noti-icon.comment { background: var(--noti-msg-bg); color: var(--primary); }
+  .noti-icon.system  { background: var(--chip-off-bg); color: var(--muted); }
+  .noti-icon.alert   { background: var(--chip-warn-bg); color: var(--chip-warn-fg); }
+
+  .noti-body { flex: 1; min-width: 0; }
+  .noti-line1 { display: flex; align-items: center; gap: 6px; }
+  .noti-title { font-size: 13px; font-weight: 550; overflow: hidden;
+                text-overflow: ellipsis; white-space: nowrap; }
+  .noti-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--primary); flex-shrink: 0; }
+  .noti-sub { font-size: 12px; color: var(--muted); margin-top: 3px;
+              display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+  .noti-time { font-variant-numeric: tabular-nums; }
+  .noti-mark { border: 0; background: none; color: var(--primary); font: inherit; font-size: 12px;
+               cursor: pointer; padding: 0; }
+  .noti-mark:disabled { color: var(--muted); cursor: not-allowed; }
+
+  .noti-foot { display: flex; justify-content: space-between; align-items: center;
+               gap: 8px; padding: 8px 12px; border-top: 1px solid var(--border); }
+  .noti-foot .foot-cnt { font-size: 12px; color: var(--muted); }
+  .noti-empty { padding: 30px 14px; text-align: center; color: var(--muted); }
+  .noti-empty svg { display: block; margin: 0 auto 8px; opacity: .55; }
+  .noti-empty p { margin: 0; font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+
+const MIN = 60_000;
+const HOUR = 60 * MIN;
+const DAY = 24 * HOUR;
+const BADGE_CAP = 9;
+
+// 相对时间：<60s "刚刚"；<60m "N 分钟前"；<24h "N 小时前"；<7d "N 天前"；否则 M 月 D 日
+function relativeTime(from, now = Date.now()) {
+  const s = Math.max(0, Math.round((now - from) / 1000));
+  if (s < 60) return "刚刚";
+  const m = Math.round(s / 60);
+  if (m < 60) return m + " 分钟前";
+  const h = Math.round(m / 60);
+  if (h < 24) return h + " 小时前";
+  const d = Math.round(h / 24);
+  if (d < 7) return d + " 天前";
+  const dt = new Date(from);
+  return (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日";
+}
+
+// 类型 → svg 图标：一处集中，加类型只加一项；配色见同名 .noti-icon.<kind>
+const KIND_ICON = {
+  mention: html`<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M11 8v.8a1.9 1.9 0 0 0 3.6.5A6.5 6.5 0 1 0 12 13"/></svg>`,
+  comment: html`<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A2.5 2.5 0 0 1 11 12H6l-2.8 2V4.5A2.5 2.5 0 0 1 5.7 2h5A2.5 2.5 0 0 1 13.5 4.5v5z"/></svg>`,
+  system:  html`<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.2"/><path d="M8 11V7.4"/><circle cx="8" cy="5.2" r=".4" fill="currentColor" stroke="none"/></svg>`,
+  alert:   html`<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.2L14.5 13.5H1.5L8 2.2z"/><path d="M8 6.6v3.2"/><circle cx="8" cy="11.6" r=".4" fill="currentColor" stroke="none"/></svg>`,
+};
+
+let seq = 0;
+const nextId = () => "n-" + Date.now().toString(36) + "-" + (seq++).toString(36);
+
+function seed() {
+  const now = Date.now();
+  return [
+    { id: "s1", kind: "mention", title: "陈禾 在评论里提到了你",             createdAt: now - 3 * MIN,   read: false },
+    { id: "s2", kind: "alert",   title: "支付重试失败：Acme 公司信用卡被拒", createdAt: now - 22 * MIN,  read: false },
+    { id: "s3", kind: "comment", title: "李慕白 回复了工单 #471",            createdAt: now - 95 * MIN,  read: false },
+    { id: "s4", kind: "system",  title: "周报已生成：本周新增 128 名用户",   createdAt: now - 5 * HOUR,  read: false },
+    { id: "s5", kind: "mention", title: "王小满 在评审中 @ 了你",            createdAt: now - 26 * HOUR, read: true  },
+    { id: "s6", kind: "system",  title: "数据库夜间备份已完成",              createdAt: now - 2 * DAY,   read: true  },
+  ];
+}
+
+// 模拟事件池：给「模拟新通知」按钮抽一条塞进去
+const SIM_POOL = [
+  { kind: "mention", title: "赵青 提到了你" },
+  { kind: "comment", title: "沈砚 回复了工单 #482" },
+  { kind: "system",  title: "月度报告已生成" },
+  { kind: "alert",   title: "存储用量已达 91%" },
+];
+
+function App() {
+  const [items, setItems]     = useState(seed);
+  const [open, setOpen]       = useState(false);
+  const [confirm, setConfirm] = useState(null);
+  const [toast, setToast]     = useState("");
+  const rootRef = useRef(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  // Popover 契约：点铃铛外任意处收起面板
+  useEffect(() => {
+    if (!open) return;
+    const onDown = e => { if (rootRef.current && !rootRef.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  // Controlled：ordered 是给面板看的一份 view，不改数据源
+  const ordered = useMemo(() => [...items].sort((a, b) => b.createdAt - a.createdAt), [items]);
+  const unread = items.reduce((n, x) => n + (x.read ? 0 : 1), 0);
+  const badge = unread > BADGE_CAP ? BADGE_CAP + "+" : unread;
+
+  const markRead = id => {
+    setItems(prev => prev.map(n => (n.id === id ? { ...n, read: true } : n)));
+    setToast("已标为已读");
+  };
+  const markAllRead = () => {
+    if (unread === 0) return;
+    const n = unread;
+    setItems(prev => prev.map(x => ({ ...x, read: true })));
+    setToast("已把 " + n + " 条全部标为已读");
+  };
+  const clearAll = () => {
+    if (items.length === 0) return;
+    setConfirm({
+      text: "清空所有 " + items.length + " 条通知？此操作不可撤销。",
+      onOk: () => { setItems([]); setToast("已清空所有通知"); setConfirm(null); },
+    });
+  };
+  const push = () => {
+    const pick = SIM_POOL[Math.floor(Math.random() * SIM_POOL.length)];
+    setItems(prev => [{ ...pick, id: nextId(), createdAt: Date.now(), read: false }, ...prev]);
+    setToast("模拟到一条新通知");
+  };
+  const restore = () => { setItems(seed()); setToast("已重置演示数据"); };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>通知中心</h1>
+          <p class="sub">头部铃铛 + 未读徽标；下拉面板显示最新事件，可单条或一键标为已读</p>
+        </div>
+      </header>
+
+      <div class="appbar">
+        <span class="appbar-title">控制台</span>
+        <div class="bell-wrap" ref=${rootRef}>
+          <button class="bell-btn"
+                  aria-label=${unread > 0 ? "通知，" + unread + " 条未读" : "通知"}
+                  aria-haspopup="dialog" aria-expanded=${open}
+                  onClick=${() => setOpen(o => !o)}>
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15.5 12.5l-1-1.5V7a4.5 4.5 0 0 0-9 0v4l-1 1.5h11z"
+                    fill=${unread > 0 ? "currentColor" : "none"}/>
+              <path d="M8 15a2 2 0 0 0 4 0"/>
+            </svg>
+            ${unread > 0 && html`<span class="bell-badge" aria-hidden="true">${badge}</span>`}
+          </button>
+          ${open && html`
+            <div class="noti-pop" role="dialog" aria-label="通知面板">
+              <div class="noti-head">
+                <strong>通知${unread > 0 ? " · " + unread + " 未读" : ""}</strong>
+                <button class="link" disabled=${unread === 0} onClick=${markAllRead}>全部标为已读</button>
+              </div>
+              ${ordered.length === 0 ? html`
+                <div class="noti-empty">
+                  <svg width="42" height="42" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+                       stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15.5 12.5l-1-1.5V7a4.5 4.5 0 0 0-9 0v4l-1 1.5h11z"/>
+                    <path d="M8 15a2 2 0 0 0 4 0"/>
+                  </svg>
+                  <p>没有新通知</p>
+                  <p style=${{ fontSize: "12px", marginTop: "4px" }}>有新事件会在这里提醒你</p>
+                </div>` : html`
+                <ul class="noti-list">
+                  ${ordered.map(n => html`
+                    <li class=${"noti-item" + (n.read ? " read" : "")} key=${n.id}>
+                      <span class=${"noti-icon " + n.kind} aria-hidden="true">${KIND_ICON[n.kind]}</span>
+                      <div class="noti-body">
+                        <div class="noti-line1">
+                          <span class="noti-title">${n.title}</span>
+                          ${!n.read && html`<span class="noti-dot" aria-label="未读"></span>`}
+                        </div>
+                        <div class="noti-sub">
+                          <span class="noti-time">${relativeTime(n.createdAt)}</span>
+                          <button class="noti-mark" disabled=${n.read}
+                                  onClick=${() => markRead(n.id)}>${n.read ? "已读" : "标为已读"}</button>
+                        </div>
+                      </div>
+                    </li>`)}
+                </ul>`}
+              <div class="noti-foot">
+                <span class="foot-cnt">共 ${items.length} 条</span>
+                <button class="link danger" disabled=${items.length === 0} onClick=${clearAll}>清空所有</button>
+              </div>
+            </div>`}
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn sm" onClick=${push}>模拟新通知</button>
+        <button class="btn sm" onClick=${restore}>重置数据</button>
+        <span class="sub" style=${{ margin: 0, alignSelf: "center" }}>共 ${items.length} 条 · ${unread} 未读</span>
+      </div>
+
+      ${confirm && html`
+        <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) setConfirm(null); }}>
+          <div class="modal">
+            <h2>确认操作</h2>
+            <p style=${{ margin: 0 }}>${confirm.text}</p>
+            <div class="actions">
+              <button class="btn" onClick=${() => setConfirm(null)}>取消</button>
+              <button class="btn primary" onClick=${confirm.onOk}>确认</button>
+            </div>
+          </div>
+        </div>`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

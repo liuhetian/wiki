@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：主从视图</title>
+<!--
+  demo-master-detail.html —— 「主从视图（Master-detail split）」形状的最小可玩实现（蓝本：open-dashboard 的 add-master-detail：orders.tsx + orders.$id.tsx，选中在 URL、列表始终挂载）。
+  复现的不变量：
+  - 选中锚点唯一：列表始终挂载，选中一条即打开详情侧栏；真实版把 id 放进 URL（/orders/$id），demo 用 useState(selId) 简化
+  - 主表和详情各自成栈：列表参数（搜索/排序/分页）不因打开详情而丢失；关闭详情回到列表时不重置这些参数
+  - 详情自带 not-found：id 失效/被删时，只有详情面板换成缺失态，主列表不掀翻
+  - 编辑走「保存 → 失效查询键」：真实版调 update mutation 成功后 invalidate list + detail 两处查询键；demo 用 setRows 直接同步一份内存源
+  - 破坏性操作先确认；变更成功后 toast
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .md-split { display: grid; grid-template-columns: minmax(220px, 34%) 1fr; gap: 12px; align-items: start; }
+  .md-list { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .md-search { padding: 8px; border-bottom: 1px solid var(--border); }
+  .md-search input { width: 100%; }
+  .md-rows { list-style: none; margin: 0; padding: 0; max-height: 520px; overflow-y: auto; }
+  .md-row { padding: 10px 12px; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .md-row:last-child { border-bottom: 0; }
+  .md-row:hover { background: rgba(53,100,215,0.06); }
+  .md-row.on { background: rgba(53,100,215,0.12); box-shadow: inset 3px 0 0 var(--primary); }
+  .md-row-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .md-code { font: 500 12px/1.4 ui-monospace, "SF Mono", Consolas, monospace; color: var(--muted); }
+  .md-row-mid { margin: 2px 0; font-weight: 550; }
+  .md-row-sub { color: var(--muted); font-size: 12px; }
+  .md-rows .empty { padding: 26px 12px; text-align: center; color: var(--muted); list-style: none; }
+  .md-detail { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .md-back { margin-bottom: 8px; }
+  .md-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
+  .md-head h2 { margin: 0; font-size: 17px; }
+  .md-fields { display: grid; grid-template-columns: 72px 1fr; column-gap: 12px; row-gap: 8px; margin: 0 0 14px; font-size: 13px; }
+  .md-fields dt { color: var(--muted); }
+  .md-fields dd { margin: 0; }
+  .md-form { display: flex; flex-direction: column; gap: 10px; }
+  .md-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+  .md-form input, .md-form select, .md-form textarea { width: 100%; }
+  .md-missing { padding: 8px 0; }
+  .md-missing h2 { margin: 0 0 4px; font-size: 15px; }
+  .md-missing p { margin: 0; color: var(--muted); font-size: 13px; }
+  @media (max-width: 719px) {
+    .md-split { grid-template-columns: 1fr; }
+    .md-rows { max-height: none; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const SEED = [
+  { id: "SO-2401", name: "六月鲜果补货",   customer: "青禾杂货铺",   status: "已完成", total: 12480, createdAt: "2026-06-02", description: "端午前一周补货，含冷链配送 3 车。" },
+  { id: "SO-2402", name: "促销物料铺货",   customer: "南门便利店",   status: "进行中", total: 8620,  createdAt: "2026-06-05", description: "端午海报 + 试吃赠品，本周内送达。" },
+  { id: "SO-2403", name: "空调滤芯 40 组", customer: "永安电器",     status: "待处理", total: 3200,  createdAt: "2026-06-11", description: "客户已确认款式，待仓库备货。" },
+  { id: "SO-2404", name: "定制礼盒 200 份", customer: "锦江酒店集团", status: "已完成", total: 24600, createdAt: "2026-05-28", description: "中秋礼盒预订，含 logo 烫印。" },
+  { id: "SO-2405", name: "夜宵档补酒",     customer: "老巷夜宵",     status: "已取消", total: 1780,  createdAt: "2026-06-01", description: "客户临时改成月结账，改走新单。" },
+  { id: "SO-2406", name: "校服返厂修补",   customer: "白鹭小学",     status: "进行中", total: 4560,  createdAt: "2026-06-08", description: "60 件春装校服返厂修补袖口。" },
+  { id: "SO-2407", name: "咖啡豆 30 kg",   customer: "半山咖啡",     status: "已完成", total: 5940,  createdAt: "2026-05-19", description: "危地马拉与耶加雪菲各 15 kg。" },
+  { id: "SO-2408", name: "会议用花艺",     customer: "云海会展",     status: "待处理", total: 2100,  createdAt: "2026-06-13", description: "6/20 会议主桌花艺，色系待客户回复。" },
+  { id: "SO-2409", name: "自营店招牌换新", customer: "南门便利店",   status: "进行中", total: 7300,  createdAt: "2026-06-04", description: "两块亚克力招牌 + 灯带更换。" },
+  { id: "SO-2410", name: "生鲜周订单",     customer: "青禾杂货铺",   status: "进行中", total: 9860,  createdAt: "2026-06-10", description: "本周日常生鲜配送，周二/五各一趟。" },
+  { id: "SO-2411", name: "端午粽子团购",   customer: "锦江酒店集团", status: "已完成", total: 15680, createdAt: "2026-05-22", description: "员工团购粽子 400 盒，已交付食堂。" },
+  { id: "SO-2412", name: "空气炸锅样品",   customer: "永安电器",     status: "待处理", total: 990,   createdAt: "2026-06-14", description: "3 台样品先寄门店测试。" },
+];
+
+function statusClass(s) {
+  if (s === "已完成") return "chip-on";
+  if (s === "进行中") return "chip-warn";
+  return "chip-off"; // 待处理 / 已取消
+}
+
+function Confirm({ text, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>确认操作</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" onClick=${onOk}>确认</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function App() {
+  const [rows, setRows] = useState(SEED);
+  const [selId, setSelId] = useState(SEED[0].id); // 真实版：URL 里的 $id；demo：局部 state
+  const [q, setQ] = useState("");
+  const [form, setForm] = useState(null);         // 编辑草稿：null=只读；否则为一份 row 的浅拷贝
+  const [confirm, setConfirm] = useState(null);
+  const [toast, setToast] = useState("");
+  const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.innerWidth < 720);
+
+  useEffect(() => {
+    const on = () => setNarrow(window.innerWidth < 720);
+    window.addEventListener("resize", on);
+    return () => window.removeEventListener("resize", on);
+  }, []);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const filtered = useMemo(() => {
+    const kw = q.trim().toLowerCase();
+    if (!kw) return rows;
+    return rows.filter(r =>
+      r.id.toLowerCase().includes(kw) ||
+      r.name.toLowerCase().includes(kw) ||
+      r.customer.toLowerCase().includes(kw));
+  }, [rows, q]);
+
+  const selected = rows.find(r => r.id === selId) || null;
+  const editing = form !== null && selected !== null && form.id === selected.id;
+
+  const pickRow = (id) => { setSelId(id); setForm(null); };
+  const startEdit = () => setForm({ ...selected });
+  const cancelEdit = () => setForm(null);
+  const saveEdit = () => {
+    const cleaned = { ...form, total: Number(form.total) || 0 };
+    // 真实版：update mutation 成功 → 失效 list + detail 查询键，两侧自动刷新
+    setRows(rs => rs.map(r => (r.id === cleaned.id ? cleaned : r)));
+    setForm(null);
+    setToast(`已保存 ${cleaned.id}`);
+  };
+  const askDelete = () => {
+    if (!selected) return;
+    setConfirm({
+      text: `删除订单「${selected.name}」（${selected.id}）？此操作不可撤销。`,
+      onOk: () => {
+        const idx = rows.findIndex(r => r.id === selected.id);
+        const next = rows.filter(r => r.id !== selected.id);
+        setRows(next);
+        // 挪到下一条（真实版：路由自己走 notFoundComponent，面板换成缺失态）
+        setSelId(next[Math.min(idx, next.length - 1)]?.id ?? null);
+        setForm(null);
+        setConfirm(null);
+        setToast(`已删除 ${selected.id}`);
+      },
+    });
+  };
+
+  // 窄屏路由：未选中只显示列表；选中只显示详情（内含「返回列表」）
+  const showList = !narrow || !selId;
+  const showDetail = !narrow || !!selId;
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>订单</h1>
+          <p class="sub">左列表 + 右详情 · 选行联动详情 · 详情可编辑保存回列表</p>
+        </div>
+      </header>
+
+      <div class="md-split">
+        ${showList && html`
+          <div class="md-list">
+            <div class="md-search">
+              <input placeholder="搜索单号 / 名称 / 客户…" value=${q}
+                     onChange=${e => setQ(e.target.value)} />
+            </div>
+            <ul class="md-rows">
+              ${filtered.map(r => html`
+                <li key=${r.id}
+                    class=${"md-row " + (r.id === selId ? "on" : "")}
+                    onClick=${() => pickRow(r.id)}>
+                  <div class="md-row-top">
+                    <span class="md-code">${r.id}</span>
+                    <span class=${"chip " + statusClass(r.status)}>${r.status}</span>
+                  </div>
+                  <div class="md-row-mid">${r.name}</div>
+                  <div class="md-row-sub">${r.customer} · ¥${r.total.toLocaleString("zh-CN")}</div>
+                </li>`)}
+              ${filtered.length === 0 && html`<li class="empty">没有匹配的订单</li>`}
+            </ul>
+          </div>`}
+
+        ${showDetail && html`
+          <div class="md-detail">
+            ${narrow && html`
+              <div class="md-back">
+                <button class="link" onClick=${() => setSelId(null)}>← 返回列表</button>
+              </div>`}
+
+            ${!selected && html`
+              <div class="md-missing">
+                <h2>订单不存在</h2>
+                <p>它可能已被删除或从未存在，从左侧列表挑一条继续。</p>
+              </div>`}
+
+            ${selected && !editing && html`
+              <div>
+                <div class="md-head">
+                  <div>
+                    <h2>${selected.name}</h2>
+                    <p class="sub">${selected.id} · 创建于 ${selected.createdAt}</p>
+                  </div>
+                  <span class=${"chip " + statusClass(selected.status)}>${selected.status}</span>
+                </div>
+                <dl class="md-fields">
+                  <dt>客户</dt><dd>${selected.customer}</dd>
+                  <dt>金额</dt><dd class="num">¥${selected.total.toLocaleString("zh-CN")}</dd>
+                  <dt>状态</dt><dd>${selected.status}</dd>
+                  <dt>创建</dt><dd>${selected.createdAt}</dd>
+                  <dt>备注</dt><dd>${selected.description || "—"}</dd>
+                </dl>
+                <div class="actions">
+                  <button class="btn" onClick=${startEdit}>编辑</button>
+                  <button class="btn" style=${{ color: "var(--danger)" }} onClick=${askDelete}>删除</button>
+                </div>
+              </div>`}
+
+            ${selected && editing && html`
+              <div class="md-form">
+                <div class="md-head">
+                  <div>
+                    <h2>编辑 ${selected.id}</h2>
+                    <p class="sub">改完点保存，左侧列表会同步刷新</p>
+                  </div>
+                </div>
+                <label>名称
+                  <input value=${form.name}
+                         onChange=${e => setForm({ ...form, name: e.target.value })} />
+                </label>
+                <label>客户
+                  <input value=${form.customer}
+                         onChange=${e => setForm({ ...form, customer: e.target.value })} />
+                </label>
+                <div class="row2">
+                  <label>状态
+                    <select value=${form.status}
+                            onChange=${e => setForm({ ...form, status: e.target.value })}>
+                      <option>待处理</option>
+                      <option>进行中</option>
+                      <option>已完成</option>
+                      <option>已取消</option>
+                    </select>
+                  </label>
+                  <label>金额（¥）
+                    <input type="number" min="0" value=${form.total}
+                           onChange=${e => setForm({ ...form, total: e.target.value })} />
+                  </label>
+                </div>
+                <label>备注
+                  <textarea rows="3" value=${form.description}
+                            onChange=${e => setForm({ ...form, description: e.target.value })}></textarea>
+                </label>
+                <div class="actions">
+                  <button class="btn" onClick=${cancelEdit}>取消</button>
+                  <button class="btn primary" onClick=${saveEdit}>保存</button>
+                </div>
+              </div>`}
+          </div>`}
+      </div>
+
+      ${confirm && html`<${Confirm} text=${confirm.text} onOk=${confirm.onOk} onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

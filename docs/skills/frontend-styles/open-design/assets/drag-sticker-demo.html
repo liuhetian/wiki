@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>可拖拽贴纸 — open-design.ai Drag Sticker 拆解</title>
+<style>
+  /* ================================================================
+     Atelier Zero 令牌（open-design 仓库 apps/landing-page/app/globals.css）
+     ================================================================ */
+  :root {
+    --paper: #fafafa;
+    --paper-dark: #f0f0f0;
+    --ink: #262626;
+    --ink-soft: #434343;
+    --ink-mute: #595959;
+    --ink-faint: #8c8c8c;
+    --coral: #63fe13;
+    --bone: #ffffff;
+    --line: #d9d9d9;
+    --shadow: 0 30px 60px -30px rgba(38, 38, 38, 0.16);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 40px clamp(20px, 6vw, 60px);
+    overflow: hidden;         /* 贴纸拖出去也不出滚动条，随便甩 */
+    position: relative;
+  }
+
+  /* ---- 被贴纸"盖章"的一段杂志排版，纯当背景 ---- */
+  .kicker { font-size: 12px; letter-spacing: .22em; color: var(--ink-faint); margin-bottom: 10px; }
+  h1 {
+    font-size: clamp(34px, 6vw, 56px);
+    font-weight: 800;
+    letter-spacing: -.03em;
+    line-height: 1.05;
+    max-width: 12em;
+    margin-bottom: 18px;
+  }
+  h1 em { font-style: normal; box-shadow: inset 0 -0.34em var(--coral); }
+  p.body { font-size: 14px; line-height: 2; color: var(--ink-soft); max-width: 40em; margin: 12px 0; }
+  .hint { margin-top: 26px; font-size: 12px; color: var(--ink-faint); letter-spacing: .08em; }
+
+  /* ================================================================
+     贴纸 A —— 官网 enhanceDragIcon 式：JS 全权接管 transform
+     结构上分两层：外层 .sticker 只承接 JS 写入的 translate（拖拽位移），
+     内层 .sticker-face 负责 rotate 倾斜和外观。
+     ▸ 坑：官网 JS 直接写 el.style.transform = 'translate(...)'，
+       会整个覆盖 CSS 里的 transform —— 倾斜若写在同一层会在
+       第一次拖动瞬间被抹掉。官网的贴纸是 SVG 图片自带倾斜所以
+       无感；纯 CSS 复刻必须拆两层。
+     ================================================================ */
+  .sticker {
+    position: absolute;
+    top: 12%;
+    right: clamp(16px, 12vw, 150px);
+    cursor: grab;
+    user-select: none;
+    touch-action: none;       /* 触屏上把手势让给拖拽，不触发页面滚动 */
+    z-index: 10;
+  }
+  .sticker-face {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 18px 26px 14px;
+    background: var(--bone);
+    border: 2px solid var(--ink);
+    border-radius: 18px;
+    transform: rotate(-7deg);
+    /* 双层阴影：一圈贴纸白边 + 一坨离得远的深影，纸片浮空感 */
+    box-shadow: 0 0 0 6px var(--bone), 0 18px 34px -18px rgba(38, 38, 38, .5);
+    transition: box-shadow .18s ease, transform .18s ease;
+  }
+  .sticker-face .word { font-size: 34px; font-weight: 800; letter-spacing: -.02em; line-height: 1; }
+  .sticker-face .word span { color: transparent; -webkit-text-stroke: 1.6px var(--ink); }
+  .sticker-face .ok { font-size: 30px; line-height: 1.1; }
+  .sticker-face .sub { font-size: 10px; letter-spacing: .3em; color: var(--ink-faint); }
+  /* 抓取反馈：官网只切一个 .is-dragging 类，其余交给 CSS */
+  .sticker.is-dragging { cursor: grabbing; z-index: 20; }
+  .sticker.is-dragging .sticker-face {
+    transform: rotate(-2deg) scale(1.05);   /* 拎起来时微微回正 */
+    box-shadow: 0 0 0 6px var(--bone), 0 30px 50px -20px rgba(38, 38, 38, .6);
+  }
+
+  /* ================================================================
+     贴纸 B —— 官网 Method 模块 reveal banner 的变体：
+     CSS 保住"居中"这个基准（translate(-50%,-50%)），JS 不碰
+     transform，只往 --drag-x / --drag-y 两个变量里写偏移。
+     基准布局和拖拽位移互不踩脚，这是比贴纸 A 更稳的写法。
+     ================================================================ */
+  .banner {
+    position: absolute;
+    left: 50%;
+    top: 62%;
+    transform: translate(calc(-50% + var(--drag-x, 0px)), calc(-50% + var(--drag-y, 0px)));
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 26px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    box-shadow: var(--shadow);
+    z-index: 10;
+  }
+  .banner .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--coral); }
+  .banner b { color: var(--coral); font-weight: 800; }
+  .banner.is-dragging { cursor: grabbing; box-shadow: 0 34px 60px -24px rgba(38, 38, 38, .5); z-index: 20; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sticker-face, .banner { transition: none; }
+    /* 拖拽本身是用户主动发起的直接操纵，不属于要禁用的"自动运动"，保留 */
+  }
+</style>
+</head>
+<body>
+
+<p class="kicker">CAPABILITIES · 可拖拽贴纸</p>
+<h1>页面角落里<br>藏一枚<em>能拽着玩</em>的印章</h1>
+<p class="body">open-design.ai 的 Capabilities 标题旁贴着一枚手绘"DONE 👌"，不提示、不发光，纯靠好奇心发现：原来能抓起来扔到任何地方。一个 30 行的 enhancer 给整页添了一件玩具。</p>
+<p class="body">右上那枚是官网同款写法（JS 接管 transform、位移进 tx/ty 累积），下面的黑色横幅是官网另一处的变体写法（CSS 变量 --drag-x/--drag-y 叠在居中定位上）。</p>
+<p class="hint">↖ 两枚贴纸都可以按住拖动 · 拖出窗口边缘也不会脱手（pointer capture）</p>
+
+<!-- 贴纸 A：enhanceDragIcon 式（外层收 translate，内层管倾斜外观） -->
+<div class="sticker" data-drag-icon>
+  <div class="sticker-face">
+    <div class="word">D<span>ON</span>E</div>
+    <div class="ok">👌</div>
+    <div class="sub">HANDCRAFTED</div>
+  </div>
+</div>
+
+<!-- 贴纸 B：--drag-x / --drag-y 变量式（CSS 基准布局丝毫不动） -->
+<div class="banner" data-drag-var>
+  <span class="dot"></span>
+  <span>已适配 <b>21+</b> Coding Agent</span>
+</div>
+
+<script>
+/* ================================================================
+   写法一：enhanceDragIcon（官网 pages/index.astro 原样机制）
+   ----------------------------------------------------------------
+   ▸ pointerdown：记录起点 (sx,sy)，挂 .is-dragging，
+     setPointerCapture —— 关键一步：捕获后哪怕指针滑出元素、
+     滑出 iframe 边界，move/up 事件仍然派发给这个元素，
+     快速甩动也永远不脱手。
+   ▸ pointermove：位移 = 累积量(tx,ty) + 本次增量(clientX-sx)，
+     直接写 style.transform（注意这会覆盖 CSS transform，
+     所以倾斜放内层元素）。
+   ▸ pointerup / pointercancel：把本次增量并进 tx/ty，
+     releasePointerCapture，摘掉状态类。
+   Pointer Events 天生统一鼠标/触屏/触控笔，不用写两套。
+   ================================================================ */
+(() => {
+  document.querySelectorAll('[data-drag-icon]').forEach((el) => {
+    let tx = 0, ty = 0;       // 历次拖拽的累积位移
+    let sx = 0, sy = 0;       // 本次按下的起点
+    let dragging = false;
+    el.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      sx = e.clientX;
+      sy = e.clientY;
+      el.classList.add('is-dragging');
+      try { el.setPointerCapture(e.pointerId); } catch (_) {}
+      e.preventDefault();     // 禁掉文字选取 / 原生图片拖拽
+    });
+    el.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      el.style.transform =
+        'translate(' + (tx + (e.clientX - sx)) + 'px,' + (ty + (e.clientY - sy)) + 'px)';
+    });
+    const end = (e) => {
+      if (!dragging) return;
+      dragging = false;
+      tx += e.clientX - sx;   // 增量落袋，下次从这里继续
+      ty += e.clientY - sy;
+      el.classList.remove('is-dragging');
+      try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+    };
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+  });
+
+  /* ================================================================
+     写法二：--drag-x / --drag-y 变量式（官网 initFallingText 里
+     reveal banner 的机制）。JS 完全不碰 transform：按下时读出
+     变量当基准，move 时 setProperty 写回。居中(-50%,-50%)那半段
+     永远由 CSS 持有 —— 换断点、改布局都不会跟拖拽打架。
+     ================================================================ */
+  document.querySelectorAll('[data-drag-var]').forEach((el) => {
+    let dragging = false;
+    let startX = 0, startY = 0;   // 本次按下的指针起点
+    let baseX = 0, baseY = 0;     // 按下时已有的偏移（从变量读回）
+    const readVar = (name) => Number.parseFloat(el.style.getPropertyValue(name)) || 0;
+    el.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      dragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      baseX = readVar('--drag-x');
+      baseY = readVar('--drag-y');
+      el.classList.add('is-dragging');
+      try { el.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    el.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      el.style.setProperty('--drag-x', `${baseX + (e.clientX - startX)}px`);
+      el.style.setProperty('--drag-y', `${baseY + (e.clientY - startY)}px`);
+    });
+    const end = (e) => {
+      if (!dragging) return;
+      dragging = false;
+      el.classList.remove('is-dragging');
+      try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+    };
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlurText 标题逐词模糊入场 — open-design.ai hero 复刻</title>
+<style>
+  /* ================================================================
+     Atelier Zero 设计令牌 —— 照抄 open-design 官网 app/globals.css :root。
+     注意 --coral 名字叫 coral，值其实是荧光绿 #63fe13：全站唯一强调色。
+     ================================================================ */
+  :root {
+    --paper: #fafafa;
+    --paper-dark: #f0f0f0;
+    --ink: #262626;
+    --ink-soft: #434343;
+    --ink-mute: #595959;
+    --ink-faint: #8c8c8c;
+    --coral: #63fe13;
+    --coral-soft: #83ff3b;
+    --bone: #ffffff;
+    --line: #d9d9d9;
+    --shadow: 0 30px 60px -30px rgba(38, 38, 38, 0.16);
+    --sans: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+    /* 官网品牌行用系统衬线栈（Georgia…），零 webfont 请求 */
+    --brand-serif: Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 40px 20px;
+    /* 官网纸面上有一层极淡的网格质感，这里用两组 1px 线性渐变模拟 */
+    background-image:
+      linear-gradient(var(--paper-dark) 1px, transparent 1px),
+      linear-gradient(90deg, var(--paper-dark) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* ---------- 眉头小字（hero-lead）：SEO 入口词放在 H1 之上 ---------- */
+  .hero-lead {
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+  }
+
+  /* ================================================================
+     ① 蓝图选择框（hero-title 的框线）
+     官网 .hero h1.hero-title：width:fit-content 收缩包裹最宽一行，
+     1px coral 边框 + 流式内边距 clamp(16px,3.2vw,28px) / clamp(18px,5vw,48px)，
+     像设计画布上被框选中的图层 —— Figma 选中框的隐喻。
+     ================================================================ */
+  .hero-title {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+    max-width: 100%;
+    line-height: 1;
+    padding: clamp(16px, 3.2vw, 28px) clamp(18px, 5vw, 48px);
+    border: 1px solid var(--coral);
+  }
+  /* 四角 9px 实心方块，translate ±50% 让方块正好"骑"在角点上
+     （官网 .hero-title-corner，4 个 span 各占一角） */
+  .corner {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    background: var(--coral);
+  }
+  .corner.tl { top: 0;    left: 0;   transform: translate(-50%, -50%); }
+  .corner.tr { top: 0;    right: 0;  transform: translate(50%, -50%);  }
+  .corner.bl { bottom: 0; left: 0;   transform: translate(-50%, 50%);  }
+  .corner.br { bottom: 0; right: 0;  transform: translate(50%, 50%);   }
+
+  /* 品牌行：衬线 800，clamp(30px,6vw,54px)（官网 .hero-title-brand） */
+  .brand-line {
+    font-family: var(--brand-serif);
+    font-weight: 800;
+    font-size: clamp(30px, 6vw, 54px);
+    letter-spacing: -0.01em;
+  }
+  /* 副行（定位语）：无衬线 800，clamp(22px,4.8vw,40px)（官网 .hero-title-main）
+     官网这行是英文 "The Vibe Design Workspace"；中文 locale 的标题按字拆 */
+  .tagline {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: clamp(22px, 4.8vw, 40px);
+    letter-spacing: -0.02em;
+    line-height: 1.06;
+  }
+
+  /* ================================================================
+     ② BlurText 逐词模糊入场（React Bits BlurText 的静态 SSR 移植）
+     官网 page.tsx 的 <BlurText> 在构建期就把每个词/字输出成
+     <span class="blur-word" style="--i:N">，浏览器端零 React、零 motion
+     runtime —— 动画完全由下面这段 CSS 完成。
+     ================================================================ */
+  .blur-word {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(-50px);
+    will-change: transform, filter, opacity;
+  }
+  /* 容器被翻成 data-revealed='true' 后开播；
+     每个词按自己的 --i 序号排队，一个词晚 0.035s（官网原值） */
+  .hero-title[data-revealed='true'] .blur-word {
+    animation: blurTextIn 0.38s cubic-bezier(0.23, 1, 0.32, 1) both;
+    animation-delay: calc(var(--i, 0) * 0.035s);
+  }
+  /* 三段关键帧照抄 React Bits 原组件的插值步：
+     blur 10px→5px→0，opacity 0→.5→1，translateY -50px→+5px→0
+     （中段先过冲 5px 再回正，落点带一点"坠感"） */
+  @keyframes blurTextIn {
+    0%   { opacity: 0;   filter: blur(10px); transform: translateY(-50px); }
+    50%  { opacity: 0.5; filter: blur(5px);  transform: translateY(5px);   }
+    100% { opacity: 1;   filter: blur(0);    transform: translateY(0);     }
+  }
+
+  /* ---------- hero-sub：标题下面的一句说明 ---------- */
+  .hero-sub {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink-mute);
+    text-align: center;
+    max-width: 46ch;
+  }
+
+  /* ---------- 重播按钮（demo 专属，官网没有） ---------- */
+  .replay {
+    font-family: var(--sans);
+    font-size: 14px;
+    padding: 10px 22px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bone);
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: border-color 0.16s ease, background 0.16s ease;
+  }
+  .replay:hover { border-color: var(--coral); background: var(--coral-soft); }
+
+  /* ---------- 无障碍兜底：照官网，reduced-motion 下全部直接可见 ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .blur-word { opacity: 1; filter: none; transform: none; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<p class="hero-lead">开源 AI 设计工作台</p>
+
+<!-- 蓝图选择框 + 两行标题。
+     英文行按词拆（by='words'），中文行按字拆（by='letters'，
+     官网 zh/ja/ko locale 就是这么切的 —— CJK 没有词间空格）；
+     第二行的 --i 从第一行末尾接着数（官网 BlurText 的 start 参数），
+     所以整个标题是一条连续的入场队列。 -->
+<h1 class="hero-title" data-reveal>
+  <span class="corner tl"></span><span class="corner tr"></span>
+  <span class="corner bl"></span><span class="corner br"></span>
+  <span class="brand-line">
+    <span class="blur-word" style="--i:0">Open&nbsp;</span><span class="blur-word" style="--i:1">Design</span>
+  </span>
+  <span class="tagline">
+    <span class="blur-word" style="--i:2">氛</span><span class="blur-word" style="--i:3">围</span><span class="blur-word" style="--i:4">设</span><span class="blur-word" style="--i:5">计</span><span class="blur-word" style="--i:6">工</span><span class="blur-word" style="--i:7">作</span><span class="blur-word" style="--i:8">台</span>
+  </span>
+</h1>
+
+<p class="hero-sub">标题在服务端就拆成了一颗颗带序号的词粒，进入视口那一刻按序号排队从模糊里坠落成形 —— 页面不带任何动画运行时。</p>
+
+<button class="replay" type="button" id="replay">↺ 重播入场</button>
+
+<script>
+  (() => {
+    const title = document.querySelector('.hero-title');
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* 触发方式照官网 home-enhancer.astro：一个页面级 IntersectionObserver
+       盯住所有 [data-reveal]，threshold 0.12 + rootMargin '0px 0px -8% 0px'
+       （元素要越过视口底部 8% 的"缓冲带"才算真正进场），翻成
+       data-revealed='true' 后立即 unobserve —— 每个元素只入场一次。
+       reduced-motion 或没有 IO 的老浏览器：直接全部置 revealed，永不空白。 */
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      title.dataset.revealed = 'true';
+    } else {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          e.target.dataset.revealed = 'true';
+          io.unobserve(e.target);
+        }
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      io.observe(title);
+    }
+
+    /* 重播：摘掉 data-revealed → 强制 reflow 让动画状态归零 → 再挂回。
+       animation 用了 both 填充模式，所以摘掉属性词粒立刻回到模糊初始态。 */
+    document.getElementById('replay').addEventListener('click', () => {
+      delete title.dataset.revealed;
+      void title.offsetWidth; /* 强制一次同步布局，切断前后两次动画 */
+      title.dataset.revealed = 'true';
+    });
+  })();
+</script>
+</body>
+</html>

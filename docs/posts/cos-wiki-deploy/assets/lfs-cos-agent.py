@@ -1,0 +1,1 @@
+../../../../scripts/lfs-cos-agent.py

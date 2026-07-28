@@ -1,0 +1,443 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>点阵地球与贡献者轨道 demo</title>
+<style>
+  /* ============================================================
+   * 点阵地球 + 贡献者头像轨道 —— open-design.ai 首页 Testimonial 模块复刻
+   *
+   * 官网是两层独立的东西叠在一起：
+   *   ① WebGL 点阵地球：cobe 库（~5KB），参数 mapSamples 12000、
+   *      白底 baseColor [1,1,1]、marker 荧光绿 [0.31,0.98,0.08]、
+   *      markerElevation 0.015、theta 0.28、每帧 phi += 0.0042、
+   *      dpr 上限 2；IntersectionObserver threshold 0.05 进视口才
+   *      start、出视口 stop（WebGL 不白烧电）。cobe 本体也是滚近
+   *      1.5 屏才动态注入的。
+   *   ② 贡献者头像轨道：纯 CSS。方形 ring 38s 匀速自转，头像靠
+   *      三层 transform 各司其职（详见下方 CSS 注释），右侧渐隐
+   *      mask 伪造"半个环转到地球背后"的纵深。
+   *
+   * 本 demo 与官网差异：为自包含没带 cobe，用 canvas 2D 手写复刻
+   * —— fibonacci 球面撒 9000 个候选点，按内嵌的 Natural Earth 110m
+   * 陆地位掩码筛出 ~3300 个陆地点（cobe mapSamples 的手写等价），
+   * 绕 y 轴自转 + 正交投影；头像用字母 chip 代替 GitHub 头像
+   * （官网加载失败时也是这个字母兜底样式 .orbit-avatar--fallback）。
+   * ============================================================ */
+  :root {
+    --paper: #fafafa;
+    --paper-dark: #f0f0f0;
+    --ink: #262626;
+    --ink-soft: #434343;
+    --ink-mute: #595959;
+    --ink-faint: #8c8c8c;
+    --coral: #63fe13;
+    --coral-soft: #83ff3b;
+    --bone: #ffffff;
+    --line: #d9d9d9;
+    --shadow: 0 30px 60px -30px rgba(38, 38, 38, 0.16);
+  }
+  * { margin: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 20px;
+  }
+
+  /* ---- 官网 Testimonial 布局：左大字文案 + 右地球 ---- */
+  .testimonial {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    align-items: center;
+    gap: 24px;
+    width: min(960px, 100%);
+  }
+  .copy h2 {
+    font-size: clamp(24px, 4.2vw, 40px);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+  }
+  .copy h2 .num { color: var(--olive, #1f8c00); background: linear-gradient(transparent 58%, var(--coral) 58%); font-variant-numeric: tabular-nums; }
+  .copy p { margin-top: 14px; color: var(--ink-mute); font-size: 14px; max-width: 34ch; }
+  .copy .btn {
+    display: inline-block;
+    margin-top: 22px;
+    padding: 10px 22px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    text-decoration: none;
+    transition: border-color .16s, color .16s;
+  }
+  .copy .btn:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* ---- 地球 + 轨道共用一个正方形舞台，二者天然同心 ---- */
+  .globe-stage {
+    position: relative;
+    width: min(100%, 460px);
+    aspect-ratio: 1 / 1;
+    margin-left: auto;
+  }
+  .globe-canvas {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    /* 球比轨道环小一圈，让头像走在球的边缘外侧 */
+    width: 74%;
+    height: 74%;
+  }
+
+  /* ---- 贡献者轨道（结构与官网 .contributor-orbit 一致） ----
+   *
+   * 三层 transform 各司其职：
+   *   ring       整环 38s 匀速正转（唯一的动力源）
+   *   slot       inset:0 铺满 + rotate(--angle)：把"顶边中点"这个
+   *              锚位转到自己的角度上 —— 角度均分 360/count，纯静态
+   *   avatar     钉在 slot 顶边中点（top:0; left:50%），再静态反转
+   *              rotate(-1 * --angle) 抵消槽位角度
+   *   face(内层) 38s 匀速**反**转，抵消 ring 的动画，字母/头像永远直立
+   *
+   * 纵深是假的：环就是个平面圆，右侧"转到地球背后"的消失感全靠
+   * 一条从左到右的渐隐 mask（官网原值照抄）。mask 只罩头像层，
+   * 地球 canvas 是兄弟节点不受影响。 */
+  .contributor-orbit {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    /* slot 是铺满整环的正方形再 rotate(--angle)，旋转后的包围盒最大到
+       √2 倍，虽然不可见却会把页面滚动区撑宽（横向滚动条）。在这里
+       clip 掉：头像被 ring 的 inset 收在盒内 ≥4px，不会被误裁。 */
+    overflow: clip;
+    -webkit-mask-image: linear-gradient(to right,
+      #000 0%, #000 22%, rgba(0,0,0,.55) 52%, rgba(0,0,0,.18) 78%, transparent 92%);
+    mask-image: linear-gradient(to right,
+      #000 0%, #000 22%, rgba(0,0,0,.55) 52%, rgba(0,0,0,.18) 78%, transparent 92%);
+  }
+  .orbit-ring {
+    position: absolute;
+    /* 官网同款内缩：让头像整个待在 mask 盒子里面，不被硬切 */
+    inset: clamp(28px, 6%, 38px);
+    animation: orbit-spin 38s linear infinite;
+  }
+  .orbit-slot {
+    position: absolute;
+    inset: 0;
+    transform: rotate(var(--angle, 0deg));
+  }
+  .orbit-avatar {
+    position: absolute;
+    top: 0; left: 50%;
+    width: clamp(34px, 10%, 48px);
+    height: clamp(34px, 10%, 48px);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(calc(-1 * var(--angle, 0deg)));
+    pointer-events: auto;
+  }
+  .orbit-face {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: clamp(14px, 2.4vw, 19px);
+    color: var(--ink-mute);
+    background: var(--face-bg, var(--paper-dark));
+    border: 2px solid var(--bone);
+    box-shadow: 0 8px 20px -8px rgba(21, 20, 15, .45),
+                inset 0 0 0 1px rgba(21, 20, 15, .06);
+    animation: orbit-spin-rev 38s linear infinite;  /* 抵消 ring 正转 */
+  }
+  .orbit-face:hover { box-shadow: 0 10px 24px -8px rgba(21,20,15,.5), inset 0 0 0 1px var(--coral); }
+  @keyframes orbit-spin     { to { transform: rotate(360deg); } }
+  @keyframes orbit-spin-rev { to { transform: rotate(-360deg); } }
+
+  @media (max-width: 720px) {
+    .testimonial { grid-template-columns: 1fr; }
+    .globe-stage { margin: 0 auto; }
+    .copy { text-align: center; }
+    .copy p { margin-left: auto; margin-right: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orbit-ring, .orbit-face { animation: none; }
+  }
+</style>
+
+<section class="testimonial">
+  <div class="copy">
+    <h2>来自全球<br><span class="num">343</span> 位贡献者<br>一起把它做出来</h2>
+    <p>官网这块左边是实时抓 GitHub API 的贡献者计数，右边是 cobe 点阵地球 + 头像轨道环。</p>
+    <a class="btn" href="javascript:void 0">认识贡献者 ↗</a>
+  </div>
+  <div class="globe-stage">
+    <canvas class="globe-canvas" aria-label="点阵地球"></canvas>
+    <div class="contributor-orbit" aria-hidden="true">
+      <div class="orbit-ring">
+        <!-- 官网从 GitHub contributors API 取前 16 个头像；
+             demo 用字母 chip（= 官网头像加载失败时的 --fallback 样式） -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  /* ---------- ① 轨道：JS 只负责均分角度铺 slot，动画全在 CSS ---------- */
+  const NAMES = ['牛', 'K', 'A', 'M', '禾', 'S', 'J', '天', 'R', 'L', 'Q', 'W'];
+  const TINTS = ['#f0f0f0', '#e9f6e2', '#f5f0e6', '#e8eef5'];  // 素雅浅底轮换
+  const ring = document.querySelector('.orbit-ring');
+  NAMES.forEach((ch, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'orbit-slot';
+    slot.style.setProperty('--angle', `${(360 / NAMES.length) * i}deg`);
+    const av = document.createElement('div');
+    av.className = 'orbit-avatar';
+    const face = document.createElement('div');
+    face.className = 'orbit-face';
+    face.style.setProperty('--face-bg', TINTS[i % TINTS.length]);
+    face.textContent = ch;
+    av.appendChild(face);
+    slot.appendChild(av);
+    ring.appendChild(slot);
+  });
+
+  /* ---------- ② 点阵地球（canvas 2D 手写，复刻 cobe 的气质) ----------
+   *
+   * fibonacci 球面均匀采样：第 i 个点
+   *   y = 1 - 2(i+0.5)/N          （纬向均匀切片）
+   *   r = sqrt(1 - y²)             （该纬度圆半径）
+   *   θ = i * π(3-√5)              （黄金角步进，经向错开不结队）
+   *   x = r·cosθ, z = r·sinθ
+   * 渲染管线：绕 y 轴自转 phi（官网每帧 +0.0042）→ 绕 x 轴俯仰
+   * theta 0.28（官网同值）→ 正交投影（丢掉 z 直接画 x,y）→ 用 z
+   * 当深度：z≤0 在背面不画，z 越大点越大越实。
+   * 官网 cobe 是 WebGL + 陆地贴图采样（mapSamples 12000 只在陆地
+   * 上撒点）；demo 同思路：撒 9000 个候选点，用内嵌的 Natural Earth
+   * 110m 陆地位掩码（360×180，base64 ~10.8KB）筛出陆地点。 */
+  const canvas = document.querySelector('.globe-canvas');
+  const ctx = canvas.getContext('2d');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DPR = Math.min(devicePixelRatio || 1, 2);   // 官网同款：dpr 封顶 2
+
+  /* 陆地位掩码：Natural Earth 110m land（公有领域）光栅成 360×180
+     位图，row-major、bit=1 为陆地、MSB 在前；生成脚本见同目录
+     make-land-mask.py。base64 内嵌，保持零外链。 */
+  const LAND_B64 =
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAP//gAAD//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//////Hf///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAf/////////////AAAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAAAAAAAAAAAAAB/////////////wAAAAX/8AAP8AAAAAAfwAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAOB////g////////AAAAD//wAAAAAAAAAAH/gAAAAAAAAAAAAAAAAAAAAAAAeP3vv/7////////+AAAAB//AAAAAAAAAAAAf8AAAAAAAAAAAA' +
+    'AAAAAAAAAA8+AL4f/g////////+AAAAAfvgAAAAAAAAAAAF+AAAAAAAAAAAAAAAAAAAAAH/3R////gP////////AAAAAHAAAAAAAf4AAAHP//AAAA8AAAAAA' +
+    'AAAAAAAAACP/5///8AAAf/////+AAAAAAAAAAAAf+AAAH////gAAD//gAAAAAAAAAAAAAf4+AN//+AAAP/////+AAAAAAAAAAAAeAAAAP///4AAAA/nAAAAA' +
+    'AAAAAAAAAf/B8///3wAAH/////8AAAAAAAAAAAB4AEAP//////H4AfAAAAAAAAAAAAAAA//+5/9//4AAD/////wAAAAAAAAAAAHwAHt////////8Af/AAAAA' +
+    '4AABgAAAA///8f8///AAD/////wAAAAAAAiAAAHwA//////////8///gQAADwAA//+gAOYf//1+///+AB/////4AAAAAAH/wAAB8A/v/////////////8AID' +
+    'AAD///+P/////v/j///AB////+AAAAAAAf//gAAA+/////////////////P+4Af//////////H/z4f/AAf///4AAAAAAD///4eB/////////////////////' +
+    '/AH/////////////45/wA///8AAAAAAAP////e///////////////////////4f/////////////gD/+A///wAycAAAAf///////////////////////////' +
+    '///////////////7g/+4Af//AB/+AAAA/+f+f///////////////////////jwf/////////////9//oAf/wAA/8AAAD/8//////////////////////////' +
+    'APH////////////PcB/wAP/gAAfgAAAP/3/////////////////////////+ACP////////////A///gAD/AAAAAAAB//H//////////////////////////' +
+    'AAf///////////wAG/5AAD/AAAAAAAD//H/////////////////////////gAA////////////wAA/4QAB+AAAAAAAB//n//////////////////////D/+A' +
+    'AAb/zwn///////wAA/44AAAAAAAAAAB//D//////////////////////D6IAAAAv4AA///////4AB//8AAAAAAAAA4B5/B///////////////////4AYPgAA' +
+    'AAAH8AAD///////AAf/8AAAAAAAAA+AP+H///////////////////gAA/wAAAAAfQAAB///////wAf/+AAAAAAAAB8AO8H///////////////////AAB/wAA' +
+    'AAD8AAAA////////x///gAAAAAAAD8AP4H//////////////////+AAB/AAAAAGAAAAD////////z///4AAAAAAAH/AP////////////////////+yAB/gAA' +
+    'AAAAAAADP///////x///+AAAAAAAPfj//////////////////////+AB+AAAAAAAAAABv///////5///+AAAAAAAPfz///////////////////////AA4AAA' +
+    'AAAAAAAAD///////////+AAAAAAAM/////////////////////////AA4AAAAAAAAAAAH///////////MAAAAAAAA////////////////////////7AAAAAA' +
+    'AAAAAAAAH//////////+fgAAAAAAAj///////////////////////7AAAAAAAAAAAAAAA//////////w/wAAAAAAAf///////////////////////+gAAAAA' +
+    'AAAAAAAAAf/////////x/wAAAAAAAf////////7//////////////yAAAAAAAAAAAAAAAf/////////9DgAAAAAAAD////////g//////////////nAAAAAA' +
+    'AAAAAAAAAP//////////gAAAAAAAAD/////P/+A/////////////+GAAAAAAAAAAAAAAAP/////////4AAAAAAAAAD/////Hf8D/////////////8HQAAAAA' +
+    'AAAAAAAAAf////////5gAAAAAAAAP//3z/+AH+D/////////////8PwAAAAAAAAAAAAAAf////////wAAAAAAAAAH/4P5/8HB+A////////////+wfgAAAAA' +
+    'AAAAAAAAAf////////4AAAAAAAAAP/8M+f//n/Af///////////8AdAAAAAAAAAAAAAAAf////////gAAAAAAAAAH/gMP/////gf///////////8AcAAAAAA' +
+    'AAAAAAAAAP///////8AAAAAAAAAAP/AMH/P///g///////////fwAMAAAAAAAAAAAAAAAP///////8AAAAAAAAAAP/gI/Pv///A//////////+T4AYAAAAAA' +
+    'AAAAAAAAAH///////4AAAAAAAAAAH/A3+Hn///g///////////78C4AAAAAAAAAAAAAAAD///////4AAAAAAAAAAH8//MHH///w///////////48D4AAAAAA' +
+    'AAAAAAAAAB///////4AAAAAAAAAAB//+AB4P//////////////A8/4AAAAAAAAAAAAAAAB///////wAAAAAAAAAAB//+AAgP//////////////g7/gAAAAAA' +
+    'AAAAAAAAAAf//////AAAAAAAAAAAH///AAAB//////////////gH8AAAAAAAAAAAAAAAAAP/////8AAAAAAAAAAAP///8PAD//////////////wHwAAAAAAA' +
+    'AAAAAAAAAAH/////4AAAAAAAAAAAP///+f/7//////////////wDAAAAAAAAAAAAAAAAAAH/////4AAAAAAAAAAAP/////////////////////wAAAAAAAAA' +
+    'AAAAAAAAAAD////i8AAAAAAAAAAAf/////////////////////4AAAAAAAAAAAAAAAAAAAB///gAcAAAAAAAAAAB//////////v///////////wAAAAAAAAA' +
+    'AAAAAAAAAAD//+AAcgAAAAAAAAAD//////////3///////////gAAAAAAAAAAAAAAAAAAAA7/+AAdwAAAAAAAAAH///////+//9///////////AAAAAAAAAA' +
+    'AAAAAAAAAAAf/+AANgAAAAAAAAAH///////+//8f//////////QAAAAAAAAAAAAAAAAAAAAc/+AABgAAAAAAAAAP///////+f//4Af///////+wAAAAAAAAA' +
+    'AAAAAAAAAAAGf+AAcgAAAAAAAAAf////////P//+Af///////8wAAAAAAAAAAAAIAAAAAAAGf+AB/gAAAAAAAAAf////////n///AH///////wwAAAAAAAAA' +
+    'AAAPAAAAAAAAP+A9H4AAAAAAAAA/////////3///AD///v//8AgAAAAAAAAAAAABgAAAAAAAP+B8B8AAAAAAAAA/////////n//+AD//8P/+YAAAAAAAAAAA' +
+    'AAABwAAAAAAAP/B4A/4AAAAAAAAf////////z//8AA//wH/88AAAAAAAAAAAAAAAgAAAAAAAD//4B3/gAAAAAAAf////////x//8AAf/AD/+4A4AAAAAAAAA' +
+    'AAAAAAAAAAAAB//wAwjgAAAAAAAf////////5//4AAf/AD/+AA4AAAAAAAAAAAAAAAAAAAAAAP/0AAAAAAAAAAAf////////4//gAAf+AD//gB4AAAAAAAAA' +
+    'AAAAAAAAAAAAADP/gAAAAAAAAAAf////////8/+AAAf4ADf/gBwAAAAAAAAAAAAAAAAAAAAAAAH/gAAAAAAAAAA///////////wAAAP4AAf/gA4AAAAAAAAA' +
+    'AAAAAAAAAAAAAAD/gAAAAAAAAAAf//////////gAAAP4AAP/wA8AAAAAAAAAAAAAAAAAAAAAAAAPgAoAAAAAAAAf/////////8MAAAPwAAP/wAzAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAHgH8AAAAAAAAf/////////x8AAAHwAAMfwBfAAAAAAAAAAAAAAAAAAAAAAAADgP//AAAAAAAH//////////8AAADwAAMfADfAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAD/f//AAAAAAAH//////////4AAAD4AAMOAGNgAAAAAAAAAAAAAAAAAAAAAAAA////gAAAAAAD//////////4AAAD8AAOEAEPgAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAN///wAAAAAAB//////////wAAABcAAOAAAfgAAAAAAAAAAAAAAAAAAAAAAAAA///6AAAAAAA//////////wAAAAcAAHgAMPgAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAA////wAAAAAAP/x///////gAAAAIABzgAfBAAAAAAAAAAAAAAAAAAAAAAAAAA////4AAAAAAPuB///////AAAAAAAB7wA+AAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAA////4AAAAAAAAAP/////+AAAAAAAA/wD8AAAAAAAAAAAAAAAAAAAAAAAAAAB////4AAAAAAAAAH/////+AAAAAAAAfwX+AQAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAB////+AAAAAAAAAH/////4AAAAAAAAP4f8xYAAAAAAAAAAAAAAAAAAAAAAAAH////8AAAAAAAAAH/////wAAAAAAAAHw//+YAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAH/////wAAAAAAAAP/////gAAAAAAAADwf98bwAAAAAAAAAAAAAAAAAAAAAAAH/////8AAAAAAAAP/////AAAAAAAAAD4f58D5gAAAAAA' +
+    'AAAAAAAAAAAAAAAAH//////4AAAAAAAH////+AAAAAAAAAD8P7wN78AwAAAAAAAAAAAAAAAAAAAAH//////8AAAAAAAB////+AAAAAAAAAA+H55+//gcAAAA' +
+    'AAAAAAAAAAAAAAAAP//////+AAAAAAAB////8AAAAAAAAAA8Ap8A3/wcAAAAAAAAAAAAAAAAAAAAH///////gAAAAAAB////4AAAAAAAAAAfABsAJ/zzAAAA' +
+    'AAAAAAAAAAAAAAAAP///////wAAAAAAA////8AAAAAAAAAAH+AAAI//hgAAAAAAAAAAAAAAAAAAAD///////wAAAAAAA////8AAAAAAAAAAD/gAAA/8A4AAA' +
+    'AAAAAAAAAAAAAAAAD///////gAAAAAAA////8AAAAAAAAAAAP37wB/OAGAAAAAAAAAAAAAAAAAAAB///////gAAAAAAA////8AAAAAAAAAAAAPnAAGHgHAAA' +
+    'AAAAAAAAAAAAAAAAB///////AAAAAAAAf///+AAAAAAAAAAAAAmAACHgBgAAAAAAAAAAAAAAAAAAA//////+AAAAAAAAf///+AAAAAAAAAAAAAAB+HAAAAAA' +
+    'AAAAAAAAAAAAAAAAA//////+AAAAAAAAf///+AwAAAAAAAAAAAAD+HAAAAAAAAAAAAAAAAAAAAAAAf/////8AAAAAAAA////+B4AAAAAAAAAAAA3+HAAAAAA' +
+    'AAAAAAAAAAAAAAAAAf/////8AAAAAAAA////+B4AAAAAAAAAAAB/8HwAADAAAAAAAAAAAAAAAAAAAP/////8AAAAAAAB////+H4AAAAAAAAAAAD//HwAADAA' +
+    'gAAAAAAAAAAAAAAAAD/////4AAAAAAAB////+P4AAAAAAAAAAAH//nwAABADAAAAAAAAAAAAAAAAAA/////4AAAAAAAB////4fwAAAAAAAAAAAP///4AAAAG' +
+    'AAAAAAAAAAAAAAAAAAf////4AAAAAAAB////gPwAAAAAAAAAAAf///4AAAAGAAAAAAAAAAAAAAAAAAf////4AAAAAAAA////APwAAAAAAAAAAB////+AAAAA' +
+    'AAAAAAAAAAAAAAAAAAf////wAAAAAAAAf//+AfgAAAAAAAAAAP////+AAMAAAAAAAAAAAAAAAAAAAAf////wAAAAAAAAf///AfAAAAAAAAAAA//////AAOAA' +
+    'AAAAAAAAAAAAAAAAAAf////gAAAAAAAAP///AfAAAAAAAAAAB//////gADAAAAAAAAAAAAAAAAAAAAf///8AAAAAAAAAP///AfAAAAAAAAAAB//////gAAAA' +
+    'AAAAAAAAAAAAAAAAAAf///wAAAAAAAAAP///AfAAAAAAAAAAB//////4AAAAAAAAAAAAAAAAAAAAAAf///AAAAAAAAAAP//8AOAAAAAAAAAAB//////4AAAA' +
+    'AAAAAAAAAAAAAAAAAAf///AAAAAAAAAAP//4AAAAAAAAAAAAB//////8AAAAAAAAAAAAAAAAAAAAAAf///AAAAAAAAAAH//4AAAAAAAAAAAAA//////8AAAA' +
+    'AAAAAAAAAAAAAAAAAA////AAAAAAAAAAD//4AAAAAAAAAAAAA//////8AAAAAAAAAAAAAAAAAAAAAA///+AAAAAAAAAAB//wAAAAAAAAAAAAAf/////8AAAA' +
+    'AAAAAAAAAAAAAAAAAA///8AAAAAAAAAAB//gAAAAAAAAAAAAA//////8AAAAAAAAAAAAAAAAAAAAAA///4AAAAAAAAAAA//gAAAAAAAAAAAAAf/////4AAAA' +
+    'AAAAAAAAAAAAAAAAAA///wAAAAAAAAAAB/+AAAAAAAAAAAAAAf/w///4AAAAAAAAAAAAAAAAAAAAAA///wAAAAAAAAAAA/8AAAAAAAAAAAAAAf+AP//wAAAA' +
+    'AAAAAAAAAAAAAAAAAA///gAAAAAAAAAAA8AAAAAAAAAAAAAAAfIAH//wAADAAAAAAAAAAAAAAAAAAB//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAD//gAABg' +
+    'AAAAAAAAAAAAAAAAAB//8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/gAABwAAAAAAAAAAAAAAAAAD//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/AAAA+' +
+    'AAAAAAAAAAAAAAAAAD//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAA+AAAAAAAAAAAAAAAAAD/8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAB8' +
+    'AAAAAAAAAAAAAAAAAD/8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA2AAADYAAAAAAAAAAAAAAAAAH/sAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+AAAH4' +
+    'AAAAAAAAAAAAAAAAAH/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAHAAAAAAAAAAAAAAAAAAH/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAA/A' +
+    'AAAAAAAAAAAAAAAAAH/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAH/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4A' +
+    'AAAAAAAAAAAAAAAAAP+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwAAAAAAAAAAAAAAAAAAP/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAP/gAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP+AAAAAAAAAAAAAAAAAAAAAAOAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8D4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAH8BgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAB/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAAAPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAB4AAAAAAA4BAAAEAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAAD8AAAAAAAAAAAAAAAAAAP8AAAAGAD//8f///wAAAAAAAAAAAAAAAAAAAAAAADwAAAAAAAAAAAAAAAAAH//34AP//////////4AAAAA' +
+    'AAAAAAAAAAAAAAAAAAT4AAAAAAAAAAAAAAAGD////8A/////////////AAAAAAAAAAAAAAAAAAAAAA/8AAAAAAAAAAAQRwA//////8f/////////////8AAA' +
+    'AAAAAAAAAAAAAAAAAA/+AAAAAAAABAH//////////8f///////////////gAAAAAAAAAAAAAB9AAAP/+AAAAAAAA/////////////5////////////////8A' +
+    'AAAAAAAAAAAAD/AgAH/+AAAAAAAH//////////////////////////////8AAAAAAAAAD3wgD///////AAAAAAAf//////////////////////////////wA' +
+    'AAAAAAB/////H//////+AAAAAAAf//////////////////////////////AAAAAAAH/////////////wAAAAAAP//////////////////////////////4AA' +
+    'AAAGAf////////////8AAAAAAf///////////////////////////////wAAAAAH/////////////+AAAAQAP////////////////////////////////4AA' +
+    'AAD3/////////////8AAAD+A/////////////////////////////////+AAAAB4/////////////wADAP+A/////////////////////////////////wAA' +
+    'AAAAAP////////////h/h/+Af///////////////////////////////+AAAAAAB///////////////5AH9//////////////////////////////////AAA' +
+    'AAAAP////////////////////////////////////////////////////8AAACAAP/////////////////////////////////////////////////////wA' +
+    '//8AB///////////////////////////////////////////////////////////////////////////////////////////////////////////////////' +
+    '////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////' +
+    '////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////';
+  const MASK_W = 360, MASK_H = 180;
+  const MASK = Uint8Array.from(atob(LAND_B64), c => c.charCodeAt(0));
+  const isLand = (lat, lon) => {                    // 弧度入参
+    const col = Math.min(MASK_W - 1, ((lon * 180 / Math.PI + 180) / 360 * MASK_W) | 0);
+    const row = Math.min(MASK_H - 1, ((90 - lat * 180 / Math.PI) / 180 * MASK_H) | 0);
+    const bit = row * MASK_W + col;
+    return (MASK[bit >> 3] >> (7 - (bit & 7))) & 1;
+  };
+
+  const N = 9000;                                   // 候选数（≈ cobe 的 mapSamples）
+  const GA = Math.PI * (3 - Math.sqrt(5));          // 黄金角 ≈ 2.39996
+  const pts = [];
+  for (let i = 0; i < N; i++) {
+    const y = 1 - 2 * (i + 0.5) / N;
+    const r = Math.sqrt(1 - y * y);
+    const a = i * GA;
+    const p = { x: r * Math.cos(a), y, z: r * Math.sin(a) };
+    // 手性陷阱：正交投影的屏幕 x 直接用体坐标 x，经度若按 atan2(z,x)
+    // 映射，东经会画到屏幕左边——整颗地球镜像。均匀点阵看不出来，
+    // 有大陆轮廓立刻穿帮。经度按 atan2(-z,x) 查掩码即恢复正手性
+    if (isLand(Math.asin(p.y), Math.atan2(-p.z, p.x))) pts.push(p);
+  }
+
+  /* 官网 markers 的 8 座城市（经纬度原值）：旧金山、纽约、柏林、
+     东京、上海、新加坡、圣保罗、悉尼。lat/lon → 单位球面坐标。 */
+  const CITIES = [
+    [37.7749, -122.4194], [40.7128, -74.006], [52.52, 13.405],
+    [35.6762, 139.6503], [31.2304, 121.4737], [1.3521, 103.8198],
+    [-23.5505, -46.6333], [-33.8688, 151.2093],
+  ].map(([lat, lon]) => {
+    const la = lat * Math.PI / 180, lo = lon * Math.PI / 180;
+    // z 取负：与掩码查询的 atan2(-z,x) 同一套手性，城市才钉在自己的大陆上
+    return { x: Math.cos(la) * Math.cos(lo), y: Math.sin(la), z: -Math.cos(la) * Math.sin(lo) };
+  });
+
+  let size = 0;
+  const resize = () => {
+    size = canvas.clientWidth;
+    canvas.width = canvas.height = Math.floor(size * DPR);
+  };
+  resize();
+  addEventListener('resize', () => { resize(); if (reduceMotion) draw(); }, { passive: true });
+
+  let phi = 0.32;                    // 官网初始 phi
+  const THETA = 0.28;                // 官网俯仰角
+  const cosT = Math.cos(THETA), sinT = Math.sin(THETA);
+
+  const project = (p, cosP, sinP) => {
+    // 绕 y 轴自转
+    const x1 = p.x * cosP + p.z * sinP;
+    const z1 = -p.x * sinP + p.z * cosP;
+    // 绕 x 轴俯仰（镜头略微俯视）
+    const y2 = p.y * cosT - z1 * sinT;
+    const z2 = p.y * sinT + z1 * cosT;
+    return { x: x1, y: y2, z: z2 };
+  };
+
+  const draw = (t = 0) => {
+    const w = canvas.width, cx = w / 2, cy = w / 2;
+    const R = w * 0.47;
+    ctx.clearRect(0, 0, w, w);
+
+    // 球底：极浅的径向渐变 + 细描边，替代 cobe 的白球体光晕
+    const g = ctx.createRadialGradient(cx - R * .3, cy - R * .35, R * .1, cx, cy, R);
+    g.addColorStop(0, '#ffffff');
+    g.addColorStop(1, '#ededed');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(38,38,38,.08)'; ctx.lineWidth = DPR; ctx.stroke();
+
+    const cosP = Math.cos(phi), sinP = Math.sin(phi);
+
+    // 点阵：正面才画，z 越深越淡越小
+    ctx.fillStyle = '#262626';
+    for (const p of pts) {
+      const q = project(p, cosP, sinP);
+      if (q.z <= 0) continue;                       // 背面剔除
+      ctx.globalAlpha = 0.10 + 0.42 * q.z;          // 深度 → 透明度
+      const r = (0.5 + 1.1 * q.z) * DPR;            // 深度 → 点径
+      ctx.beginPath();
+      ctx.arc(cx + q.x * R, cy - q.y * R, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 城市标记：荧光绿大点 + sin 脉动光晕（对应 cobe 的 markerColor
+    // [0.31,0.98,0.08] 与 markerElevation 0.015）
+    CITIES.forEach((p, i) => {
+      const q = project(p, cosP, sinP);
+      if (q.z <= 0.02) return;
+      const sx = cx + q.x * R, sy = cy - q.y * R;
+      const pulse = 0.5 + 0.5 * Math.sin(t / 500 + i * 1.7);
+      ctx.globalAlpha = (0.18 + 0.2 * pulse) * q.z;
+      ctx.fillStyle = '#63fe13';
+      ctx.beginPath(); ctx.arc(sx, sy, (5 + 4 * pulse) * DPR, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = Math.min(1, 0.55 + 0.45 * q.z);
+      ctx.beginPath(); ctx.arc(sx, sy, 2.6 * DPR, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  };
+
+  /* ---------- ③ 官网同款省电开关：进视口才转，出视口就停 ---------- */
+  let active = false, raf = 0;
+  const loop = (t) => {
+    if (!active) return;
+    if (!reduceMotion) phi += 0.0042;   // 官网每帧自转增量
+    draw(t);
+    raf = requestAnimationFrame(loop);
+  };
+  const start = () => { if (!active) { active = true; raf = requestAnimationFrame(loop); } };
+  const stop = () => { active = false; cancelAnimationFrame(raf); };
+
+  if (reduceMotion) {
+    draw();                             // 静止画一帧，不自转
+  } else if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()),
+      { threshold: 0.05 }).observe(canvas);
+  } else {
+    start();
+  }
+})();
+</script>

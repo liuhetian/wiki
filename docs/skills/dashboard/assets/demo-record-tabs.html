@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：记录选项卡</title>
+<!--
+  demo-record-tabs.html —— 「记录选项卡」形状的最小可玩实现（蓝本：open-dashboard 的 add-record-tabs）。
+  复现的不变量（+ demo 与真实版的差异）：
+  - 当前 tab 在 URL 里 —— 分享/后退可用。demo 用 location.hash（#tab=…）模拟；真实版走嵌套路由 /orders/$id/<tab>
+  - 每个 tab 首次切到才拉数据，出骨架屏 ~400ms 后展示内容
+  - 已加载过的 tab 缓存不重复取数。demo 用 useState 缓存；真实版按 TanStack Query 查询键 ["orders","detail",id,"<tab>"] 缓存
+  - 变更（保存设置 / 取消订单）必 toast；破坏性操作（取消订单）先弹确认
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin: 12px 0 0; }
+  .tab { position: relative; border: 0; background: transparent; padding: 8px 14px;
+         color: var(--muted); cursor: pointer; font: inherit;
+         border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab.on { color: var(--fg); border-bottom-color: var(--primary); font-weight: 600; }
+  .tab:hover:not(.on) { color: var(--fg); }
+  .tab .dot { color: var(--primary); margin-left: 4px; font-size: 14px; line-height: 1; }
+  .urlbar { color: var(--muted); font-size: 12px; margin: 6px 0 10px; }
+  .urlbar code { background: var(--card); border: 1px solid var(--border);
+                 border-radius: 4px; padding: 1px 6px; font-size: 12px; }
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+           padding: 14px 16px; min-height: 240px; }
+  .panel > .skel { margin: 10px 0; }
+  .dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px 20px; margin: 0; }
+  .dl > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .dl dt { color: var(--muted); font-size: 12px; margin: 0; }
+  .dl dd { margin: 0; font-weight: 550; }
+  .note { margin: 14px 0 0; padding-top: 10px; border-top: 1px dashed var(--border);
+          font-size: 13px; color: var(--muted); }
+  .note strong { color: var(--fg); }
+  .timeline { list-style: none; margin: 0; padding: 0;
+              display: flex; flex-direction: column; gap: 12px; }
+  .timeline li { display: flex; gap: 10px; align-items: flex-start; }
+  .timeline .ico { flex: 0 0 28px; height: 28px; border-radius: 6px;
+                   background: var(--chip-off-bg); color: var(--chip-off-fg);
+                   display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
+  .timeline .ev { margin: 0; }
+  .timeline .at { margin: 2px 0 0; color: var(--muted); font-size: 12px;
+                  font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .setrow { display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .setrow:first-of-type { padding-top: 2px; }
+  .setrow:last-of-type { border-bottom: 0; }
+  .setrow .k { display: block; font-weight: 550; }
+  .setrow .sub { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .setrow input[type="checkbox"] { width: 16px; height: 16px; }
+  .setact { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;
+            padding-top: 10px; border-top: 1px dashed var(--border); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const ORDER_ID = "ORD-4821";
+const TABS = [
+  { key: "overview", label: "概览" },
+  { key: "activity", label: "活动" },
+  { key: "settings", label: "设置" },
+];
+
+// 三份服务端数据（真实版对应 3 个 useQuery，按 tab 各自拉）
+const OVERVIEW = {
+  id: ORDER_ID,
+  customer: "Northwind 实验室",
+  plan: "旗舰版（年付）",
+  amount: "¥ 4,800 / 月",
+  seats: "24 / 40",
+  region: "华东",
+  renewal: "2027-04-30",
+  note: "重点客户；预计 Q3 有扩容评审。主要联系人偏好异步沟通。",
+};
+const ACTIVITY = [
+  { id: "a1", icon: "✎", text: "陈禾 将订阅升级为旗舰版", at: "2026-05-12 09:41" },
+  { id: "a2", icon: "ℹ", text: "席位数从 18 上调至 24",   at: "2026-05-09 16:08" },
+  { id: "a3", icon: "⏱", text: "试用转为付费订阅",         at: "2026-04-30 11:22" },
+  { id: "a4", icon: "⚙", text: "全员启用 SSO 单点登录",     at: "2026-04-18 14:55" },
+];
+const SETTINGS = { emailDigest: true, autoRenew: false };
+
+// hash <-> tab 双向同步（模拟 URL 里的 tab 段）
+function readHashTab() {
+  const m = /tab=(\w+)/.exec(location.hash);
+  const t = m && m[1];
+  return TABS.some(x => x.key === t) ? t : "overview";
+}
+function writeHashTab(t) { location.hash = "tab=" + t; }
+
+// 模拟服务端往返 320~480ms；真实版对应 useQuery(fetcher) 首次触发
+function fetchTab(key) {
+  const delay = 320 + (key.charCodeAt(0) % 5) * 40;
+  return new Promise(resolve => setTimeout(() => {
+    if (key === "overview")      resolve(OVERVIEW);
+    else if (key === "activity") resolve(ACTIVITY);
+    else                         resolve({ ...SETTINGS });
+  }, delay));
+}
+
+function Confirm({ text, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>确认操作</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" onClick=${onOk}>确认</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function Skeleton({ rows = 3 }) {
+  const widths = ["78%", "62%", "88%", "54%"];
+  return html`<div>${Array.from({ length: rows }, (_, i) => html`
+    <div class="skel" key=${i} style=${{ width: widths[i % widths.length] }}></div>`)}</div>`;
+}
+
+function Overview({ data, status }) {
+  const rows = [
+    ["订单号", data.id],
+    ["客户",   data.customer],
+    ["套餐",   data.plan],
+    ["金额",   data.amount],
+    ["席位",   data.seats],
+    ["区域",   data.region],
+    ["到期",   data.renewal],
+    ["状态",   status],
+  ];
+  return html`
+    <div>
+      <dl class="dl">
+        ${rows.map(([k, v]) => html`<div key=${k}><dt>${k}</dt><dd>${v}</dd></div>`)}
+      </dl>
+      <p class="note"><strong>备注：</strong>${data.note}</p>
+    </div>`;
+}
+
+function Activity({ data }) {
+  return html`
+    <ul class="timeline">
+      ${data.map(ev => html`
+        <li key=${ev.id}>
+          <span class="ico" aria-hidden="true">${ev.icon}</span>
+          <div>
+            <p class="ev">${ev.text}</p>
+            <p class="at">${ev.at}</p>
+          </div>
+        </li>`)}
+    </ul>`;
+}
+
+function Settings({ data, onSave, onAskCancel }) {
+  const [local, setLocal] = useState(data);
+  const dirty = local.emailDigest !== data.emailDigest || local.autoRenew !== data.autoRenew;
+  const flip = k => setLocal(s => ({ ...s, [k]: !s[k] }));
+
+  return html`
+    <div>
+      <label class="setrow">
+        <div>
+          <span class="k">每周邮件摘要</span>
+          <span class="sub">每周一早上发送用量摘要邮件。</span>
+        </div>
+        <input type="checkbox" checked=${local.emailDigest} onChange=${() => flip("emailDigest")} />
+      </label>
+      <label class="setrow">
+        <div>
+          <span class="k">自动续费</span>
+          <span class="sub">到期时自动扣款续订。</span>
+        </div>
+        <input type="checkbox" checked=${local.autoRenew} onChange=${() => flip("autoRenew")} />
+      </label>
+      <div class="setact">
+        <button class="btn" style=${{ color: "var(--danger)" }} onClick=${onAskCancel}>取消订单…</button>
+        <button class="btn primary" disabled=${!dirty} onClick=${() => onSave(local)}>保存设置</button>
+      </div>
+    </div>`;
+}
+
+function App() {
+  const [tab, setTab] = useState(readHashTab);
+  const [cache, setCache] = useState({});         // { [key]: data | undefined }
+  const [loading, setLoading] = useState({});     // { [key]: true } 表明进行中
+  const [status, setStatus] = useState("生效中"); // 订单头状态（取消订单会改）
+  const [confirm, setConfirm] = useState(null);
+  const [toast, setToast] = useState("");
+
+  // hash <-> state 双向同步（浏览器后退/前进也走这条）
+  useEffect(() => {
+    const onHash = () => setTab(readHashTab());
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+  useEffect(() => { if (readHashTab() !== tab) writeHashTab(tab); }, [tab]);
+
+  // toast 自动消失
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(id);
+  }, [toast]);
+
+  // 懒加载：切到 tab 且未缓存/未在加载时拉一次
+  useEffect(() => {
+    if (cache[tab] !== undefined || loading[tab]) return;
+    setLoading(l => ({ ...l, [tab]: true }));
+    fetchTab(tab).then(data => {
+      setCache(c => ({ ...c, [tab]: data }));
+      setLoading(l => ({ ...l, [tab]: false }));
+    });
+  }, [tab, cache, loading]);
+
+  const saveSettings = (next) => {
+    setCache(c => ({ ...c, settings: next }));
+    setToast("已保存设置");
+  };
+  const askCancel = () => setConfirm({
+    text: `取消订单 ${ORDER_ID}？此操作不可撤销。`,
+    onOk: () => {
+      setConfirm(null);
+      setStatus("已取消");
+      // 真实版：失效 ["orders","detail",id] 查询键让 overview 重取；demo 直接改本地状态
+      setToast(`已取消订单 ${ORDER_ID}`);
+    },
+  });
+
+  const cur = cache[tab];
+  const isLoading = cur === undefined;
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>订单 ${ORDER_ID}</h1>
+          <p class="sub">Northwind 实验室 · 每个 tab 首次切到才拉数据；已加载过的秒开；tab 名写进 URL hash，可分享/后退</p>
+        </div>
+        <span class=${"chip " + (status === "已取消" ? "chip-off" : "chip-on")}>${status}</span>
+      </header>
+
+      <nav class="tabs" role="tablist" aria-label="订单详情分区">
+        ${TABS.map(t => html`
+          <button key=${t.key} role="tab" aria-selected=${tab === t.key}
+                  class=${"tab " + (tab === t.key ? "on" : "")}
+                  onClick=${() => setTab(t.key)}>
+            ${t.label}${cache[t.key] !== undefined ? html`<span class="dot" title="已缓存，切回不再取数">•</span>` : null}
+          </button>`)}
+      </nav>
+
+      <p class="urlbar">当前 URL: <code>/orders/${ORDER_ID}#tab=${tab}</code>（分享此链接 / 按后退键可回到该 tab）</p>
+
+      <div class="panel">
+        ${isLoading
+          ? html`<${Skeleton} rows=${tab === "activity" ? 4 : 3} />`
+          : tab === "overview"
+            ? html`<${Overview} data=${cur} status=${status} />`
+            : tab === "activity"
+              ? html`<${Activity} data=${cur} />`
+              : html`<${Settings} data=${cur} onSave=${saveSettings} onAskCancel=${askCancel} />`}
+      </div>
+
+      ${confirm && html`<${Confirm} text=${confirm.text} onOk=${confirm.onOk} onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

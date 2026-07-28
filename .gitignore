@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Zensical / MkDocs build output
+site/
+.cache/
+
+# Secrets
+.env
+.env.*
+
+# 二进制媒体与第三方 vendor 真身经 git-lfs 入库：.gitattributes 定规则，
+# blob 存备份桶 lfs/ 前缀（agent：scripts/lfs-cos-agent.py；
+# 新机器跑 scripts/setup-lfs.sh 接入；备份桶根下的路径镜像为历史双轨：scripts/backup-media.sh）
+
+.claude/
+.agents/

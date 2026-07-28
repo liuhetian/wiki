@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：关联记录</title>
+<!--
+  demo-related-records.html —— 「关联记录」形状的最小可玩实现（蓝本：open-dashboard 的 RelatedList + related-records 模板）。
+  复现的不变量：
+  - RelatedList 是展示型、对行类型泛型：把「已按父 id 过滤好的行」传进来，组件自己不发请求
+  - 子记录来自「子资源的 list query，按父 id 过滤」，不是自定义 join
+  - 一屏一父，多父就多页；子列表标题旁的计数徽标 = rows.length，随 rows 变化
+  - 破坏性关联操作（移除）先过确认；添加/移除都出 toast
+  demo 层的简化：关系存在父对象的 orderIds 里（内存），真实版走关联表 mutation 后失效父 + 子 list 键。
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .customer { padding: 14px 16px; margin-bottom: 12px; }
+  .customer h2 { margin: 0 0 6px; font-size: 17px; }
+  .customer dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                 gap: 6px 14px; margin: 6px 0 0; }
+  .customer dt { margin: 0; font-size: 12px; color: var(--muted); }
+  .customer dd { margin: 0 0 4px; font-size: 13px; font-weight: 550; }
+  .rel-head { display: flex; align-items: center; gap: 8px; margin: 4px 0 8px; }
+  .rel-head h3 { margin: 0; font-size: 15px; }
+  .rel-head .badge { display: inline-flex; align-items: center; min-width: 22px; padding: 1px 8px;
+                     border-radius: 999px; background: var(--chip-off-bg); color: var(--chip-off-fg);
+                     font-size: 12px; font-weight: 600; justify-content: center; }
+  .rel-head .spacer { flex: 1; }
+  .cand-list { max-height: 300px; overflow-y: auto; border: 1px solid var(--border);
+               border-radius: 8px; }
+  .cand-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+              border-bottom: 1px solid var(--border); font-size: 13px; }
+  .cand-row:last-child { border-bottom: 0; }
+  .cand-row .meta { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .cand-row .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--muted); }
+  .cand-row .num { color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useMemo, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+// 父记录：一位客户
+const CUSTOMER = {
+  id: "cus_001",
+  name: "陈禾（示例商贸有限公司）",
+  contact: "陈禾",
+  email: "chenhe@corp.cn",
+  plan: "企业版",
+  since: "2024-02-11",
+};
+
+// 全体订单池（内存态）：已关联到该客户的用 orderIds 引用，未关联的作为候选出现
+const ALL_ORDERS = [
+  { id: "ORD-2048", date: "2026-05-14", items: 3, total: 184.00, status: "已发货" },
+  { id: "ORD-2031", date: "2026-05-02", items: 1, total: 49.00,  status: "处理中" },
+  { id: "ORD-1997", date: "2026-04-21", items: 5, total: 312.50, status: "已发货" },
+  { id: "ORD-1960", date: "2026-04-08", items: 2, total: 98.00,  status: "已退款" },
+  { id: "ORD-1922", date: "2026-03-19", items: 4, total: 226.00, status: "已发货" },
+  { id: "ORD-1880", date: "2026-03-02", items: 1, total: 39.00,  status: "处理中" },
+  { id: "ORD-1841", date: "2026-02-18", items: 6, total: 402.00, status: "已发货" },
+  { id: "ORD-1802", date: "2026-01-30", items: 2, total: 128.00, status: "已发货" },
+  { id: "ORD-1765", date: "2026-01-11", items: 3, total: 176.00, status: "已退款" },
+  { id: "ORD-1721", date: "2025-12-22", items: 1, total: 52.00,  status: "已发货" },
+];
+
+const STATUS_CHIP = { "已发货": "chip-on", "处理中": "chip-warn", "已退款": "chip-off" };
+
+const fmtMoney = n => "¥" + n.toFixed(2);
+
+function Confirm({ text, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>确认操作</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" onClick=${onOk}>确认</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function AddDialog({ candidates, onAdd, onCancel }) {
+  const [q, setQ] = useState("");
+  const [picked, setPicked] = useState({});
+  const kw = q.trim().toLowerCase();
+  const list = candidates.filter(o =>
+    !kw || o.id.toLowerCase().includes(kw) || o.status.includes(kw));
+  const pickedIds = Object.keys(picked).filter(k => picked[k]);
+
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal" style=${{ maxWidth: 460 }}>
+        <h2>添加关联订单</h2>
+        <p style=${{ margin: 0, color: "var(--muted)", fontSize: 12 }}>
+          从未关联的订单中勾选，加入到该客户名下。
+        </p>
+        <input placeholder="搜索订单号或状态…" value=${q} onChange=${e => setQ(e.target.value)} />
+        <div class="cand-list">
+          ${list.length === 0 && html`<div class="empty">没有匹配的候选订单</div>`}
+          ${list.map(o => html`
+            <label class="cand-row" key=${o.id}>
+              <input type="checkbox" checked=${!!picked[o.id]}
+                     onChange=${() => setPicked({ ...picked, [o.id]: !picked[o.id] })} />
+              <div class="meta">
+                <span class="mono">${o.id} · ${o.date}</span>
+                <span class="num">${o.items} 件 · ${fmtMoney(o.total)} · ${o.status}</span>
+              </div>
+            </label>`)}
+        </div>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" disabled=${pickedIds.length === 0}
+                  onClick=${() => onAdd(pickedIds)}>
+            加入 ${pickedIds.length > 0 ? `(${pickedIds.length})` : ""}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function App() {
+  // 父记录的关联子 id 列表（真实版走关联表；这里就是父对象的一个数组）
+  const [orderIds, setOrderIds] = useState(["ORD-2048", "ORD-2031", "ORD-1997", "ORD-1960", "ORD-1922"]);
+  const [dialog, setDialog] = useState(null);   // "add" | null
+  const [confirm, setConfirm] = useState(null); // { text, onOk }
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  // 展示型的 rows：由 orderIds 拉出对应的订单（真实版：子资源 list query({ filters: { customerId } }))
+  const rows = useMemo(
+    () => orderIds.map(id => ALL_ORDERS.find(o => o.id === id)).filter(Boolean),
+    [orderIds]);
+  const candidates = useMemo(
+    () => ALL_ORDERS.filter(o => !orderIds.includes(o.id)),
+    [orderIds]);
+
+  const addMany = ids => {
+    setOrderIds(prev => [...ids, ...prev]);
+    setDialog(null);
+    setToast(`已关联 ${ids.length} 张订单`);
+  };
+  const removeOne = id => {
+    setConfirm({
+      text: `移除订单 ${id} 与该客户的关联？关联可稍后再添加回来。`,
+      onOk: () => {
+        setOrderIds(prev => prev.filter(x => x !== id));
+        setConfirm(null);
+        setToast(`已移除 ${id}`);
+      },
+    });
+  };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>客户详情</h1>
+          <p class="sub">父记录信息 + 下方关联订单，计数徽标随 rows 同步</p>
+        </div>
+      </header>
+
+      <section class="card customer">
+        <h2>${CUSTOMER.name} <span class="chip chip-on" style=${{ marginLeft: 6 }}>活跃</span></h2>
+        <dl>
+          <div><dt>主要联系人</dt><dd>${CUSTOMER.contact}</dd></div>
+          <div><dt>邮箱</dt><dd>${CUSTOMER.email}</dd></div>
+          <div><dt>套餐</dt><dd>${CUSTOMER.plan}</dd></div>
+          <div><dt>客户 id</dt><dd style=${{ fontFamily: "ui-monospace, monospace", fontSize: 12 }}>${CUSTOMER.id}</dd></div>
+          <div><dt>建档时间</dt><dd>${CUSTOMER.since}</dd></div>
+        </dl>
+      </section>
+
+      <div class="rel-head">
+        <h3>关联订单</h3>
+        <span class="badge" aria-label=${`共 ${rows.length} 条`}>${rows.length}</span>
+        <span class="spacer"></span>
+        <button class="btn sm primary"
+                disabled=${candidates.length === 0}
+                onClick=${() => setDialog("add")}>
+          添加关联
+        </button>
+      </div>
+
+      <table class="list">
+        <thead>
+          <tr>
+            <th>订单号</th>
+            <th>下单日期</th>
+            <th class="num">件数</th>
+            <th class="num">金额</th>
+            <th>状态</th>
+            <th class="ops">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(o => html`
+            <tr key=${o.id}>
+              <td style=${{ fontFamily: "ui-monospace, monospace" }}>${o.id}</td>
+              <td>${o.date}</td>
+              <td class="num">${o.items}</td>
+              <td class="num">${fmtMoney(o.total)}</td>
+              <td><span class=${"chip " + STATUS_CHIP[o.status]}>${o.status}</span></td>
+              <td class="ops"><button class="link danger" onClick=${() => removeOne(o.id)}>移除</button></td>
+            </tr>`)}
+          ${rows.length === 0 && html`
+            <tr><td class="empty" colSpan="6">该客户暂无关联订单，点右上「添加关联」挂上一张。</td></tr>`}
+        </tbody>
+      </table>
+
+      <p class="sub" style=${{ marginTop: 10 }}>
+        候选池剩余 ${candidates.length} 张未关联订单${candidates.length === 0 ? "（已全部关联）" : ""}。
+      </p>
+
+      ${dialog === "add" && html`
+        <${AddDialog} candidates=${candidates} onAdd=${addMany} onCancel=${() => setDialog(null)} />`}
+      ${confirm && html`<${Confirm} text=${confirm.text} onOk=${confirm.onOk} onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

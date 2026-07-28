@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：无限滚动</title>
+<!--
+  demo-infinite-list.html —— 「无限滚动」形状的最小可玩实现（蓝本：open-dashboard 的 add-infinite-list + list-infinite.tsx 模板）。
+  复现的不变量：
+  - 「加载更多」按钮永远可用——滚动近底自动触发（IntersectionObserver 观察底部哨兵）只是增强，不是唯一路径
+  - 始终显示「已加载 x / 共 y」，到底后有明确的完结态
+  - 远程形态的 loading（下一页骨架行）与 error（暂停自动触发 + 重试按钮）都显式处理
+  - 游标 = 上一页最后一行 id，顺序恒按 id 升序、追加前去重；搜索变化即重置游标从头加载，过期响应按请求序号丢弃
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .feed { height: 350px; overflow: auto; }
+  .rowitem { display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+             border-bottom: 1px solid var(--border); }
+  .avatar { flex: none; width: 30px; height: 30px; border-radius: 999px;
+            background: var(--chip-off-bg); color: var(--chip-off-fg);
+            display: flex; align-items: center; justify-content: center; font-size: 13px; }
+  .meta { min-width: 0; flex: 1; }
+  .meta p { margin: 0; }
+  .meta .n { font-weight: 550; font-size: 13px; }
+  .meta .e { color: var(--muted); font-size: 12px; }
+  .idno { color: var(--muted); font-weight: 400; font-variant-numeric: tabular-nums; }
+  .loadrow { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; }
+  .errwrap { display: inline-flex; align-items: center; gap: 10px; color: var(--danger); font-size: 13px; }
+  .endtext { color: var(--muted); font-size: 13px; }
+  .sentinel { height: 1px; }
+  .failbox { display: flex; align-items: center; gap: 6px; font-size: 12px;
+             color: var(--muted); white-space: nowrap; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+
+const PAGE = 10;      // 每页条数
+const LATENCY = 400;  // 模拟网络延迟（ms）
+
+const FAMILY = ["林", "沈", "顾", "陆", "叶", "秦", "江", "苏", "孟", "裴", "温", "霍"];
+const FAMILY_PY = ["lin", "shen", "gu", "lu", "ye", "qin", "jiang", "su", "meng", "pei", "wen", "huo"];
+const GIVEN = ["之远", "照澜", "轻舟", "望舒", "南絮", "知微", "晚晴", "既白", "疏影", "青梧"];
+const GIVEN_PY = ["zhiyuan", "zhaolan", "qingzhou", "wangshu", "nanxu", "zhiwei", "wanqing", "jibai", "shuying", "qingwu"];
+const DEPTS = ["研发", "设计", "运营", "市场", "数据", "客服"];
+
+// 确定性的 57 条数据：id 即插入顺序，也是排序与游标的依据
+const DB = Array.from({ length: 57 }, (_, i) => ({
+  id: i + 1,
+  name: FAMILY[i % FAMILY.length] + GIVEN[i % GIVEN.length],
+  email: FAMILY_PY[i % 12] + "." + GIVEN_PY[i % 10] + (i + 1) + "@corp.cn",
+  dept: DEPTS[i % DEPTS.length],
+}));
+
+// —— 模拟「服务端」：游标式列表接口 ——
+// 游标 = 上一页最后一行的 id；数据恒按 id 升序，同一 (search, cursor) 永远返回
+// 同一页，翻页天然不重复、不漏行。真实版把这段换成服务端查询：
+//   WHERE id > :cursor ORDER BY id LIMIT :pageSize
+function fetchPage({ cursor, search, fail }) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (fail) { reject(new Error("网络错误")); return; }
+      const raw = search.trim();
+      const kw = raw.toLowerCase();
+      const matched = DB.filter(m =>
+        !raw || m.name.includes(raw) || m.dept.includes(raw) || m.email.includes(kw));
+      const start = cursor == null ? 0 : matched.findIndex(m => m.id > cursor);
+      const items = start === -1 ? [] : matched.slice(start, start + PAGE);
+      resolve({
+        items,
+        nextCursor: items.length ? items[items.length - 1].id : cursor,
+        hasMore: start !== -1 && start + items.length < matched.length,
+        total: matched.length,
+      });
+    }, LATENCY);
+  });
+}
+
+const SkeletonRows = () => html`
+  <div>
+    ${[0, 1, 2].map(i => html`<div key=${i} class="skel" style=${{ width: (78 - i * 14) + "%" }}></div>`)}
+  </div>`;
+
+function App() {
+  const [q, setQ] = useState("");
+  const [items, setItems] = useState([]);
+  const [cursor, setCursor] = useState(null);
+  const [total, setTotal] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [status, setStatus] = useState("loading"); // "loading" | "idle" | "error"
+  const [failNext, setFailNext] = useState(false);
+  const reqSeq = useRef(0);
+  const firstRun = useRef(true);
+  const listRef = useRef(null);
+  const sentinelRef = useRef(null);
+
+  // 发起一页请求；reset=true 表示（搜索变化后）重置游标从头加载
+  function loadPage(cur, reset) {
+    const seq = ++reqSeq.current;   // 请求序号：旧响应晚到直接丢弃，列表顺序不被打乱
+    const fail = failNext;
+    if (fail) setFailNext(false);   // 失败开关一次性消费，点「重试」即可成功
+    setStatus("loading");
+    if (reset) { setItems([]); setCursor(null); setHasMore(true); setTotal(null); }
+    fetchPage({ cursor: cur, search: q, fail })
+      .then(res => {
+        if (seq !== reqSeq.current) return; // 过期响应，丢弃
+        setItems(prev => {
+          const base = reset ? [] : prev;
+          const seen = new Set(base.map(m => m.id)); // 追加前按 id 去重兜底
+          return [...base, ...res.items.filter(m => !seen.has(m.id))];
+        });
+        setCursor(res.nextCursor);
+        setHasMore(res.hasMore);
+        setTotal(res.total);
+        setStatus("idle");
+      })
+      .catch(() => { if (seq === reqSeq.current) setStatus("error"); });
+  }
+
+  // 「加载更多」：按钮和滚动触发共用的唯一入口；出错时暂停自动触发，只留重试
+  function loadMore() {
+    if (status !== "idle" || !hasMore) return;
+    loadPage(cursor, false);
+  }
+
+  // 搜索：重置游标、从头加载；300ms 防抖，首帧立即加载
+  const loadRef = useRef(null);
+  loadRef.current = loadPage;
+  useEffect(() => {
+    const delay = firstRun.current ? 0 : 300;
+    firstRun.current = false;
+    const t = setTimeout(() => loadRef.current(null, true), delay);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  // 滚动近底自动触发（增强路径）：观察列表底部哨兵，提前 120px 预取
+  const moreRef = useRef(null);
+  moreRef.current = loadMore;
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      entries => { if (entries[0].isIntersecting) moreRef.current(); },
+      { root: listRef.current, rootMargin: "0px 0px 120px 0px" });
+    io.observe(sentinelRef.current);
+    return () => io.disconnect();
+  }, []);
+
+  const showEmpty = status === "idle" && items.length === 0;
+  const showEnd = status === "idle" && !hasMore && items.length > 0;
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>成员目录（无限滚动）</h1>
+          <p class="sub">点「加载更多」或滚到列表近底自动取下一页；搜索会重置游标从头加载</p>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <input class="grow" placeholder="搜索姓名、部门或邮箱…" value=${q}
+               onChange=${e => setQ(e.target.value)} />
+        <label class="failbox">
+          <input type="checkbox" checked=${failNext}
+                 onChange=${e => setFailNext(e.target.checked)} />
+          模拟下次加载失败
+        </label>
+      </div>
+
+      <div class="card feed" ref=${listRef}>
+        ${items.map(m => html`
+          <div key=${m.id} class="rowitem">
+            <div class="avatar">${m.name[0]}</div>
+            <div class="meta">
+              <p class="n"><span class="idno">#${m.id}</span> ${m.name}</p>
+              <p class="e">${m.email}</p>
+            </div>
+            <span class="chip chip-off">${m.dept}</span>
+          </div>`)}
+
+        ${status === "loading" && html`<${SkeletonRows} />`}
+        ${showEmpty && html`<div class="empty">没有匹配的成员</div>`}
+
+        <div class="loadrow">
+          ${status === "error" && html`
+            <span class="errwrap">
+              加载失败：网络错误
+              <button class="btn sm" onClick=${() => loadPage(cursor, false)}>重试</button>
+            </span>`}
+          ${status !== "error" && hasMore && items.length > 0 && html`
+            <button class="btn" disabled=${status === "loading"} onClick=${loadMore}>
+              ${status === "loading" ? "加载中…" : "加载更多"}
+            </button>`}
+          ${showEnd && html`<span class="endtext">✓ 没有更多了 · 共 ${total} 条已全部加载</span>`}
+        </div>
+        <div class="sentinel" ref=${sentinelRef}></div>
+      </div>
+
+      <footer class="pager">
+        <span>已加载 ${items.length} / 共 ${total == null ? "…" : total} 条</span>
+        <span>游标 = 最后一行 id：${cursor == null ? "—" : "#" + cursor}</span>
+      </footer>
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

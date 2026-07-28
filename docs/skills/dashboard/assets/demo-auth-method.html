@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形状 demo：登录方式</title>
+<!--
+  demo-auth-method.html —— 「登录方式」形状的最小可玩实现
+  （蓝本：open-dashboard 的 add-auth-method + SocialButtons.tsx + auth-methods.tsx）。
+  复现的不变量：
+  - 三种登录形态共用一个卡片布局：邮箱+密码 / 社交 OAuth / Magic Link
+  - 客户端就地校验（邮箱格式、密码长度）在字段 touched 后显示；服务端错误
+    （"邮箱或密码错误"）走表单顶部横幅 —— 两层错误分离
+  - 提交按钮无效或提交中即禁用，提交中文本切"正在..."并显示转圈；一个按钮承载状态
+  - 社交按钮触发 signIn.social()：demo 用 toast 模拟 OAuth 回跳；同时最多一个
+    provider 处于 pending，其他按钮禁用（避免叠发请求 / 双提）
+  - Magic Link 提交后进入「检查邮箱」终态，只展示已发送的邮箱与"换个邮箱"；
+    换邮箱是清空态的动作，走确认弹窗
+  - 切换登录方式时若当前面板存在已输入的脏数据，先确认再切（避免误清）
+  运行时：/vendor 的 React 18 UMD + htm（免构建），样式共用同级 demo.css。
+-->
+<link rel="stylesheet" href="demo.css">
+<style>
+  .authcard { max-width: 380px; margin: 12px auto 0; padding: 20px 22px;
+              display: flex; flex-direction: column; gap: 12px; }
+  .authcard h2 { margin: 0 0 2px; font-size: 16px; }
+  .authcard .desc { margin: 0; color: var(--muted); font-size: 12px; }
+  .field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+  input[aria-invalid="true"] { border-color: var(--danger); }
+  .segwrap { display: flex; justify-content: center; margin-top: 4px; }
+  .soc-btn { display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .soc-btn svg { flex: none; }
+  .check-mail { text-align: center; padding: 8px 4px 4px; }
+  .check-mail .icon { font-size: 30px; }
+  .check-mail p { margin: 6px 0; }
+  .check-mail .email { color: var(--fg); font-weight: 600; }
+  .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid currentColor;
+             border-right-color: transparent; border-radius: 50%; animation: spin .8s linear infinite;
+             vertical-align: -2px; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+"use strict";
+const { useState, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+const LABEL = { password: "邮箱密码", social: "社交登录", magic: "Magic Link" };
+// 宽松版邮箱校验（形状对齐蓝本的 zod .email()；不追求 RFC 精度）
+const isEmail = s => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
+
+function Confirm({ text, onOk, onCancel }) {
+  return html`
+    <div class="overlay" onClick=${e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div class="modal">
+        <h2>确认操作</h2>
+        <p style=${{ margin: 0 }}>${text}</p>
+        <div class="actions">
+          <button class="btn" onClick=${onCancel}>取消</button>
+          <button class="btn primary" onClick=${onOk}>确认</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// 内联 SVG 品牌标（不引 CDN；Google 多色、GitHub 单色跟随 currentColor）
+const GoogleIcon = () => html`
+  <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
+    <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.7 2.5 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.3l7.9 6.2C12.4 13.7 17.7 9.5 24 9.5z"/>
+    <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.2-.4-4.7H24v9h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9c4.4-4.1 7.1-10.1 7.1-17.4z"/>
+    <path fill="#FBBC05" d="M10.5 28.5c-.5-1.5-.8-3-.8-4.5s.3-3 .8-4.5l-7.9-6.2C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.7l7.9-6.2z"/>
+    <path fill="#34A853" d="M24 48c6.5 0 12-2.1 15.9-5.9l-7.6-5.9c-2.1 1.4-4.8 2.3-8.3 2.3-6.3 0-11.6-4.2-13.5-10l-7.9 6.2C6.5 42.6 14.6 48 24 48z"/>
+  </svg>`;
+
+const GithubIcon = () => html`
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 .5A12 12 0 0 0 .5 12.5c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.4 3.6 1 .1-.8.4-1.4.8-1.7-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.3-3.2-.1-.4-.6-1.6.1-3.3 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.3.8.8 1.3 1.9 1.3 3.2 0 4.7-2.9 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6 4.8-1.6 8.2-6.1 8.2-11.4A12 12 0 0 0 12 .5z"/>
+  </svg>`;
+
+function App() {
+  const [mode, setMode] = useState("password"); // password | social | magic
+  // 邮箱密码
+  const [pwEmail, setPwEmail] = useState("");
+  const [pwPass, setPwPass] = useState("");
+  const [pwTouched, setPwTouched] = useState({ email: false, pass: false });
+  const [pwPending, setPwPending] = useState(false);
+  const [pwTop, setPwTop] = useState("");           // 顶部服务端错误横幅
+  // 社交
+  const [socPending, setSocPending] = useState(null); // null | "google" | "github"
+  // Magic Link
+  const [mlEmail, setMlEmail] = useState("");
+  const [mlTouched, setMlTouched] = useState(false);
+  const [mlPending, setMlPending] = useState(false);
+  const [mlSent, setMlSent] = useState(null);       // null 或已发送到的邮箱
+  // 通用
+  const [confirm, setConfirm] = useState(null);
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const hardReset = () => {
+    setPwEmail(""); setPwPass(""); setPwTouched({ email: false, pass: false }); setPwTop("");
+    setMlEmail(""); setMlTouched(false); setMlSent(null);
+  };
+
+  // 切换：当前面板有脏数据则先确认（避免误清）
+  const dirtyInMode = m =>
+    (m === "password" && (pwEmail || pwPass)) ||
+    (m === "magic" && (mlEmail || mlSent));
+  const switchMode = to => {
+    if (to === mode) return;
+    if (dirtyInMode(mode)) {
+      setConfirm({
+        text: `切换到「${LABEL[to]}」会清空当前已填写的内容，继续？`,
+        onOk: () => { hardReset(); setMode(to); setConfirm(null); },
+      });
+      return;
+    }
+    hardReset(); setMode(to);
+  };
+
+  // —— 邮箱密码 ——
+  const pwErrEmail = pwTouched.email && pwEmail && !isEmail(pwEmail)
+    ? "邮箱格式不正确"
+    : (pwTouched.email && !pwEmail ? "邮箱必填" : "");
+  const pwErrPass = pwTouched.pass && pwPass.length < 6
+    ? "密码至少 6 位"
+    : "";
+  const pwValid = isEmail(pwEmail) && pwPass.length >= 6;
+  const submitPw = e => {
+    e.preventDefault();
+    setPwTouched({ email: true, pass: true });
+    setPwTop("");
+    if (!pwValid) return;
+    setPwPending(true);
+    setTimeout(() => {
+      setPwPending(false);
+      // 演示服务端拒绝：密码字面量 "wrong" 触发 —— 归因到整体凭据，横幅显示
+      if (pwPass === "wrong") { setPwTop("邮箱或密码错误"); return; }
+      setToast(`登录成功：${pwEmail}`);
+      hardReset();
+    }, 900);
+  };
+
+  // —— 社交 OAuth：一次仅一个 pending，其它按钮禁用 ——
+  const signInWith = p => {
+    setSocPending(p);
+    setTimeout(() => {
+      setSocPending(null);
+      setToast(`演示：已从 ${p === "google" ? "Google" : "GitHub"} 回跳（真实版走 OAuth 回调路由）`);
+    }, 900);
+  };
+
+  // —— Magic Link ——
+  const mlErr = mlTouched && mlEmail && !isEmail(mlEmail)
+    ? "邮箱格式不正确"
+    : (mlTouched && !mlEmail ? "邮箱必填" : "");
+  const submitMl = e => {
+    e.preventDefault();
+    setMlTouched(true);
+    if (!isEmail(mlEmail)) return;
+    setMlPending(true);
+    setTimeout(() => {
+      setMlPending(false);
+      setMlSent(mlEmail);
+      setToast("链接已发送");
+    }, 700);
+  };
+  const changeMlEmail = () => {
+    setConfirm({
+      text: "换个邮箱会清空当前的「检查邮箱」状态并要求重新发送，继续？",
+      onOk: () => {
+        setMlSent(null); setMlEmail(""); setMlTouched(false); setConfirm(null);
+      },
+    });
+  };
+
+  return html`
+    <div class="page">
+      <header class="head">
+        <div>
+          <h1>登录方式</h1>
+          <p class="sub">同一张卡片切三种登录形态 —— 邮箱密码校验、社交 OAuth 跳转模拟、Magic Link 检查邮箱终态</p>
+        </div>
+      </header>
+
+      <div class="segwrap">
+        <div class="seg">
+          ${["password", "social", "magic"].map(m => html`
+            <button key=${m} class=${mode === m ? "on" : ""} onClick=${() => switchMode(m)}>${LABEL[m]}</button>`)}
+        </div>
+      </div>
+
+      <div class="card authcard">
+        ${mode === "password" && html`
+          <div>
+            <h2>登录到工作台</h2>
+            <p class="desc">用邮箱和密码继续</p>
+          </div>
+          ${pwTop && html`<div class="alert danger"><p>${pwTop}</p></div>`}
+          <form onSubmit=${submitPw} noValidate>
+            <label class="field">
+              <span>邮箱</span>
+              <input type="email" autoComplete="email" value=${pwEmail}
+                     aria-invalid=${!!pwErrEmail}
+                     onBlur=${() => setPwTouched(t => ({ ...t, email: true }))}
+                     onChange=${e => setPwEmail(e.target.value)}
+                     placeholder="you@example.com" />
+              ${pwErrEmail && html`<p class="err">${pwErrEmail}</p>`}
+            </label>
+            <label class="field" style=${{ marginTop: "10px" }}>
+              <span>密码 <span style=${{ opacity: .7 }}>（输入 wrong 触发服务端拒绝）</span></span>
+              <input type="password" autoComplete="current-password" value=${pwPass}
+                     aria-invalid=${!!pwErrPass}
+                     onBlur=${() => setPwTouched(t => ({ ...t, pass: true }))}
+                     onChange=${e => setPwPass(e.target.value)} />
+              ${pwErrPass && html`<p class="err">${pwErrPass}</p>`}
+            </label>
+            <button type="submit" class="btn primary" style=${{ width: "100%", marginTop: "12px" }}
+                    disabled=${!pwValid || pwPending}>
+              ${pwPending ? html`<span class="spinner"></span>正在登录…` : "登录"}
+            </button>
+          </form>`}
+
+        ${mode === "social" && html`
+          <div>
+            <h2>用第三方账号继续</h2>
+            <p class="desc">点击后跳转到授权页，回跳落地默认工作台</p>
+          </div>
+          <button class="btn soc-btn" style=${{ width: "100%" }}
+                  disabled=${socPending !== null && socPending !== "google"}
+                  onClick=${() => signInWith("google")}>
+            <${GoogleIcon} />
+            ${socPending === "google" ? html`<span class="spinner"></span>正在跳转到 Google…` : "使用 Google 继续"}
+          </button>
+          <button class="btn soc-btn" style=${{ width: "100%" }}
+                  disabled=${socPending !== null && socPending !== "github"}
+                  onClick=${() => signInWith("github")}>
+            <${GithubIcon} />
+            ${socPending === "github" ? html`<span class="spinner"></span>正在跳转到 GitHub…` : "使用 GitHub 继续"}
+          </button>
+          <p class="desc">未配 provider 密钥时真实版只 toast 一句"未配置"，登录页仍可用（fail-closed）。</p>`}
+
+        ${mode === "magic" && (mlSent
+          ? html`
+            <div class="check-mail">
+              <div class="icon">📮</div>
+              <p>登录链接已发送到</p>
+              <p class="email">${mlSent}</p>
+              <p class="desc">检查邮箱并点击链接完成登录（demo 不真发邮件）</p>
+              <button class="btn" style=${{ marginTop: "6px" }} onClick=${changeMlEmail}>换个邮箱</button>
+            </div>`
+          : html`
+            <div>
+              <h2>Magic Link 登录</h2>
+              <p class="desc">不用密码：给邮箱寄一次性登录链接</p>
+            </div>
+            <form onSubmit=${submitMl} noValidate>
+              <label class="field">
+                <span>邮箱</span>
+                <input type="email" autoComplete="email" value=${mlEmail}
+                       aria-invalid=${!!mlErr}
+                       onBlur=${() => setMlTouched(true)}
+                       onChange=${e => setMlEmail(e.target.value)}
+                       placeholder="you@example.com" />
+                ${mlErr && html`<p class="err">${mlErr}</p>`}
+              </label>
+              <button type="submit" class="btn primary" style=${{ width: "100%", marginTop: "12px" }}
+                      disabled=${!isEmail(mlEmail) || mlPending}>
+                ${mlPending ? html`<span class="spinner"></span>正在发送…` : "发送登录链接"}
+              </button>
+            </form>`)}
+      </div>
+
+      ${confirm && html`<${Confirm} text=${confirm.text} onOk=${confirm.onOk} onCancel=${() => setConfirm(null)} />`}
+      ${toast && html`<div class="toast">${toast}</div>`}
+    </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

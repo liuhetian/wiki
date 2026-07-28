@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lieflat Charts — L7 品牌光谱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#F0EFEB;--dark:#1C1C1A;--ink:#1C1C1A;--muted:#8F8E88;--faint:#C6C5BF;--grid:#DEDDD6}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--ink);padding:40px;-webkit-font-smoothing:antialiased}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1400px;margin:0 auto}
+  .card{background:var(--bg);border-radius:24px;padding:28px 28px 20px}
+  .card.dark{background:var(--dark);color:#F0EFEB}
+  .card.dark .sub{color:#8F8E88}
+  .card.dark .src{color:#55554F}
+  .card.wide{grid-column:1/-1}
+  .split{display:grid;grid-template-columns:250px 1fr;gap:30px;align-items:start}
+  h2{font-weight:700;font-size:16.5px;letter-spacing:-.02em;margin-bottom:3px}
+  .sub{font-size:11.5px;color:var(--muted);margin-bottom:14px}
+  .src{font-size:9.5px;color:var(--faint);margin-top:10px;letter-spacing:.08em;font-weight:500}
+  .note{font-size:11px;color:#6A6963;line-height:1.65;margin-bottom:16px}
+  .legend{font-size:9px;letter-spacing:.1em;font-weight:600;color:var(--muted);line-height:2}
+  svg{width:100%;max-height:330px;display:block;margin:0 auto}
+  svg text{font-family:'Inter',sans-serif}
+  .pop{transform-box:fill-box;transform-origin:center;animation:pop .5s cubic-bezier(.2,.7,.3,1.3) both}
+  @keyframes pop{from{transform:scale(0)}to{transform:none}}
+  .fade{animation:fade .9s ease both}
+  @keyframes fade{from{opacity:0}}
+  .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1s cubic-bezier(.4,0,.2,1) both}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @media (prefers-reduced-motion:reduce){
+    .pop,.fade{animation:none}
+    .draw{animation:none;stroke-dasharray:none;stroke-dashoffset:0}
+  }
+
+  .pagehead{max-width:1400px;margin:0 auto 26px;padding:0 4px}
+  .pagehead h1{font-size:22px;letter-spacing:-.02em;font-weight:800}
+  .pagehead p{font-size:12px;color:#8F8E88;margin-top:5px;line-height:1.7}
+  .pagehead .badge{margin:0 2px}
+  .badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.08em;
+    padding:3px 10px;border-radius:99px;margin-bottom:10px}
+  .badge.del{background:#1C1C1A;color:#F0EFEB}
+  .badge.pick{border:1.5px solid #1C1C1A;color:#1C1C1A}
+  .badge.pair{border:1px dashed #B0AFA9;color:#8F8E88}
+  .card.dark .badge.del{background:#F0EFEB;color:#1C1C1A}
+  .card.dark .badge.pick{border-color:#F0EFEB;color:#F0EFEB}
+  .card.dark .badge.pair{border-color:#55554F;color:#8F8E88}
+
+  html,body{min-height:100%;margin:0}
+  body{display:grid;place-items:center;padding:28px}
+  .pagehead{display:none}
+  .grid2{display:block;width:min(100%,920px);max-width:920px;margin:0 auto}
+  .card,.card.wide{display:block;width:100%;min-height:520px;padding:38px 42px 24px}
+  .card .split{grid-template-columns:minmax(190px,250px) 1fr}
+  .wiki-code{display:inline-block;margin-bottom:12px;padding:4px 11px;border:1px dashed #B0AFA9;border-radius:99px;color:#8F8E88;font-size:10px;font-weight:700;letter-spacing:.08em}
+  .card.dark .wiki-code{border-color:#55554F}
+  @media(max-width:620px){
+    body{padding:10px}
+    .card,.card.wide{min-height:500px;padding:26px 18px 20px}
+    .card .split{display:block}
+    .card .note,.card .legend{display:none}
+  }
+</style>
+
+</head>
+<body>
+<main class="grid2">
+<div class="card">
+    <span class="wiki-code">LUPI 编辑型 · L7</span>
+    <h2>品牌落在光谱的哪里</h2>
+    <div class="sub">120 位客户把品牌放在成对特质之间 · 大圆点代表我们 · 小圆点代表竞品</div>
+    <svg id="spectrum" viewBox="0 0 460 300" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="src">BRAND SPECTRUM · MONO-EDITORIAL2 · BRAND SURVEY</div>
+  </div>
+</main>
+<script>
+// ── shared Mono tokens ──
+const INK='#1C1C1A',PAPER='#F0EFEB',MUTED='#8F8E88',GRID='#DEDDD6';
+const NS='http://www.w3.org/2000/svg';
+const el=(p,t,a)=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);p.appendChild(n);return n};
+const txt=(p,a,s)=>{const n=el(p,'text',a);n.textContent=s;return n};
+const tip=(n,s)=>{const t=document.createElementNS(NS,'title');t.textContent=s;n.appendChild(t)};
+const rnd=(i,k)=>Math.abs(((i*73856093)^(k*19349663))%1000)/1000; // deterministic
+const D2R=Math.PI/180;
+const pol=(cx,cy,r,deg)=>[cx+r*Math.cos(deg*D2R),cy+r*Math.sin(deg*D2R)];
+const sect=(cx,cy,r0,r1,a0,a1)=>{
+  const big=a1-a0>180?1:0;
+  const [xa,ya]=pol(cx,cy,r1,a0),[xb,yb]=pol(cx,cy,r1,a1);
+  const [xc,yc]=pol(cx,cy,r0,a1),[xd,yd]=pol(cx,cy,r0,a0);
+  return `M${xa} ${ya} A${r1} ${r1} 0 ${big} 1 ${xb} ${yb} L${xc} ${yc} A${r0} ${r0} 0 ${big} 0 ${xd} ${yd} Z`;
+};
+// unified reveal: draw when scrolled into view; click replays
+const obsReveal=(id,fn)=>{
+  const n=document.getElementById(id);
+  const go=()=>{n.innerHTML='';fn(n)};
+  const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){go();io.disconnect()}},{threshold:.3});
+  io.observe(n);
+  n.style.cursor='pointer';
+  n.addEventListener('click',go);
+};
+
+// ════ 1 · brand spectrum ════
+// paired opposites; the pale ribbon threads our position down the page
+(()=>{
+const ROWS=[['FRIEND','AUTHORITY'],['SERIOUS','PLAYFUL'],['RELIABLE','RISK-TAKING'],['CONTEMPORARY','CLASSIC']];
+const US=[.74,.80,.40,.22];                 // 0 = left trait, 1 = right trait
+const COMP=[[.42,.52,.57],[.60,.65,.86],[.30,.34,.50],[.36,.41,.73]];
+const X0=118,X1=342,Y=i=>58+i*60,px=t=>X0+t*(X1-X0);
+obsReveal('spectrum',s=>{
+  // the ribbon first, underneath everything
+  let d=`M${px(US[0])} ${Y(0)}`;
+  for(let i=1;i<4;i++)
+    d+=` C${px(US[i-1])} ${Y(i-1)+30} ${px(US[i])} ${Y(i)-30} ${px(US[i])} ${Y(i)}`;
+  el(s,'path',{d,fill:'none',stroke:'#F0EFEB','stroke-width':30,'stroke-linecap':'round',
+    'stroke-linejoin':'round',opacity:.9,pathLength:1,class:'draw',
+    style:'animation-duration:1.4s'});
+  ROWS.forEach(([a,b],i)=>{
+    const y=Y(i);
+    el(s,'line',{x1:X0,y1:y,x2:X1,y2:y,stroke:'#B0AFA9','stroke-width':1,
+      class:'fade',style:`animation-delay:${i*.08}s`});
+    [X0,X1].forEach(x=>el(s,'line',{x1:x,y1:y-4,x2:x,y2:y+4,stroke:'#B0AFA9','stroke-width':1,
+      class:'fade',style:`animation-delay:${i*.08}s`}));
+    txt(s,{x:X0-14,y:y+3,'font-size':8,'font-weight':600,fill:'#6A6963','text-anchor':'end',
+      'letter-spacing':'.1em',class:'fade',style:`animation-delay:${i*.08}s`},a);
+    txt(s,{x:X1+14,y:y+3,'font-size':8,'font-weight':600,fill:'#6A6963',
+      'letter-spacing':'.1em',class:'fade',style:`animation-delay:${i*.08}s`},b);
+    COMP[i].forEach((t,k)=>{
+      const c=el(s,'circle',{cx:px(t),cy:y,r:3.2,fill:'#8F8E88',
+        class:'pop',style:`animation-delay:${.3+i*.1+k*.05}s`});
+      tip(c,`competitor ${'ABC'[k]} — ${Math.round(t*100)}% toward ${b}`);
+    });
+    const us=el(s,'circle',{cx:px(US[i]),cy:y,r:8,fill:INK,
+      class:'pop',style:`animation-delay:${.5+i*.1}s`});
+    tip(us,`us — ${Math.round(US[i]*100)}% toward ${b}`);
+  });
+  txt(s,{x:X0,y:284,'font-size':7.5,'font-weight':600,fill:'#B0AFA9','letter-spacing':'.12em',
+    class:'fade',style:'animation-delay:.9s'},'● US    ● COMPETITORS A · B · C');
+});
+})();
+</script>
+</body>
+</html>
