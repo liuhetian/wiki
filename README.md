@@ -36,6 +36,7 @@ docs/
 mkdocs.yml            # Zensical 兼容配置；nav 只是给人的策展层，不在 AI 链路上
 deploy.sh             # 构建 + md 源镜像 + 同步 COS（一键部署）
 deploy-cert/          # HTTPS 证书自动续期（acme.sh → DNSPod → COS API）
+scripts/              # lfs-cos-agent.py（媒体 blob ↔ 备份桶）· setup-lfs.sh（clone 一次性接入）
 ```
 
 ## 内容导览
@@ -55,12 +56,14 @@ deploy-cert/          # HTTPS 证书自动续期（acme.sh → DNSPod → COS AP
 
 ## 本地开发与部署
 
-**首次初始化**（新机器 clone 后）：
+**首次初始化**（新机器）：
 
 ```bash
+GIT_LFS_SKIP_SMUDGE=1 git clone git@github.com:liuhetian/wiki.git && cd wiki
 uv sync                          # 装依赖（Python ≥3.13）
-bash scripts/fetch-vendor.sh     # 恢复重型 vendor（MathJax/ECharts，按版本拉，不入库）
-scripts/backup-media.sh down     # 从备份桶拉媒体（图/视频/3D 等；git 里只放文本）
+# 放好 .env（见下）
+bash scripts/setup-lfs.sh        # 接入自制 mini LFS（媒体真身在备份桶）
+git lfs pull                     # 还原全部媒体（图/视频/字体/vendor）
 ```
 
 **日常**：
@@ -69,12 +72,12 @@ scripts/backup-media.sh down     # 从备份桶拉媒体（图/视频/3D 等；g
 uv run zensical serve            # 本地预览
 uv run zensical build            # 构建到 site/
 ./deploy.sh                      # 构建 + md 源镜像 + 同步到主 COS 桶
-scripts/backup-media.sh          # 有新媒体后备份到独立桶（同名才覆盖、只增不删）
+# 媒体不用单独管：git push 时 blob 自动上备份桶（LFS）
 ```
 
-同步上线先在本地 `git commit` 并 `git push`，确保远端部署机能拉到最新版本。然后执行 `ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lht/study/26.06/zensical-wiki && ./deploy.sh'`，由部署机拉取、构建并上传到 COS。图片等二进制媒体不进 Git，须保持 `docs/` 下的相同相对路径单独 rsync 到部署机；完整命令见[部署实操手册·图片从副机上传到部署机](docs/posts/cos-wiki-deploy/reference/deploy.md#图片从副机上传到部署机)。
+同步上线先在本地 `git commit` 并 `git push`，确保远端部署机能拉到最新版本。然后执行 `ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lht/study/26.06/zensical-wiki && ./deploy.sh'`，由部署机拉取、构建并上传到 COS。图片等二进制媒体经 git-lfs 随 push 自动进备份桶、部署机 pull 时自动取回，不需要任何单独操作；机制与副机接入见[部署实操手册·资源备份](docs/posts/cos-wiki-deploy/reference/deploy.md#媒体备份)。
 
-`.env` 需要（不入库）：`COS_BUCKET` / `COS_REGION` / `COS_SECRET_ID` / `COS_SECRET_KEY` / `COS_DOMAIN` / `COS_BACKUP_BUCKET`。前 5 项主桶用于部署；`COS_BACKUP_BUCKET` 是二进制媒体的独立备份桶，与部署桶隔离，`down` 走**本地目录白名单**（已删文章的历史资源留桶里不拉回，见 [`scripts/backup-media.sh`](scripts/backup-media.sh)）。
+`.env` 需要（不入库）：`COS_BUCKET` / `COS_REGION` / `COS_SECRET_ID` / `COS_SECRET_KEY` / `COS_DOMAIN` / `COS_BACKUP_BUCKET`。前 5 项主桶用于部署；`COS_BACKUP_BUCKET` 是媒体真身的 LFS 桶（`lfs/` 前缀按内容寻址，历史版本永久保留，见 [`scripts/lfs-cos-agent.py`](scripts/lfs-cos-agent.py)），与部署桶隔离。只写文字的机器可以不配 `.env`（`GIT_LFS_SKIP_SMUDGE=1` clone 后照常写、push）。
 
 HTTPS 证书自动续期见 [`deploy-cert/install.sh`](deploy-cert/)，来龙去脉见[实操手册](docs/posts/cos-wiki-deploy/reference/deploy.md)。
 
