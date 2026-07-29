@@ -88,3 +88,11 @@ HTTPS 证书自动续期见 [`deploy-cert/install.sh`](deploy-cert/)，来龙去
 - **引外部资料三步**：真身存档进 `assets/`（软链或 clone）+ 正文摘句 + 自己的分析；吸收整个开源项目时例外 —— 原文不本地存档，Invariants 提炼进文章、钉 commit 的 GitHub 永链指路（范例：[dashboard 的 MIRROR.md](docs/skills/dashboard/assets/open-dashboard/MIRROR.md)）
 - **交互 demo**：自包含静态单页进 `assets/`，iframe 同域嵌入，逻辑不压缩（人玩交互、AI 读同一 URL 下的源码），运行时共用 `docs/vendor/`
 - **nav 随便重排，链接图纹丝不动**：页面路径只由 `docs/` 里的文件位置决定，`mkdocs.yml` 的 `nav` 是纯策展层；真正动链接图的操作只有挪文件
+
+## 写作流程
+
+1. 读写作规范和部署说明。
+2. 写文章（可能还需要生图）并注册导航。
+3. git commit + push
+4. SSH 主机部署。
+5. 以部署脚本成功退出作为结果。
