@@ -8,13 +8,13 @@
 - [用对象存储部署 AI 友好的个人知识库](posts/cos-wiki-deploy/index.md) —— 讲这个站点本身的定位设计与部署过程
 - [预测项目闭环](posts/prediction-loop.md) —— 把「写完就扔」的脚本养成能被 AI 运维的系统
 - [建站手记](posts/cos-wiki-deploy/reference/wiki-build-log.md) —— 这个 wiki 是怎么一点点长起来的
-- [把下午调回可用状态](posts/afternoon-reset/index.md) —— 清空桌面、制造凉意、缩小任务入口
 
 ## 笔记
 
 算法、概率、机器学习和编程语言等专业科目的学习与推导：
 
 - [概率与算法](notes/probability/index.md) —— 从 [12 枚硬币的奇偶性](notes/probability/coin-parity.md) 起步
+- [机器学习](notes/machine-learning/index.md) —— 从[用西瓜搞懂准确率、精确率和召回率](notes/machine-learning/classification-metrics/index.md)起步
 
 ## Skills
 

@@ -60,7 +60,6 @@ nav:
       - AI 时代的产品经理: posts/ai-pm.md
       - 动画网页 PPT: posts/animated-ppt/index.md
       - 用 AI 生成代码骨架: posts/ai-code-skeleton/index.md
-      - 把下午调回可用状态: posts/afternoon-reset/index.md
       - Kindle 常显信息屏:
           - posts/kindle-dashboard/index.md
           - 越狱与显示通道: posts/kindle-dashboard/reference/jailbreak.md
@@ -86,6 +85,9 @@ nav:
           - notes/probability/index.md
           - 12 枚硬币的奇偶性: notes/probability/coin-parity.md
           - 3 根绳子烧出 7 分钟: notes/probability/rope-timing.md
+      - 机器学习:
+          - notes/machine-learning/index.md
+          - 准确率、精确率与召回率: notes/machine-learning/classification-metrics/index.md
   - Skills:
       - skills/index.md
       - FastAPI 后端:
