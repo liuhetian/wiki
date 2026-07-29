@@ -172,11 +172,64 @@ sequenceDiagram
 - 重要注意事项 → 用提示框 `!!!`（warning 易犯错误、tip 建议、note 补充）
 - 系统架构或交互流程 → 用 Mermaid 图
 - 交互效果演示 → iframe 嵌**自包含静态单页**（纯客户端、真身进 `assets/`、vendor 不走 CDN、逻辑不压缩，规矩与活例见[第 9 节](#iframe-demo)）
+- AI 生成概念配图 → 用[白底黑色马克笔草图](#marker-doodle-images)，一张图只讲一个概念
 - **引用外部一手资料：有存档、有引用、有分析**。三步缺一不可：① 真身 clone / 下载进文章 `assets/` 存档（注明出处与获取日期），文中 `??? abstract` 折叠 + `--8<--` 展示原文；② 正文摘关键原句（`>` 引用块）；③ 每处引用**必须跟自己的分析** —— 只贴引用不给分析，等于没消化。**例外**：引用的是活跃开源仓库、且原文的关键契约（Invariants / 不变量 / API）已经在正文里消化成自己的语言，可以省掉真身存档，改用**钉具体 commit hash 的 GitHub 永链**代替。前提是永链钉的是 commit 而不是 branch（内容冻结不随上游变），且读者不依赖点开链接就能理解正文——链接只做溯源。活例：[Dashboard skill](../../dashboard/index.md) 的 open-dashboard 蓝本吸收
 - **收录外部 git 仓库：只取核心文件，不整仓 clone 进来**。挑对理解主题真正关键的那几个文件复制进 `assets/` 存档，其余一律不进 docs —— 本 wiki 不追求完整镜像，追求核心，因为**人也要读**；要完整原貌，顺钉 commit 的永链自己去 GitHub。活例：Dashboard 蓝本吸收曾把 84 篇原文全量镜像进 `assets/`，后来删到只剩 `PATTERNS.md` + `backends/CONTRACT.md` 两份切不进单篇文章的系统级契约。唯一例外是吸收型 skill：行为定义文件（主文件 + 它引用的 references）必须收齐才能跑，见附录的吸收规矩
 - **markdown 层级缩进** 统一用 **4 个空格**（折叠块 / 选项卡 / 提示框的子内容必须缩进 4 空格才被识别）。注意：这只指 markdown 写作时的缩进，**代码块内部的 Python / 其他语言缩进原样保留，不受影响**
 - 代码块语言标识统一用 `python`（不用 `py`）
 - 新增页面必须在 `mkdocs.yml` 的 `nav:` 中注册
+
+### 文章配图：白底黑色马克笔草图 { #marker-doodle-images }
+
+概念配图不负责装饰，只负责让一个抽象关系更快被看懂。**需要 AI 新生成概念图时，统一画成白底黑色马克笔随手草图；每张图只表达一个概念。** 截图、数据图表、历史材料等有证据作用的图片不套这套风格。
+
+#### 视觉硬规矩
+
+- 媒介 → 黑色马克笔或手机手写笔，不用蜡笔、水彩或铅笔
+- 线条 → 实心黑线，粗细略有变化；允许重描、越界、歪斜和接缝不齐
+- 造型 → 物体压成基础几何形，只留最关键的识别特征
+- 构图 → 主体居中，占画面约 60–70%，四周留大量空白
+- 色彩 → 纯黑线、纯白背景，不填色，不画阴影、灰阶或排线
+- 气质 → 像不擅长画画的人临时拿笔解释概念——直接、笨拙、未经修饰
+- 信息量 → 一张图只讲一个概念，不堆文字、标签、箭头或装饰
+- 避免 → 工整图标感、儿童绘本感、毛茸茸的蜡笔颗粒、刻意卖萌、专业插画质感
+
+#### 生成与入库
+
+1. 先列清文章里真正需要画的概念——能用一句话说清的图才画；一句话里有两个关系就拆成两张。
+2. 每个概念单独生成，不让模型在一张画布里拼多张图或多个分镜。
+3. 逐张检查纯白背景、纯黑线、无文字、无阴影、主体比例和留白；不合格只改一个最明显的问题再生成。
+4. 最终图片放进文章自己的 `assets/`，不要只留在生成工具的默认目录。文件名用语义化 kebab-case，如 `random-sample-marker-doodle.png`。
+5. Markdown 用相对路径引用，alt text 写**这张图解释的概念**，不重复“白底黑色马克笔”这类视觉信息：
+
+    ```markdown
+    ![从同一总体反复抽样，会得到略有不同的样本](assets/repeated-samples-marker-doodle.png)
+    ```
+
+6. PNG 等二进制文件按仓库现有 `.gitattributes` 走 git-lfs；照常 `git add`、commit、push，不把图片转成 base64 塞进 markdown。
+
+可直接复用的 prompt 骨架：
+
+```text
+Use case: scientific-educational
+Asset type: landscape illustration for a concise Chinese wiki article
+Primary request: <只写一个要解释的概念，以及画面里必须出现的对象>
+Scene/backdrop: pure white background
+Style/medium: black marker or phone stylus doodle, drawn quickly by an adult
+who is bad at drawing while explaining a concept; solid black strokes with
+slightly uneven thickness; crooked outlines, imperfect proportions, visible
+retracing, overshoot, and mismatched joins; objects reduced to basic geometry
+Composition/framing: landscape 3:2, subject centered and occupying about
+60–70 percent of the canvas, very large blank margins
+Color palette: pure black linework only on pure white
+Constraints: no text, no labels, no numbers, no arrows, no fill, no gray,
+no shadows, no hatching, no decoration, no watermark
+Avoid: polished icon design, children's picture-book style, cute expression,
+crayon grain, pencil texture, watercolor, professional illustration,
+geometric precision, dense infographic layout
+```
+
+活例：[《抽样：检验之前，先把样本抽对》](../../../notes/statistics/sampling/index.md)用四张图分别讲随机抽取、重复抽样、分层抽样和抽样框遗漏；[《用西瓜搞懂准确率、精确率和召回率》](../../../notes/machine-learning/classification-metrics/index.md)把同一风格用于分类指标。
 
 ### 文风 { #文风 }
 
