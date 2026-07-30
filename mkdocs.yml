@@ -120,6 +120,7 @@ nav:
           - notes/git/index.md
           - fork 后吸收上游: notes/git/fork-upstream-sync.md
           - stash 的心智模型: notes/git/stash.md
+          - worktree 的心智模型: notes/git/worktree.md
   - Skills:
       - skills/index.md
       - FastAPI 后端:
