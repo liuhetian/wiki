@@ -165,7 +165,7 @@ sequenceDiagram
     --8<-- "skills/writing/mkdocs-wiki/assets/react-spa-demo.html"
     ```
 
-## 写作规范
+## 写作规范 { #写作规范 }
 
 - 同一功能有 Python / R 两种写法 → 用选项卡 `===`
 - 内容很长但非必读 → 用折叠 `???`
@@ -178,6 +178,8 @@ sequenceDiagram
 - **markdown 层级缩进** 统一用 **4 个空格**（折叠块 / 选项卡 / 提示框的子内容必须缩进 4 空格才被识别）。注意：这只指 markdown 写作时的缩进，**代码块内部的 Python / 其他语言缩进原样保留，不受影响**
 - 代码块语言标识统一用 `python`（不用 `py`）
 - 新增页面必须在 `mkdocs.yml` 的 `nav:` 中注册
+- **每篇新页面必须被某个祖先索引页用 markdown 链接直接链到** —— `nav` 只是给人的策展层，不在 AI 链路上，漏挂链接的文章对 AI 等于不存在。索引页指 `index.md` / `MIRROR.md` / `SKILL.md` 三种，写一行带钩子的链接即可。`deploy.sh` 在构建前跑 [`scripts/check-links.py`](#link-check) 强制校验，不过不许部署
+- **不给挪走的文件留旧地址存根页**。要保住旧 URL 就别挪文件；挪了就直接删原文件，让 404 诚实暴露。存根页是天生的孤儿（无人链接、不进 nav），留着只会逼校验开豁免口子，而每个豁免口子都是下一次漏挂链接的藏身处（2026-07-30 依此清掉了 `posts/animated-ppt/reference/deck-skill.md` 和 `skills/data-visualization/reference/f1-rung-bars.md` 两页存根）
 
 ### 文章配图：白底黑色马克笔草图 { #marker-doodle-images }
 
@@ -269,8 +271,41 @@ zensical-wiki/
 1. 在 `docs/` 下合适位置创建 `.md`
 2. 编写内容
 3. **必须**在 `mkdocs.yml` 的 `nav:` 注册路径
-4. `uv run zensical serve` 本地预览（毫秒级热更新）
-5. `./deploy.sh` 一键构建 + 同步到 COS
+4. **必须**在父级索引页（`index.md` / `MIRROR.md` / `SKILL.md`）加一行链接 —— 给 AI 的通路，见下节
+5. `python3 scripts/check-links.py` 自查（可选，`deploy.sh` 里会强制跑一遍）
+6. `uv run zensical serve` 本地预览（毫秒级热更新）
+7. `./deploy.sh` 一键构建 + 同步到 COS
+
+### 链路校验：`scripts/check-links.py` { #link-check }
+
+本 wiki 的 AI 入口是**相对链接**，不是 `nav`。所以「文章写完了、nav 也注册了」并不代表 AI 能读到它 —— 得有人在索引页里挂一行链接。这件事纯靠自觉会漏，所以做成部署闸门：`deploy.sh` 在 `git pull` 之后、读凭证和构建之前跑校验，非零退出码被 `set -e` 拦下，部署中止。
+
+查三项：
+
+| 检查 | 规则 | 失败后果 |
+|---|---|---|
+| 父级链接 | 每篇 `.md` 必须被**某个祖先目录**的 `index.md` / `MIRROR.md` / `SKILL.md` 直接链到 | 阻断部署 |
+| 死链 | 指向不存在的 `.md` | 阻断部署 |
+| `nav` 注册 | 路径出现在 `mkdocs.yml` 里（`MIRROR.md` 按规范豁免） | 阻断部署 |
+
+两个设计要点：
+
+- **是「祖先」而不是「最近父级」** —— 吸收型 skill 的 `index.md` 是上游原文照录、不许改，它的归档文件只能由 `MIRROR.md` 或分类索引挂链，隔着一层。活例：xi-wen 的 9 份归档全靠 [`MIRROR.md`](../xi-wen/MIRROR.md) 的「本地归档」一栏挂住
+- **吸收来的上游原文里的死链降级为警告** —— 原文里的路径常是举例（活例：`domain-modeling/CONTEXT-FORMAT.md` 举例 `./src/ordering/CONTEXT.md` 该放哪），本地不可能存在；而往原文里加豁免注释就是改原文，违反照录规矩。判据是同级或祖先目录有 `MIRROR.md`。警告仍然打印，因为归档真漏了一份依赖也会在这里现形
+
+豁免写在文件顶部（前 5 行内）：
+
+```markdown
+<!-- link-check-ok: 为什么这篇不该上链路 -->
+```
+
+理由写在文件里而不是脚本白名单里 —— 挪文件不会让豁免失效，读到那个文件的人也立刻知道为什么。**「已迁移存根」不是正当理由**，本 wiki 不留存根页。
+
+??? abstract "`scripts/check-links.py`"
+
+    ```python
+    --8<-- "scripts/check-links.py"
+    ```
 
 ### 当前项目的 `mkdocs.yml`
 
@@ -306,7 +341,7 @@ nav:
 2. 属于算法、机器学习、编程语言等专业科目的学习、推导或题解吗？→ [笔记](../../../notes/index.md)
 3. 其余完整可独立阅读的复盘、观点和方法整理 → [文章](../../../posts/index.md)
 
-文章和 skill 是共生不是成熟度递进：复盘归文章，复盘里沉淀出的可复用手册归 skill，正文互链——例：[动画 PPT 复盘](../../../posts/animated-ppt/index.md)与它的[工程手册](../deck/index.md)。板块归属变了就把文件真的搬过去，让磁盘和分类保持一致。默认给已发布的旧地址留一页存根指针；明确不需要兼容时可以直接删除。
+文章和 skill 是共生不是成熟度递进：复盘归文章，复盘里沉淀出的可复用手册归 skill，正文互链——例：[动画 PPT 复盘](../../../posts/animated-ppt/index.md)与它的[工程手册](../deck/index.md)。板块归属变了就把文件真的搬过去，让磁盘和分类保持一致。**不留旧地址存根页** —— 要保住旧 URL 就别挪文件，挪了就直接删，理由见上文[写作规范](#写作规范)那条。
 
 ### 从 MkDocs Material 切换到 Zensical 几乎零成本
 

@@ -9,6 +9,11 @@ cd "$PROJECT_DIR"
 #    逼人先处理再部署，不会静默合并出意外内容
 git pull --ff-only
 
+# 0.5 链路校验：本 wiki 的 AI 入口是相对链接、不是 nav，所以漏挂链接的文章对 AI 等于
+#     不存在。这道闸门要求每篇 .md 都能被某个祖先索引页直接链到，另查死链与 nav 注册。
+#     放在读凭证和构建之前 —— 失败得越早，浪费越少（set -e 拦下非零退出码）
+python3 "$PROJECT_DIR/scripts/check-links.py"
+
 # 1. 读凭证、写 coscmd 配置
 set -a; source .env; set +a
 COSCMD="$PROJECT_DIR/.venv/bin/coscmd"

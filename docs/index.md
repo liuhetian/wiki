@@ -4,6 +4,8 @@
 
 ## 文章
 
+完整可独立阅读的复盘、观点与方法整理，全部在[文章索引](posts/index.md)。几篇代表：
+
 - [工作方法](posts/methods/index.md) —— 精力管理、推进执行和做出决策
 - [用对象存储部署 AI 友好的个人知识库](posts/cos-wiki-deploy/index.md) —— 讲这个站点本身的定位设计与部署过程
 - [预测项目闭环](posts/prediction-loop.md) —— 把「写完就扔」的脚本养成能被 AI 运维的系统
@@ -11,14 +13,15 @@
 
 ## 笔记
 
-算法、概率、机器学习和编程语言等专业科目的学习与推导：
+算法、概率、统计、机器学习和编程语言等专业科目的学习与推导，全部分类在[笔记索引](notes/index.md)。几个入口：
 
 - [概率与算法](notes/probability/index.md) —— 从 [12 枚硬币的奇偶性](notes/probability/coin-parity.md) 起步
 - [机器学习](notes/machine-learning/index.md) —— 从[用西瓜搞懂准确率、精确率和召回率](notes/machine-learning/classification-metrics/index.md)起步
+- [Git](notes/git/index.md) —— 从 [stash 不是剪贴板，是个游离的 merge commit](notes/git/stash.md) 起步
 
 ## Skills
 
-给 AI 挂载执行的成套资产，按 Claude skill 标准目录组织，每套都可以直接当远程 skill 用：
+给 AI 挂载执行的成套资产，按 Claude skill 标准目录组织，每套都可以直接当远程 skill 用，全部在 [Skills 索引](skills/index.md)：
 
 - [FastAPI 后端](skills/fastapi/index.md) —— 依赖注入、SQLModel 分层建模、按需参考的一整套后端约定
 - [Dashboard 后台](skills/dashboard/index.md) —— 形状目录 + 每形状一个可玩的活 demo
