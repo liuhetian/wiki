@@ -116,6 +116,10 @@ nav:
       - 机器学习:
           - notes/machine-learning/index.md
           - 准确率、精确率与召回率: notes/machine-learning/classification-metrics/index.md
+      - Git:
+          - notes/git/index.md
+          - fork 后吸收上游: notes/git/fork-upstream-sync.md
+          - stash 的心智模型: notes/git/stash.md
   - Skills:
       - skills/index.md
       - FastAPI 后端:
