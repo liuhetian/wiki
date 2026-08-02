@@ -1,13 +1,12 @@
-"""各 kind 的 params 类型 —— 与 web/src/state/types.ts 逐字段对齐（权威源在前端）。
-
-⚠️ 命名故意「混搭」：anchor 系用 snake_case（char_width…，与线上 template_config 一致），
-其余用 camelCase（depthThreshold / bgId / origUrl…）。这不是笔误 —— Pydantic 字段名
-必须与 TS 类型完全一致，openapi-typescript 生成出来的 TS 才能和 types.ts 无缝互换。
+"""各 kind 的 params 类型 —— 与 web/src/state/types.ts 逐字段对齐（权威源在前端），字段名一字不改。
 
 判别方式：params 本身不带 kind 字段（前端如此），靠外层 Resource.kind 判别。
 反序列化 params_json 时必须用 KIND_TO_PARAMS[kind].model_validate(...)，
 不要指望 Union 自动挑对分支（DualParams 是 DepthParams 的子集，会误判）。
 """
+# 为什么命名「混搭」：anchor 系用 snake_case（char_width…，沿线上 template_config），
+# 其余用 camelCase（depthThreshold / bgId / origUrl…）。这不是笔误 —— Pydantic 字段名
+# 必须与 TS 类型完全一致，openapi-typescript 生成出来的 TS 才能和 types.ts 无缝互换。
 from typing import Literal, Union
 
 from pydantic import BaseModel, ConfigDict
