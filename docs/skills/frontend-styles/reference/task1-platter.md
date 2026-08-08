@@ -1,6 +1,6 @@
 # PLATTER 平面音乐档案
 
-<iframe src="/skills/frontend-styles/assets/task1-platter-demo/"
+<iframe src="/skills/frontend-styles/assets/task1-platter-demo/index.html"
         style="width:100%;height:760px;border:1px solid #8884;border-radius:10px"
         loading="lazy" title="PLATTER 平面音乐档案 demo"></iframe>
 
@@ -20,6 +20,7 @@
 - 固定迷你播放器贯穿 library / detail，播放状态不因页面切换被重置
 - 小屏把侧视架降级成居中横向轨道，按钮命中区保持至少 44px
 - `prefers-reduced-motion` 下取消转场和均衡器动画，内容与操作一步到位
+- 缓动曲线与拖拽阈值是无源码复刻的推测值、不是原作测量，移植时按手感自由调整
 
 上面的 demo 直接由工作区 `3d-music-album-clone` 原项目构建，完整保留 12 张专辑、
 曲目数据、搜索、队列、键盘导航、拖拽/滚轮吸附、详情轮播、长曲目滚动条和音频播放器，

@@ -1,6 +1,6 @@
 # NEAT ANNOTATIONS 手绘标注标本
 
-<iframe src="/skills/frontend-styles/assets/task7-neat-annotations-demo/"
+<iframe src="/skills/frontend-styles/assets/task7-neat-annotations-demo/index.html"
         style="width:100%;height:800px;border:1px solid #8884;border-radius:10px"
         loading="lazy" title="NEAT ANNOTATIONS 手绘标注标本 demo"></iframe>
 

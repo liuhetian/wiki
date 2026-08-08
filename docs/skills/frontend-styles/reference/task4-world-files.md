@@ -1,6 +1,6 @@
 # WORLD FILES 档案袋叙事
 
-<iframe src="/skills/frontend-styles/assets/task4-world-files-demo/"
+<iframe src="/skills/frontend-styles/assets/task4-world-files-demo/index.html"
         style="width:100%;height:760px;border:1px solid #8884;border-radius:10px"
         loading="lazy" title="WORLD FILES 档案袋叙事 demo"></iframe>
 
@@ -19,6 +19,7 @@
 - 详情层使用清晰的长文网格与原生滚动，物件隐喻到此为止
 - 打开详情后隔离背景焦点，Escape 返回原档案，关闭后把焦点还给触发项
 - `prefers-reduced-motion` 下跳过解绳和铺纸等待，直接显示可读正文
+- 转场顺序照源视频钉死，但解结、铺纸各段时长是刻意比原作缩短的复刻取值，可按节奏调整
 
 上面的 demo 直接由工作区 `task4` 原项目构建，完整保留 8 份档案、横向拖拽与滚轮、
 真实卡片几何位置接力、解绳—铺纸—显字转场、详情长文、焦点归还和减弱动画适配，

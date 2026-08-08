@@ -157,7 +157,8 @@ sequenceDiagram
 - **自包含、不走 CDN**：运行时库 vendor 进**全站共享**的 `docs/vendor/`（线上 `/vendor/`，各 skill 的 demo 复用；不放 `docs/assets/` 是因为那会跟主题产物的 `site/assets/` 混居），demo 里用根绝对路径 `/vendor/xxx.js` 引用。本例是 React 18 UMD + `htm`（React 19 起不再发 UMD 构建，免构建场景钉 18），国内访问不抖、断外网也能跑
 - **demo 逻辑不压缩**：单页是文本，线上有独立 URL，AI 可直接读。vite 构建产物（`base: './'` 后整个目录丢进 `assets/`）也能嵌，但 minified 对 AI 不可读，算二等公民
 - **免 JSX 构建**：用 `htm` 的 tagged template 配 React UMD，零工具链，源码即真身
-- **iframe `src` 用站点根绝对路径**（`/skills/<skill>/assets/xxx.html`）：目录式 URL 下相对路径容易算错层级；样式上给定固定高度 + `loading="lazy"`
+- **iframe `src` 用站点根绝对路径、且指到具体 `.html` 文件**（`/skills/<skill>/assets/xxx.html`）：目录式 URL 下相对路径容易算错层级；样式上给定固定高度 + `loading="lazy"`
+- **vite 目录产物的 `src` 同样写到 `index.html`**（`/skills/<skill>/assets/xxx-demo/index.html`），不写目录 URL `xxx-demo/`：目录 URL 能不能解析到入口取决于托管的索引文档配置，写死文件名才让 demo 的存活与托管配置无关，也让读 md 源的 AI 一眼看到入口文件而不用猜。活例：`frontend-styles/reference/` 的 task1–task7 七篇（2026-08-04 从目录 URL 统一补成 `index.html`）
 
 ??? abstract "`assets/react-spa-demo.html` —— 演示单页源码（自包含、未压缩）"
 

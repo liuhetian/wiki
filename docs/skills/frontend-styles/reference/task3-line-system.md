@@ -1,6 +1,6 @@
 # LINE//SYSTEM 线性工业图形
 
-<iframe src="/skills/frontend-styles/assets/task3-line-system-demo/"
+<iframe src="/skills/frontend-styles/assets/task3-line-system-demo/index.html"
         style="width:100%;height:760px;border:1px solid #8884;border-radius:10px"
         loading="lazy" title="LINE SYSTEM 线性工业图形 demo"></iframe>
 

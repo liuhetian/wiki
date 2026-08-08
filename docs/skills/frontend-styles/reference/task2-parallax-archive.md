@@ -1,6 +1,6 @@
 # PARALLAX 三态作品档案
 
-<iframe src="/skills/frontend-styles/assets/task2-parallax-archive-demo/"
+<iframe src="/skills/frontend-styles/assets/task2-parallax-archive-demo/index.html"
         style="width:100%;height:760px;border:1px solid #8884;border-radius:10px"
         loading="lazy" title="PARALLAX 三态作品档案 demo"></iframe>
 

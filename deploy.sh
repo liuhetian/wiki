@@ -38,6 +38,12 @@ cp "$PROJECT_DIR/site/index.md" "$PROJECT_DIR/site/llms.txt"
 #    两条递归都带 -s（MD5 一致跳过），没变化的文件两步都不动。
 cd "$PROJECT_DIR/site"
 "$COSCMD" upload -rs --include '*.md' -H 'Content-Type: text/markdown; charset=utf-8' ./ /
+#    代码源文件（demo 的 source/、文章附的脚本）同理要钉类型：COS 按扩展名猜，
+#    .ts 会猜成 video/mp2t（MPEG 视频流）、.tsx/.jsx/.mjs/.py 猜成 octet-stream——
+#    AI 抓取工具按 content-type 过滤文本时直接拒收，「完整实现」的链接摆得再对也读不回内容。
+#    不带 -s：桶里已有一批错类型的旧对象，内容没变会被 MD5 跳过、类型永远修不掉；
+#    这批文件共 20 来个小文本，每次全量重传，换部署即自愈
+"$COSCMD" upload -r --include '*.ts,*.tsx,*.jsx,*.mjs,*.py' -H 'Content-Type: text/plain; charset=utf-8' ./ /
 # llms.txt 不带 -s：coscmd 单文件 upload -s 命中"MD5 一致跳过"时退出码是 254（且静默），
 # 会被 set -e 误杀、后面的全量镜像不再执行；2KB 每次直传换脚本必然走完。
 "$COSCMD" upload -H 'Content-Type: text/plain; charset=utf-8' llms.txt /llms.txt  # 内容是 markdown，扩展名按 llms.txt 规范用 .txt，浏览器直读用 text/plain

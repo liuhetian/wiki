@@ -1,6 +1,6 @@
 # PIXEL BLOOM 网格揭示
 
-<iframe src="/skills/frontend-styles/assets/task5-pixel-bloom-demo/"
+<iframe src="/skills/frontend-styles/assets/task5-pixel-bloom-demo/index.html"
         style="width:100%;height:760px;border:1px solid #8884;border-radius:10px"
         loading="lazy" title="PIXEL BLOOM 网格揭示 demo"></iframe>
 
@@ -20,6 +20,7 @@
 - 大画面同步扩大笔刷并延长寿命，保持相对覆盖范围与涂抹节奏
 - UI 只保留品牌、状态和一句操作提示，把视觉重量全部交给画面与轨迹
 - 触屏设备用 pointer 事件统一处理；`prefers-reduced-motion` 隐去持续操作暗示
+- 笔刷半径与轨迹衰减时长是只有源视频、没有原 JS 时的推测值，移植时按画面手感调整
 
 上面的 demo 直接由工作区 `task5` 原项目构建，完整带入主图和 3 个同坐标世界状态，
 保留高分屏 Canvas、图片预采样、轨迹插值、网格纹理复制、寿命消散、点击换世界与触屏事件，
