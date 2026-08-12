@@ -1,0 +1,502 @@
+/* 首页开屏样式，仅被 overrides/home.html 加载（其它页面零开销）。
+   骨架仿 mkdocs-material 官网首页，视觉令牌与效果参数照抄
+   docs/skills/frontend-styles/open-design/ 的拆解（Atelier Zero）：
+   纸白底 + 黑墨字 + 荧光绿 #63fe13 只做点缀。
+   版心与正文一致（Material md-grid 的 61rem ≈ 1220px），不做全屏 splash。
+   Material 的 html { font-size: 125% }，即 1rem = 20px，下面统一用 px 免换算。 */
+
+:root {
+  --paper: #fafafa;
+  --paper-dark: #f0f0f0;
+  --ink: #262626;
+  --ink-soft: #434343;
+  --ink-mute: #595959;
+  --ink-faint: #8c8c8c;
+  --coral: #63fe13;        /* 官网变量名叫 coral，值其实是荧光绿 */
+  --coral-soft: #83ff3b;
+  --bone: #ffffff;
+  --line: #d9d9d9;
+  --shadow: 0 30px 60px -30px rgba(38, 38, 38, .16);
+  /* 贴纸阴影（stat-cards 官网同值）：浓但负扩散收得极窄，只剩卡底一条深影 */
+  --zx-sticker: 0 28px 60px -42px rgba(0, 0, 0, .72);
+  --zx-sticker-hover: 0 36px 76px -42px rgba(0, 0, 0, .86);
+  --zx-serif: Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif;
+
+  /* Material 顶栏/标签条改成纸白 + 黑墨（默认靛蓝在纸面里最扎眼）：
+     header 背景吃 --md-primary-fg-color，文字吃 --md-primary-bg-color（名字是反的） */
+  --md-primary-fg-color: #fafafa;
+  --md-primary-bg-color: #262626;
+  --md-primary-bg-color--light: rgba(38, 38, 38, .54);
+  --md-accent-fg-color: #16a005;   /* hover 强调：荧光绿压深一档，白底上可读 */
+}
+.md-header { box-shadow: none; border-bottom: 1px solid var(--line); }
+.md-tabs { border-bottom: 1px solid var(--line); }
+.md-search__form { background-color: var(--paper-dark); }
+.md-search__form:hover { background-color: #e6e6e6; }
+
+/* 正文区已被模板置空，但手机端的汉堡抽屉导航（.md-sidebar--primary）就挂在
+   .md-main 里 —— 不能整块 display:none，只收掉空正文的占位间距 */
+.md-main__inner { margin-top: 0; margin-bottom: 0; }
+
+.zx-home {
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.7;
+  /* data-reveal 的 left/right 变体入场前横向位移 36px，窄屏会撑出横向滚动条，clip 掉 */
+  overflow-x: clip;
+}
+/* 版心对齐 Material 的 md-grid（61rem = 1220px） */
+.zx-wrap { max-width: 1220px; margin: 0 auto; padding: 0 24px; }
+.zx-home h1, .zx-home h2, .zx-home h3 { margin: 0; color: var(--ink); line-height: 1.25; }
+.zx-home code {
+  font-family: var(--md-code-font-family, SFMono-Regular, Consolas, Menlo, monospace);
+  font-size: .85em;
+  background: var(--paper-dark);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* ================================================================
+   data-reveal 滚动入场体系（scroll-reveal-demo，官网 globals.css 原值）：
+   初始透明 + 位移，翻成 data-revealed='true' 后 900ms 快出缓收飘到位；
+   --reveal-delay 由行内样式给出，同批进场靠 delay 错成波浪。
+   ================================================================ */
+[data-reveal] {
+  opacity: 0;
+  translate: 0 28px;
+  transition:
+    opacity 900ms cubic-bezier(.22, 1, .36, 1) var(--reveal-delay, 0ms),
+    translate 900ms cubic-bezier(.22, 1, .36, 1) var(--reveal-delay, 0ms),
+    scale 900ms cubic-bezier(.22, 1, .36, 1) var(--reveal-delay, 0ms);
+  will-change: opacity, translate, scale;
+}
+[data-reveal='left']    { translate: -36px 0; }
+[data-reveal='right']   { translate: 36px 0; }
+[data-reveal='rise-lg'] { translate: 0 64px; scale: .985; }
+/* bare：只当 BlurText 的触发器，容器本身不做位移淡入 */
+[data-reveal='bare'] { opacity: 1; translate: 0 0; transition: none; }
+[data-reveal][data-revealed='true'] {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+  will-change: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1 !important; translate: 0 0 !important; scale: 1 !important; transition: none !important; }
+}
+
+/* ===== Hero：铺满首屏（视口高 − 顶栏两条 96px），极淡网格纸打底 ===== */
+.zx-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  min-height: calc(100vh - 98px);
+  min-height: calc(100dvh - 98px);
+  border-bottom: 1px solid var(--line);
+  background-image:
+    linear-gradient(var(--paper-dark) 1px, transparent 1px),
+    linear-gradient(90deg, var(--paper-dark) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.zx-hero__grid {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap: 56px;
+  align-items: center;
+  width: 100%;
+  padding-top: 40px;
+  padding-bottom: 72px;
+}
+/* 往下看提示：scroll-reveal-demo 的 bob 箭头 */
+.zx-hero__down {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  font-size: 22px;
+  color: var(--ink-faint);
+  text-decoration: none;
+  animation: zxBob 1.6s ease-in-out infinite;
+}
+.zx-hero__down:hover { color: var(--ink); }
+@keyframes zxBob { 50% { transform: translateX(-50%) translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .zx-hero__down { animation: none; } }
+
+/* 眉头小字（hero-lead） */
+.zx-lead {
+  margin: 0 0 22px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+/* ================================================================
+   蓝图选择框（blur-text-demo）：fit-content 收缩包裹，1px 荧光绿边框，
+   四角 9px 实心方块 translate ±50% 骑在角点上 —— Figma 选中框隐喻。
+   ================================================================ */
+.zx-frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: fit-content;
+  max-width: 100%;
+  line-height: 1;
+  padding: clamp(16px, 2.4vw, 26px) clamp(18px, 3vw, 40px);
+  border: 1px solid var(--coral);
+  background: rgba(255, 255, 255, .55);   /* 压住底下的网格线 */
+}
+.zx-corner { position: absolute; width: 9px; height: 9px; background: var(--coral); }
+.zx-corner--tl { top: 0;    left: 0;   transform: translate(-50%, -50%); }
+.zx-corner--tr { top: 0;    right: 0;  transform: translate(50%, -50%);  }
+.zx-corner--bl { bottom: 0; left: 0;   transform: translate(-50%, 50%);  }
+.zx-corner--br { bottom: 0; right: 0;  transform: translate(50%, 50%);   }
+
+/* 品牌行：衬线 800（官网 .hero-title-brand）；副行：无衬线 800 */
+.zx-frame__brand {
+  font-family: var(--zx-serif);
+  font-weight: 800;
+  font-size: clamp(26px, 3.4vw, 40px);
+  letter-spacing: -.01em;
+}
+.zx-frame__tagline {
+  font-weight: 800;
+  font-size: clamp(20px, 2.6vw, 30px);
+  letter-spacing: -.02em;
+  line-height: 1.18;
+}
+
+/* ================================================================
+   BlurText 逐词/逐字模糊入场（blur-text-demo，React Bits 原参数）：
+   一个词晚 0.035s；blur 10→5→0，translateY -50→+5→0，中段过冲带坠感。
+   ================================================================ */
+.zx-word {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(-50px);
+  will-change: transform, filter, opacity;
+}
+.zx-frame[data-revealed='true'] .zx-word {
+  animation: zxBlurIn .38s cubic-bezier(.23, 1, .32, 1) both;
+  animation-delay: calc(var(--i, 0) * .035s);
+}
+@keyframes zxBlurIn {
+  0%   { opacity: 0;  filter: blur(10px); transform: translateY(-50px); }
+  50%  { opacity: .5; filter: blur(5px);  transform: translateY(5px);   }
+  100% { opacity: 1;  filter: blur(0);    transform: translateY(0);     }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zx-word { opacity: 1; filter: none; transform: none; animation: none !important; }
+}
+
+/* ================================================================
+   可拖拽贴纸（drag-sticker-demo 变量式）：定位/居中由 CSS 持有，
+   JS 只写 --drag-x/y；倾斜放内层 span，不和拖拽位移打架。
+   三种皮：荧光绿 / 纸白描边 / 黑墨。
+   ================================================================ */
+.zx-sticker {
+  position: absolute;
+  transform: translate(var(--drag-x, 0px), var(--drag-y, 0px));
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  z-index: 2;
+}
+.zx-sticker.is-dragging { cursor: grabbing; z-index: 10; }
+.zx-sticker > span {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  transform: rotate(var(--srot, 6deg));
+  box-shadow: var(--shadow);
+  transition: transform .16s ease;
+  white-space: nowrap;
+}
+.zx-sticker.is-dragging > span,
+.zx-sticker:hover > span { transform: rotate(0deg) scale(1.06); }
+.zx-sticker--coral > span { background: var(--coral); color: var(--ink); }
+.zx-sticker--bone  > span { background: var(--bone); color: var(--ink); border: 1px solid var(--line); }
+.zx-sticker--ink   > span { background: var(--ink); color: var(--paper); }
+/* 各自的落点和初始歪度 */
+.zx-sticker--done { top: -16px; right: -26px; }
+.zx-sticker--md   { bottom: -14px; left: -20px; --srot: -5deg; }
+.zx-sticker--link { top: -14px; left: -12px; --srot: -4deg; z-index: 3; }
+
+/* 右侧代码卡容器：给「顺链接读」贴纸当定位参照 */
+.zx-hero__aside { position: relative; }
+
+.zx-hero__lede {
+  margin: 24px 0 0;
+  max-width: 34em;
+  color: var(--ink-mute);
+  font-size: 15px;
+  line-height: 1.8;
+}
+.zx-hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+
+/* ===== 按钮：药丸形 ===== */
+.zx-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .16s ease, border-color .16s ease, color .16s ease;
+}
+.zx-btn--ink { background: var(--ink); border: 1px solid var(--ink); color: var(--paper); }
+.zx-btn--ink:hover { background: var(--coral); border-color: var(--coral); color: var(--ink); }
+.zx-btn--pill { background: var(--bone); border: 1px solid var(--line); color: var(--ink); box-shadow: var(--shadow); }
+.zx-btn--pill:hover { border-color: var(--coral); background: var(--coral-soft); color: var(--ink); }
+.zx-btn__icon svg { width: 17px; height: 17px; fill: currentColor; display: block; }
+
+/* ===== 贴纸代码卡 / 终端卡（stat-cards 的贴纸机制） ===== */
+.zx-stickercode, .zx-termcard {
+  text-align: left;
+  background: var(--bone);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  rotate: var(--tilt, 0deg);   /* 用独立属性，不占用 data-reveal 的 translate/scale */
+  box-shadow: var(--zx-sticker);
+  transition: box-shadow 260ms ease;
+  overflow: hidden;
+}
+.zx-stickercode:hover, .zx-termcard:hover { box-shadow: var(--zx-sticker-hover); }
+.zx-stickercode__label, .zx-termcard__label {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.zx-stickercode pre, .zx-termcard pre { margin: 0; padding: 20px 22px; overflow-x: auto; }
+.zx-stickercode code, .zx-termcard code {
+  font-family: var(--md-code-font-family, SFMono-Regular, Consolas, Menlo, monospace);
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--ink-soft);
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+.zx-stickercode .c, .zx-termcard .c { color: var(--ink-faint); }
+.zx-stickercode .swap-out { color: var(--ink-faint); text-decoration: line-through; }
+.zx-stickercode .swap-in { background: var(--coral); color: var(--ink); font-weight: 700; padding: 1px 5px; }
+.zx-termcard .k { color: var(--ink-faint); }
+.zx-termcard .hl { font-weight: 700; box-shadow: inset 0 -6px 0 rgba(99, 254, 19, .55); }
+.zx-termcard .ok { font-weight: 700; }
+
+/* ===== 话题 chips：每一枚都能抓着拖 ===== */
+.zx-chipstrip {
+  padding: 44px 0;
+  border-bottom: 1px solid var(--line);
+}
+.zx-chipstrip__label {
+  margin: 0 0 18px;
+  font-size: 13px;
+  letter-spacing: .14em;
+  color: var(--ink-mute);
+}
+.zx-chips { display: flex; flex-wrap: wrap; gap: 12px 14px; }
+.zx-chip {
+  position: relative;   /* 拖走后原位留白由 flex 保持，不塌 */
+  display: inline-block;
+  transform: translate(var(--drag-x, 0px), var(--drag-y, 0px));
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.zx-chip.is-dragging { cursor: grabbing; z-index: 10; }
+.zx-chip > span {
+  display: inline-block;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: var(--bone);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  transform: rotate(var(--tilt, 0deg));
+  box-shadow: var(--shadow);
+  transition: transform .16s ease, border-color .16s ease;
+  white-space: nowrap;
+}
+.zx-chip:hover > span, .zx-chip.is-dragging > span { transform: rotate(0deg) scale(1.05); border-color: var(--ink); }
+.zx-chip--coral > span { background: var(--coral); border-color: transparent; }
+.zx-chip--ink   > span { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+
+/* ===== 通用段落节奏 ===== */
+.zx-section { padding: 84px 0; }
+.zx-section--tail { padding-top: 0; }
+.zx-kicker { margin: 0 0 10px; font-size: 13px; letter-spacing: .14em; color: var(--ink-mute); }
+.zx-display {
+  font-size: clamp(24px, 3.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  margin-bottom: 38px;
+}
+/* 荧光绿荧光笔高亮（scroll-reveal-demo 的 em 用法） */
+.zx-display em, .zx-stage em { font-style: normal; }
+.zx-display em { background: var(--coral); padding: 0 8px; }
+
+/* ===== 特性网格：6 格，图标左字右（mkdocs-material mdx-expect 布局） ===== */
+.zx-expect {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 56px;
+}
+.zx-expect__item { display: flex; gap: 18px; align-items: flex-start; }
+/* 兄弟错峰：一行两个 90ms 一波 */
+.zx-expect__item:nth-child(2n)   { --reveal-delay: 90ms; }
+.zx-expect__icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  padding: 10px;
+  background: var(--bone);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+.zx-expect__icon svg { width: 22px; height: 22px; fill: var(--ink); display: block; }
+.zx-expect__item h3 {
+  font-size: 16.5px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  margin-bottom: 6px;
+  /* 荧光绿短下划线，标记感 */
+  width: fit-content;
+  box-shadow: inset 0 -7px 0 rgba(99, 254, 19, .45);
+}
+.zx-expect__item p { margin: 0; color: var(--ink-mute); font-size: 14px; }
+
+/* ===== 聚光灯：左右交替（mkdocs-material spotlights） ===== */
+.zx-spot {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+  padding: 34px 0;
+}
+.zx-spot--flip .zx-spot__copy { order: 2; }
+.zx-spot--flip .zx-spot__demo { order: 1; }
+.zx-spot__copy h3 {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  margin-bottom: 12px;
+  width: fit-content;
+  box-shadow: inset 0 -8px 0 rgba(99, 254, 19, .45);
+}
+.zx-spot__copy p { margin: 0; color: var(--ink-mute); font-size: 14.5px; line-height: 1.9; max-width: 34em; }
+
+/* ===== 宣言：随滚动逐字点亮（statement-reveal-demo） ===== */
+.zx-statement { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.zx-statement__wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 14vh 28px;
+}
+.zx-statement__text {
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.5;
+}
+/* JS 未接管（无脚本 / reduced-motion）时保持全墨可读，动画只是增强 */
+.zx-rword { display: inline-block; }
+.zx-rspace { display: inline; }
+.zx-rword.hl { background: var(--coral); padding: 0 6px; }
+
+/* ===== 参数贴纸卡：荧光绿大数字 + 可拖走 ===== */
+.zx-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;   /* 官网同值 */
+}
+.zx-statcard {
+  position: relative;
+  padding: 26px 24px;
+  border-radius: 18px;
+  background: var(--bone);
+  border: 1px solid var(--line);
+  transform: translate(var(--drag-x, 0px), var(--drag-y, 0px));
+  rotate: var(--tilt, 0deg);
+  box-shadow: var(--zx-sticker);
+  transition: box-shadow 260ms ease;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.zx-statcard.is-dragging { cursor: grabbing; z-index: 10; box-shadow: var(--zx-sticker-hover); }
+.zx-statcard:hover { box-shadow: var(--zx-sticker-hover); }
+/* 大数字：荧光绿填充 + 1px 黑墨描边（scroll-reveal-demo 的 .num 同款） */
+.zx-statcard__num {
+  display: block;
+  font-size: clamp(38px, 4vw, 56px);
+  font-weight: 800;
+  line-height: .96;
+  letter-spacing: -.028em;
+  color: var(--coral);
+  -webkit-text-stroke: 1px var(--ink);
+  margin-bottom: 12px;
+}
+.zx-statcard h3 { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+.zx-statcard p { margin: 0; color: var(--ink-mute); font-size: 13.5px; line-height: 1.7; }
+
+/* ===== CTA：黑墨舞台块（scroll-reveal-demo 的 .stage） ===== */
+.zx-stage {
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 20px;
+  padding: 56px 34px;
+  text-align: center;
+}
+.zx-stage h2 {
+  color: var(--paper);
+  font-size: clamp(22px, 3.4vw, 32px);
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+.zx-stage em { color: var(--coral); }
+.zx-stage p { color: #bfbfbf; margin: 10px 0 0; font-size: 14px; }
+.zx-stage__actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.zx-btn--stage { background: transparent; border: 1px solid rgba(250, 250, 250, .38); color: var(--paper); }
+.zx-btn--stage:hover { background: var(--coral); border-color: var(--coral); color: var(--ink); }
+
+/* ===== 响应式 ===== */
+@media (max-width: 960px) {
+  .zx-hero__grid { grid-template-columns: 1fr; gap: 40px; padding-top: 48px; padding-bottom: 56px; }
+  .zx-spot { grid-template-columns: 1fr; gap: 24px; padding: 26px 0; }
+  .zx-spot--flip .zx-spot__copy { order: 1; }
+  .zx-spot--flip .zx-spot__demo { order: 2; }
+}
+@media (max-width: 960px) and (min-width: 761px) {
+  .zx-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .zx-section { padding: 56px 0; }
+  .zx-expect { grid-template-columns: 1fr; gap: 24px; }
+  .zx-expect__item:nth-child(2n) { --reveal-delay: 0ms; }
+  .zx-sticker--done { right: -8px; }
+  .zx-sticker--md { left: -6px; }
+  .zx-sticker--link { left: -4px; }
+  .zx-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .zx-statement__wrap { padding: 10vh 24px; }
+  /* 手机上首屏两栏叠放会超过一屏，min-height 交给内容自然撑开 */
+  .zx-hero { min-height: 0; }
+  .zx-hero__down { display: none; }
+}

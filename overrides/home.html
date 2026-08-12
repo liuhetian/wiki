@@ -1,0 +1,370 @@
+<!--
+  首页开屏模板。骨架仿 mkdocs-material 官网首页（hero → 特性网格 → 聚光灯 → CTA），
+  视觉与动效照抄 docs/skills/frontend-styles/open-design/ 的拆解（Atelier Zero：
+  纸白 + 黑墨 + 荧光绿 #63fe13，只做点缀不做大色块）：
+  - 蓝图选择框标题 + BlurText 逐字模糊落定（blur-text-demo）
+  - data-reveal 滚动入场体系 + left/right 方向变体 + 波浪错峰（scroll-reveal-demo）
+  - 贴纸卡：微旋转 + 窄底深影（stat-cards-demo）
+  - 可拖拽贴纸/chips/参数卡（drag-sticker-demo 的变量式写法，[data-drag-var] 通吃）
+  - 宣言逐字点亮（statement-reveal-demo：滚动 82%→22% 行程映射亮度）
+  首屏铺满视口（100dvh - 顶栏），往下滚进入正文段落。
+  由 docs/index.md 的 frontmatter `template: home.html` 启用。
+  注意：docs/index.md 的 Markdown 正文不在浏览器里渲染（container 被置空），
+  但会原样发布为同域 index.md 源给 LLM 读。开屏只放稳定内容，不放具体篇目。
+  样式在 docs/stylesheets/home.css，仅本页加载。
+-->
+{% extends "base.html" %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ 'stylesheets/home.css' | url }}">
+{% endblock %}
+
+{# landing 放在 tabs 之后：顶部导航条保持原位 #}
+{% block tabs %}
+  {{ super() }}
+
+  <div class="zx-home">
+
+    <!-- ===== Hero：铺满首屏，左文案 + 右贴纸代码卡 ===== -->
+    <section class="zx-hero">
+      <div class="zx-wrap zx-hero__grid">
+        <div class="zx-hero__copy">
+          <p class="zx-lead" data-reveal>AI-FRIENDLY PERSONAL WIKI</p>
+
+          {# 蓝图选择框：data-reveal="bare" 只当触发器，
+             翻牌后由里面的 .zx-word 按 --i 排队从模糊里落定 #}
+          <h1 class="zx-frame" data-reveal="bare">
+            <span class="zx-corner zx-corner--tl"></span>
+            <span class="zx-corner zx-corner--tr"></span>
+            <span class="zx-corner zx-corner--bl"></span>
+            <span class="zx-corner zx-corner--br"></span>
+            <span class="zx-sticker zx-sticker--coral zx-sticker--done" data-drag-var><span>DONE&nbsp;👌</span></span>
+            <span class="zx-sticker zx-sticker--bone zx-sticker--md" data-drag-var><span>.md&nbsp;✅</span></span>
+            <span class="zx-frame__brand"><span class="zx-word" style="--i:0">牛合天's&nbsp;</span><span class="zx-word" style="--i:1">wiki</span></span>
+            <span class="zx-frame__tagline"><span class="zx-word" style="--i:2">一</span><span class="zx-word" style="--i:3">份</span><span class="zx-word" style="--i:4">人</span><span class="zx-word" style="--i:5">和</span><span class="zx-word" style="--i:6">&nbsp;AI&nbsp;</span><span class="zx-word" style="--i:7">都</span><span class="zx-word" style="--i:8">能</span><span class="zx-word" style="--i:9">直</span><span class="zx-word" style="--i:10">接</span><span class="zx-word" style="--i:11">读</span><span class="zx-word" style="--i:12">的</span><span class="zx-word" style="--i:13">知</span><span class="zx-word" style="--i:14">识</span><span class="zx-word" style="--i:15">库</span></span>
+          </h1>
+
+          <p class="zx-hero__lede" data-reveal style="--reveal-delay: 120ms">
+            项目复盘、学科笔记和可挂载执行的 AI skills。写给人看，也写给 agent 读：
+            每个页面在同域提供 Markdown 源，整站可以当作你的 agent 的远程知识库。
+          </p>
+
+          <div class="zx-hero__actions" data-reveal style="--reveal-delay: 220ms">
+            <a class="zx-btn zx-btn--ink" href="{{ 'posts/' | url }}">
+              从文章开始读
+              <span class="zx-btn__icon">{% include ".icons/material/arrow-right.svg" %}</span>
+            </a>
+            <a class="zx-btn zx-btn--pill" href="{{ 'posts/cos-wiki-deploy/' | url }}">这套建站方案</a>
+          </div>
+        </div>
+
+        <div class="zx-hero__aside" data-reveal="right" style="--reveal-delay: 260ms">
+          <span class="zx-sticker zx-sticker--ink zx-sticker--link" data-drag-var><span>顺链接读&nbsp;🔗</span></span>
+          <div class="zx-stickercode" style="--tilt: 1.4deg">
+            <div class="zx-stickercode__label">把任意页面喂给 AI</div>
+            <pre><code><span class="c"># 任意页面，把结尾的 / 换成 .md</span>
+wiki.liuhetian.work/posts/prediction-loop<span class="swap-out">/</span>
+wiki.liuhetian.work/posts/prediction-loop<span class="swap-in">.md</span>
+
+<span class="c"># 或者直接从入口开始，顺相对链接往下读</span>
+curl https://wiki.liuhetian.work/index.md</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <a class="zx-hero__down" href="#zx-more" aria-label="往下看">↓</a>
+    </section>
+
+    <!-- ===== 话题 chips：全部可以抓着拖 ===== -->
+    <section class="zx-chipstrip" id="zx-more">
+      <div class="zx-wrap">
+        <p class="zx-chipstrip__label" data-reveal>这站聊什么 —— 每一枚都可以抓着玩</p>
+        <div class="zx-chips">
+          <span class="zx-chip zx-chip--ink"   data-drag-var data-reveal style="--tilt:-2deg;  --reveal-delay:0ms"><span>Python</span></span>
+          <span class="zx-chip"                data-drag-var data-reveal style="--tilt:1.5deg; --reveal-delay:40ms"><span>概率</span></span>
+          <span class="zx-chip"                data-drag-var data-reveal style="--tilt:-1deg;  --reveal-delay:80ms"><span>统计</span></span>
+          <span class="zx-chip zx-chip--coral" data-drag-var data-reveal style="--tilt:2deg;   --reveal-delay:120ms"><span>机器学习</span></span>
+          <span class="zx-chip"                data-drag-var data-reveal style="--tilt:-1.6deg;--reveal-delay:160ms"><span>Git</span></span>
+          <span class="zx-chip"                data-drag-var data-reveal style="--tilt:1.2deg; --reveal-delay:200ms"><span>FastAPI</span></span>
+          <span class="zx-chip zx-chip--coral" data-drag-var data-reveal style="--tilt:-2.2deg;--reveal-delay:240ms"><span>Claude&nbsp;skills</span></span>
+          <span class="zx-chip"                data-drag-var data-reveal style="--tilt:1.8deg; --reveal-delay:280ms"><span>MkDocs</span></span>
+          <span class="zx-chip"                data-drag-var data-reveal style="--tilt:-1.2deg;--reveal-delay:320ms"><span>ECharts</span></span>
+          <span class="zx-chip"                data-drag-var data-reveal style="--tilt:2.4deg; --reveal-delay:360ms"><span>Dashboard</span></span>
+          <span class="zx-chip"                data-drag-var data-reveal style="--tilt:-1.8deg;--reveal-delay:400ms"><span>前端动效</span></span>
+          <span class="zx-chip zx-chip--ink"   data-drag-var data-reveal style="--tilt:1.4deg; --reveal-delay:440ms"><span>贝叶斯</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 特性网格：6 格（mkdocs-material "Everything you would expect"） ===== -->
+    <section class="zx-section">
+      <div class="zx-wrap">
+        <p class="zx-kicker" data-reveal>你能得到什么</p>
+        <h2 class="zx-display" data-reveal>不止是<em>又一个博客</em></h2>
+        <ul class="zx-expect">
+          <li class="zx-expect__item" data-reveal>
+            <span class="zx-expect__icon">{% include ".icons/material/book-open-variant.svg" %}</span>
+            <div><h3>完整的复盘</h3><p>每篇文章可独立阅读：背景、决策、踩坑和结论一次讲完，不发碎片。</p></div>
+          </li>
+          <li class="zx-expect__item" data-reveal>
+            <span class="zx-expect__icon">{% include ".icons/material/school-outline.svg" %}</span>
+            <div><h3>推导出来的笔记</h3><p>算法、概率、统计、机器学习，从具体问题一步步推到结论，跟着走一遍就是一次练习。</p></div>
+          </li>
+          <li class="zx-expect__item" data-reveal>
+            <span class="zx-expect__icon">{% include ".icons/material/toolbox-outline.svg" %}</span>
+            <div><h3>拿来即用的 skills</h3><p>按 Claude skill 标准目录组织的成套资产：约定、模板和活 demo，复制路径就能挂载。</p></div>
+          </li>
+          <li class="zx-expect__item" data-reveal>
+            <span class="zx-expect__icon">{% include ".icons/material/robot-outline.svg" %}</span>
+            <div><h3>AI 可直接消费</h3><p>同域 .md 源加 llms.txt 入口，LLM 拿到的是干净 Markdown，不用从 HTML 里抠正文。</p></div>
+          </li>
+          <li class="zx-expect__item" data-reveal>
+            <span class="zx-expect__icon">{% include ".icons/material/link-variant.svg" %}</span>
+            <div><h3>链接即目录</h3><p>所有页面用相对链接互联，agent 顺着链接一层层读，需要多深读多深。</p></div>
+          </li>
+          <li class="zx-expect__item" data-reveal>
+            <span class="zx-expect__icon">{% include ".icons/material/source-branch.svg" %}</span>
+            <div><h3>方案完全公开</h3><p>对象存储 + 静态构建 + 部署校验，整套建站方案有完整拆解，可以照抄。</p></div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== 聚光灯：左右交替（mkdocs-material spotlights） ===== -->
+    <section class="zx-section zx-section--spot">
+      <div class="zx-wrap">
+        <p class="zx-kicker" data-reveal>细看几处</p>
+        <h2 class="zx-display" data-reveal>为 agent 铺好的路</h2>
+
+        <div class="zx-spot">
+          <div class="zx-spot__copy" data-reveal="left">
+            <h3>llms.txt 入口</h3>
+            <p>
+              站点根目录提供 <code>/llms.txt</code>，内容就是首页索引的 Markdown 副本
+              —— 服从 llms.txt 协议的爬虫和 agent 一进门就能拿到全站地图，
+              不需要任何约定之外的先验知识。
+            </p>
+          </div>
+          <div class="zx-spot__demo" data-reveal="right">
+            <div class="zx-termcard" style="--tilt: -.8deg">
+              <div class="zx-termcard__label">llms.txt</div>
+              <pre><code><span class="k">$</span> curl wiki.liuhetian.work/llms.txt
+<span class="c"># 牛合天's wiki</span>
+<span class="c">&gt; AI 友好的个人知识库：每个页面在同域提供 .md 源…</span>
+<span class="c">## 文章 / ## 笔记 / ## Skills …</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="zx-spot zx-spot--flip">
+          <div class="zx-spot__copy" data-reveal="right">
+            <h3>远程 skill 挂载</h3>
+            <p>
+              skills 板块按 Claude skill 的标准目录组织：<code>SKILL.md</code> 写约定，
+              <code>reference/</code> 放按需加载的细则。给 agent 一个 URL，
+              它就多了一套现成的工作方式。
+            </p>
+          </div>
+          <div class="zx-spot__demo" data-reveal="left">
+            <div class="zx-termcard" style="--tilt: .7deg">
+              <div class="zx-termcard__label">skills/fastapi/</div>
+              <pre><code>skills/fastapi/
+├── <span class="hl">SKILL.md</span>        <span class="c"># 总约定，入口</span>
+└── reference/
+    ├── 项目布局.md
+    ├── 数据库.md
+    └── 测试.md      <span class="c"># …按需加载</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="zx-spot">
+          <div class="zx-spot__copy" data-reveal="left">
+            <h3>部署即校验</h3>
+            <p>
+              这个站的 AI 入口是相对链接，不是 nav —— 漏挂链接的文章对 agent 等于不存在。
+              所以每次部署前有一道闸门：每篇 .md 都必须能被某个祖先索引页直接链到，
+              另查死链。挂不上链，部署不了。
+            </p>
+          </div>
+          <div class="zx-spot__demo" data-reveal="right">
+            <div class="zx-termcard" style="--tilt: -.6deg">
+              <div class="zx-termcard__label">deploy.sh</div>
+              <pre><code><span class="k">$</span> ./deploy.sh
+<span class="ok">✅ 链路校验通过</span> —— 全部文章
+   都能从上一级索引走到</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 宣言：随滚动逐字点亮（statement-reveal） ===== -->
+    <section class="zx-statement">
+      <div class="zx-statement__wrap">
+        <p class="zx-kicker">为什么这么做</p>
+        {# 正文直接写在标签里当无 JS 兜底；脚本接管后按 CJK 单字 / 拉丁整词
+           切成 token，亮度跟着滚动位置走 —— 回滚会逐字熄灭，完全跟手 #}
+        <h2 class="zx-statement__text" id="zx-statement" data-highlight="Markdown">写下来的东西，应该人能读，AI 也能直接读。链接就是目录，Markdown 就是接口。</h2>
+      </div>
+    </section>
+
+    <!-- ===== 参数贴纸卡：可以抓走 ===== -->
+    <section class="zx-section zx-section--stats">
+      <div class="zx-wrap">
+        <p class="zx-kicker" data-reveal>顺手一提</p>
+        <h2 class="zx-display" data-reveal>这些卡片<em>也能拖</em></h2>
+        <div class="zx-stats">
+          <div class="zx-statcard" data-drag-var data-reveal style="--tilt:-1.4deg; --reveal-delay:0ms">
+            <span class="zx-statcard__num">0</span>
+            <h3>读取门槛</h3><p>不用登录，不用 API key，curl 就行。</p>
+          </div>
+          <div class="zx-statcard" data-drag-var data-reveal style="--tilt:1deg; --reveal-delay:90ms">
+            <span class="zx-statcard__num">1</span>
+            <h3>条 curl</h3><p>/llms.txt 一口气拿到全站地图。</p>
+          </div>
+          <div class="zx-statcard" data-drag-var data-reveal style="--tilt:-.8deg; --reveal-delay:180ms">
+            <span class="zx-statcard__num">3</span>
+            <h3>个板块</h3><p>文章、笔记、skills，各管一摊。</p>
+          </div>
+          <div class="zx-statcard" data-drag-var data-reveal style="--tilt:1.6deg; --reveal-delay:270ms">
+            <span class="zx-statcard__num">∞</span>
+            <h3>链接深度</h3><p>顺相对链接往下读，要多深有多深。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CTA：黑墨舞台块 ===== -->
+    <section class="zx-section zx-section--tail">
+      <div class="zx-wrap">
+        <div class="zx-stage" data-reveal="rise-lg">
+          <h2>从一个<em>入口</em>开始</h2>
+          <p>人从索引读，AI 从 .md 读，殊途同归。</p>
+          <div class="zx-stage__actions">
+            <a class="zx-btn zx-btn--stage" href="{{ 'posts/' | url }}">文章索引</a>
+            <a class="zx-btn zx-btn--stage" href="{{ 'notes/' | url }}">笔记索引</a>
+            <a class="zx-btn zx-btn--stage" href="{{ 'skills/' | url }}">Skills 索引</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    (() => {
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ============================================================
+         ① data-reveal 编排（open-design home-enhancer.astro 原参数）：
+         threshold 0.12 + rootMargin '0px 0px -8% 0px'，翻牌即 unobserve。
+         鲁棒性契约：reduced-motion 或没有 IO 时全部直接置 revealed。
+         ============================================================ */
+      const elements = document.querySelectorAll('[data-reveal]:not([data-revealed])');
+      if (reduceMotion || !('IntersectionObserver' in window)) {
+        for (const el of elements) el.dataset.revealed = 'true';
+      } else {
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            e.target.dataset.revealed = 'true';
+            io.unobserve(e.target);
+          }
+        }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+        for (const el of elements) io.observe(el);
+      }
+
+      /* ============================================================
+         ② 可拖拽（drag-sticker-demo 变量式）：贴纸、chips、参数卡通吃。
+         JS 只写 --drag-x/y，定位和倾斜由 CSS 持有；
+         setPointerCapture 甩出元素也不脱手。
+         ============================================================ */
+      document.querySelectorAll('[data-drag-var]').forEach((el) => {
+        let dragging = false, startX = 0, startY = 0, baseX = 0, baseY = 0;
+        const readVar = (n) => Number.parseFloat(el.style.getPropertyValue(n)) || 0;
+        el.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          dragging = true;
+          startX = e.clientX; startY = e.clientY;
+          baseX = readVar('--drag-x'); baseY = readVar('--drag-y');
+          el.classList.add('is-dragging');
+          try { el.setPointerCapture(e.pointerId); } catch (_) {}
+        });
+        el.addEventListener('pointermove', (e) => {
+          if (!dragging) return;
+          el.style.setProperty('--drag-x', (baseX + (e.clientX - startX)) + 'px');
+          el.style.setProperty('--drag-y', (baseY + (e.clientY - startY)) + 'px');
+        });
+        const end = (e) => {
+          if (!dragging) return;
+          dragging = false;
+          el.classList.remove('is-dragging');
+          try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+        };
+        el.addEventListener('pointerup', end);
+        el.addEventListener('pointercancel', end);
+      });
+
+      /* ============================================================
+         ③ 宣言逐字点亮（statement-reveal-demo 原参数）：
+         CJK 一字一 token、拉丁整词；progress 由块顶在视口 82%→22%
+         的行程给出，第 i 个词的点亮窗口 [i/n,(i+1)/n]；
+         暗底 0.18 保持墨影轮廓。reduced-motion：不接管，全墨可读。
+         ============================================================ */
+      const host = document.getElementById('zx-statement');
+      if (host && !reduceMotion) {
+        const CJK = /[぀-ヿ㐀-鿿　-〿＀-￯]/;
+        const hl = (host.dataset.highlight || '').split(' ');
+        const tokens = [];
+        let buf = '';
+        const flush = () => { if (buf) { tokens.push(buf); buf = ''; } };
+        for (const ch of host.textContent.trim()) {
+          if (ch === ' ') { flush(); tokens.push(' '); }
+          else if (CJK.test(ch)) { flush(); tokens.push(ch); }
+          else buf += ch;
+        }
+        flush();
+        host.textContent = '';
+        const frag = document.createDocumentFragment();
+        for (const tok of tokens) {
+          const s = document.createElement('span');
+          if (tok === ' ') { s.className = 'zx-rspace'; s.textContent = ' '; }
+          else { s.className = 'zx-rword' + (hl.includes(tok) ? ' hl' : ''); s.textContent = tok; }
+          frag.append(s);
+        }
+        host.append(frag);
+        const words = host.querySelectorAll('.zx-rword');
+        const n = words.length;
+        let ticking = false;
+        const update = () => {
+          ticking = false;
+          const rect = host.getBoundingClientRect();
+          const vh = innerHeight;
+          const start = vh * 0.82, end = vh * 0.22;
+          const progress = (start - rect.top) / (start - end);
+          for (let i = 0; i < n; i++) {
+            const a = i / n, b = (i + 1) / n;
+            let o;
+            if (progress <= a) o = 0;
+            else if (progress >= b) o = 1;
+            else o = (progress - a) / (b - a);
+            words[i].style.opacity = String(0.18 + 0.82 * o);
+          }
+        };
+        const onScroll = () => {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(update);
+        };
+        addEventListener('scroll', onScroll, { passive: true });
+        addEventListener('resize', onScroll, { passive: true });
+        update();
+      }
+    })();
+  </script>
+{% endblock %}
+
+{# 正文由上面的 landing 接管；index.md 的 Markdown 只作为同域 .md 源发布 #}
+{% block container %}{% endblock %}

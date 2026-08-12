@@ -6,6 +6,7 @@ copyright: >
 
 theme:
   name: material
+  custom_dir: overrides   # 首页开屏模板 home.html 所在目录
   language: zh
   features:
     - navigation.tabs
@@ -47,6 +48,13 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
 
+# zensical 的链接校验有并行竞态：同一份内容偶发（约 1/15 次构建）误报大量
+# "page does not exist"，产物 HTML 实测无差异（0.0.46 与 0.0.53 均复现）。
+# 死链检查由 scripts/check-links.py 在部署前把关（会阻断部署），这里关掉不丢保障；
+# invalid_link_anchors（锚点校验）check-links.py 不覆盖，保留 —— 若它也出现偶发误报，同样对待。
+validation:
+  invalid_links: false
+
 nav:
   - 首页:
       - index.md
@@ -59,7 +67,7 @@ nav:
       - 预测项目闭环: posts/prediction-loop.md
       - AI 时代的产品经理: posts/ai-pm.md
       - 动画网页 PPT: posts/animated-ppt/index.md
-      - 用 AI 生成代码骨架: posts/ai-code-skeleton/index.md
+      - 超级轻量的自用AI编程Harness框架: posts/ai-code-skeleton/index.md
       - Kindle 常显信息屏:
           - posts/kindle-dashboard/index.md
           - 越狱与显示通道: posts/kindle-dashboard/reference/jailbreak.md

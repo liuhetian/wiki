@@ -7,5 +7,5 @@
 - [预测项目闭环：把「写完就扔」的脚本养成能被 AI 运维的系统](prediction-loop.md) —— 留痕、回填、离线迭代，让预测项目长期可信
 - [AI 时代的产品经理：从点子到提测的完整复盘](ai-pm.md) —— 算法岗顶上 PM 缺位的一个月：五步框架、两条回边，和用卡片汇报谈判性进展
 - [会动的网页 PPT 是怎么做出来的](animated-ppt/index.md) —— 关键帧图 + 首尾帧视频 + 滚动叙事引擎，附最深的坑（all-intra 重编码）和可复用的[工程手册](../skills/writing/deck/index.md)
-- [用 AI 生成代码骨架：搭新项目和读旧仓库的同一把工具](ai-code-skeleton/index.md) —— 骨架的正逆两个方向风险相反：正向你信它（它定义未来），逆向你查它（它转述现在）
+- [超级轻量的自用AI编程Harness框架](ai-code-skeleton/index.md) —— 骨架的正逆两个方向风险相反：正向你信它（它定义未来），逆向你查它（它转述现在）
 - [让 Kindle 常显一块 Token 看板](kindle-dashboard/index.md) —— 墨水屏的两条硬约束（刷新有代价、只有 16 级灰）反推出的整套设计；附[越狱与显示通道实操](kindle-dashboard/reference/jailbreak.md)、[上报接口交接](kindle-dashboard/reference/report-api.md)与[决策日志](kindle-dashboard/reference/decision-log.md)

@@ -1,3 +1,13 @@
+---
+template: home.html
+hide:
+  - navigation
+  - toc
+---
+
+<!-- 浏览器里首页由 overrides/home.html（SaaS 开屏）渲染，下面的正文不上屏，
+     但会原样发布为同域 index.md 源给 LLM 读。改开屏内容时记得两边同步。 -->
+
 # 牛合天's wiki
 
 > AI 友好的个人知识库：每个页面在同域提供 `.md` 源（把 URL 结尾的 `/` 换成 `.md` 即可），LLM 可顺相对链接一层层读进去 —— 整份 wiki 可当远程 skill 用。设计与落地详见 [用对象存储部署 AI 友好的个人知识库](posts/cos-wiki-deploy/index.md)。
