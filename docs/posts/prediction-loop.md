@@ -10,13 +10,15 @@
 
 ```mermaid
 graph LR
-    subgraph dev["开发时："]
-        direction TB
-        h["1 搭建 harness<br/>→ PRD 中枢"] --> rb["2 写 runbook<br/>→ 随服务上线的入口"] --> b["3 搭工程底座<br/>→ lockfile · 版本注入 · 脱敏 · 取数入口"]
-    end
+    %% run 先声明、dev 后声明是故意的：mermaid 逆序注册 subgraph，配合 it→h 的环，
+    %% 按 dev、run 顺序声明会让整图左右翻转（运行时跑到最左边）
     subgraph run["运行时："]
         direction TB
         t["4 留痕<br/>→ 单条痕迹（L1）"] --> m["5 算口径<br/>→ health（L1） · 评估与日报（L2）"]
+    end
+    subgraph dev["开发时："]
+        direction TB
+        h["1 搭建 harness<br/>→ PRD 中枢"] --> rb["2 写 runbook<br/>→ 随服务上线的入口"] --> b["3 搭工程底座<br/>→ lockfile · 版本注入 · 脱敏 · 取数入口"]
     end
     b -->|部署 · 埋点| t
     m -->|L2 读出异常 · 人审核| it["6 离线迭代<br/>→ 新 prompt · 新模型 · 新 commit"]

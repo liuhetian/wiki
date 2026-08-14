@@ -17,6 +17,7 @@
 - [PIXEL BLOOM 网格揭示](reference/task5-pixel-bloom.md) —— Canvas 沿指针轨迹逐格揭开三个同坐标隐藏世界
 - [TINTORY 视觉考古编辑部](reference/task6-tintory.md) —— 六页视觉研究工作室与真实民族服饰素材
 - [NEAT ANNOTATIONS 手绘标注标本](reference/task7-neat-annotations.md) —— 八方向、内置颜色与组合效果的完整 CSS 标本页
+- [One Hub 翡翠管理台](reference/onehub-berry-admin.md) —— Berry 骨架 × Minimals 色语言的 MUI 后台皮肤：墨色主按钮、双层卡片阴影、灰底表头 + 虚线行分隔；活例是纯 CSS 缩微，正文附可直接抄进 MUI 项目的 createTheme 三件套配方
 - [Open Design 官网拆解](open-design/index.md) —— open-design.ai 首页 11 个动效逐个复刻：磁性 Dock、物理掉落、点阵地球、逐词模糊入场 …… 纸白 + 荧光绿的零 React runtime 渐进增强流派
 - [HAOQI 3D 开屏拆解](haoqi/index.md) —— 一个完整开屏展示：手写 Banana TubeGeometry、Pointer 视差、玻璃折射与 GPU Fluid Push；后续独立特效按第二、第三篇追加
 - [ORYZO 官网拆解](oryzo/index.md) —— Lusion 的高斯泼溅玩梗营销站，按叙事顺序复现精彩场面：蓝图开场、泼溅渲染系统、翻滚转台场景切换、巨型标题景深换焦、照片滑轨、RGB 呼吸光边
