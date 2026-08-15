@@ -68,6 +68,7 @@ nav:
           - posts/cos-wiki-deploy/index.md
           - 部署实操手册: posts/cos-wiki-deploy/reference/deploy.md
           - 建站手记: posts/cos-wiki-deploy/reference/wiki-build-log.md
+      - 自建 git-lfs 后端: posts/git-lfs-cos.md
       - 预测项目闭环: posts/prediction-loop.md
       - AI 时代的产品经理: posts/ai-pm.md
       - 动画网页 PPT: posts/animated-ppt/index.md
