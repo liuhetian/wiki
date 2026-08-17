@@ -22,3 +22,6 @@ docs/vendor/three/** filter=lfs diff=lfs merge=lfs -text
 docs/vendor/react.production.min.js filter=lfs diff=lfs merge=lfs -text
 docs/vendor/react-dom.production.min.js filter=lfs diff=lfs merge=lfs -text
 docs/vendor/htm.umd.js filter=lfs diff=lfs merge=lfs -text
+docs/vendor/htm.module.js filter=lfs diff=lfs merge=lfs -text
+docs/vendor/r3f/** filter=lfs diff=lfs merge=lfs -text
+docs/vendor/react-esm/** filter=lfs diff=lfs merge=lfs -text

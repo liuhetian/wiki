@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Vercel Lanyard — 可拖拽 3D 工牌（免构建运行时 React）</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden; background: #000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    touch-action: none; -webkit-user-select: none; user-select: none;
+  }
+  #root { width: 100%; height: 100%; }
+  canvas { display: block; }
+  .hint {
+    position: fixed; bottom: 20px; left: 0; right: 0; text-align: center;
+    color: rgba(255,255,255,.45); font-size: 13px; letter-spacing: .08em;
+    pointer-events: none; z-index: 10;
+  }
+  .logo {
+    position: fixed; top: 22px; left: 26px; color: #fff;
+    font-size: 15px; font-weight: 600; letter-spacing: .02em;
+    pointer-events: none; z-index: 10;
+  }
+</style>
+<!-- 运行时依赖全部来自全站共享 /vendor/，无 CDN、无构建。
+     react/three/fiber 这些"单例敏感"的包在打包时被 external 化，
+     由这份 import map 统一指到唯一文件，保证全页只有一份实例。 -->
+<script type="importmap">
+{
+  "imports": {
+    "react": "/vendor/react-esm/react.js",
+    "react/jsx-runtime": "/vendor/react-esm/jsx-runtime.js",
+    "scheduler": "/vendor/react-esm/scheduler.js",
+    "react-dom": "/vendor/react-esm/react-dom.js",
+    "react-dom/client": "/vendor/react-esm/react-dom-client.js",
+    "three": "/vendor/three/three.module.min.js",
+    "@react-three/fiber": "/vendor/r3f/fiber.js",
+    "@react-three/drei": "/vendor/r3f/drei-slim.js",
+    "@react-three/rapier": "/vendor/r3f/rapier.js",
+    "meshline": "/vendor/r3f/meshline.js",
+    "htm": "/vendor/htm.module.js"
+  }
+}
+</script>
+</head>
+<body>
+<div class="logo">SHIP 2024</div>
+<div id="root"></div>
+<div class="hint">拖动工牌试试 — 松手后它会自己甩回去</div>
+
+<script type="module">
+import * as THREE from 'three'
+import { createElement, useEffect, useRef, useState, Fragment } from 'react'
+import { createRoot } from 'react-dom/client'
+import { Canvas, extend, useFrame, useThree } from '@react-three/fiber'
+import { Environment, Lightformer, useGLTF, useTexture } from '@react-three/drei'
+import {
+  BallCollider, CuboidCollider, Physics, RigidBody,
+  useRopeJoint, useSphericalJoint,
+} from '@react-three/rapier'
+import { MeshLineGeometry, MeshLineMaterial } from 'meshline'
+import htm from 'htm'
+
+// htm：JSX 的免构建替身 —— html`<mesh>` 等价于 JSX 的 <mesh>，组件用 <${Comp}> 插值
+const html = htm.bind(createElement)
+
+// 把 meshline 的类注册进 R3F，使其可以作为 <meshLineGeometry /> / <meshLineMaterial /> 使用
+extend({ MeshLineGeometry, MeshLineMaterial })
+
+// 资产与本页同目录，相对路径引用（tag.glb 工牌模型 / band.jpg 挂绳贴图）
+const GLB = './tag.glb'
+const BAND = './band.jpg'
+useGLTF.preload(GLB)
+useTexture.preload(BAND)
+
+function App() {
+  return html`
+    <${Canvas} camera=${{ position: [0, 0, 13], fov: 25 }}>
+      <ambientLight intensity=${Math.PI} />
+      <${Physics} interpolate gravity=${[0, -40, 0]} timeStep=${1 / 60}>
+        <${Band} />
+      <//>
+      <!-- 用 Lightformer 手搓一套环境光，不依赖外部 HDRI 文件 -->
+      <${Environment} background blur=${0.75}>
+        <color attach="background" args=${['black']} />
+        <${Lightformer} intensity=${2} color="white" position=${[0, -1, 5]} rotation=${[0, 0, Math.PI / 3]} scale=${[100, 0.1, 1]} />
+        <${Lightformer} intensity=${3} color="white" position=${[-1, -1, 1]} rotation=${[0, 0, Math.PI / 3]} scale=${[100, 0.1, 1]} />
+        <${Lightformer} intensity=${3} color="white" position=${[1, 1, 1]} rotation=${[0, 0, Math.PI / 3]} scale=${[100, 0.1, 1]} />
+        <${Lightformer} intensity=${10} color="white" position=${[-10, 0, 14]} rotation=${[0, Math.PI / 2, Math.PI / 3]} scale=${[100, 10, 1]} />
+      <//>
+    <//>
+  `
+}
+
+function Band({ maxSpeed = 50, minSpeed = 10 }) {
+  // band = 绳子的 mesh；fixed 是顶部固定点；j1/j2/j3 是绳子的三个关节；card 是工牌本体
+  const band = useRef()
+  const fixed = useRef()
+  const j1 = useRef()
+  const j2 = useRef()
+  const j3 = useRef()
+  const card = useRef()
+
+  // 复用的临时向量，避免每帧 new
+  const vec = new THREE.Vector3()
+  const ang = new THREE.Vector3()
+  const rot = new THREE.Vector3()
+  const dir = new THREE.Vector3()
+
+  const segmentProps = {
+    type: 'dynamic',
+    canSleep: true,
+    colliders: false,
+    angularDamping: 2,
+    linearDamping: 2,
+  }
+
+  const { nodes, materials } = useGLTF(GLB)
+  const texture = useTexture(BAND)
+  const { width, height } = useThree((state) => state.size)
+
+  // 绳子的曲线：4 个控制点，由物理关节的实时位置驱动
+  const [curve] = useState(
+    () =>
+      new THREE.CatmullRomCurve3([
+        new THREE.Vector3(),
+        new THREE.Vector3(),
+        new THREE.Vector3(),
+        new THREE.Vector3(),
+      ]),
+  )
+  const [dragged, drag] = useState(false)
+  const [hovered, hover] = useState(false)
+
+  // 固定点 -> j1 -> j2 -> j3 串成一条绳，每段最长 1
+  useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1])
+  useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1])
+  useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1])
+  // 工牌用球铰挂在 j3 上，锚点在卡片顶部（y = 1.45）所以它能自由摆动
+  useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.45, 0]])
+
+  useEffect(() => {
+    if (hovered) {
+      document.body.style.cursor = dragged ? 'grabbing' : 'grab'
+      return () => void (document.body.style.cursor = 'auto')
+    }
+  }, [hovered, dragged])
+
+  useFrame((state, delta) => {
+    // 掉帧、GC、切回标签页时 delta 会突然变大，先钳住，否则下面的插值会被打飞
+    const dt = Math.min(delta, 1 / 30)
+
+    if (dragged) {
+      // 把 2D 鼠标位置反投影到 3D 空间，得到相机视线上的一点
+      vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera)
+      dir.copy(vec).sub(state.camera.position).normalize()
+      vec.add(dir.multiplyScalar(state.camera.position.length()))
+      // 被拖拽时整条绳都要唤醒，否则休眠的刚体不会跟着动
+      ;[card, j1, j2, j3, fixed].forEach((ref) => ref.current?.wakeUp())
+      card.current?.setNextKinematicTranslation({
+        x: vec.x - dragged.x,
+        y: vec.y - dragged.y,
+        z: vec.z - dragged.z,
+      })
+    }
+
+    if (fixed.current) {
+      // 对中间两个关节做插值平滑，消除猛拉时绳子的抖动
+      ;[j1, j2].forEach((ref) => {
+        // 顺带自愈：一旦 lerped 变成 NaN/Inf 就重置，否则 NaN 会永久传染给绳子的几何
+        if (!ref.current.lerped || !Number.isFinite(ref.current.lerped.x)) {
+          ref.current.lerped = new THREE.Vector3().copy(ref.current.translation())
+        }
+        const clampedDistance = Math.max(
+          0.1,
+          Math.min(1, ref.current.lerped.distanceTo(ref.current.translation())),
+        )
+        // alpha 必须留在 [0,1]：>1 会过冲，>2 会每帧放大直至数值爆炸成 NaN，
+        // 那时 meshline 的顶点全废，绳子就退化成乱飞的三角形
+        const alpha = Math.min(1, dt * (minSpeed + clampedDistance * (maxSpeed - minSpeed)))
+        ref.current.lerped.lerp(ref.current.translation(), alpha)
+      })
+
+      // 用四个关节位置刷新 Catmull-Rom 曲线，再喂给 meshline
+      curve.points[0].copy(j3.current.translation())
+      curve.points[1].copy(j2.current.lerped)
+      curve.points[2].copy(j1.current.lerped)
+      curve.points[3].copy(fixed.current.translation())
+      band.current.geometry.setPoints(curve.getPoints(32))
+
+      // 给一点角速度修正，让卡片正面始终倾向于朝着屏幕
+      ang.copy(card.current.angvel())
+      rot.copy(card.current.rotation())
+      card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z })
+    }
+  })
+
+  curve.curveType = 'chordal'
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping
+
+  return html`
+    <${Fragment}>
+      <group position=${[0, 4, 0]}>
+        <${RigidBody} ref=${fixed} ...${segmentProps} type="fixed" />
+        <${RigidBody} position=${[0.5, 0, 0]} ref=${j1} ...${segmentProps}>
+          <${BallCollider} args=${[0.1]} />
+        <//>
+        <${RigidBody} position=${[1, 0, 0]} ref=${j2} ...${segmentProps}>
+          <${BallCollider} args=${[0.1]} />
+        <//>
+        <${RigidBody} position=${[1.5, 0, 0]} ref=${j3} ...${segmentProps}>
+          <${BallCollider} args=${[0.1]} />
+        <//>
+        <${RigidBody}
+          position=${[2, 0, 0]}
+          ref=${card}
+          ...${segmentProps}
+          type=${dragged ? 'kinematicPosition' : 'dynamic'}
+        >
+          <${CuboidCollider} args=${[0.8, 1.125, 0.01]} />
+          <group
+            scale=${2.25}
+            position=${[0, -1.2, -0.05]}
+            onPointerOver=${() => hover(true)}
+            onPointerOut=${() => hover(false)}
+            onPointerUp=${(e) => {
+              e.target.releasePointerCapture(e.pointerId)
+              drag(false)
+            }}
+            onPointerDown=${(e) => {
+              e.target.setPointerCapture(e.pointerId)
+              // 记录点击点相对卡片中心的偏移，拖动时才不会"跳"到鼠标下
+              drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())))
+            }}
+          >
+            <mesh geometry=${nodes.card.geometry}>
+              <meshPhysicalMaterial
+                map=${materials.base.map}
+                map-anisotropy=${16}
+                clearcoat=${1}
+                clearcoatRoughness=${0.15}
+                roughness=${0.3}
+                metalness=${0.5}
+              />
+            </mesh>
+            <mesh geometry=${nodes.clip.geometry} material=${materials.metal} material-roughness=${0.3} />
+            <mesh geometry=${nodes.clamp.geometry} material=${materials.metal} />
+          </group>
+        <//>
+      </group>
+      <mesh ref=${band}>
+        <meshLineGeometry />
+        <meshLineMaterial
+          color="white"
+          depthTest=${false}
+          resolution=${[width, height]}
+          useMap
+          map=${texture}
+          repeat=${[-3, 1]}
+          lineWidth=${1}
+        />
+      </mesh>
+    <//>
+  `
+}
+
+createRoot(document.getElementById('root')).render(html`<${App} />`)
+</script>
+</body>
+</html>
