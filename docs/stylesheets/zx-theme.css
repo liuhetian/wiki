@@ -1,0 +1,423 @@
+/* 全站皮肤层：把 Zensical modern 的 chrome 与 .md-typeset 排版改成 Atelier Zero
+   （纸白 + 黑墨 + 荧光绿点缀 + 1px 硬线 + 直角）。只消费 zx-tokens.css 的令牌，不定义令牌。
+   原则：能靠 --md-* 变量搞定的都在 tokens 里做了，这里只放变量够不着的（字面值、硬编码 hex、
+   结构性新增）。extra_css 在主题 CSS 之后加载，同特异度就能赢，所以尽量不用 !important；
+   下面每处 !important 都单独注明为什么不可替代。
+   硬线一律写字面 1px 而不是 Zensical 的 .05rem：宽屏 root 字号变 22/24px 时 .05rem 会糊成
+   1.1/1.2px，Atelier Zero 的识别度就在"硬"。这是有意的不一致。
+   衬线只出现在三处：站名、h1、h2。其余一切 Inter —— Georgia 的中文回退是宋体，小字号很难看。
+   参照文件：site/assets/stylesheets/modern/main.*.min.css（每条覆盖的特异度都对着它核过）。 */
+
+/* ================================================================
+   0. 全局
+   ================================================================ */
+::selection { background: var(--coral); color: var(--ink); text-shadow: none; }
+
+/* 直角总闸。Zensical 把 border-radius 撒在 ~42 处，其中十几条是
+   .md-typeset .tabbed-block>.highlight:first-child>.highlighttable>tbody>tr>.code>div>pre>code
+   这种 7 级复合选择器，逐条对齐特异度不可维护、升级即失效。这里是白名单式点名，不是通配。 */
+.md-typeset code,
+.md-typeset pre > code,
+.md-typeset .admonition,
+.md-typeset details,
+.md-typeset table:not([class]),
+.md-typeset .tabbed-labels > label,
+.md-typeset .highlight span.filename,
+.highlighttable .linenos,
+.highlighttable tr:first-child > .linenos,
+.md-nav__link,
+.md-search__button,
+.md-code__nav,
+.md-top,
+.md-dialog,
+.md-sidebar--secondary .md-sidebar__inner {
+  border-radius: 0 !important;
+}
+
+/* ================================================================
+   1. 顶栏 / 标签条 / 搜索
+   ================================================================ */
+.md-header {
+  border-bottom: 1px solid var(--line);
+  box-shadow: none;
+}
+.md-header--shadow { box-shadow: none; }
+/* 站名：衬线三处之一，和首页 .zx-frame__brand 同族 */
+.md-header__topic:first-child .md-ellipsis {
+  font-family: var(--zx-serif);
+  font-weight: 800;
+  letter-spacing: 0;
+}
+.md-header__title { letter-spacing: 0; }
+
+.md-tabs {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  box-shadow: none;
+}
+/* 默认 opacity:.7 + color:inherit，纸面上灰得像失效；强调走 opacity / 字重 / 下划线 */
+.md-tabs__link { opacity: 1; color: var(--ink-mute); }
+.md-tabs__link:hover,
+.md-tabs__link:focus { color: var(--ink); }
+/* modern 的 active 是 .05rem solid fg-color；换成 2px 荧光绿硬线。
+   （--md-indicator-x 那套滑动指示器只用于 tabbed 代码块，不在这里，不会双线） */
+.md-tabs__item--active { border-bottom: 2px solid var(--coral); }
+.md-tabs__item--active .md-tabs__link { color: var(--ink); font-weight: 700; }
+
+/* 搜索入口是 <button class="md-search__button">（modern 没有 .md-search__form）。
+   面板本体在 shadow DOM 里，配色已由 tokens 的 --color-* 接管，这里只管按钮。 */
+.md-search__button {
+  background-color: var(--bone);
+  border: 1px solid var(--line);
+  color: var(--ink-mute);
+}
+.md-search__button:hover,
+.md-search__button:focus {
+  background-color: var(--paper-dark);   /* 默认 hover 是 --lighter(#8c8c8c)，纸面上太重 */
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.md-search__button:before { background-color: var(--ink-mute); }   /* 放大镜 mask */
+
+/* ================================================================
+   2. 左侧导航
+   ================================================================ */
+.md-nav__item--section > .md-nav__link {
+  color: var(--ink-faint);
+  letter-spacing: .06em;
+}
+/* active：--coral-wash 底 + 左侧 2px 绿竖条（inset box-shadow 不撑布局），替掉圆角药丸。
+   Zensical 原规则同为 3 类，我们在后 → 赢。 */
+.md-nav--primary .md-nav__item .md-nav__link--active {
+  background: var(--coral-wash);
+  color: var(--ink);
+  font-weight: 700;
+  box-shadow: inset 2px 0 0 var(--coral);
+}
+/* hover：Zensical 那条是 5 类（--primary + __link + [href] + :hover + :not()），必须逐字对齐 */
+.md-nav--primary .md-nav__link[href]:hover:not(.md-nav__link--active),
+.md-nav--primary .md-nav__link[href]:focus:not(.md-nav__link--active),
+.md-nav--primary .md-nav__link[for]:hover:not(.md-nav__link--active),
+.md-nav--primary .md-nav__link[for]:focus:not(.md-nav__link--active) {
+  background-color: var(--paper-dark);
+  color: var(--ink);
+}
+
+/* ================================================================
+   3. 右侧 TOC：一条 1px 竖线当轨道，当前项在轨道上换成 2px 绿
+   ================================================================ */
+.md-nav--secondary .md-nav__title {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-faint);
+  font-size: .6rem;
+  letter-spacing: .14em;
+}
+.md-sidebar--secondary .md-nav--secondary > .md-nav__list {
+  border-left: 1px solid var(--line);
+  margin-left: .2rem;
+}
+.md-nav--secondary .md-nav__link {
+  margin-left: -1px;                   /* 压在轨道上 */
+  border-left: 2px solid transparent;
+  padding: .2rem .6rem;
+  color: var(--ink-mute);
+}
+/* Zensical: .md-nav__item .md-nav__link--active{color:var(--md-typeset-a-color)} 2 类；同 2 类在后 → 赢 */
+.md-nav--secondary .md-nav__link--active {
+  border-left-color: var(--coral);
+  color: var(--ink);
+  font-weight: 700;
+}
+.md-nav--secondary .md-nav__link[href]:hover,
+.md-nav--secondary .md-nav__link[href]:focus { color: var(--coral-deep); }
+/* 窄屏 TOC 是浮起来的小面板 */
+@media screen and (max-width: 59.984375em) {
+  .md-sidebar--secondary .md-sidebar__inner {
+    background: var(--bone);
+    border: 1px solid var(--ink);
+    box-shadow: var(--zx-sticker);
+  }
+}
+
+/* ================================================================
+   4. 正文排版
+   ================================================================ */
+.md-typeset {
+  font-size: .78rem;        /* modern 默认偏小，CJK 下再放一点 */
+  line-height: 1.85;
+}
+/* h1：衬线巨字 + 底部 1px 墨线 */
+.md-typeset h1 {
+  font-family: var(--zx-serif);
+  font-weight: 800;
+  font-size: 2em;
+  letter-spacing: 0;        /* modern 的 -.025em 对汉字是负收益 */
+  line-height: 1.25;
+  color: var(--ink);
+  margin: 0 0 .9em;
+  padding-bottom: .42em;
+  border-bottom: 1px solid var(--ink);
+}
+/* h2：章节闸门。顶部 1px 通栏线 + 骑在线上的绿短杠（对应首页 .zx-corner）—— 正文标题里唯一的绿 */
+.md-typeset h2 {
+  font-family: var(--zx-serif);
+  font-weight: 800;
+  letter-spacing: 0;
+  position: relative;
+  margin: 2.2em 0 .7em;
+  padding-top: .7em;
+  border-top: 1px solid var(--line);
+}
+.md-typeset h2::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 26px;
+  height: 2px;
+  background: var(--coral);
+}
+/* h1 紧接 h2 时避免"底线 + 顶线"双线（更常见的 h1 → 导语 → h2 不受影响） */
+.md-typeset h1 + h2 { border-top: 0; margin-top: 1em; padding-top: 0; }
+.md-typeset h1 + h2::before { display: none; }
+/* h3 起 Inter，只调字重字距。不做荧光笔：inset 阴影只画盒底，两行标题只有第二行有绿底 */
+.md-typeset h3 { font-weight: 800; letter-spacing: 0; }
+.md-typeset h4 { font-weight: 800; letter-spacing: 0; color: var(--ink-soft); }
+.md-typeset h5,
+.md-typeset h6 { color: var(--ink-mute); letter-spacing: .04em; }
+
+/* 索引页导语：H1 之后的第一段放大成 lede，对应首页 .zx-hero__lede */
+.md-typeset h1 + p {
+  font-size: 1.1em;
+  color: var(--ink-mute);
+  max-width: 38em;
+}
+
+/* 链接：墨字 + 荧光绿 1px 下划线，hover 加粗成 2px 深绿。
+   索引页整页是链接列表，hover 加底色会闪成一片，所以只动下划线。 */
+.md-typeset a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--coral);
+  text-decoration-thickness: 1px;
+  text-underline-offset: .2em;
+}
+.md-typeset a:hover,
+.md-typeset a:focus {
+  color: var(--coral-deep);
+  text-decoration-color: var(--coral-deep);
+  text-decoration-thickness: 2px;
+}
+.md-typeset .headerlink { color: var(--line); }
+
+/* 列表：方块 marker，绿点 */
+.md-typeset ul { list-style-type: square; }
+.md-typeset ul > li::marker { color: var(--coral-deep); }
+.md-typeset ol > li::marker { color: var(--ink-faint); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.md-typeset hr { border-bottom: 1px solid var(--line); margin: 2em 0; }
+
+/* 引用块（124 篇）：2px 墨色硬线 + 灰字，保持 Inter。
+   Zensical 把边框写在 [dir=ltr] .md-typeset blockquote（0,2,1）上，光写 .md-typeset blockquote 改不动。 */
+[dir=ltr] .md-typeset blockquote {
+  border-left: 2px solid var(--ink);
+  padding-left: 1.1em;
+}
+.md-typeset blockquote { color: var(--ink-mute); }
+
+/* ================================================================
+   5. 代码（189 篇，权重最高）
+   ================================================================ */
+.md-typeset pre > code {
+  background: var(--bone);
+  border: 1px solid var(--line);
+  padding: .9em 1.2em;
+  line-height: 1.7;
+}
+.md-typeset code {                    /* 行内码：比 paper 深一档 */
+  background: var(--paper-dark);
+  color: var(--ink-soft);
+  padding: .12em .4em;
+}
+/* 文件名条：小字号大字距的小标，只留上/左/右三边线，底线由代码块的顶线充当 */
+.md-typeset .highlight span.filename {
+  background: var(--paper-dark);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  color: var(--ink-faint);
+  font-size: .72em;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+/* 行号：pymdownx 两种形态都接 */
+.highlight [data-linenos]:before {
+  background-color: var(--paper-dark);
+  box-shadow: -1px 0 var(--line) inset;
+  color: var(--ink-faint);
+}
+.highlighttable .linenos {
+  background-color: var(--paper-dark);
+  border: 1px solid var(--line);
+  border-right: 0;
+}
+.highlighttable .linenodiv { box-shadow: none; }
+.highlighttable .linenodiv pre { color: var(--ink-faint); }
+.highlighttable .code pre > code { border-left: 0; }   /* 和行号栏共一条竖线 */
+/* 复制 / 全选按钮（modern 叫 .md-code__button，不是 Material 的 .md-clipboard） */
+.md-code__nav {
+  background-color: var(--bone);
+  border: 1px solid var(--line);
+  padding: .15rem;
+  gap: .15rem;
+}
+:hover > .md-code__nav { background-color: var(--bone); }
+.md-code__button { color: var(--ink-faint); }          /* 默认吃 --lightest，几乎看不见 */
+:hover > * > .md-code__button { color: var(--ink-mute); }
+
+/* ================================================================
+   6. 表格（112 篇）：三线表。外框墨线、表头底线墨线、行间淡线
+   ================================================================ */
+.md-typeset table:not([class]) {
+  background: var(--bone);
+  border: 1px solid var(--ink);
+  font-size: .7rem;                    /* 原 .64rem，CJK 太小 */
+}
+.md-typeset table:not([class]) th {
+  background: var(--paper-dark);
+  border-bottom: 1px solid var(--ink);
+  letter-spacing: .03em;
+  padding: .8em 1.1em;
+}
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--line);
+  padding: .8em 1.1em;
+}
+.md-typeset table:not([class]) tbody tr:first-child td { border-top: 0; }   /* 免得和表头墨线叠成双线 */
+/* 默认 hover 带 box-shadow inset 一条 bg 色，在纸白底上是一道浅缝，关掉 */
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: var(--coral-wash);
+  box-shadow: none;
+}
+
+/* ================================================================
+   7. admonition / details（22 篇）—— 唯一必须逐 type 硬碰的部件
+   modern 把 12 个 type 的底色与图标色写死成 hex（#448aff1a / #448aff …），变量改不动。
+   用 [class] 把特异度顶到和 .md-typeset .admonition.note 一样的 3 类，靠源序赢。
+   十二个 type 压成三档"温度"：绿 = 可做（默认）、墨 = 注意、警示红 = 别做。
+   ================================================================ */
+.md-typeset .admonition[class],
+.md-typeset details[class],
+.md-typeset details {                  /* 裸 <details>（无 type）也要接，否则留着默认的蓝底 */
+  background: var(--bone);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--coral-deep);
+  box-shadow: none;
+  font-size: .72rem;                   /* 原 .64rem */
+  padding: 0 .9rem;
+}
+/* 标题条通栏：负 margin 抵掉容器 padding */
+.md-typeset .admonition-title,
+.md-typeset details[class] > summary,
+.md-typeset details > summary {
+  background: var(--paper-dark);
+  border-bottom: 1px solid var(--line);
+  margin: 0 -.9rem 1em;
+  padding: .55rem .9rem .55rem 2.3rem;
+  color: var(--ink);
+  font-weight: 700;
+}
+.md-typeset details:not([open]) > summary { margin-bottom: 0; border-bottom: 0; }
+/* 图标底色。Zensical 的 per-type 规则：
+     .md-typeset .note>.admonition-title:before  (0,3,1)  → .admonition>.admonition-title:before 同为 (0,3,1) 打平
+     .md-typeset .note>summary:before            (0,2,2)  → details[class]>summary:before 是 (0,2,3)，不加 [class] 会输 */
+.md-typeset .admonition > .admonition-title:before,
+.md-typeset details[class] > summary:before,
+.md-typeset details > summary:before {
+  background-color: var(--coral-deep);
+  left: .9rem;
+  top: .55rem;                         /* 跟标题条的 padding-top 对齐；默认 top:.125em 是按无底色标题算的 */
+}
+.md-typeset .admonition > .admonition-title:after,
+.md-typeset details[class] > summary:after,
+.md-typeset details > summary:after { color: var(--ink-faint); top: .55rem; }
+
+/* 墨档：warning / caution / attention */
+.md-typeset .admonition.warning, .md-typeset .admonition.caution, .md-typeset .admonition.attention,
+.md-typeset details.warning, .md-typeset details.caution, .md-typeset details.attention {
+  border-left-color: var(--ink);
+}
+.md-typeset .admonition.warning > .admonition-title:before, .md-typeset .admonition.caution > .admonition-title:before, .md-typeset .admonition.attention > .admonition-title:before,
+.md-typeset details.warning > summary:before, .md-typeset details.caution > summary:before, .md-typeset details.attention > summary:before {
+  background-color: var(--ink);
+}
+/* 警示档：danger / error / failure / fail / missing / bug */
+.md-typeset .admonition.danger, .md-typeset .admonition.error, .md-typeset .admonition.failure, .md-typeset .admonition.fail, .md-typeset .admonition.missing, .md-typeset .admonition.bug,
+.md-typeset details.danger, .md-typeset details.error, .md-typeset details.failure, .md-typeset details.fail, .md-typeset details.missing, .md-typeset details.bug {
+  border-left-color: var(--zx-alert);
+}
+.md-typeset .admonition.danger > .admonition-title:before, .md-typeset .admonition.error > .admonition-title:before, .md-typeset .admonition.failure > .admonition-title:before, .md-typeset .admonition.fail > .admonition-title:before, .md-typeset .admonition.missing > .admonition-title:before, .md-typeset .admonition.bug > .admonition-title:before,
+.md-typeset details.danger > summary:before, .md-typeset details.error > summary:before, .md-typeset details.failure > summary:before, .md-typeset details.fail > summary:before, .md-typeset details.missing > summary:before, .md-typeset details.bug > summary:before {
+  background-color: var(--zx-alert);
+}
+
+/* ================================================================
+   8. tabbed / 脚注 / 容器
+   ================================================================ */
+.md-typeset .tabbed-labels { box-shadow: 0 -1px var(--line) inset; }
+.md-typeset .tabbed-labels > label { color: var(--ink-mute); font-weight: 700; }
+.md-typeset .tabbed-labels > label:hover { color: var(--ink); }
+.js .md-typeset .tabbed-labels:before { background: var(--coral); height: 2px; }
+/* 选中标签的 color 由一条 16 项巨链给出，值是 var(--md-default-fg-color) —— tokens 已重指为墨，不用碰 */
+
+.md-typeset .footnote {
+  border-top: 1px solid var(--line);
+  padding-top: .6em;
+  color: var(--ink-mute);
+}
+
+.md-typeset .mermaid {
+  background: var(--bone);
+  border: 1px solid var(--line);
+  padding: 1em .6em;
+  margin: 1.4em 0;
+}
+/* echarts：vendor/echarts-init.js 把 pre.echarts 整个 replaceWith 成 div.echarts-chart（高度内联 px）。
+   不加 padding —— echarts 按 clientHeight 画，padding 会让图撞框 */
+.md-typeset .echarts-chart {
+  background: var(--bone);
+  border: 1px solid var(--line);
+}
+/* iframe demo（129 处）：md 里行内写死了 border:1px solid #8884; border-radius:10px。
+   行内样式只能被作者 !important 打败；替代方案是 sed 改 129 个文件，更贵且不可逆。 */
+.md-typeset iframe {
+  border: 1px solid var(--line) !important;
+  border-radius: 0 !important;
+  background: var(--bone);
+  box-shadow: var(--shadow);
+}
+
+/* ================================================================
+   9. 页脚 / 回到顶部 / 复制提示
+   ================================================================ */
+.md-footer { border-top: 1px solid var(--ink); }
+.md-footer-meta {
+  background-color: var(--paper-dark);
+  border-top: 1px solid var(--line);
+}
+.md-copyright { color: var(--ink-mute); }
+.md-copyright__highlight { color: var(--ink); }
+
+.md-top {
+  background-color: var(--bone);
+  border: 1px solid var(--ink);
+  box-shadow: var(--zx-sticker);
+  color: var(--ink-mute);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.md-top:hover,
+.md-top:focus { background-color: var(--coral); color: var(--ink); }
+
+.md-dialog { background-color: var(--ink); }      /* 默认吃 accent，会是一块绿 toast */
+.md-dialog__inner { color: var(--paper); }

@@ -11,12 +11,13 @@
   由 docs/index.md 的 frontmatter `template: home.html` 启用。
   注意：docs/index.md 的 Markdown 正文不在浏览器里渲染（container 被置空），
   但会原样发布为同域 index.md 源给 LLM 读。开屏只放稳定内容，不放具体篇目。
-  样式在 docs/stylesheets/home.css，仅本页加载。
+  样式在 docs/stylesheets/home.css，仅本页加载；设计令牌（--paper/--ink/--coral…）来自全站的 zx-tokens.css。
 -->
 {% extends "base.html" %}
 
-{% block styles %}
-  {{ super() }}
+{# 放 extrahead 不放 styles：base.html 里 extra_css 的循环在 block styles 之后，挂在 styles 里
+   会被 zx-theme.css 压过；extrahead 在 extra_css 之后，首页专属样式才能最后说话 #}
+{% block extrahead %}
   <link rel="stylesheet" href="{{ 'stylesheets/home.css' | url }}">
 {% endblock %}
 

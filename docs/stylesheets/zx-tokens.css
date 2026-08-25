@@ -1,0 +1,115 @@
+/* 全站唯一令牌源（Atelier Zero）：纸白 + 黑墨 + 荧光绿只做点缀。
+   风格出处：docs/skills/frontend-styles/open-design/ 的拆解。
+   分层：fonts.css（字体）→ 本文件（令牌 + Material 变量映射）→ zx-theme.css（选择器皮肤）
+   → 首页 home.css（只用令牌不定义令牌，经 overrides/home.html 的 extrahead 最后加载）。
+
+   本文件针对 Zensical 的 theme.variant = modern 编写。modern 里 --md-primary-fg-color
+   不是顶栏底色而是正文链接色（--md-typeset-a-color 的默认值），切回 classic 时语义会变。
+   Material 下 html{font-size:125%}，即 1rem = 20px。
+   选择器写成 :root,[data-md-color-scheme=default] 是给将来的深色模式留挂载点：
+   加 slate 时在文件末尾追加 [data-md-color-scheme=slate]{...} 把下面的短名全部重给一遍即可。 */
+:root,
+[data-md-color-scheme=default] {
+  /* ---- Atelier Zero 令牌（原在 home.css 的 :root，现全站共享） ---- */
+  --paper: #fafafa;
+  --paper-dark: #f0f0f0;
+  --bone: #ffffff;
+  --ink: #262626;
+  --ink-soft: #434343;
+  --ink-mute: #595959;
+  --ink-faint: #8c8c8c;
+  --coral: #63fe13;                    /* 官网变量名叫 coral，值其实是荧光绿；只做背景块/线条 */
+  --coral-soft: #83ff3b;
+  --coral-deep: #16a005;               /* 白底上可读的那一档，承担所有"文字色 / 交互色" */
+  --coral-wash: rgba(99, 254, 19, .16); /* 荧光笔底、active 底 */
+  --line: #d9d9d9;
+  --line-soft: #e8e8e8;
+  --shadow: 0 30px 60px -30px rgba(38, 38, 38, .16);
+  /* 贴纸阴影（stat-cards 官网同值）：浓但负扩散收得极窄，只剩卡底一条深影 */
+  --zx-sticker: 0 28px 60px -42px rgba(0, 0, 0, .72);
+  --zx-sticker-hover: 0 36px 76px -42px rgba(0, 0, 0, .86);
+  --zx-serif: Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif;
+  /* 整套皮肤里唯一有意引入的新色相：只给 danger / failure / bug 三类 admonition，别处不得再用 */
+  --zx-alert: #a8071a;
+
+  /* ---- 基色 ---- */
+  --md-default-fg-color: var(--ink);
+  --md-default-fg-color--light: var(--ink-mute);
+  --md-default-fg-color--lighter: var(--ink-faint);
+  /* --lightest 在 modern 里被引用 30 次，既当分隔线色又当 .md-footer-meta / 导航 hover /
+     搜索按钮的底色。设成 --line 会把这些面板刷成深灰 —— 必须保持"极淡 alpha"语义，
+     真正的硬线一律另用 --line。 */
+  --md-default-fg-color--lightest: rgba(38, 38, 38, .09);
+  --md-default-bg-color: var(--paper);
+  --md-default-bg-color--light: rgba(250, 250, 250, .88);   /* .md-header 底，保留 backdrop-blur */
+  --md-default-bg-color--lighter: rgba(250, 250, 250, .55);
+  --md-default-bg-color--lightest: rgba(250, 250, 250, .22);
+
+  /* ---- 链接 / 强调（一号故障点：a-color 必须显式设，不能靠 primary 传导） ---- */
+  --md-typeset-a-color: var(--ink);
+  --md-accent-fg-color: var(--coral-deep);
+  --md-accent-fg-color--transparent: var(--coral-wash);
+  --md-accent-bg-color: var(--paper);
+  --md-primary-fg-color: var(--ink);         /* modern 里只剩 .md-button--primary 一个用户 */
+  --md-primary-bg-color: var(--paper);
+
+  /* ---- 代码：近单色，绿只给字符串 ---- */
+  --md-code-fg-color: var(--ink-soft);
+  --md-code-bg-color: var(--bone);           /* 白纸卡浮在 paper 底上，靠 zx-theme 的 1px 线定形 */
+  --md-code-bg-color--light: rgba(255, 255, 255, .9);
+  --md-code-bg-color--lighter: rgba(255, 255, 255, .6);
+  --md-code-hl-color: var(--coral);          /* hl_lines 命中行左侧 2px */
+  --md-code-hl-color--light: var(--coral-wash);
+  --md-code-hl-keyword-color: var(--ink);
+  --md-code-hl-function-color: var(--ink);
+  --md-code-hl-string-color: var(--coral-deep);
+  --md-code-hl-number-color: var(--ink);     /* 不用警示红：别让每个数字都像报错 */
+  --md-code-hl-special-color: var(--ink);
+  --md-code-hl-constant-color: var(--ink-soft);
+  --md-code-hl-name-color: var(--md-code-fg-color);
+  --md-code-hl-comment-color: var(--ink-faint);
+  --md-code-hl-operator-color: var(--ink-mute);
+  --md-code-hl-punctuation-color: var(--ink-mute);
+  --md-code-hl-generic-color: var(--ink-mute);
+  --md-code-hl-variable-color: var(--ink-mute);
+
+  /* ---- 正文杂项 ---- */
+  --md-typeset-mark-color: rgba(99, 254, 19, .55);   /* ==高亮== = 荧光笔 */
+  --md-typeset-table-color: var(--line);
+  --md-typeset-table-color--light: var(--coral-wash);
+  --md-typeset-kbd-color: var(--paper-dark);
+  --md-typeset-kbd-accent-color: var(--bone);
+  --md-typeset-kbd-border-color: var(--line);
+  --md-admonition-fg-color: var(--ink);
+  --md-admonition-bg-color: var(--bone);
+  /* 阴影：极窄负扩散的浓底影，替掉 Material 的柔散阴影 */
+  --md-shadow-z1: var(--shadow);
+  --md-shadow-z2: var(--zx-sticker);
+  --md-shadow-z3: var(--zx-sticker-hover);
+
+  /* ---- 搜索面板：open shadow DOM 的唯一入口，格式必须是空格分隔的 RGB 三元组 ---- */
+  --color-foreground: 38 38 38;
+  --color-background: 250 250 250;
+  --color-background-subtle: 240 240 240;
+  --color-backdrop: 250 250 250;
+}
+
+/* mermaid：Zensical 把 26 个 --md-mermaid-* 定义在 :root>*（落在 body）上，:root 打不过，
+   必须同选择器。且默认 node 吃 accent —— 不显式拉回来，35 篇图会因为 accent 变绿而整体绿框绿字。 */
+:root > * {
+  --md-mermaid-font-family: var(--md-text-font-family), sans-serif;
+  --md-mermaid-edge-color: var(--ink);
+  --md-mermaid-node-bg-color: var(--bone);
+  --md-mermaid-node-fg-color: var(--ink);
+  --md-mermaid-label-bg-color: var(--bone);
+  --md-mermaid-label-fg-color: var(--ink);
+  --md-mermaid-sequence-actor-bg-color: var(--bone);
+  --md-mermaid-sequence-actor-border-color: var(--ink);
+  --md-mermaid-sequence-actor-fg-color: var(--ink);
+  --md-mermaid-sequence-actor-line-color: var(--line);
+  --md-mermaid-sequence-number-bg-color: var(--coral);
+  --md-mermaid-sequence-number-fg-color: var(--ink);
+  --md-mermaid-sequence-note-bg-color: var(--paper-dark);
+  --md-mermaid-sequence-note-border-color: var(--line);
+  --md-mermaid-sequence-note-fg-color: var(--ink);
+}

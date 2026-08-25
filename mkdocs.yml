@@ -16,7 +16,9 @@ theme:
     - content.code.annotate
 
 extra_css:
-  - vendor/fonts/fonts.css   # 本地 Inter + JetBrains Mono，替代 fonts.googleapis.com
+  - vendor/fonts/fonts.css       # 本地 Inter + JetBrains Mono，替代 fonts.googleapis.com；只出 --md-text-font/--md-code-font
+  - stylesheets/zx-tokens.css    # 全站令牌层：Atelier Zero 令牌 + --md-*/--color-* 映射（首页 home.css 也用它）
+  - stylesheets/zx-theme.css     # 全站皮肤层：只写选择器，消费上一层的变量
 
 extra_javascript:
   - vendor/mathjax-init.js   # MathJax 配置，须在真身之前

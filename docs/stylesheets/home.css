@@ -5,34 +5,8 @@
    版心与正文一致（Material md-grid 的 61rem ≈ 1220px），不做全屏 splash。
    Material 的 html { font-size: 125% }，即 1rem = 20px，下面统一用 px 免换算。 */
 
-:root {
-  --paper: #fafafa;
-  --paper-dark: #f0f0f0;
-  --ink: #262626;
-  --ink-soft: #434343;
-  --ink-mute: #595959;
-  --ink-faint: #8c8c8c;
-  --coral: #63fe13;        /* 官网变量名叫 coral，值其实是荧光绿 */
-  --coral-soft: #83ff3b;
-  --bone: #ffffff;
-  --line: #d9d9d9;
-  --shadow: 0 30px 60px -30px rgba(38, 38, 38, .16);
-  /* 贴纸阴影（stat-cards 官网同值）：浓但负扩散收得极窄，只剩卡底一条深影 */
-  --zx-sticker: 0 28px 60px -42px rgba(0, 0, 0, .72);
-  --zx-sticker-hover: 0 36px 76px -42px rgba(0, 0, 0, .86);
-  --zx-serif: Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif;
-
-  /* Material 顶栏/标签条改成纸白 + 黑墨（默认靛蓝在纸面里最扎眼）：
-     header 背景吃 --md-primary-fg-color，文字吃 --md-primary-bg-color（名字是反的） */
-  --md-primary-fg-color: #fafafa;
-  --md-primary-bg-color: #262626;
-  --md-primary-bg-color--light: rgba(38, 38, 38, .54);
-  --md-accent-fg-color: #16a005;   /* hover 强调：荧光绿压深一档，白底上可读 */
-}
-.md-header { box-shadow: none; border-bottom: 1px solid var(--line); }
-.md-tabs { border-bottom: 1px solid var(--line); }
-.md-search__form { background-color: var(--paper-dark); }
-.md-search__form:hover { background-color: #e6e6e6; }
+/* 设计令牌（--paper / --ink / --coral / --line / --zx-sticker / --zx-serif …）与 Material 顶栏/标签条的
+   重皮肤都在全站的 zx-tokens.css / zx-theme.css 里，本文件只放首页专属的 .zx-* 组件，不再定义 :root。 */
 
 /* 正文区已被模板置空，但手机端的汉堡抽屉导航（.md-sidebar--primary）就挂在
    .md-main 里 —— 不能整块 display:none，只收掉空正文的占位间距 */
@@ -46,8 +20,9 @@
   /* data-reveal 的 left/right 变体入场前横向位移 36px，窄屏会撑出横向滚动条，clip 掉 */
   overflow-x: clip;
 }
-/* 版心对齐 Material 的 md-grid（61rem = 1220px） */
-.zx-wrap { max-width: 1220px; margin: 0 auto; padding: 0 24px; }
+/* 版心对齐 Material 的 md-grid（61rem）。写 rem 不写 1220px：宽屏下 root 字号会升到 22/24px，
+   死 px 会让开屏版心比正文窄一百多像素 */
+.zx-wrap { max-width: 61rem; margin: 0 auto; padding: 0 24px; }
 .zx-home h1, .zx-home h2, .zx-home h3 { margin: 0; color: var(--ink); line-height: 1.25; }
 .zx-home code {
   font-family: var(--md-code-font-family, SFMono-Regular, Consolas, Menlo, monospace);

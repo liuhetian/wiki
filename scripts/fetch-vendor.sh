@@ -14,4 +14,11 @@ mkdir -p docs/vendor/echarts
 curl -fsSL --max-time 120 -o docs/vendor/echarts/echarts.min.js \
   https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js
 
+# Mermaid 11.17.1：```mermaid 图的渲染真身。Zensical 自带的加载器写死了 unpkg CDN，但只在
+# window.mermaid 未定义时才去拉；overrides/main.html 在有 mermaid 块的页面里先同步引入本地真身，
+# 加载器检测到全局已存在就不再出网（境内 unpkg 常超时 → 图整块空白）
+mkdir -p docs/vendor/mermaid
+curl -fsSL --max-time 180 -o docs/vendor/mermaid/mermaid.min.js \
+  https://cdn.jsdelivr.net/npm/mermaid@11.17.1/dist/mermaid.min.js
+
 echo "✅ vendor 真身已恢复"
