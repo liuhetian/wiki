@@ -301,64 +301,188 @@
 }
 
 /* ================================================================
-   7. admonition / details（22 篇）—— 唯一必须逐 type 硬碰的部件
-   modern 把 12 个 type 的底色与图标色写死成 hex（#448aff1a / #448aff …），变量改不动。
-   用 [class] 把特异度顶到和 .md-typeset .admonition.note 一样的 3 类，靠源序赢。
-   十二个 type 压成三档"温度"：绿 = 可做（默认）、墨 = 注意、警示红 = 别做。
+   7. admonition / details（22 篇）
+   modern 把 12 个 type 的底色与图标色写死成 hex，变量改不动，只能写选择器。
+   做法：每个 type 只在容器上设一个 --adm（Material 原色），左竖条 / 图标 / 底色全从它派生。
+   普通提示框与可折叠块共用一套语言（左侧 type 色短竖线 + 1px 引导线 + 缩进内容），
+   区别只在标题行：提示框是图标 + 墨字、不可点；折叠块是 type 色描边 + 箭头，hover/展开整条填色。
+   特异度：用 [class] 把容器顶到和 .md-typeset .admonition.note 一样的 3 类，靠源序赢；
+   注意 [dir=ltr] 按 class 计数，Zensical 的 [dir=ltr] .md-typeset .admonition-title 是 3 类，
+   所以标题的 padding-left:1.6rem / 图标 left:0 直接沿用，不去硬碰。
    ================================================================ */
-.md-typeset .admonition[class],
-.md-typeset details[class],
-.md-typeset details {                  /* 裸 <details>（无 type）也要接，否则留着默认的蓝底 */
-  background: var(--bone);
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--coral-deep);
+/* 普通提示框：和折叠块同一套语言 —— 去底去框，左侧 type 色短竖线 + 一根 1px 引导线接住内容，
+   标题行是 type 色图标 + 墨色粗体（没有箭头、没有填色条，一眼看出不可点）。 */
+.md-typeset .admonition[class] {
+  position: relative;
+  background: transparent;
+  border: 0;
   box-shadow: none;
-  font-size: .72rem;                   /* 原 .64rem */
-  padding: 0 .9rem;
+  border-radius: 0;
+  margin: 1.2em 0;
+  padding: 0 0 0 .8rem;
+  font-size: .72rem;
 }
-/* 标题条通栏：负 margin 抵掉容器 padding */
-.md-typeset .admonition-title,
-.md-typeset details[class] > summary,
-.md-typeset details > summary {
-  background: var(--paper-dark);
-  border-bottom: 1px solid var(--line);
-  margin: 0 -.9rem 1em;
-  padding: .55rem .9rem .55rem 2.3rem;
-  color: var(--ink);
-  font-weight: 700;
+/* 短竖线：默认与 details 展开态同高；hover 整个提示框时从顶端拉长到全文底部，把引导线"填满" */
+.md-typeset .admonition[class]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .45rem;                           /* 1.1rem 中线 − 1.3rem/2 */
+  width: 3px;
+  height: 1.3rem;
+  background: var(--adm, #448aff);
+  transition: height .35s cubic-bezier(.4, 0, .2, 1);
 }
-.md-typeset details:not([open]) > summary { margin-bottom: 0; border-bottom: 0; }
-/* 图标底色。Zensical 的 per-type 规则：
-     .md-typeset .note>.admonition-title:before  (0,3,1)  → .admonition>.admonition-title:before 同为 (0,3,1) 打平
-     .md-typeset .note>summary:before            (0,2,2)  → details[class]>summary:before 是 (0,2,3)，不加 [class] 会输 */
-.md-typeset .admonition > .admonition-title:before,
-.md-typeset details[class] > summary:before,
-.md-typeset details > summary:before {
-  background-color: var(--coral-deep);
-  left: .9rem;
-  top: .55rem;                         /* 跟标题条的 padding-top 对齐；默认 top:.125em 是按无底色标题算的 */
+.md-typeset .admonition[class]:hover::after { height: calc(100% - .45rem - .4rem); }   /* 到引导线的底端 */
+.md-typeset .admonition[class]::before {  /* 引导线 */
+  content: "";
+  position: absolute;
+  left: 1px;
+  top: 1.8rem;
+  bottom: .4rem;
+  width: 1px;
+  background: var(--line);
 }
-.md-typeset .admonition > .admonition-title:after,
-.md-typeset details[class] > summary:after,
-.md-typeset details > summary:after { color: var(--ink-faint); top: .55rem; }
+/* type → 颜色（Material 原色，含别名）。--adm 不在容器规则里给默认值，否则 3 类会压过这里的 2 类 */
+.md-typeset .note                                              { --adm: #448aff; }
+.md-typeset .abstract, .md-typeset .summary, .md-typeset .tldr { --adm: #00b0ff; }
+.md-typeset .info, .md-typeset .todo                           { --adm: #00b8d4; }
+.md-typeset .tip, .md-typeset .hint, .md-typeset .important    { --adm: #00bfa5; }
+.md-typeset .success, .md-typeset .check, .md-typeset .done    { --adm: #00c853; }
+.md-typeset .question, .md-typeset .help, .md-typeset .faq     { --adm: #64dd17; }
+.md-typeset .warning, .md-typeset .caution, .md-typeset .attention { --adm: #ff9100; }
+.md-typeset .failure, .md-typeset .fail, .md-typeset .missing  { --adm: #ff5252; }
+.md-typeset .danger, .md-typeset .error                        { --adm: #ff1744; }
+.md-typeset .bug                                               { --adm: #f50057; }
+.md-typeset .example                                           { --adm: #7c4dff; }
+.md-typeset .quote, .md-typeset .cite                          { --adm: #9e9e9e; }
 
-/* 墨档：warning / caution / attention */
-.md-typeset .admonition.warning, .md-typeset .admonition.caution, .md-typeset .admonition.attention,
-.md-typeset details.warning, .md-typeset details.caution, .md-typeset details.attention {
-  border-left-color: var(--ink);
+/* 标题行。带 [dir=ltr]：Zensical 的 [dir=ltr] .md-typeset .admonition-title{padding-left:1.6rem} 是 3 类 */
+[dir=ltr] .md-typeset .admonition-title {
+  display: flex;
+  align-items: center;
+  min-height: 2.2rem;
+  margin: 0;
+  padding: .35rem .8rem .35rem 2.1rem;
+  background: transparent;
+  color: var(--ink);
+  font-size: .76rem;
+  font-weight: 600;
+  line-height: 1.4;
 }
-.md-typeset .admonition.warning > .admonition-title:before, .md-typeset .admonition.caution > .admonition-title:before, .md-typeset .admonition.attention > .admonition-title:before,
-.md-typeset details.warning > summary:before, .md-typeset details.caution > summary:before, .md-typeset details.attention > summary:before {
-  background-color: var(--ink);
+/* 图标：type 色，垂直居中。Zensical per-type 规则 .md-typeset .note>.admonition-title:before 是 (0,3,1) */
+[dir=ltr] .md-typeset .admonition > .admonition-title:before {
+  background-color: var(--adm, #448aff);
+  left: .65rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: .9rem;
+  height: .9rem;
 }
-/* 警示档：danger / error / failure / fail / missing / bug */
-.md-typeset .admonition.danger, .md-typeset .admonition.error, .md-typeset .admonition.failure, .md-typeset .admonition.fail, .md-typeset .admonition.missing, .md-typeset .admonition.bug,
-.md-typeset details.danger, .md-typeset details.error, .md-typeset details.failure, .md-typeset details.fail, .md-typeset details.missing, .md-typeset details.bug {
-  border-left-color: var(--zx-alert);
+/* 内容缩进到和标题文字对齐 */
+.md-typeset .admonition[class] > :not(.admonition-title) { margin-left: 2.1rem; }
+.md-typeset .admonition[class] > .admonition-title + * { margin-top: .3em; }   /* 标题和首段别隔一整行 */
+.md-typeset .admonition[class] > :last-child { margin-bottom: .2em; }
+@media screen and (max-width: 59.984375em) {
+  .md-typeset .admonition[class] > :not(.admonition-title) { margin-left: .8rem; }
 }
-.md-typeset .admonition.danger > .admonition-title:before, .md-typeset .admonition.error > .admonition-title:before, .md-typeset .admonition.failure > .admonition-title:before, .md-typeset .admonition.fail > .admonition-title:before, .md-typeset .admonition.missing > .admonition-title:before, .md-typeset .admonition.bug > .admonition-title:before,
-.md-typeset details.danger > summary:before, .md-typeset details.error > summary:before, .md-typeset details.failure > summary:before, .md-typeset details.fail > summary:before, .md-typeset details.missing > summary:before, .md-typeset details.bug > summary:before {
-  background-color: var(--zx-alert);
+
+/* ---------- 可折叠块 details：去底的"阳变阴"面板 ----------
+   summary 平时透明 + 1px 描边，hover / 展开时整条填成 type 色、文字反白；左侧短竖线和箭头也是 type 色。
+   Zensical 的 summary:before 本是 type 图标（mask），这里把它改造成竖线：mask 置 none 即可。
+   选择器统一带 [dir=ltr]：Zensical 的 [dir=ltr] .md-typeset summary{padding-left}/:before{left}/:after{right}
+   是 (0,2,1)/(0,2,2)，裸 <details> 没有 [class] 可借，不加前缀就输。 */
+.md-typeset details[class],
+.md-typeset details {
+  position: relative;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  margin: 1.2em 0;
+  padding: 0 0 0 .8rem;                  /* 左侧留出竖线与引导线的位置 */
+  font-size: .72rem;
+}
+[dir=ltr] .md-typeset details > summary {
+  display: flex;
+  align-items: center;
+  min-height: 2.2rem;
+  margin: 0;
+  padding: .35rem .8rem .35rem 2.1rem;   /* 左侧给箭头留 1rem + 间距 */
+  background: transparent;
+  border: 1px solid var(--adm, #448aff); /* 收起时留一圈 type 色描边，不然一行字在正文里找不到 */
+  color: var(--ink);
+  font-size: .76rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color .3s cubic-bezier(.4, 0, .2, 1), color .3s cubic-bezier(.4, 0, .2, 1),
+              border-color .3s cubic-bezier(.4, 0, .2, 1);
+}
+/* hover / 展开：整条填成 type 色，文字与箭头反白 */
+[dir=ltr] .md-typeset details > summary:hover,
+[dir=ltr] .md-typeset details[open] > summary {
+  background: var(--adm, #448aff);
+  border-color: var(--adm, #448aff);
+  color: #fff;
+}
+[dir=ltr] .md-typeset details > summary:hover:after,
+[dir=ltr] .md-typeset details[open] > summary:after { color: #fff; }
+/* 左侧短竖线：挂在 details::after 上，不能挂 summary:before —— Chrome 会把 <summary> 的绝对定位伪元素
+   裁在 summary 自己的盒子里，负 left 直接不可见（实测）。details 的伪元素不受此限。
+   默认 12px，hover / 展开拉长到约 summary 高度的 60%。 */
+[dir=ltr] .md-typeset details > summary:before { display: none; }   /* 原 type 图标，不再用 */
+.md-typeset details::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .45rem;                           /* 与展开态 1.3rem 竖线的顶端对齐，向下生长 */
+  width: 3px;
+  height: 12px;
+  margin-top: calc(.65rem - 6px);        /* 闭合态 12px 短线仍居中在 summary 中线 (1.1rem) */
+  background: var(--adm, #448aff);
+  transition: height .3s ease, margin-top .3s ease;
+}
+.md-typeset details:hover::after,
+.md-typeset details[open]::after { margin-top: 0; }
+.md-typeset details:hover::after,
+.md-typeset details[open]::after { height: 1.3rem; }
+/* 展开后再 hover 整块：竖线沿引导线拉到全文底部，和提示框同一行为 */
+.md-typeset details[open]:hover::after { height: calc(100% - .45rem - .4rem); }
+/* 箭头挪到左侧，展开转 90° */
+[dir=ltr] .md-typeset details > summary:after {
+  color: var(--adm, #448aff);
+  right: auto;
+  left: .7rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(0deg);
+  transition: transform .3s cubic-bezier(.4, 0, .2, 1);
+}
+[dir=ltr] .md-typeset details[open] > summary:after { transform: translateY(-50%) rotate(90deg); }
+/* 展开内容：缩进到和标题文字对齐，左侧一根 1px 引导线接住上面的短竖线
+   （引导线从 1rem 起画，上半段被反白的 summary 盖住，标题换行也不会露头） */
+[dir=ltr] .md-typeset details[open]::before {
+  content: "";
+  position: absolute;
+  left: 1px;                             /* 居中在 3px 短竖线之下 */
+  top: 1rem;
+  bottom: .4rem;
+  width: 1px;
+  background: var(--line);
+}
+[dir=ltr] .md-typeset details[open] > :not(summary) {
+  margin-left: 2.1rem;
+  animation: zx-details-in .35s ease-out;
+}
+[dir=ltr] .md-typeset details[open] > summary + * { margin-top: .5em; }
+[dir=ltr] .md-typeset details[open] > :last-child { margin-bottom: .2em; }
+@keyframes zx-details-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+@media screen and (max-width: 59.984375em) {
+  [dir=ltr] .md-typeset details[open] > :not(summary) { margin-left: .8rem; }
 }
 
 /* ================================================================
