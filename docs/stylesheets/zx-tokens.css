@@ -28,9 +28,14 @@
   /* 贴纸阴影（stat-cards 官网同值）：浓但负扩散收得极窄，只剩卡底一条深影 */
   --zx-sticker: 0 28px 60px -42px rgba(0, 0, 0, .72);
   --zx-sticker-hover: 0 36px 76px -42px rgba(0, 0, 0, .86);
-  /* 标题族。全站统一到 Maple Mono 后它与正文同族，留着这一行是为了好改回来：
-     想让 h1/h2 与首页大标题回到衬线，把值换成 Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif 即可。 */
-  --zx-serif: var(--md-text-font-family);
+  /* 标题族（站名 / h1 / h2 / 首页大标题）。全站统一到 Maple Mono 后它与正文同族，
+     留着这一行是为了好改回来：想让它们回到衬线，把值换成
+     Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif 即可。
+     不要写成 var(--md-text-font-family)：Zensical 把那个变量定义在 body 上而不是 :root，
+     在这里（:root）取不到值，整条 --zx-serif 会变成 guaranteed-invalid，
+     用它的 font-family 声明全部失效退回继承值 —— 表面上"看起来还对"，
+     实际是靠继承兜的，一旦父层字体变了就跟着漂。所以这里写字面栈。 */
+  --zx-serif: "Maple Mono", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
   /* 整套皮肤里唯一有意引入的新色相：只给 danger / failure / bug 三类 admonition，别处不得再用 */
   --zx-alert: #a8071a;
 
