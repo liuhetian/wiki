@@ -100,6 +100,7 @@ nav:
           - notes/probability/index.md
           - 12 枚硬币的奇偶性: notes/probability/coin-parity.md
           - 3 根绳子烧出 7 分钟: notes/probability/rope-timing.md
+          - 100 次抛硬币的最长连正: notes/probability/longest-head-run.md
       - 统计学:
           - notes/statistics/index.md
           - 基础:

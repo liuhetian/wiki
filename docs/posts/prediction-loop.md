@@ -10,8 +10,10 @@
 
 ```mermaid
 graph LR
-    %% run 先声明、dev 后声明是故意的：mermaid 逆序注册 subgraph，配合 it→h 的环，
-    %% 按 dev、run 顺序声明会让整图左右翻转（运行时跑到最左边）
+    %% 两个 mermaid 怪癖，缺一不可：
+    %% 1) 跨子图的边只挂子图（dev --> run），不连内部节点——节点级跨子图连线
+    %%    会把子图的 direction TB 覆盖成父图的 LR，整图压成一横排
+    %% 2) run 先声明、dev 后声明——mermaid 逆序注册 subgraph，这样 dev 才在左
     subgraph run["运行时："]
         direction TB
         t["4 留痕<br/>→ 单条痕迹（L1）"] --> m["5 算口径<br/>→ health（L1） · 评估与日报（L2）"]
@@ -20,9 +22,9 @@ graph LR
         direction TB
         h["1 搭建 harness<br/>→ PRD 中枢"] --> rb["2 写 runbook<br/>→ 随服务上线的入口"] --> b["3 搭工程底座<br/>→ lockfile · 版本注入 · 脱敏 · 取数入口"]
     end
-    b -->|部署 · 埋点| t
-    m -->|L2 读出异常 · 人审核| it["6 离线迭代<br/>→ 新 prompt · 新模型 · 新 commit"]
-    it -.回流成 1 的输入.-> h
+    dev -->|部署 · 埋点| run
+    run -->|L2 读出异常 · 人审核| it["6 离线迭代<br/>→ 新 prompt · 新模型 · 新 commit"]
+    it -.回流成 1 的输入.-> dev
 ```
 
 以下是这六个动作的定义和顺序：
