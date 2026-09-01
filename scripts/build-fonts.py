@@ -17,6 +17,7 @@ CN 版只有 ttf（单字重 18MB），直接上站不可能。所以拉丁字�
     uv run --with "fonttools[woff]" python scripts/build-fonts.py /tmp/maple
 
 字符集口径见 cjk_charset()：改动它就要重跑本脚本并重新提交 files/ 下的 woff2。
+汉字字身框的收紧见 tighten_cjk()。
 """
 
 from __future__ import annotations
@@ -24,7 +25,10 @@ from __future__ import annotations
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
+
+from fontTools.ttLib import TTFont
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "docs" / "vendor" / "fonts" / "files"
@@ -46,6 +50,13 @@ LATIN = {
 # 中文字形：子集后单字重仍有几百 KB，只出常规与粗两档，
 # fonts.css 用 font-weight 区间把 100-500 / 501-900 分别兜到这两个文件上。
 CJK = {"Regular": "400", "Bold": "700"}
+
+# 汉字字身框：Maple Mono CN 把 1000 的标准字身框塞进 1200 的 advance（左右各留 100），
+# 好处是一个汉字正好 = 两个拉丁字符、代码里中英能对齐成栅格；代价是正文里字距肉眼可见地松，
+# 中文读起来像儿童读物。本站是中文 wiki，正文观感优先，所以压回 1000 —— 与系统黑体、
+# 思源一致的标准字身框。放弃的是「汉字 = 2 个拉丁字符」，代码块里中英混排的列对齐会失效。
+# 想要栅格回来就把这里改成 1200（等于不动字体度量），改完重跑本脚本。
+CJK_TARGET_WIDTH = 1000
 
 
 def cjk_charset() -> set[str]:
@@ -93,6 +104,45 @@ def cjk_charset() -> set[str]:
     return keep
 
 
+def tighten_cjk(path: Path) -> tuple[int, int]:
+    """把 advance=1200 的字形压到 CJK_TARGET_WIDTH，字形整体左移保持居中。
+
+    只碰 advance 恰为 1200 的字形（=全部汉字/假名/中文标点/全角形，4472 个），
+    拉丁字形是 600、空字形是 0，都不动。已核对过：CN 子集里 advance=1200 的字形
+    没有一个是复合字形，也没有任何复合字形引用它们 —— 所以直接平移轮廓点不会
+    让别的字形跟着漂。换字体版本后这个前提要重新核一遍（脚本会自己报错）。
+    """
+    if CJK_TARGET_WIDTH == 1200:
+        return (0, 0)
+
+    font = TTFont(path)
+    glyf, hmtx = font["glyf"], font["hmtx"]
+    shift = (CJK_TARGET_WIDTH - 1200) // 2   # 负数：字形左移，把右边多出来的空也收掉
+    touched = 0
+
+    for name in font.getGlyphOrder():
+        advance, lsb = hmtx[name]
+        if advance != 1200:
+            continue
+        glyph = glyf[name]
+        if glyph.isComposite():
+            raise SystemExit(
+                f"{path.name}: 字形 {name} 是复合字形且 advance=1200，"
+                "平移轮廓的前提不再成立，需要先展开复合字形再改度量"
+            )
+        if glyph.numberOfContours != 0:
+            glyph.coordinates.translate((shift, 0))
+            glyph.recalcBounds(glyf)
+        hmtx[name] = (CJK_TARGET_WIDTH, lsb + shift)
+        touched += 1
+
+    # advanceWidthMax 必须跟着降，否则等宽检测与部分排版引擎会按 1200 预留行宽
+    font["hhea"].advanceWidthMax = max(aw for aw, _ in hmtx.metrics.values())
+    font.flavor = "woff2"
+    font.save(path)
+    return (touched, shift)
+
+
 def main() -> int:
     if len(sys.argv) != 2:
         print(__doc__)
@@ -135,7 +185,9 @@ def main() -> int:
             ],
             check=True,
         )
-        print(f"{dst.stat().st_size / 1024:7.0f} KB  {dst.name}  ← 子集自 {f.name}")
+        touched, shift = tighten_cjk(dst)
+        note = f"，{touched} 个字形 advance 1200→{CJK_TARGET_WIDTH}（轮廓左移 {abs(shift)}）" if touched else ""
+        print(f"{dst.stat().st_size / 1024:7.0f} KB  {dst.name}  ← 子集自 {f.name}{note}")
 
     return 0
 

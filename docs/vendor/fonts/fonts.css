@@ -5,7 +5,9 @@
    两套字形分工，靠 unicode-range 互补：
    · maple-mono-latin-*  拉丁/希腊/西里尔/箭头/制表符 —— 官方 MapleMono-Woff2.zip 原封不动，每档 ~75KB
    · maple-mono-cn-*     汉字/假名/中文标点/全角形 —— 官方只出 18MB 的 ttf，本站自己子集化到 ~1MB，
-                         口径与重建方式见 scripts/build-fonts.py
+                         并把汉字 advance 从 1200 压回 1000（原字体为了让一个汉字正好等于两个
+                         拉丁字符，在 1000 的标准字身框外左右各加了 100 留白，正文里字距明显发虚）。
+                         口径、收紧幅度与重建方式都见 scripts/build-fonts.py
 
    ⚠ 两套的 font-weight 描述符必须逐档一一对应，写法也要一致（都写单值，别一边单值一边区间）。
    踩过的坑：CN 起初写成 font-weight: 100 500 / 501 900 两条区间去兜六档拉丁单值，结果
@@ -17,8 +19,12 @@
    汉字实体文件只有常规/粗两个（子集单档 1MB），300/400/500 都指常规，600/700/800 都指粗。
    斜体两套都只出 400/700，请求 500/600/800 斜体时两边都会就近落到同一档，不会错配。
 
-   校验方式：构建后起本地 http，在页面里 await document.fonts.ready，然后逐字重量
-   「牛合天」的宽度 / font-size —— 命中 CN 是 1.2（汉字 advance 1.2em），掉回系统字体是 1.0。
+   校验方式：构建后起本地 http，在页面里 await document.fonts.ready，再用 canvas 量墨迹宽度
+   （汉字 advance 收紧后与系统字体一样是 1.0em，光量 advance 已经分不出谁在渲染）：
+     c.font = '400 100px "Maple Mono"'; m = c.measureText('口');
+     ink = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;   // Maple Mono CN 是 75.7
+   同一段代码把 font 换成 sans-serif 得到系统字体的基线值，两者相等就说明没命中。
+   逐字重都要量 —— 这套 @font-face 最容易坏在某几档字重上，见上面的 ⚠。
 
    Maple Mono 是等宽字体，本站有意让正文与代码同族（终端质感）。要把正文换回无衬线，
    只改下面的 --md-text-font 一行即可，@font-face 不用动。
