@@ -21,4 +21,7 @@ mkdir -p docs/vendor/mermaid
 curl -fsSL --max-time 180 -o docs/vendor/mermaid/mermaid.min.js \
   https://cdn.jsdelivr.net/npm/mermaid@11.17.1/dist/mermaid.min.js
 
+# 字体（Maple Mono）不在这里：官方发布物是 zip，且中文字形要本地子集化，
+# 升级流程独立一份 —— 见 scripts/build-fonts.py 的文件头注释。
+
 echo "✅ vendor 真身已恢复"

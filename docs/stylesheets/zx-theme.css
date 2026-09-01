@@ -5,7 +5,8 @@
    下面每处 !important 都单独注明为什么不可替代。
    硬线一律写字面 1px 而不是 Zensical 的 .05rem：宽屏 root 字号变 22/24px 时 .05rem 会糊成
    1.1/1.2px，Atelier Zero 的识别度就在"硬"。这是有意的不一致。
-   衬线只出现在三处：站名、h1、h2。其余一切 Inter —— Georgia 的中文回退是宋体，小字号很难看。
+   字体：全站单族 Maple Mono（等宽，中英同一族，见 vendor/fonts/fonts.css）。站名、h1、h2 走
+   --zx-serif —— 这个令牌现在也指向 Maple Mono，只是留作"标题族"的挂载点，见 zx-tokens.css。
    参照文件：site/assets/stylesheets/modern/main.*.min.css（每条覆盖的特异度都对着它核过）。 */
 
 /* ================================================================
@@ -42,7 +43,7 @@
   box-shadow: none;
 }
 .md-header--shadow { box-shadow: none; }
-/* 站名：衬线三处之一，和首页 .zx-frame__brand 同族 */
+/* 站名：走标题族 --zx-serif，和首页 .zx-frame__brand 同族 */
 .md-header__topic:first-child .md-ellipsis {
   font-family: var(--zx-serif);
   font-weight: 800;
@@ -181,7 +182,7 @@
 /* h1 紧接 h2 时避免"底线 + 顶线"双线（更常见的 h1 → 导语 → h2 不受影响） */
 .md-typeset h1 + h2 { border-top: 0; margin-top: 1em; padding-top: 0; }
 .md-typeset h1 + h2::before { display: none; }
-/* h3 起 Inter，只调字重字距。不做荧光笔：inset 阴影只画盒底，两行标题只有第二行有绿底 */
+/* h3 起不再挂标题族，只调字重字距。不做荧光笔：inset 阴影只画盒底，两行标题只有第二行有绿底 */
 .md-typeset h3 { font-weight: 800; letter-spacing: 0; }
 .md-typeset h4 { font-weight: 800; letter-spacing: 0; color: var(--ink-soft); }
 .md-typeset h5,
@@ -218,7 +219,7 @@
 
 .md-typeset hr { border-bottom: 1px solid var(--line); margin: 2em 0; }
 
-/* 引用块（124 篇）：2px 墨色硬线 + 灰字，保持 Inter。
+/* 引用块（124 篇）：2px 墨色硬线 + 灰字，字体不另设。
    Zensical 把边框写在 [dir=ltr] .md-typeset blockquote（0,2,1）上，光写 .md-typeset blockquote 改不动。 */
 [dir=ltr] .md-typeset blockquote {
   border-left: 2px solid var(--ink);

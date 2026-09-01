@@ -28,7 +28,9 @@
   /* 贴纸阴影（stat-cards 官网同值）：浓但负扩散收得极窄，只剩卡底一条深影 */
   --zx-sticker: 0 28px 60px -42px rgba(0, 0, 0, .72);
   --zx-sticker-hover: 0 36px 76px -42px rgba(0, 0, 0, .86);
-  --zx-serif: Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif;
+  /* 标题族。全站统一到 Maple Mono 后它与正文同族，留着这一行是为了好改回来：
+     想让 h1/h2 与首页大标题回到衬线，把值换成 Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif 即可。 */
+  --zx-serif: var(--md-text-font-family);
   /* 整套皮肤里唯一有意引入的新色相：只给 danger / failure / bug 三类 admonition，别处不得再用 */
   --zx-alert: #a8071a;
 
