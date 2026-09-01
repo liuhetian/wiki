@@ -276,24 +276,33 @@
 :hover > * > .md-code__button { color: var(--ink-mute); }
 
 /* ================================================================
-   6. 表格（112 篇）：三线表。外框墨线、表头底线墨线、行间淡线
+   6. 表格（112 篇）：booktabs 式三线表，和提示框 / 折叠块同一套去底去框语言。
+   上下两条粗墨线定界、表头一条细墨线、行间极淡线；无侧边框、无底色
    ================================================================ */
 .md-typeset table:not([class]) {
-  background: var(--bone);
-  border: 1px solid var(--ink);
+  background: transparent;
+  border: 0;
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
   font-size: .7rem;                    /* 原 .64rem，CJK 太小 */
 }
 .md-typeset table:not([class]) th {
-  background: var(--paper-dark);
+  background: transparent;
   border-bottom: 1px solid var(--ink);
   letter-spacing: .03em;
-  padding: .8em 1.1em;
+  padding: .75em 1.1em;
 }
 .md-typeset table:not([class]) td {
-  border-top: 1px solid var(--line);
-  padding: .8em 1.1em;
+  border-top: 1px solid var(--line-soft);
+  padding: .75em 1.1em;
 }
 .md-typeset table:not([class]) tbody tr:first-child td { border-top: 0; }   /* 免得和表头墨线叠成双线 */
+/* 行内码芯片继承了全局 break-word，窄列里会把 terminate 掰成 terminat/e */
+.md-typeset table:not([class]) code { word-break: normal; }
+/* 窄表整体居中：包装层 .md-typeset__table 是 inline-block，跟随父层 text-align；
+   中层复位，免得单元格文字也跟着居中 */
+.md-typeset .md-typeset__scrollwrap { text-align: center; }
+.md-typeset .md-typeset__table { text-align: left; }
 /* 默认 hover 带 box-shadow inset 一条 bg 色，在纸白底上是一道浅缝，关掉 */
 .md-typeset table:not([class]) tbody tr:hover {
   background-color: var(--coral-wash);
@@ -530,11 +539,16 @@
   color: var(--ink-mute);
 }
 
+/* mermaid 手绘卡片：SVG 在 closed shadow root 里外部 CSS 进不去，能改的只有这个宿主 div
+   （节点级样式走图源码 classDef，见 memory/mermaid-styling-channels）。
+   右/下留 margin 给硬阴影，否则被内容列裁掉 */
 .md-typeset .mermaid {
   background: var(--bone);
-  border: 1px solid var(--line);
-  padding: 1em .6em;
-  margin: 1.4em 0;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 6px 6px 0 var(--ink);
+  padding: 1.6em 1em;
+  margin: 1.8em 8px 2em 0;
 }
 /* echarts：vendor/echarts-init.js 把 pre.echarts 整个 replaceWith 成 div.echarts-chart（高度内联 px）。
    不加 padding —— echarts 按 clientHeight 画，padding 会让图撞框 */
