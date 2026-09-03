@@ -19,7 +19,7 @@ node scripts/validate-lieflat-charts.mjs   # 只在改 data-visualization/liefla
 正式上线在部署机执行，本地只负责 commit + push：
 
 ```bash
-ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; ./deploy.sh'
+ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lht/study/26.06/zensical-wiki && ./deploy.sh'
 ```
 
 以部署脚本成功退出为结果。**除非看到明确报错，不要主动去浏览器或发网络请求验证线上效果**，那一步由人来做。
