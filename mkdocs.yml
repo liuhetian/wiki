@@ -75,6 +75,7 @@ nav:
       - AI 时代的产品经理: posts/ai-pm.md
       - 动画网页 PPT: posts/animated-ppt/index.md
       - 超级轻量的自用AI编程Harness框架: posts/ai-code-skeleton/index.md
+      - 项目上线之前如何验收: posts/项目上线之前如何验收.md
       - Kindle 常显信息屏:
           - posts/kindle-dashboard/index.md
           - 越狱与显示通道: posts/kindle-dashboard/reference/jailbreak.md
