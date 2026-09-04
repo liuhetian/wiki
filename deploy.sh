@@ -25,7 +25,12 @@ uv run zensical build
 
 # 3. 复制 docs/ 的 .md 源进 site/（保留目录结构）→ site/ 成为桶的单一镜像；
 #    .md 与 .html 的 key 不冲突（use_directory_urls：页面在 /x/index.html，源在 /x.md）
-rsync -am --include='*/' --include='*.md' --exclude='*' "$PROJECT_DIR/docs/" "$PROJECT_DIR/site/"
+#    --exclude='.*/' 必须排在最前（rsync 首个匹配的规则生效）：有人在 docs/ 里某个
+#    assets 目录跑过一次 uv，就地留下 .venv，里面依赖包自带的 LICENSE.md 会被
+#    --include='*.md' 一路捞进产物、跟着上桶。zensical build 自己会跳过点开头目录，
+#    这条镜像不跳，就成了 .venv 上桶的唯一漏口（同一个坑的另一种形状见
+#    reference/deploy.md 里 uv run --directory 那段）。
+rsync -am --exclude='.*/' --include='*/' --include='*.md' --exclude='*' "$PROJECT_DIR/docs/" "$PROJECT_DIR/site/"
 
 # 3.5 llms.txt = index.md 的构建期副本（同一份内容双 URL：/index.md 给源、/llms.txt 给 llms.txt 协议爬虫）
 #     写作时只维护 docs/index.md 一份即可；index.md 正文按 llms.txt 规范写（H1+blockquote+H2），
@@ -48,7 +53,7 @@ cd "$PROJECT_DIR/site"
 #    带 -s：-s 只比对 MD5 不看类型，新增/内容变动的文件会带着正确类型上传，没变的跳过。
 #    （桶里错类型的历史对象已在 2026-08 前的部署里全量重传修正过，此后无需再无条件重传；
 #    若哪天又混入错类型对象，临时去掉 -s 跑一次即可自愈）
-"$COSCMD" upload -rs --include '*.ts,*.tsx,*.jsx,*.mjs,*.py' -H 'Content-Type: text/plain; charset=utf-8' ./ /
+"$COSCMD" upload -rs --include '*.ts,*.tsx,*.jsx,*.mjs,*.py,*.sh' -H 'Content-Type: text/plain; charset=utf-8' ./ /
 # llms.txt 不带 -s：coscmd 单文件 upload -s 命中"MD5 一致跳过"时退出码是 254（且静默），
 # 会被 set -e 误杀、后面的全量镜像不再执行；2KB 每次直传换脚本必然走完。
 "$COSCMD" upload -H 'Content-Type: text/plain; charset=utf-8' llms.txt /llms.txt  # 内容是 markdown，扩展名按 llms.txt 规范用 .txt，浏览器直读用 text/plain

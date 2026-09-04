@@ -5,7 +5,7 @@
 给人的策展层、不在 AI 链路上。所以一篇文章漏挂链接 = 对 AI 不存在，nav 里有它
 也没用。这个校验就是那道闸门，在 deploy.sh 构建前跑，不过就不许部署。
 
-三项检查：
+五项检查：
 
 1. 父级链接 —— 每篇 .md 必须被**某个祖先目录**的索引页用 markdown 链接直接指向。
    索引页指 index.md / MIRROR.md / SKILL.md 三种：后两者是吸收型 skill 里唯一
@@ -16,6 +16,17 @@
 2. 死链 —— 指向不存在 .md 的链接。
 
 3. nav 注册 —— 写作规范要求新增页面必须进 mkdocs.yml 的 nav。
+
+4. 笔记里的未解决课程提问 —— docs/notes/ 下不允许出现 <<<<<<< 冲突标记。
+   课程页（docs/courses/）的提问本来就是这个形状，那是题；一旦这形状出现在笔记里，
+   说明有题还空着没答就想发出去。归档要走 scripts/course.py add，它会逐题检查。
+
+5. 非 .md 资源死链 —— 图片、iframe 的 demo、`<a href>` 指向的本地文件必须存在。
+   检查 1、2 只看 markdown 链接里的 .md，而这个 wiki 的活 demo 全靠 iframe src
+   指到 assets/ 下的 .html，配图靠 ![](assets/x.png)：这些挪了或删了，页面照样
+   构建通过、线上直接 404。判据是「代码块之外的引用」—— 写作规范和 skill 文档里
+   大量在 ``` 块和行内 `code` 里举例写路径（活例：写作规范演示 ![](assets/xxx.png)
+   该怎么写），那些是示范不是引用，先剥掉再查，否则全是误报。
 
 豁免：文件顶部（前 5 行内）写 `<!-- link-check-ok: 理由 -->` 可跳过检查 1 和 3。
 理由写在文件里而不是脚本白名单里 —— 挪文件不会让豁免失效，读到那个文件的人也
@@ -36,6 +47,13 @@ MKDOCS = ROOT / "mkdocs.yml"
 # markdown 链接 [text](target)，容忍 <> 包裹和 "title" 后缀
 LINK = re.compile(r"\[[^\]]*\]\(\s*<?([^)\s>]+)>?[^)]*\)")
 EXEMPT = re.compile(r"<!--\s*link-check-ok:")
+# 课程提问块的起始标记（与 scripts/course.py、vendor/conflict-init.js 同规则）
+CONFLICT = re.compile(r"^<{7} ", re.M)
+# 检查 5 用：围栏代码块（``` 或 ~~~，允许缩进，按开围栏的缩进配对）与行内 code
+FENCE = re.compile(r"^(?P<i>\s*)(?P<f>`{3,}|~{3,}).*?^(?P=i)(?P=f)\s*$", re.M | re.S)
+INLINE_CODE = re.compile(r"`[^`\n]+`")
+# 图片 ![](x)、以及 src=/href= 指到的东西
+ASSET_REF = re.compile(r"""!\[[^\]]*\]\(\s*<?([^)\s>]+)|(?:src|href)\s*=\s*["']([^"']+)["']""")
 INDEX_NAMES = ("index.md", "MIRROR.md", "SKILL.md")
 
 
@@ -64,6 +82,34 @@ def md_links(md: Path) -> set:
         else:
             dead.append(target)
     return hits, dead
+
+
+def asset_refs(md: Path) -> list:
+    """该文件在代码块之外引用、但本地不存在的非 .md 资源。
+
+    只看渲染后真会去请求的东西：![](x)、iframe/img/script 的 src、a 的 href。
+    绝对路径按站点根（= docs/）解析，因为 demo 的 iframe 按规范写站点根绝对路径。
+    """
+    text = md.read_text(encoding="utf-8")
+    text = FENCE.sub("", text)
+    text = INLINE_CODE.sub("", text)
+    missing = []
+    for m in ASSET_REF.finditer(text):
+        target = (m.group(1) or m.group(2) or "").strip()
+        if not target or target.startswith(
+            ("http://", "https://", "mailto:", "#", "data:", "{{", "//")
+        ):
+            continue
+        target = target.split("#")[0].split("?")[0]
+        if not target or target.endswith(".md"):
+            continue  # .md 归检查 2 管
+        if target.startswith("/"):
+            resolved = DOCS / target.lstrip("/")
+        else:
+            resolved = (md.parent / target).resolve()
+        if not resolved.exists():
+            missing.append(target)
+    return missing
 
 
 def is_absorbed(md: Path) -> bool:
@@ -114,11 +160,20 @@ def main() -> int:
         if dead:
             (dead_warn if is_absorbed(md) else dead_links)[md] = dead
 
-    orphans, unregistered = [], []
+    orphans, unregistered, unresolved, dead_assets = [], [], [], {}
     for md in all_md:
         r = rel(md)
-        if "assets" in r.parts or md == root_index:
+        if "assets" in r.parts:
             continue
+        # 5. 非 .md 资源死链（首页也查：它的 iframe/图同样会 404）
+        missing = asset_refs(md)
+        if missing:
+            dead_assets[md] = missing
+        if md == root_index:
+            continue
+        # 4. 笔记里不许有未解决的课程提问
+        if r.parts[0] == "notes" and CONFLICT.search(md.read_text(encoding="utf-8")):
+            unresolved.append(r)
         head = "".join(md.read_text(encoding="utf-8").splitlines(keepends=True)[:5])
         if EXEMPT.search(head):
             continue
@@ -148,6 +203,17 @@ def main() -> int:
         unregistered,
         "补进 nav；reference/ 一层按规范展平到父级",
     )
+    report(
+        "笔记里还有未解决的课程提问",
+        unresolved,
+        "把每道题答完，再跑 python3 scripts/course.py add <分类>/<slug> 归档",
+    )
+    if dead_assets:
+        print(f"\n✗ 引用了不存在的本地资源（{len(dead_assets)} 个文件）", file=sys.stderr)
+        for md, targets in dead_assets.items():
+            print(f"    {rel(md)}  →  {', '.join(targets)}", file=sys.stderr)
+        print("  → 图片/demo 的路径写错或文件挪走了；只是举例写法就放进代码块或行内 `code`",
+              file=sys.stderr)
     if dead_links:
         print(f"\n✗ 死链，指向不存在的 .md（{len(dead_links)} 个文件）", file=sys.stderr)
         for md, targets in dead_links.items():
@@ -158,7 +224,8 @@ def main() -> int:
         for md, targets in dead_warn.items():
             print(f"    {rel(md)}  →  {', '.join(targets)}")
 
-    failed = len(orphans) + len(unregistered) + len(dead_links)
+    failed = (len(orphans) + len(unregistered) + len(dead_links)
+              + len(unresolved) + len(dead_assets))
     checked = sum(1 for m in all_md if "assets" not in rel(m).parts)
     if failed:
         print(f"\n链路校验未通过：{failed} 处问题（检查了 {checked} 篇）", file=sys.stderr)
