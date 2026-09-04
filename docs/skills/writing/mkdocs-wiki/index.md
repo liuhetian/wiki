@@ -1,3 +1,7 @@
+---
+description: "写技术 wiki（本 wiki 就在用）"
+---
+
 # MkDocs Wiki 写作
 
 本项目用 MkDocs Material / Zensical 渲染 Markdown。每种语法**直接演示使用** ——
@@ -166,12 +170,35 @@ sequenceDiagram
     --8<-- "skills/writing/mkdocs-wiki/assets/react-spa-demo.html"
     ```
 
+## 10. 可运行 JS 代码块 `{.js .run}` { #js-run }
+
+要让读者**当场看到代码跑出什么**（语言机制、算法、数据结构这类不依赖 DOM 的主题），在 fence 上加 `.run`：
+
+```{.js .run}
+const xs = [3, 1, 2]
+console.log(xs.sort((a, b) => a - b))
+console.log({ 对象也会格式化: true, 嵌套: [1, { k: "v" }] })
+```
+
+写法就是 superfences 的属性语法 —— `` ```{.js .run} `` 让 Zensical 产出 `<div class="language-js run highlight">`，
+Pygments 高亮和右上角复制按钮全都原样保留，[`vendor/js-runner.js`](../../../vendor/js-runner.js) 只在下方**追加**工具条和输出面板。
+所以这是纯增量的：脚本没加载，页面退化成普通高亮代码块，内容一行不丢。
+
+硬性规矩：
+
+- **执行在 Web Worker 里，没有 `document` / `window` / `requestAnimationFrame`**。要摸 DOM 的交互演示走[第 9 节](#iframe-demo)的 iframe 单页，别往 `.run` 里塞。选 Worker 而不是 iframe 是因为 iframe（srcdoc）与父页共用渲染主线程，读者写个 `while(true)` 会把整个 wiki 页面卡死、连「停止」都点不动；Worker 是独立线程，`terminate()` 能硬杀 —— 那道 5 秒死循环保护只有在 Worker 里才是真的
+- **值要用 `console.log` 打出来才看得见**。面板不显示最后一个表达式的值（不是 REPL），`log` / `warn` / `error` 分色，对象、`Map`、`Set`、循环引用、函数都有格式化
+- **顶层 `await` 可以直接写**，代码统一包进 AsyncFunction。但 `done` 之后仍在排队的 `setTimeout` 会随 Worker 一起终止，要看延迟输出就用 `await` 显式等住
+- **故意写坏是预期用法**。死循环 5 秒后被砍、报错带行号（已扣掉包装偏移），坏例子和好例子一样值得放进来
+- **只能运行，不能在页面上改**。曾做过 textarea 编辑态，换进去就丢了 Pygments 高亮（零依赖下没法重新上色），为顺手改两行牺牲整块代码的可读性不值得；要试自己的想法，浏览器控制台比页面里的小框好用。所以例子要**自带对照组**（把"换成 X 会怎样"写成注释或第二个块），别指望读者动手改
+
 ## 写作规范 { #写作规范 }
 
 - 同一功能有 Python / R 两种写法 → 用选项卡 `===`
 - 内容很长但非必读 → 用折叠 `???`
 - 重要注意事项 → 用提示框 `!!!`（warning 易犯错误、tip 建议、note 补充）
 - 系统架构或交互流程 → 用 Mermaid 图
+- 读者需要看到实际输出的 JS 例子 → 用 `{.js .run}` 可运行块（Worker 沙箱、无 DOM、只运行不可编辑，规矩见[第 10 节](#js-run)）
 - 交互效果演示 → iframe 嵌**自包含静态单页**（纯客户端、真身进 `assets/`、vendor 不走 CDN、逻辑不压缩，规矩与活例见[第 9 节](#iframe-demo)）
 - AI 生成概念配图 → 用[白底黑色马克笔草图](#marker-doodle-images)，一张图只讲一个概念
 - **引用外部一手资料：有存档、有引用、有分析**。三步缺一不可：① 真身 clone / 下载进文章 `assets/` 存档（注明出处与获取日期），文中 `??? abstract` 折叠 + `--8<--` 展示原文；② 正文摘关键原句（`>` 引用块）；③ 每处引用**必须跟自己的分析** —— 只贴引用不给分析，等于没消化。**例外**：引用的是活跃开源仓库、且原文的关键契约（Invariants / 不变量 / API）已经在正文里消化成自己的语言，可以省掉真身存档，改用**钉具体 commit hash 的 GitHub 永链**代替。前提是永链钉的是 commit 而不是 branch（内容冻结不随上游变），且读者不依赖点开链接就能理解正文——链接只做溯源。活例：[Dashboard skill](../../dashboard/index.md) 的 open-dashboard 蓝本吸收
@@ -270,24 +297,42 @@ zensical-wiki/
 ### 新增页面流程
 
 1. 在 `docs/` 下合适位置创建 `.md`
-2. 编写内容
+2. 编写内容，顶部写一行 `description` frontmatter（见下）
 3. **必须**在 `mkdocs.yml` 的 `nav:` 注册路径
 4. **必须**在父级索引页（`index.md` / `MIRROR.md` / `SKILL.md`）加一行链接 —— 给 AI 的通路，见下节
 5. `python3 scripts/check-links.py` 自查（可选，`deploy.sh` 里会强制跑一遍）
 6. `uv run zensical serve` 本地预览（毫秒级热更新）
 7. `./deploy.sh` 一键构建 + 同步到 COS
 
+### 每页一行 `description` { #description }
+
+页面顶部的 frontmatter 写一句话摘要，它会进 HTML 的 `<meta name="description">`，是搜索引擎和 AI 爬虫拿到的第一手介绍：
+
+```markdown
+---
+description: "一句话说清这页在回答什么问题，120 字以内，不写「本文介绍……」"
+---
+
+# 页面标题
+```
+
+**直接抄索引页给它的那行钩子**就行 —— 钩子本来就是为「扫一眼决定点不点进去」写的，跟 description 要干的事一模一样，两处一致还省得维护两份说法。
+
+值双引号包起来（里面有冒号也不会被 YAML 吃掉），不写 markdown 标记，`**粗体**` 和 `` `代码` `` 在 meta 里只会露出星号和反引号。
+
 ### 链路校验：`scripts/check-links.py` { #link-check }
 
 本 wiki 的 AI 入口是**相对链接**，不是 `nav`。所以「文章写完了、nav 也注册了」并不代表 AI 能读到它 —— 得有人在索引页里挂一行链接。这件事纯靠自觉会漏，所以做成部署闸门：`deploy.sh` 在 `git pull` 之后、读凭证和构建之前跑校验，非零退出码被 `set -e` 拦下，部署中止。
 
-查三项：
+查五项：
 
 | 检查 | 规则 | 失败后果 |
 |---|---|---|
 | 父级链接 | 每篇 `.md` 必须被**某个祖先目录**的 `index.md` / `MIRROR.md` / `SKILL.md` 直接链到 | 阻断部署 |
 | 死链 | 指向不存在的 `.md` | 阻断部署 |
 | `nav` 注册 | 路径出现在 `mkdocs.yml` 里（`MIRROR.md` 按规范豁免） | 阻断部署 |
+| 笔记未答题 | `docs/notes/` 下不许出现 `<<<<<<<` 冲突标记（那是课程的题，答完才归档） | 阻断部署 |
+| 资源死链 | 代码块之外引用的图片、iframe demo、本地 `href` 必须存在 | 阻断部署 |
 
 写作时只需记两条例外，别为了过校验去改错地方：
 
@@ -330,13 +375,16 @@ nav:
 - `- 路径.md` → 自动取文件一级标题
 - 路径相对于 `docs/`
 
-### 内容放哪个板块：三问判定
+### 内容放哪个板块：四问判定
 
-顶层板块按**用途和知识性质**分——文章（完整可读的复盘、观点与方法整理）、笔记（专业科目的学习与推导）、Skills（给 AI 的成套资产）；主题只做板块内的二级目录。新内容按顺序问三个问题：
+顶层板块按**用途和知识性质**分——文章（完整可读的复盘、观点与方法整理）、笔记（专业科目的学习与推导）、课程（要自己动手做完才算数的实操题）、Skills（给 AI 的成套资产）；主题只做板块内的二级目录。新内容按顺序问四个问题：
 
 1. 是给 agent 直接挂载/参考的成套资产吗？→ [Skills](../../index.md)
-2. 属于算法、机器学习、编程语言等专业科目的学习、推导或题解吗？→ [笔记](../../../notes/index.md)
-3. 其余完整可独立阅读的复盘、观点和方法整理 → [文章](../../../posts/index.md)
+2. 是一道要在真实环境里动手做完、做完才有结论的题吗？→ [课程](../../../courses/index.md)（写法见 [课程页怎么写](reference/course-page.md)）
+3. 属于算法、机器学习、编程语言等专业科目的学习、推导或题解吗？→ [笔记](../../../notes/index.md)
+4. 其余完整可独立阅读的复盘、观点和方法整理 → [文章](../../../posts/index.md)
+
+课程与笔记是同一件事的两半：**课程是题，笔记是答卷**，同名文件，答完才搬过去。所以判定 2 和 3 不冲突 —— 一篇 `notes/git/xxx.md` 可以正是 `courses/git/xxx.md` 的产物。
 
 文章和 skill 是共生不是成熟度递进：复盘归文章，复盘里沉淀出的可复用手册归 skill，正文互链——例：[动画 PPT 复盘](../../../posts/animated-ppt/index.md)与它的[工程手册](../deck/index.md)。板块归属变了就把文件真的搬过去，让磁盘和分类保持一致。**不留旧地址存根页** —— 要保住旧 URL 就别挪文件，挪了就直接删，理由见上文[写作规范](#写作规范)那条。
 

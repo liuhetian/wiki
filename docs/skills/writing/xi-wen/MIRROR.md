@@ -1,5 +1,6 @@
 ---
 title: MIRROR
+description: "本目录归档 YuanZHAO321/XiWen 的真身，供未来上游漂移时可对照。真身就是入口：index.md 即上游 SKILL.md 原文照录（仅改文件名），人读的一句话介绍在分类索引 ../index.md"
 ---
 
 # xi-wen 来源与吸收说明

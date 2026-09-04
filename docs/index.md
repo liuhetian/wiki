@@ -3,6 +3,7 @@ template: home.html
 hide:
   - navigation
   - toc
+description: "AI 友好的个人知识库：每个页面在同域提供 .md 源，把 URL 结尾的 / 换成 .md 即可，LLM 可顺相对链接一层层读进去。收录项目复盘、学科笔记、动手课程与可挂载的 AI skills。"
 ---
 
 <!-- 浏览器里首页由 overrides/home.html（SaaS 开屏）渲染，下面的正文不上屏，
@@ -28,6 +29,13 @@ hide:
 - [概率与算法](notes/probability/index.md) —— 从 [12 枚硬币的奇偶性](notes/probability/coin-parity.md) 起步
 - [机器学习](notes/machine-learning/index.md) —— 从[用西瓜搞懂准确率、精确率和召回率](notes/machine-learning/classification-metrics/index.md)起步
 - [Git](notes/git/index.md) —— 从 [stash 不是剪贴板，是个游离的 merge commit](notes/git/stash.md) 起步
+
+## 课程
+
+带空白的题：每一课先用脚本在本机造出一个真实的 Git 事故现场，再用 git 冲突标记的形状提问，答完才算数。全部在[课程索引](courses/index.md)：
+
+- [课程是怎么设计的](courses/index.md) —— 为什么用冲突标记提问、checkout → 答题 → add 的环路、给 AI 的上课流程
+- [Git](courses/git/index.md) —— 33 课 5 章，从 clone 到跨仓库 cherry-pick，答完的笔记落在[笔记 / Git](notes/git/index.md)
 
 ## Skills
 

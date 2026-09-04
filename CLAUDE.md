@@ -11,9 +11,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 uv run zensical serve              # 本地预览（Python ≥3.13，依赖由 uv 管）
 uv run zensical build              # 构建到 site/
-python3 scripts/check-links.py     # AI 链路校验：父级链接 + 死链 + nav 注册；写完文章必跑
+python3 scripts/check-links.py     # AI 链路校验：父级链接 + 死链 + nav 注册 + 笔记未答题 + 图片/demo 资源死链；写完文章必跑
 ./deploy.sh                        # git pull --ff-only → check-links → 构建 → md 源镜像 + llms.txt → 同步 COS
 node scripts/validate-lieflat-charts.mjs   # 只在改 data-visualization/lieflat-charts 时跑：48 篇 reference ↔ 48 个 demo 一一对应
+python3 scripts/course.py checkout git/<slug>   # 课程：领题到 docs/notes/ 同名文件；status 看进度，add 归档（答完才通过）
+bash scripts/course-smoke.sh               # 只在改 docs/courses/git/assets/ 时跑：33 个 init.sh 各跑两遍
 ```
 
 正式上线在部署机执行，本地只负责 commit + push：
@@ -38,7 +40,7 @@ ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lh
 
 **代码即引用。** 文章里的代码用 `--8<--` snippet 引用仓库真实文件，snippet `base_path` 是 `docs` 再回退到项目根，所以 docs 内引用写 `skills/.../x.md`（不带 `docs/` 前缀），根文件写 `mkdocs.yml`、`deploy.sh` 这样的相对根路径。
 
-**交互 demo。** 自包含静态单页放进各 skill 的 `assets/`，iframe 同域嵌入，`src` 用站点根绝对路径且写到具体 `.html` 文件；逻辑不压缩，AI 读同一 URL 下的源码。运行时库全部在 `docs/vendor/`（React UMD + htm、React ESM、three/r3f、MathJax、ECharts、Mermaid、Maple Mono 字体），线上不走任何 CDN。`overrides/main.html` 只给含 mermaid 块的页面同步引入本地 mermaid 真身。升级 vendor 版本用 `scripts/fetch-vendor.sh`，换字体版本用 `scripts/build-fonts.py`（中文按 GB2312 + 本站用字子集化），两者只在升级时跑一次。
+**交互 demo。** 自包含静态单页放进各 skill 的 `assets/`，iframe 同域嵌入，`src` 用站点根绝对路径且写到具体 `.html` 文件；逻辑不压缩，AI 读同一 URL 下的源码。运行时库全部在 `docs/vendor/`（React UMD + htm、React ESM、three/r3f、MathJax、ECharts、Chart.js、Mermaid、Maple Mono 字体），线上不走任何 CDN —— demo 里写 `cdn.jsdelivr.net` 之类的 `<script src>` 一律要改成 `../../../../vendor/...` 的相对路径。真身大的按需加载，不给无关页面付代价：MathJax（2MB）由 `vendor/mathjax-init.js` 查到 `.arithmatex` 才拉，ECharts 由 `vendor/echarts-init.js` 查到 ```echarts 块才拉，`overrides/main.html` 只给含 mermaid 块的页面同步引入 mermaid 真身。升级 vendor 版本用 `scripts/fetch-vendor.sh`，换字体版本用 `scripts/build-fonts.py`（中文按 GB2312 + 本站用字子集化），两者只在升级时跑一次。
 
 **媒体走自制 git-lfs。** `.gitattributes` 把图/视频/字体/vendor 真身交给 LFS，blob 由 `scripts/lfs-cos-agent.py`（standalone custom transfer agent）存到备份桶 `lfs/` 前缀，与部署桶隔离。`git push` 自动上传，部署机 pull 自动取回。
 
@@ -52,7 +54,7 @@ ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lh
 4. git commit + push。
 5. SSH 部署机跑 `./deploy.sh`。
 
-三个顶层分区分工：`posts/` 讲完整来龙去脉，`notes/` 记专业科目的学习推导（每个分类有统一骨架），`skills/` 是能直接交给 AI 执行的成套资产。引外部资料三步：真身存档进 `assets/` + 正文摘句 + 自己的分析。图表优先用 ```` ```mermaid ```` / ```` ```echarts ```` 代码块声明式写。
+四个顶层分区分工：`posts/` 讲完整来龙去脉，`notes/` 记专业科目的学习推导（每个分类有统一骨架），`courses/` 是带空白的实操题（提问写成 git 冲突标记，答完才用 `scripts/course.py add` 归档进 `notes/` 同名文件，详见 `docs/courses/index.md`），`skills/` 是能直接交给 AI 执行的成套资产。引外部资料三步：真身存档进 `assets/` + 正文摘句 + 自己的分析。图表优先用 ```` ```mermaid ```` / ```` ```echarts ```` 代码块声明式写。
 
 ## 已知的构建怪癖
 

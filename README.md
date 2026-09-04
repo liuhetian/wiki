@@ -28,7 +28,9 @@ flowchart LR
 docs/
 ├── index.md          # 站点首页，也是 AI 的入口（浏览器里由 overrides/home.html 开屏渲染，正文仍发布为 .md 源）
 ├── posts/            # 文章：完整可独立阅读的复盘、观点与方法整理
-├── notes/            # 笔记：概率与算法 / 统计学 / 机器学习 / Git，专业科目的学习与推导
+├── notes/            # 笔记：概率与算法 / 统计学 / 机器学习 / Git / JavaScript，专业科目的学习与推导
+├── courses/          # 课程：带空白的实操题。提问写成 git 冲突标记，答完才归档进 notes/ 同名文件
+│   └── git/assets/         #   每课一个 init.sh（无 root、本地裸仓库当 remote）+ 公共 lib.sh
 ├── skills/           # 给 AI 挂载执行的成套资产：按 Claude skill 标准目录组织
 │   ├── fastapi/            #   FastAPI 后端开发约定（14 篇 reference）
 │   ├── dashboard/          #   后台形状目录：36 形状全成文（35 篇），每篇配可玩活 demo
@@ -38,25 +40,29 @@ docs/
 │   ├── frontend-styles/    #   前端风格收集：15 种风格 + Open Design / HAOQI / ORYZO 三个官网拆解
 │   └── collab/             #   和 AI 协作：CLAUDE.md 模板、盘问我、带文档盘问
 ├── stylesheets/      # 全站令牌层 zx-tokens.css + 皮肤层 zx-theme.css + 首页 home.css
-└── vendor/           # 本地化运行时，全部不走 CDN：React UMD + htm、React ESM、three / r3f、
-                      # MathJax、ECharts、Mermaid，以及 Maple Mono 字体（拉丁官方 woff2 + 自建中文子集）
+├── vendor/           # 本地化运行时，全部不走 CDN：React UMD + htm、React ESM、three / r3f、
+│                     # MathJax、ECharts、Chart.js、Mermaid，以及 Maple Mono 字体（拉丁官方 woff2 + 自建中文子集）
+└── robots.txt        # 全站开放抓取 + 指向 sitemap.xml
 overrides/            # 主题模板覆盖：home.html 首页开屏；main.html 给有 mermaid 块的页面同步引入本地真身
 mkdocs.yml            # Zensical 兼容配置；nav 只是给人的策展层，不在 AI 链路上
 deploy.sh             # git pull → 链路校验 → 构建 → md 源镜像 + llms.txt → 钉 Content-Type 同步 COS（一键部署）
 deploy-cert/          # HTTPS 证书自动续期（acme.sh → DNSPod → COS API）
+courses-src/          # 不发布：课程的参考解法与原关卡存档，以及把它们生成成课程页的一次性脚本
 scripts/
-├── check-links.py              # AI 链路闸门（父级链接 + 死链 + nav 注册），deploy.sh 构建前强制跑
+├── check-links.py              # AI 链路闸门（父级链接 + 死链 + nav 注册 + 笔记未答题 + 资源死链），deploy.sh 构建前强制跑
+├── course.py                   # 课程闸门：checkout 领题 / status 看进度 / add 归档（每题都答了才通过）
+├── course-smoke.sh             # 33 个课程 init.sh 各跑两遍，验证可重复重建
 ├── lfs-cos-agent.py            # 自制 git-lfs custom transfer agent：媒体 blob ↔ 备份桶
 ├── setup-lfs.sh                # 新 clone 一次性接入上面的 LFS 后端
 ├── backup-media.sh             # 备份桶根下路径镜像（LFS 之前的历史双轨，仍可用）
-├── fetch-vendor.sh             # 升级 MathJax / ECharts / Mermaid 版本时重拉真身
+├── fetch-vendor.sh             # 升级 MathJax / ECharts / Chart.js / Mermaid 版本时重拉真身
 ├── build-fonts.py              # 换 Maple Mono 版本时重做 woff2（中文按 GB2312 + 本站用字子集化）
 └── validate-lieflat-charts.mjs # 校验 lieflat-charts 的 48 篇 reference 与 48 个 demo 一一对应
 ```
 
 ## 内容导览
 
-三个顶层分区各管一类内容：**文章**把来龙去脉讲完整，**笔记**记专业科目的学习推导，**Skills** 是能直接交给 AI 执行的成套资产。
+四个顶层分区各管一类内容：**文章**把来龙去脉讲完整，**笔记**记专业科目的学习推导，**课程**是要自己动手做完才算数的实操题，**Skills** 是能直接交给 AI 执行的成套资产。
 
 **文章**（[docs/posts/](docs/posts/index.md)）：
 
@@ -67,7 +73,7 @@ scripts/
 - [AI 时代的产品经理](docs/posts/ai-pm.md) —— 算法岗顶上 PM 缺位一个月的复盘
 - [会动的网页 PPT 是怎么做出来的](docs/posts/animated-ppt/index.md) —— 关键帧图 + 首尾帧视频 + 滚动叙事引擎
 - [超级轻量的自用 AI 编程 Harness 框架](docs/posts/ai-code-skeleton/index.md) —— 骨架的正逆两个方向风险相反
-- [项目上线之前如何验收](docs/posts/项目上线之前如何验收.md) —— 黄金用例打底、evals 跑批、线上差评回灌离线测试集
+- [自己想用例一定漏：AI 项目验收的三层测试集](docs/posts/release-acceptance.md) —— 黄金用例保下限、evals 保变更不退化、线上差评回灌保覆盖面增长
 - [让 Kindle 常显一块 Token 看板](docs/posts/kindle-dashboard/index.md) —— 墨水屏两条硬约束反推出的整套设计，附越狱、上报接口与决策日志
 
 **笔记**（[docs/notes/](docs/notes/index.md)，每个分类有统一骨架，索引里每篇只留一行钩子）：
@@ -76,6 +82,12 @@ scripts/
 - [统计学](docs/notes/statistics/index.md) —— 从抽样设计到统计推断、统计模型与设计实务，22 篇
 - [机器学习](docs/notes/machine-learning/index.md) —— 用可算的小例子拆模型概念
 - [Git](docs/notes/git/index.md) —— fork 吸收上游、stash 与 worktree 的心智模型
+- [JavaScript](docs/notes/javascript/index.md) —— 语言与运行时机制；代码块可直接在页面上跑（Worker 沙箱，见 [`vendor/js-runner.js`](docs/vendor/js-runner.js)）
+
+**课程**（[docs/courses/](docs/courses/index.md)，做完才有笔记，题在课程、答卷在笔记）：
+
+- [课程是怎么设计的](docs/courses/index.md) —— 为什么把提问写成 git 冲突标记、checkout → 答题 → add 的环路、给 Claude Code 的上课流程
+- [Git](docs/courses/git/index.md) —— 33 课 5 章，从 clone 到跨仓库 cherry-pick；每课一个 `init.sh` 在本机造出真实事故现场，冲突、误删、写歪的历史都是真的
 
 **Skills**（[docs/skills/](docs/skills/index.md)，每套讲「怎么做、为什么这么做」，不是教程）：
 
@@ -112,7 +124,7 @@ uv run zensical build            # 构建到 site/
 
 `.env` 需要（不入库）：`COS_BUCKET` / `COS_REGION` / `COS_SECRET_ID` / `COS_SECRET_KEY` / `COS_DOMAIN` / `COS_BACKUP_BUCKET`。前 5 项主桶用于部署；`COS_BACKUP_BUCKET` 是媒体真身的 LFS 桶（`lfs/` 前缀按内容寻址，历史版本永久保留，见 [`scripts/lfs-cos-agent.py`](scripts/lfs-cos-agent.py)），与部署桶隔离。只写文字的机器可以不配 `.env`（`GIT_LFS_SKIP_SMUDGE=1` clone 后照常写、push）。
 
-**第三方真身全部本地化**，不依赖任何 CDN：MathJax / ECharts / Mermaid 由 [`scripts/fetch-vendor.sh`](scripts/fetch-vendor.sh) 拉取，Maple Mono 字体由 [`scripts/build-fonts.py`](scripts/build-fonts.py) 加工（中文字形按 GB2312 + 本站用字子集化）；两者只在升级版本时跑一次，产物经 LFS 入库，日常恢复靠 `git lfs pull`。
+**第三方真身全部本地化**，不依赖任何 CDN：MathJax / ECharts / Chart.js / Mermaid 由 [`scripts/fetch-vendor.sh`](scripts/fetch-vendor.sh) 拉取，Maple Mono 字体由 [`scripts/build-fonts.py`](scripts/build-fonts.py) 加工（中文字形按 GB2312 + 本站用字子集化）；两者只在升级版本时跑一次，产物经 LFS 入库，日常恢复靠 `git lfs pull`。
 
 HTTPS 证书自动续期见 [`deploy-cert/install.sh`](deploy-cert/)，来龙去脉见[实操手册](docs/posts/cos-wiki-deploy/reference/deploy.md)。
 
@@ -125,7 +137,7 @@ HTTPS 证书自动续期见 [`deploy-cert/install.sh`](deploy-cert/)，来龙去
 - **交互 demo**：自包含静态单页进 `assets/`，iframe 同域嵌入且 `src` 写到具体 `.html` 文件，逻辑不压缩（人玩交互、AI 读同一 URL 下的源码），运行时共用 `docs/vendor/`
 - **图表声明式写**：```` ```mermaid ```` 与 ```` ```echarts ```` 代码块直接渲染，真身都在本地 `vendor/`；概念配图统一白底黑色马克笔草图
 - **nav 随便重排，链接图纹丝不动**：页面路径只由 `docs/` 里的文件位置决定，`mkdocs.yml` 的 `nav` 是纯策展层；真正动链接图的操作只有挪文件
-- **每篇文章必须被某个祖先索引页挂一行链接**：`nav` 不在 AI 链路上，漏挂链接的文章对 AI 等于不存在。`deploy.sh` 构建前跑 [`scripts/check-links.py`](scripts/check-links.py) 强制校验（父级链接 + 死链 + nav 注册三项），不过不许部署；确实不该上链路的页在文件前 5 行写 `<!-- link-check-ok: 理由 -->` 豁免
+- **每篇文章必须被某个祖先索引页挂一行链接**：`nav` 不在 AI 链路上，漏挂链接的文章对 AI 等于不存在。`deploy.sh` 构建前跑 [`scripts/check-links.py`](scripts/check-links.py) 强制校验（父级链接 + 死链 + nav 注册 + 笔记里的未答题 + 图片和 demo 的资源死链，五项），不过不许部署；确实不该上链路的页在文件前 5 行写 `<!-- link-check-ok: 理由 -->` 豁免
 - **不留旧地址存根页**：要保住旧 URL 就别挪文件，挪了就直接删。存根页是天生的孤儿，留着只会逼校验开豁免口子
 - **首页两处同步**：`docs/index.md` 的正文发布为 AI 读的源与 `llms.txt`，浏览器开屏由 `overrides/home.html` 渲染，改首页内容要两边一起改
 
