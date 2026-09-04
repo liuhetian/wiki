@@ -1,3 +1,7 @@
+---
+description: "照片感的地基，三个部件一篇讲完：光栅化管线、Rust wasm Worker 异步排序、镜像假反射"
+---
+
 # 高斯泼溅渲染系统
 
 oryzo.ai 一切照片感的地基：three.js 之上自研的 3D Gaussian Splatting 渲染器。

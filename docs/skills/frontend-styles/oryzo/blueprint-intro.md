@@ -1,3 +1,7 @@
+---
+description: "loader 变第一幕：\"产品正在被设计\"的虚线圆 draw-on + 选择手柄 + fractalNoise 材质化"
+---
+
 # 蓝图开场动画
 
 <iframe src="/skills/frontend-styles/oryzo/assets/blueprint-intro-demo.html"

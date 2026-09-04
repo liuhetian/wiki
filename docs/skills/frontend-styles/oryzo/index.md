@@ -1,3 +1,7 @@
+---
+description: "Lusion 的高斯泼溅玩梗营销站，按叙事顺序复现精彩场面：蓝图开场、泼溅渲染系统、翻滚转台场景切换、巨型标题景深换焦、照片滑轨、RGB 呼吸光边"
+---
+
 # ORYZO 官网拆解 —— 浏览器里的高斯泼溅营销站
 
 我先给结论：
@@ -14,7 +18,11 @@ Oryzo 并不是真实存在的 AI 产品，而是英国互动创意工作室 **L
 
 官网自己也明确声明项目是虚构和讽刺性的；Lusion 将服务范围列为 Concept、Web Design、Web Development、3D Design、WebGL 和 Animation。[Oryzo 官网](https://oryzo.ai/)、[Lusion 项目页](https://lusion.co/projects/oryzo_ai/)
 
-项目从 2025 年初开始，前后作为内部项目打磨约一年，并不是“两三周做一个 Awwwards 首页”。Lusion 后来发布了 7 篇幕后文章的计划，但截至 2026 年 7 月，公开的只有前三篇，原本准备披露具体 Three.js 技巧的第 4～7 篇尚未发布。[Oryzo BTS Part 1](https://blog.lusion.co/oryzo-bts-part-1-7-concept-and-creative-direction)、[Part 3](https://blog.lusion.co/oryzo-bts-part-3-7-website-ux-ui-and-illustrations)
+项目从 2025 年初开始，前后作为内部项目打磨约一年，并不是“两三周做一个 Awwwards 首页”。Part 1 原话：
+
+> Oryzo is a year long internal project, and we wanted to share some of the thinking behind how it came together. This post is the first in a seven part behind the scenes series on the making of Oryzo.ai.
+
+Lusion 计划发 7 篇幕后文章，但截至 2026 年 7 月公开的只有前三篇，原本准备披露具体 Three.js 技巧的第 4～7 篇尚未发布。[Oryzo BTS Part 1](https://blog.lusion.co/oryzo-bts-part-1-7-concept-and-creative-direction)（[本地存档](assets/upstream/lusion-bts-part-1.md)）、[Part 3](https://blog.lusion.co/oryzo-bts-part-3-7-website-ux-ui-and-illustrations)（[本地存档](assets/upstream/lusion-bts-part-3.md)）
 
 ---
 
@@ -34,7 +42,13 @@ Oryzo 并不是真实存在的 AI 产品，而是英国互动创意工作室 **L
 
 最有力的官方证据来自 Lusion 自己的幕后文章：
 
-他们最初真的尝试过 **图片序列和视频**，但认为缺乏交互性；也尝试过纯实时 PBR，但达不到离线渲染的视觉质量。最后选择了 Gaussian Splatting，把 Houdini/Redshift 生成的高质量场景转成浏览器里可实时交互的 WebGL 场景。[Lusion 3D 与动效幕后](https://blog.lusion.co/oryzo-bts-part-2-7-3d-design-and-motion-graphics)
+他们最初真的尝试过 **图片序列和视频**，但认为缺乏交互性；也尝试过纯实时 PBR，但达不到离线渲染的视觉质量。Part 2 原话：
+
+> We tried image sequences and video, but they lacked the interactivity we wanted. We also tested real time PBR rendering, but it did not quite reach the visual quality we were aiming for.
+>
+> So we explored Gaussian Splatting as a way to translate high quality rendered scenes into something that could still run in real time with WebGL.
+
+最后选择了 Gaussian Splatting，把 Houdini/Redshift 生成的高质量场景转成浏览器里可实时交互的 WebGL 场景。[Lusion 3D 与动效幕后](https://blog.lusion.co/oryzo-bts-part-2-7-3d-design-and-motion-graphics)（[本地存档](assets/upstream/lusion-bts-part-2.md)）
 
 所以正确表述是：
 
@@ -269,7 +283,11 @@ Lusion 披露：
 * 删除了不少原设计中的字体层级；
 * 只有杂志式转场刻意打破系统。
 
-也就是说，3D 已经很复杂时，UI 反而必须节制。[UX/UI 制作披露](https://blog.lusion.co/oryzo-bts-part-3-7-website-ux-ui-and-illustrations)
+也就是说，3D 已经很复杂时，UI 反而必须节制。Part 3 把这件事写进了开篇的提纲，四条设计原则里没有一条是关于 UI 本身的：
+
+> We will walk through the early visual exploration, the design principles that came out of it, **the way we kept UI from getting in the way of the content**, and where we allowed AI into the pipeline without letting it define the final look.
+
+那四条原则是 A realistic image、The product at the centre、Seamless transitions、Humour —— 全都指向内容和产品，UI 的职责只剩"别挡路"。[UX/UI 制作披露](https://blog.lusion.co/oryzo-bts-part-3-7-website-ux-ui-and-illustrations)（[本地存档](assets/upstream/lusion-bts-part-3.md)）
 
 ## 4. 真实世界细节比 shader 更重要
 

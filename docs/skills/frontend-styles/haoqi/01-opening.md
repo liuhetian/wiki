@@ -1,3 +1,7 @@
+---
+description: "完整开屏、独立果冻模型、Hover 涟漪三个可交互 Demo"
+---
+
 # 01 · 3D 开场专题
 
 > Prompt：由 LLM 手工绘制 “Banana” 连续 SVG 贝塞尔中心线，用 Three.js `TubeGeometry` 生成圆管，以 Z 轴错层避免笔画穿插，最后通过 `GLTFExporter` 烘焙为 GLB。

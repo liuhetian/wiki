@@ -1,3 +1,7 @@
+---
+description: "视口级电竞灯效玩梗：conic-gradient 彩虹环 + mask 抠边 + 双层 blur 辉光"
+---
+
 # RGB 呼吸光边
 
 <iframe src="/skills/frontend-styles/oryzo/assets/rgb-glow-border-demo.html"

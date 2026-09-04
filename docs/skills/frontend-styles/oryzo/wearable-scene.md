@@ -1,3 +1,7 @@
+---
+description: "视口高的标题横穿发光、字与景互为景深的换焦、纵向滚动折算横向走片"
+---
+
 # Wearable 一幕：巨型标题、景深换焦与照片滑轨
 
 <iframe src="/skills/frontend-styles/oryzo/assets/wearable-typography-demo.html"

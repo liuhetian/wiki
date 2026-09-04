@@ -1,3 +1,7 @@
+---
+description: "全站的叙事魔法：\"主角不换、场景在换\"的三幕交接 + 底下的 scrollManager 架构"
+---
+
 # 滚动叙事：场景切换与翻滚转台
 
 <iframe src="/skills/frontend-styles/oryzo/assets/scroll-turntable-demo.html"
