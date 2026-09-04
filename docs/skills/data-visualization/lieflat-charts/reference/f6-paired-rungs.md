@@ -1,3 +1,7 @@
+---
+description: "F6 · 并列梯级柱：分组对比（每类 2 系列，如今昔）的 Lupi Basics 真实参考实现。示例结论为“各方案今年与去年相比”"
+---
+
 # F6 · 并列梯级柱
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f6-paired-rungs.html"

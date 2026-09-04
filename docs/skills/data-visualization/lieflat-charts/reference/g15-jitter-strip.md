@@ -1,3 +1,7 @@
+---
+description: "G15 · 抖动条带图：分组分布，逐条记录（几百点）的 Glance 真实参考实现。示例结论为“响应时长的真实分布”"
+---
+
 # G15 · 抖动条带图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g15-jitter-strip.html"

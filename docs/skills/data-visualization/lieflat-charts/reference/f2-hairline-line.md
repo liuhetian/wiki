@@ -1,3 +1,7 @@
+---
+description: "F2 · 发丝折线图：日序列（≤30 天，逐日读数）的 Lupi Basics 真实参考实现。示例结论为“三十天注册量，一天不落”"
+---
+
 # F2 · 发丝折线图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f2-hairline-line.html"

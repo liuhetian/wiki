@@ -1,3 +1,7 @@
+---
+description: "B1 · 密集环形关系图：网络 60 节点环形弦膜的 Interactive Big Chart 真实参考实现。示例结论为“六百次协作，汇成一环”"
+---
+
 # B1 · 密集环形关系图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/b1-circular-graph-dense.html"

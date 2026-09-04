@@ -1,3 +1,7 @@
+---
+description: "G6 · 小型环形关系图：网络，≤12 节点的 Glance 真实参考实现。示例结论为“谁在和谁协作”"
+---
+
 # G6 · 小型环形关系图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g6-circular-graph.html"

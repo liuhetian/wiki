@@ -1,3 +1,7 @@
+---
+description: "八方向、内置颜色与组合效果的完整 CSS 标本页"
+---
+
 # NEAT ANNOTATIONS 手绘标注标本
 
 <iframe src="/skills/frontend-styles/assets/task7-neat-annotations-demo/index.html"

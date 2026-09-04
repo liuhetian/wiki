@@ -1,3 +1,7 @@
+---
+description: "F11 · 刻线进度表：单值进度（0–100%）的 Lupi Basics 真实参考实现。示例结论为“距离本季度目标还有多远”"
+---
+
 # F11 · 刻线进度表
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f11-tick-gauge.html"

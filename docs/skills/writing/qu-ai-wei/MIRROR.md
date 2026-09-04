@@ -1,3 +1,7 @@
+---
+description: "本目录归档 LifelongLazyLearner/qu-ai-wei 的真身，供未来上游漂移时可对照。真身就是入口：index.md 即上游 SKILL.md 原文照录（仅改文件名），人读的一句话介绍在分类索引 ../index.md"
+---
+
 # qu-ai-wei 来源与吸收说明
 
 本目录归档 [LifelongLazyLearner/qu-ai-wei](https://github.com/LifelongLazyLearner/qu-ai-wei) 的真身，供未来上游漂移时可对照。真身就是入口：[`index.md`](index.md) 即上游 `SKILL.md` 原文照录（仅改文件名），人读的一句话介绍在分类索引 [`../index.md`](../index.md)。

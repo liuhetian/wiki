@@ -1,3 +1,7 @@
+---
+description: "F9 · 梯级瀑布图：瀑布 / 增减分解（≤6 级）的 Lupi Basics 真实参考实现。示例结论为“从毛收入到净收入，逐级拆解”"
+---
+
 # F9 · 梯级瀑布图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f9-rung-waterfall.html"

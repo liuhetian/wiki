@@ -1,3 +1,7 @@
+---
+description: "G14 · 单轴图：星期×小时×量（punch card 数据）的 Glance 真实参考实现。示例结论为“客服负载，逐日展开”"
+---
+
 # G14 · 单轴图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g14-single-axis.html"

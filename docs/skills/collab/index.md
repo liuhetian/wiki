@@ -1,3 +1,7 @@
+---
+description: "CLAUDE.md 模板 + 盘问式协作"
+---
+
 # 和 AI 协作
 
 跟 AI 协作时沉淀的通用做法，每个是一个独立 skill：

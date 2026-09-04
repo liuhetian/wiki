@@ -1,3 +1,7 @@
+---
+description: "从数据生成机制识别 Bernoulli、Binomial、Poisson、Normal、Gamma、Beta、t、卡方和 F"
+---
+
 # 常见分布：先认数据生成机制，再认公式
 
 选择分布先问“数据怎样产生”，不要先看曲线像不像。计数、等待时间、比例和极值有不同的支持集与机制。

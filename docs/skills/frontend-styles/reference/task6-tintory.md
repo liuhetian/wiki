@@ -1,3 +1,7 @@
+---
+description: "六页视觉研究工作室与真实民族服饰素材"
+---
+
 # TINTORY 视觉考古编辑部
 
 <iframe src="/skills/frontend-styles/assets/task6-tintory-demo/index.html"

@@ -1,3 +1,7 @@
+---
+description: "L13 · 沙漏流图：分阶段递减人数（漏斗）的 Lupi Editorial 真实参考实现。示例结论为“漏斗像沙一样倾泻”"
+---
+
 # L13 · 沙漏流图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l13-hourglass-stream.html"

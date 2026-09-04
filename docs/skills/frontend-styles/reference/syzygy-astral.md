@@ -1,3 +1,7 @@
+---
+description: "一 div 巨行星 + 大气层渐变落地纸白正文的深空官网首屏，data-brand-theme 令牌一键换肤"
+---
+
 # Syzygy 克莱因蓝星穹
 
 <iframe src="/skills/frontend-styles/assets/syzygy-astral-demo.html"

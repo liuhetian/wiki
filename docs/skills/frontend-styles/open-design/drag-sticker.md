@@ -1,3 +1,7 @@
+---
+description: "标题旁那枚随手拖着玩的 \"DONE 👌\"，pointer capture 三行核心"
+---
+
 # 可拖拽贴纸
 
 <iframe src="/skills/frontend-styles/open-design/assets/drag-sticker-demo.html"

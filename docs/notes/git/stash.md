@@ -1,3 +1,7 @@
+---
+description: "看清它的 2~3 个 parent 和 reflog 出身，「为什么冲突时 merge --abort 用不了」「为什么 apply 敲两次不会叠加」都不用背"
+---
+
 # stash 不是剪贴板，是个游离的 merge commit
 
 ## 场景

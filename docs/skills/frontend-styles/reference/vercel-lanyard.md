@@ -1,3 +1,7 @@
+---
+description: "Rapier 物理绳链 + meshline 绳带 + 反投影拖拽的挂绳工牌，复现自 Vercel Ship 2024；全站首个免构建 React 3D demo：htm + import map + esbuild external 化的 /vendor/ ESM 运行时"
+---
+
 # VERCEL LANYARD 可拖拽 3D 工牌
 
 <iframe src="/skills/frontend-styles/assets/vercel-lanyard-demo/index.html"

@@ -1,3 +1,7 @@
+---
+description: "hero 大标题的蓝图选择框 + 逐词 blur(10→0) 级联落定"
+---
+
 # 标题逐词模糊入场（BlurText）
 
 <iframe src="/skills/frontend-styles/open-design/assets/blur-text-demo.html"

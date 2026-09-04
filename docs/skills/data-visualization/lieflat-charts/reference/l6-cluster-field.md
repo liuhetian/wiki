@@ -1,3 +1,7 @@
+---
+description: "L6 · 贡献者星群：中心+卫星网络，海报版的 Lupi Editorial 真实参考实现。示例结论为“贡献者星群”"
+---
+
 # L6 · 贡献者星群
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l6-cluster-field.html"

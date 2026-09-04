@@ -1,3 +1,7 @@
+---
+description: "L12 · 归属柱廊图：多对一归属+逐条名单（≤50 条）的 Lupi Editorial 真实参考实现。示例结论为“44 个代码仓库，归属十位负责人”"
+---
+
 # L12 · 归属柱廊图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l12-type-colonnade.html"

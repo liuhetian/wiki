@@ -1,3 +1,7 @@
+---
+description: "横向档案架与解绳、铺纸、显字的连续转场"
+---
+
 # WORLD FILES 档案袋叙事
 
 <iframe src="/skills/frontend-styles/assets/task4-world-files-demo/index.html"

@@ -1,3 +1,7 @@
+---
+description: "G18 · 一笔绘制与计数器：累计增长（一条线+一个大数）的 Glance 真实参考实现。示例结论为“上半年收入，一笔画出”"
+---
+
 # G18 · 一笔绘制与计数器
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g18-draw-in-plus-counter.html"

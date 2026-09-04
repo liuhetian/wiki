@@ -1,3 +1,7 @@
+---
+description: "单色琥珀 + 深黑底 + 等宽微发光的复古 CRT 面板，Fallout Pip-Boy 灵感"
+---
+
 # PIP-BOY 琥珀终端
 
 <iframe src="/skills/frontend-styles/assets/pip-boy-terminal-demo.html"

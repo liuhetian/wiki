@@ -1,3 +1,7 @@
+---
+description: "G3 · 粗体柱状图：少类目排名比较（≤6）的 Glance 真实参考实现。示例结论为“各方案收入”"
+---
+
 # G3 · 粗体柱状图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g3-chunky-bars.html"

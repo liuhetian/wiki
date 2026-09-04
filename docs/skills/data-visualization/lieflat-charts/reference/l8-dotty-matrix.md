@@ -1,3 +1,7 @@
+---
+description: "L8 · 点阵空间矩阵：多组×网格×量，等距堆叠的 Lupi Editorial 真实参考实现。示例结论为“四支小队，层层堆叠”"
+---
+
 # L8 · 点阵空间矩阵
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l8-dotty-matrix.html"

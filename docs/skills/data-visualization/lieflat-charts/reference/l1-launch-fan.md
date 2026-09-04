@@ -1,3 +1,7 @@
+---
+description: "L1 · 上线扇形图：多实体各带出生时间+当前规模的 Lupi Editorial 真实参考实现。示例结论为“十二项功能，依次展开成扇”"
+---
+
 # L1 · 上线扇形图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l1-launch-fan.html"

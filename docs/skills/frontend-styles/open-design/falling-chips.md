@@ -1,3 +1,7 @@
+---
+description: "一排 agent 图标滚到视口上半区集体砸落成堆，可以抓着扔"
+---
+
 # 图标物理掉落（FallingText）
 
 <iframe src="/skills/frontend-styles/open-design/assets/falling-chips-demo.html"

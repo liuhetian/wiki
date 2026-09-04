@@ -1,3 +1,7 @@
+---
+description: "G7 · 左右树状图：层级结构（2–3 层）的 Glance 真实参考实现。示例结论为“平台交付的全部能力”"
+---
+
 # G7 · 左右树状图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g7-tree-lr.html"

@@ -1,3 +1,7 @@
+---
+description: "B2 · 密集力导向图：网络 180 节点力导向星系的 Interactive Big Chart 真实参考实现。示例结论为“一百八十项服务，自成星系”"
+---
+
 # B2 · 密集力导向图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/b2-force-graph-dense.html"

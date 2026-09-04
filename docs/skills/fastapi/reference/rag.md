@@ -1,3 +1,7 @@
+---
+description: "提供两套方案进行选择，需要主动询问用户使用哪一种，一种是使用sqlite，一种是使用pgvector，默认选择sqlite"
+---
+
 # RAG 向量检索
 
 提供两套方案进行选择，需要主动询问用户使用哪一种，一种是使用sqlite，一种是使用pgvector，默认选择sqlite

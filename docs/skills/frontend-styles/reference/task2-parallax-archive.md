@@ -1,3 +1,7 @@
+---
+description: "同一批卡片在 Layered / Orbit / Archive 三种视角间切换"
+---
+
 # PARALLAX 三态作品档案
 
 <iframe src="/skills/frontend-styles/assets/task2-parallax-archive-demo/index.html"

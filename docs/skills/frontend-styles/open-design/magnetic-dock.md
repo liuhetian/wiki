@@ -1,3 +1,7 @@
+---
+description: "macOS 风格近距放大 + tooltip + 持久 track 无闪切换轮播"
+---
+
 # 磁性 Dock 预览切换
 
 <iframe src="/skills/frontend-styles/open-design/assets/magnetic-dock-demo.html"

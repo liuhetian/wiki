@@ -1,3 +1,7 @@
+---
+description: "G2 · 花瓣玫瑰图：单变量分类计数，≤8 类且近似等分的 Glance 真实参考实现。示例结论为“每次发布带来的情绪”"
+---
+
 # G2 · 花瓣玫瑰图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g2-petal-rose.html"

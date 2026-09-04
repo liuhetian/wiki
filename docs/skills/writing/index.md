@@ -1,3 +1,7 @@
+---
+description: "MkDocs Wiki 文档、报纸版 HTML、去 AI 味"
+---
+
 # 写作口味
 
 写作与表达相关的独立 skill，按场景挑：

@@ -1,3 +1,7 @@
+---
+description: "F10 · 点阵热力图：星期×小时×量（小热力）的 Lupi Basics 真实参考实现。示例结论为“客服何时最繁忙”"
+---
+
 # F10 · 点阵热力图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f10-dot-heat.html"

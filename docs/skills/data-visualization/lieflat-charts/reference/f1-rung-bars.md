@@ -1,3 +1,7 @@
+---
+description: "少类目比较（≤8），单位可数"
+---
+
 # F1 · 梯级柱状图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f1-rung-bars.html"

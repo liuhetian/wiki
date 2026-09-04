@@ -1,3 +1,7 @@
+---
+description: "open-design.ai 首页 11 个动效逐个复刻：磁性 Dock、物理掉落、点阵地球、逐词模糊入场 …… 纸白 + 荧光绿的零 React runtime 渐进增强流派"
+---
+
 # Open Design 官网效果拆解
 
 [open-design.ai](https://open-design.ai/) 首页是一套很完整的"纸白 + 黑墨 + 荧光绿 `#63fe13`"编辑部气质（他们自己管这套令牌叫 **Atelier Zero**），动效密度很高却全程轻快 —— 秘密在架构上：Astro 静态输出、浏览器端**零 React runtime**，每个动效都是"服务端渲染好的静态 HTML + 一小段内联增强脚本"的渐进增强，观察器不触发、reduced-motion、脚本挂掉，页面照样完整可读。

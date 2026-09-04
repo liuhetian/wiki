@@ -1,3 +1,7 @@
+---
+description: "L2 · 点阵级联图：排名比较，可数单位（unit chart）的 Lupi Editorial 真实参考实现。示例结论为“故障原因，堆叠后见排名”"
+---
+
 # L2 · 点阵级联图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l2-dot-cascade.html"

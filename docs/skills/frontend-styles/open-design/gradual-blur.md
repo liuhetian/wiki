@@ -1,3 +1,7 @@
+---
+description: "10 层 backdrop-filter + 四段 mask 叠出的连续模糊梯度"
+---
+
 # 页底渐进高斯模糊
 
 <iframe src="/skills/frontend-styles/open-design/assets/gradual-blur-demo.html"

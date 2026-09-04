@@ -1,3 +1,7 @@
+---
+description: "全页通用的 data-reveal 观察器体系，永不空白的兜底契约"
+---
+
 # 滚动入场编排（data-reveal）
 
 <iframe src="/skills/frontend-styles/open-design/assets/scroll-reveal-demo.html"

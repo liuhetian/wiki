@@ -1,3 +1,7 @@
+---
+description: "G12 · 错落波形图：多类目分布（30–60 根）的 Glance 真实参考实现。示例结论为“五十个市场，汇成一道波”"
+---
+
 # G12 · 错落波形图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g12-stagger-wave.html"

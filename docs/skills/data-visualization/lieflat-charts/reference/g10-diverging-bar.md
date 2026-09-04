@@ -1,3 +1,7 @@
+---
+description: "G10 · 发散条形图：有正负的分类数值的 Glance 真实参考实现。示例结论为“哪些细分增长，哪些流失”"
+---
+
 # G10 · 发散条形图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g10-diverging-bar.html"

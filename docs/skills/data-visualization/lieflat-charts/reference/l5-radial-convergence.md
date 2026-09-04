@@ -1,3 +1,7 @@
+---
+description: "L5 · 径向汇聚图：多对一归属，不丢明细（≤60 条）的 Lupi Editorial 真实参考实现。示例结论为“48 条需求汇向五个主题”"
+---
+
 # L5 · 径向汇聚图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l5-radial-convergence.html"

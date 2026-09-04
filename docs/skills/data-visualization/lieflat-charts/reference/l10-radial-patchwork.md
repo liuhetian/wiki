@@ -1,3 +1,7 @@
+---
+description: "L10 · 径向拼布图：逐事件叠加：时刻(角)×规模(径)，透明度=密度的 Lupi Editorial 真实参考实现。示例结论为“一个季度的部署，层层叠加”"
+---
+
 # L10 · 径向拼布图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l10-radial-patchwork.html"

@@ -1,3 +1,7 @@
+---
+description: "L4 · 弧形矩阵：分类×分类+量，小数据（≤100 格）的 Lupi Editorial 真实参考实现。示例结论为“八款产品进入十二座城市”"
+---
+
 # L4 · 弧形矩阵
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l4-arc-matrix.html"

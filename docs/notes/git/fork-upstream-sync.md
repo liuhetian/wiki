@@ -1,3 +1,7 @@
+---
+description: "把 main 降级成上游的只读镜像，自己的 commit 一行都不放上去；同步上游因此永远是 fast-forward"
+---
+
 # fork 别人的仓库，还要持续吸收上游
 
 ## 场景

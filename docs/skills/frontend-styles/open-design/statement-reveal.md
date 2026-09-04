@@ -1,3 +1,7 @@
+---
+description: "About 大字宣言随滚动逐 token 从墨影点亮，CJK 单字切分"
+---
+
 # 宣言逐字点亮（Text Scroll Reveal）
 
 <iframe src="/skills/frontend-styles/open-design/assets/statement-reveal-demo.html"

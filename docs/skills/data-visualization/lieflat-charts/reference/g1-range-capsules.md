@@ -1,3 +1,7 @@
+---
+description: "G1 · 区间胶囊图：每天一个区间（min–max）的日序列的 Glance 真实参考实现。示例结论为“每日活跃区间”"
+---
+
 # G1 · 区间胶囊图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g1-range-capsules.html"

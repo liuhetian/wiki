@@ -1,3 +1,7 @@
+---
+description: "模板驱动的单色编辑型数据可视化；从数据形状选图，逐张展示 Lupi Editorial、Lupi Basics、Glance 与交互大图"
+---
+
 # Lieflat Charts
 
 一套**从数据形状出发的选图方法与真实模板**：单色、编辑感、可阅读。这里收录 48 张图，每张都有可运行效果、技术档案、使用边界和完整 HTML 源码。

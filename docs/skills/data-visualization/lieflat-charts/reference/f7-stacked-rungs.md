@@ -1,3 +1,7 @@
+---
+description: "F7 · 堆叠梯级柱：堆叠构成（≤4 类 × ≤3 段）的 Lupi Basics 真实参考实现。示例结论为“各地区收入由什么构成”"
+---
+
 # F7 · 堆叠梯级柱
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f7-stacked-rungs.html"

@@ -1,3 +1,7 @@
+---
+description: "F4 · 刻线环形图：100% 构成（≤6 段）的 Lupi Basics 真实参考实现。示例结论为“流量从哪里来”"
+---
+
 # F4 · 刻线环形图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f4-tick-donut.html"

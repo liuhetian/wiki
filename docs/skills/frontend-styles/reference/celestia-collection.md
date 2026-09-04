@@ -1,3 +1,7 @@
+---
+description: "数据自带主题色板的玻璃拟态收藏画廊，衬线大字 + 宽字距小标签的杂志气质"
+---
+
 # Celestia 主题收藏卡
 
 <iframe src="/skills/frontend-styles/assets/celestia-collection-demo.html"

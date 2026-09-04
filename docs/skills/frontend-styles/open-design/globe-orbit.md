@@ -1,3 +1,7 @@
+---
+description: "自转点阵球 + 纯 CSS 头像环，mask 假装的背面纵深"
+---
+
 # 点阵地球与贡献者轨道
 
 <iframe src="/skills/frontend-styles/open-design/assets/globe-orbit-demo.html"

@@ -1,3 +1,7 @@
+---
+description: "L3 · 条码棒棒糖图：每天一个读数的日序列（90 天级）的 Lupi Editorial 真实参考实现。示例结论为“九十天，排成一道条码”"
+---
+
 # L3 · 条码棒棒糖图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l3-barcode-lollipop.html"

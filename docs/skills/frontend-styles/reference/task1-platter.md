@@ -1,3 +1,7 @@
+---
+description: "完整唱片架、详情轮播、搜索、队列和音频播放器"
+---
+
 # PLATTER 平面音乐档案
 
 <iframe src="/skills/frontend-styles/assets/task1-platter-demo/index.html"

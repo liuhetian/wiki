@@ -1,3 +1,7 @@
+---
+description: "Canvas 沿指针轨迹逐格揭开三个同坐标隐藏世界"
+---
+
 # PIXEL BLOOM 网格揭示
 
 <iframe src="/skills/frontend-styles/assets/task5-pixel-bloom-demo/index.html"

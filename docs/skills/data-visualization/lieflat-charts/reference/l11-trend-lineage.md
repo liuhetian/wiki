@@ -1,3 +1,7 @@
+---
+description: "L11 · 趋势谱系图：事件序列生命史（首发/重做/休眠/存活）的 Lupi Editorial 真实参考实现。示例结论为“功能兴起、沉寂，再度归来”"
+---
+
 # L11 · 趋势谱系图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l11-trend-lineage.html"

@@ -1,3 +1,7 @@
+---
+description: "standalone custom transfer agent：140 行脚本替掉整个 LFS 服务，协议、坑和换存储的改法"
+---
+
 # 用自己的对象存储做 git-lfs 后端：不起服务，只要一个脚本
 
 git-lfs 的存储后端是可插拔的 —— 不必买 GitHub 的 LFS 配额，也不必自建 LFS server。写一个 **standalone custom transfer agent** 就能把二进制真身指向自己的对象存储桶：git 在 push/pull 时把它当子进程拉起，stdin/stdout 上聊四种 JSON 事件，用完即退。**没有常驻进程，不监听端口，不需要域名和证书。**

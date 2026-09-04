@@ -1,3 +1,7 @@
+---
+description: "L15 · 选票刻线图：多选题百分比（各项独立 0–100），≤6 项的 Lupi Editorial 真实参考实现。示例结论为“他们害怕什么，一票一划”"
+---
+
 # L15 · 选票刻线图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l15-ballot-tally.html"

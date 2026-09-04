@@ -1,3 +1,7 @@
+---
+description: "L14 · 百人点阵：100% 构成（占比），≤6 类小数据的 Lupi Editorial 真实参考实现。示例结论为“一百个人，四种态度”"
+---
+
 # L14 · 百人点阵
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l14-hundred-field.html"

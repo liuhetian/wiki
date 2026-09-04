@@ -1,3 +1,7 @@
+---
+description: "下滑藏、上滑现的 Headroom 顶栏，rAF 折叠滚动事件"
+---
+
 # 滚动感知吸顶导航
 
 <iframe src="/skills/frontend-styles/open-design/assets/headroom-nav-demo.html"

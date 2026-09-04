@@ -1,3 +1,7 @@
+---
+description: "依赖注入、SQLModel 分层建模、按需参考的一整套后端约定"
+---
+
 # FastAPI 后端开发
 
 用 Python 的最新版本和 FastAPI 的最新语法，使用依赖注入等技术。

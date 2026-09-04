@@ -1,3 +1,7 @@
+---
+description: "G13 · 大切片图：双编码：占比(角)×强度(径)的 Glance 真实参考实现。示例结论为“大份额带来深参与”"
+---
+
 # G13 · 大切片图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g13-big-slice.html"

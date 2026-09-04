@@ -1,3 +1,7 @@
+---
+description: "G4 · 点阵华夫图：100% 构成（占比）的 Glance 真实参考实现。示例结论为“新注册用户从哪里来”"
+---
+
 # G4 · 点阵华夫图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g4-dot-waffle.html"

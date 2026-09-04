@@ -1,3 +1,7 @@
+---
+description: "海报实验室、设计拆解、组件图谱与提示词库"
+---
+
 # LINE//SYSTEM 线性工业图形
 
 <iframe src="/skills/frontend-styles/assets/task3-line-system-demo/index.html"

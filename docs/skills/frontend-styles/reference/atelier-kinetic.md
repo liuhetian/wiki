@@ -1,3 +1,7 @@
+---
+description: "暖纸白 + 墨黑巨字 + 单一朱砂红的实验排版作品页，一个弹簧积分器驱动全页：巨字被指针推开、卡片甩出去弹回来、滚动横推作品轨；页内附「对标 Awwwards」那段审美基调提示词原文与它的适用边界"
+---
+
 # ATELIER 纸白动力学
 
 <iframe src="/skills/frontend-styles/assets/atelier-kinetic-demo.html"

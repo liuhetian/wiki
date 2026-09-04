@@ -1,3 +1,7 @@
+---
+description: "Berry 骨架 × Minimals 色语言的 MUI 后台皮肤：墨色主按钮、双层卡片阴影、灰底表头 + 虚线行分隔；活例是纯 CSS 缩微，正文附可直接抄进 MUI 项目的 createTheme 三件套配方"
+---
+
 # One Hub 翡翠管理台
 
 <iframe src="/skills/frontend-styles/assets/onehub-berry-admin-demo.html"

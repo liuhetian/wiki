@@ -1,3 +1,7 @@
+---
+description: "F12 · 串珠哑铃图：类目级前后对比（≤6 类，串珠=真单位）的 Lupi Basics 真实参考实现。示例结论为“改版前后的新手引导耗时”"
+---
+
 # F12 · 串珠哑铃图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f12-dumbbell-queue.html"

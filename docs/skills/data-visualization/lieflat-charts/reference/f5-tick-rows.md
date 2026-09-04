@@ -1,3 +1,7 @@
+---
+description: "F5 · 刻线横条图：横向排名比较，单位可数（≤8 行）的 Lupi Basics 真实参考实现。示例结论为“六支团队，逐次清点发布”"
+---
+
 # F5 · 刻线横条图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f5-tick-rows.html"

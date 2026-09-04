@@ -1,3 +1,7 @@
+---
+description: "需要使用最新的fastmcp 3 来写服务"
+---
+
 
 需要使用最新的fastmcp 3 来写服务 
 

@@ -1,3 +1,7 @@
+---
+description: "G11 · 小型力导向图：中心+卫星网络，≤15 节点的 Glance 真实参考实现。示例结论为“集成围绕中心聚拢”"
+---
+
 # G11 · 小型力导向图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g11-force-graph.html"

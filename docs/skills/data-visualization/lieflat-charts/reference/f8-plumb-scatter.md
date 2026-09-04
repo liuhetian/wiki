@@ -1,3 +1,7 @@
+---
+description: "F8 · 铅垂散点图：二维散点（≤20 点）的 Lupi Basics 真实参考实现。示例结论为“十二款产品，价格与满意度”"
+---
+
 # F8 · 铅垂散点图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f8-plumb-scatter.html"

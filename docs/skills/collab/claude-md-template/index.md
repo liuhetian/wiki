@@ -1,3 +1,7 @@
+---
+description: "新项目直接抄进 CLAUDE.md 的协作约束，吸收自 Karpathy 四条原则 + 自己踩的三个坑"
+---
+
 # CLAUDE.md 初始化模板
 
 一份跨项目通用的协作约束，新项目初始化时直接抄进项目根 `CLAUDE.md`。吸收自 Andrej Karpathy 提炼的四条编码原则，再补上自己在 Codex / GPT 长任务协作中反复踩到的三个坑——原文四条不覆盖这三类问题。

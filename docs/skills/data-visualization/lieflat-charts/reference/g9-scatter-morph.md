@@ -1,3 +1,7 @@
+---
+description: "G9 · 散点变形图：同一实体集的三个维度轮播的 Glance 真实参考实现。示例结论为“同一份数据，三种视角”"
+---
+
 # G9 · 散点变形图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g9-scatter-morph.html"

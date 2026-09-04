@@ -1,3 +1,7 @@
+---
+description: "高轨道 + sticky 把整屏钉住，滚动 1:1 跟手推进步骤和配图"
+---
+
 # 滚动锁定步骤联动
 
 <iframe src="/skills/frontend-styles/open-design/assets/scrolly-steps-demo.html"

@@ -1,3 +1,7 @@
+---
+description: "L7 · 品牌光谱：双极量表（两端都是合法位置）+ 竞品对照的 Lupi Editorial 真实参考实现。示例结论为“品牌落在光谱的哪里”"
+---
+
 # L7 · 品牌光谱
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l7-brand-spectrum.html"

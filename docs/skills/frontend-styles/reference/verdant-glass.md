@@ -1,3 +1,7 @@
+---
+description: "浅灰绿底 + 白玻璃卡 + 翡翠绿点缀的 LLM 网关用量看板，悬浮胶囊侧栏 + 热力图 + 面积图"
+---
+
 # Verdant Glass 苔光用量台
 
 <iframe src="/skills/frontend-styles/assets/verdant-glass-demo.html"

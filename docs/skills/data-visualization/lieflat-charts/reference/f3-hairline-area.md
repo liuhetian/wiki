@@ -1,3 +1,7 @@
+---
+description: "F3 · 发丝面积图：日序列（30–60 天，看形态）的 Lupi Basics 真实参考实现。示例结论为“每一天填满并发曲线”"
+---
+
 # F3 · 发丝面积图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/f3-hairline-area.html"

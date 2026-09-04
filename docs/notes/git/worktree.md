@@ -1,3 +1,7 @@
+---
+description: "一份 .git 挂多个 HEAD，只有 HEAD 和 index 各一份；「为什么一个分支不能检出两次」「为什么删了目录它还在 list 里」都从这个模型推得出来"
+---
+
 # worktree 不是第二个 clone，是同一个仓库的第二个 HEAD
 
 ## 场景

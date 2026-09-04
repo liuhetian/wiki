@@ -1,3 +1,7 @@
+---
+description: "G8 · 雨幕双面积图：双序列因果（投入 vs 产出）的 Glance 真实参考实现。示例结论为“营销投入落下，注册量流动”"
+---
+
 # G8 · 雨幕双面积图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g8-rainfall-dual-area.html"

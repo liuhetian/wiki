@@ -1,3 +1,7 @@
+---
+description: "近黑墨绿深空底 + 酸性荧光绿点缀的科幻发布页 hero，SVG 笔画描边大标题 + 行星轨道核心 + 纯 CSS 伪影片模态"
+---
+
 # NEXUS 2030 酸绿深空首屏
 
 <iframe src="/skills/frontend-styles/assets/nexus-2030-demo.html"

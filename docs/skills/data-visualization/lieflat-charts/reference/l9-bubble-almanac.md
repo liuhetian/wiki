@@ -1,3 +1,7 @@
+---
+description: "L9 · 气泡年鉴：分类×年份+量+状态，大跨度（手绘 blob）的 Lupi Editorial 真实参考实现。示例结论为“八年工单，汇成一本年鉴”"
+---
+
 # L9 · 气泡年鉴
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/l9-bubble-almanac.html"

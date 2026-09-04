@@ -1,3 +1,7 @@
+---
+description: "B3 · 三段丝线图：三段路径 100+ 条丝线的 Interactive Big Chart 真实参考实现。示例结论为“数据究竟流向哪里，现在可以查清了”"
+---
+
 # B3 · 三段丝线图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/b3-thread-triptych.html"

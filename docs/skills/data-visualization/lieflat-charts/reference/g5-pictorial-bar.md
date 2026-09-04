@@ -1,3 +1,7 @@
+---
+description: "G5 · 象形柱状图：逐年计数（一个符号=固定数量）的 Glance 真实参考实现。示例结论为“每年种下多少棵树”"
+---
+
 # G5 · 象形柱状图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g5-pictorial-bar.html"
