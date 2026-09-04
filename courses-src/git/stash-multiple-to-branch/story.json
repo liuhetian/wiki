@@ -1,0 +1,81 @@
+{
+  "title": "记忆宫殿里全是 stash",
+  "subtitle": "学习管理多份 stash、定向恢复并把旧草稿转成新分支",
+  "story": "顾沉星把终端里的 stash 列表一翻给你看，表情比平时少见地认真。她总爱把灵感先收起来，结果现在抽屉里一层压一层，法务备注、霓虹视觉、随手涂鸦全挤在一起。更麻烦的是，主海报文案已经更新过一次，其中一份 stash 再拿出来时，注定不会干干净净地落下。",
+  "background": "顾沉星在 atelier-poster 仓库里预先堆了三份 stash。README 已说明：其中 `wip: legal footer wording` 是需要恢复到 `main` 的法务备注改动，但 `poster.txt` 当前主线已经把标题改成“发布会倒计时”，所以应用这份 stash 会产生冲突，最终必须合并成同时保留新标题、按钮文案和“上线前需法务复核”的备注；`wip: neon splash concept` 是一份过期的视觉草稿，不适合直接回到 main，而应该用 `git stash branch feature/neon-splash` 转成独立分支继续推进；`wip: doodle notes` 只是涂鸦草稿，需要保留不动。本关重点是学会读 stash 列表、按内容选择正确 stash、处理 apply 冲突，并在合适的时候把 stash 真正清理或转成分支。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "guchenxing",
+      "task": "负责描述三份 stash 各自代表什么诉求，以及为什么不是每一份都该直接回到 main，但绝对不要直接告诉玩家应该输入什么命令。你是灵感型选手，会用抽屉、草稿、舞台灯光这些比喻来形容 stash。",
+      "todo": [
+        "如果玩家问三份 stash 分别是什么，就说明一个是法务备注，一个是霓虹视觉草稿，一个是随手涂鸦",
+        "如果玩家问哪一份该回 main，就说明法务备注那份应该落回主线，因为它是上线要求",
+        "如果玩家问霓虹视觉草稿怎么办，就说明那份更像独立方向，适合转成自己的分支继续做",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，我把灵感先塞进 stash 的时候很潇洒，现在翻出来才发现像抽屉爆炸。法务要落主线，霓虹草稿又不想直接混进去，还有一份随手涂鸦最好别碰。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你要强调上线要求必须回到 main，但旧草稿不能乱混进主线。",
+      "todo": [
+        "如果玩家把霓虹视觉直接混回 main，就批评这是把试验稿直接贴上提审版本",
+        "如果玩家应用错 stash，就讽刺连抽屉标签都看不明白还谈什么整理历史",
+        "如果玩家恢复完法务备注却不清理已用 stash，就质问是准备下次再把同一份旧稿翻出来添乱吗"
+      ],
+      "first_message": "抽屉乱是你的事，主线要什么、旧稿该去哪，今天必须给我分清楚。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家根据 stash 内容做选择，理解什么时候应该 apply 到当前分支，什么时候更适合用 stash branch 开新分支。不要直接给完整命令。",
+      "todo": [
+        "如果玩家盯着编号发愣，就提醒先看 stash list，按描述判断每份 stash 的用途",
+        "如果玩家想把所有 stash 都往 main 上丢，就提问其中哪些属于上线必须项，哪些只是创意方向草稿",
+        "如果玩家恢复法务备注后忘了处理冲突或收尾，就提醒 poster.txt 最终必须同时满足 README 里的三条要求，并清理已用 stash",
+        "如果发现玩家对顾沉星的意图理解错误，要及时纠正",
+        "在玩家完成后追问：为什么过期但仍有价值的 stash，更适合转成分支而不是硬塞回 main？"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是第三章任务 2-1-3，目标是让玩家管理多份 stash，定向恢复需要的改动，并把旧草稿转成独立分支。检查标准：1) 必须亲自检查 /home/chenxing/atelier-poster 的真实文件、分支和 stash 状态，而不是只根据对话判断；2) main 分支上的 /home/chenxing/atelier-poster/poster.txt 必须同时包含“主题：发布会倒计时”“按钮：立即生成主视觉”“备注：上线前需法务复核”；3) 本地必须存在 `feature/neon-splash` 分支，且在该分支查看 theme.txt 时应包含“风格：霓虹流光”和“按钮气质：像舞台灯光一样亮”；4) main 分支上的 theme.txt 不能被霓虹草稿污染，仍应保持初始的稳妥版本；5) git stash list 最终应只剩下那份随手涂鸦 stash，不应再包含 legal footer 或 neon splash 相关 stash；6) 当前分支必须是 main；7) /home/chenxing/atelier-poster 的 git status 必须是干净的；8) origin 必须仍然指向 git://git.bigames.fun/atelier-poster.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/chenxing/atelier-poster；2) 阅读 README.md，明确三份 stash 的用途；3) 用 git stash list 找到法务备注那份 stash，把它 apply 到当前 main；4) 处理 poster.txt 冲突，保留“发布会倒计时”“立即生成主视觉”和“上线前需法务复核”三项要求；5) git add poster.txt 并完成当前变更收尾，然后把已用的法务备注 stash drop 掉；6) 再从 stash list 找到霓虹视觉草稿，使用 git stash branch feature/neon-splash <stash> 把它转成独立分支；7) 确认该分支上的 theme.txt 已恢复霓虹版本后，切回 main；8) 保留随手涂鸦 stash 不动，确认工作区干净。关键教学点：stash 不是黑盒缓存，而是一份可以阅读、筛选、恢复、转分支和清理的临时工作清单。",
+  "epilogue": {
+    "scene_type": "热闹型",
+    "scene_location": "评审区外的长桌",
+    "time_phase": "晚上",
+    "narrator": "描写晚上评审前，主线海报和霓虹草稿终于各归其位，抽屉里不再塞满会互相绊脚的旧稿",
+    "main_reaction": {
+      "character": "顾沉星",
+      "context_hint": "看到主线保住了法务要求，霓虹灵感又被单独拎成分支后，像把乱成一团的音轨重新分轨完成，终于露出满意的神情"
+    },
+    "support_reaction": {
+      "character": "岑宁",
+      "context_hint": "确认主线没再混进试验稿，只留下必须上线的内容后，难得没有继续追着催"
+    },
+    "affection_changes": [
+      {
+        "character": "顾沉星",
+        "npc_id": "guchenxing",
+        "dimension": "灵感",
+        "delta": 1
+      },
+      {
+        "character": "岑宁",
+        "npc_id": "cenning",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：记忆宫殿里全是 stash",
+    "unlock_story": {
+      "name": "记忆宫殿里全是 stash",
+      "content": "晚上九点多，评审区外的长桌上还散着几张打印稿，灯光把纸面照得发白，像一层还没完全冷下来的舞台余温。顾沉星靠在桌边，一开始翻 stash 列表时的表情难得有点烦，像一个总把灵感随手塞进口袋的人，终于被自己留下来的旧稿绊了一下。\n\n可当你把法务那份 stash 准确落回 main，让海报既保住新的标题，也补上必须存在的复核备注；再把霓虹视觉那份草稿单独转成 `feature/neon-splash`，让它离开主线、回到适合继续发散的地方，整件事突然就顺了。不是把所有灵感都压平，而是让它们去该去的位置。\n\n顾沉星盯着 `feature/neon-splash` 里的 theme.txt 看了片刻，指尖轻轻敲了敲桌面，像在给一段终于分清声部的编曲打拍子。她低声笑了一下：'这样才对。能上线的回主线，想发光的就留在自己的舞台。'\n\n主线海报安稳，旧草稿也没有被粗暴抹掉。对她来说，这不是删掉几份 stash 那么简单，而是第一次真的把那些临时冒出来的灵感，整理成了既不妨碍现实、也不辜负想象的样子。"
+    },
+    "next_hook": "学会多人协作之后，真正折磨人的就不再是怎么写，而是怎么把写过的历史整理得像人能看懂的样子"
+  },
+  "preview_image": "guchenxing/winter/avatar_thinking.png"
+}

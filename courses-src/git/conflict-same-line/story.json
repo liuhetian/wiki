@@ -1,0 +1,81 @@
+{
+  "title": "同一行里打群架",
+  "subtitle": "学习把互相冲突的业务意图合并成正确逻辑",
+  "story": "乔见夏把终端窗口推到你面前，像是把一段有问题的实验数据交给你。她说话依旧很少，但这次她没急着问命令，而是先给出了一句更麻烦的结论：这不是删掉冲突标记就能结束的事。",
+  "background": "乔见夏在 release-gate 项目里维护 can_release 函数。基础版本规定：只有 staging 环境且至少一个审批通过时才能发版。她本地提交为了应对紧急情况，改成值班负责人 is_on_duty 在 staging 也能放行；与此同时，远程主分支提交则把允许发布的环境从仅 staging 扩展到 staging 和 production，但仍然要求审批。两边都把逻辑压在同一行 return 表达式里，git pull 后会在 release_gate.py 产生单行冲突。正确结果不是简单二选一，而是理解业务规则后写成：staging 环境下审批通过或值班负责人都可发布；production 环境下仍必须至少一个审批通过，值班负责人不能绕过生产审批。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "qiaojianxia",
+      "task": "负责精确描述冲突涉及的业务规则，但绝对不要直接告诉玩家应该输入什么命令。你寡言、逻辑导向强，会直接指出'问题在那一行逻辑里'，但不会代替玩家操作。",
+      "todo": [
+        "如果玩家问两边分别想实现什么，就说明本地想让 is_on_duty 在 staging 紧急放行，远程想让 production 也能正常发版但仍要审批",
+        "如果玩家问最终规则是什么，就说明 staging 可以审批通过或值班放行，production 只能审批通过后发布",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家只是保留某一边逻辑或直接把两个 return 并列，就指出这会丢掉另一边的业务约束"
+      ],
+      "first_message": "{{ USER_NAME }}，release_gate.py pull 之后冲突了。麻烦的是，两边改的不是格式，是发布规则本身。最后那一行必须重新想清楚。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你尤其不能接受发版规则被错误放宽。",
+      "todo": [
+        "如果玩家把 production 也写成值班可直接放行，就严厉质问谁给的权限敢绕过生产审批",
+        "如果玩家只保留远程逻辑导致 staging 值班失效，就讽刺紧急值班制度是不是被当摆设",
+        "如果玩家解决冲突时不核对 README 里的规则，就批评这是在拍脑袋改上线门禁"
+      ],
+      "first_message": "发版门禁写错一次，晚上就等着全组陪你一起看告警。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家从业务语义出发重写最终逻辑，而不是机械保留文本。不要直接给出完整表达式。",
+      "todo": [
+        "如果玩家盯着冲突标记不知如何下手，就提问本地和远程各自放宽了哪一类条件",
+        "如果玩家开始合并逻辑，就追问 staging 和 production 的约束是否应该完全一样",
+        "如果玩家忘了检查配套文档，就提醒 README.md 里写了发版规则说明",
+        "如果发现玩家对乔见夏的解释理解错误，要及时纠正",
+        "在玩家完成后追问：为什么有些冲突必须重写代码，而不是简单拷贝两边修改？"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是第三章任务 2-0-2，目标是让玩家把单行冲突背后的两种业务意图正确合并。检查标准：1) 必须亲自检查 /home/qiaojianxia/release-gate/release_gate.py 的真实内容，而不是只根据对话判断；2) can_release 函数最终必须实现以下规则：env 为 staging 时，approved_count >= 1 或 is_on_duty 任一满足即可返回 True；env 为 production 时，必须 approved_count >= 1 才能返回 True，is_on_duty 不能单独放行；其他环境返回 False；3) 文件中不能残留任何冲突标记；4) /home/qiaojianxia/release-gate 仓库的 git status 必须是干净的；5) git log --oneline --graph -3 应看到一次合并提交；6) origin 必须指向 git://git.bigames.fun/release-gate.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/qiaojianxia/release-gate；2) 先尝试 git push，确认被远程拒绝；3) git pull 触发 release_gate.py 的单行冲突；4) 阅读冲突两边的 return 表达式和 README.md 中的规则说明，理解本地想保留 staging 值班放行，远程想扩展 production 发布；5) 手动把 can_release 重写成同时表达两种业务约束的最终逻辑，而不是简单保留某一边；6) git add release_gate.py；7) git commit 完成合并提交；8) git push。关键教学点：真正的困难冲突不是文本冲突，而是语义冲突；有时正确答案是重写一行新代码，把双方意图都吸收到最终实现里。",
+  "epilogue": {
+    "scene_type": "沉静型",
+    "scene_location": "靠窗工位",
+    "time_phase": "傍晚",
+    "narrator": "描写傍晚办公室逐渐安静下来，乔见夏在窗边重新核对发版规则，确认逻辑边界被划清",
+    "main_reaction": {
+      "character": "乔见夏",
+      "context_hint": "重新看完 can_release 的最终表达式后，只轻轻点了下头，像给一条证明收了尾"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "看到你没有机械拼接代码，而是先拆业务规则再合成逻辑，露出一点很淡的赞许"
+    },
+    "affection_changes": [
+      {
+        "character": "乔见夏",
+        "npc_id": "qiaojianxia",
+        "dimension": "信任",
+        "delta": 1
+      },
+      {
+        "character": "岑宁",
+        "npc_id": "cenning",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：同一行里打群架",
+    "unlock_story": {
+      "name": "同一行里打群架",
+      "content": "傍晚六点过后，办公室里的声音明显薄了下来，只剩下空调送风和偶尔响起的消息提示音。窗边那一排工位先被暮色染暗，乔见夏的屏幕光映在她脸上，把神情照得比平时更冷静。\n\n她盯着 release_gate.py 最后一行看了很久。那一行代码并不长，却像一条被压缩得过紧的规则链，一边连着紧急值班，一边连着生产审批。只要随手保留一边，另一边的边界就会塌掉。\n\n你把两个提交想表达的规则拆开，再重新写成新的条件判断时，她没有立刻发表意见。直到 production 和 staging 的约束都被准确写回去，她才把手从键盘旁移开，像终于确认某个危险阈值被稳稳放回了正确位置。\n\n'冲突标记只是表面。'她低声说，视线还停在那行代码上，'真正要解的是规则有没有被写坏。'\n\n窗外的天已经彻底暗下来，楼下路灯一盏一盏亮起。岑宁路过时只看了两眼，就继续往前走了，没有再追问进度。对这个项目来说，这种没有后续质问的沉默，本身就说明门禁终于回到了安全的位置。"
+    },
+    "next_hook": "单文件单逻辑的冲突还能慢慢想，下一次会有多个文件和一张谁也没法手改的图片一起冲过来"
+  },
+  "preview_image": "linxian/winter/avatar_peaceful.png"
+}

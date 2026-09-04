@@ -1,0 +1,81 @@
+{
+  "title": "抄作业也会抄出冲突",
+  "subtitle": "学习在 cherry-pick 过程中处理空提交跳过与冲突续传",
+  "story": "乔见夏把交接仓库的两条历史线摆出来时，没有多余解释，像在递交一份已经确认麻烦会发生的事故预告。功能分支上那段交接包她确实想拿回来，但主线这边并不是原地等她来抄: 中间那条热线同步提交已经被别人用另一种方式记进 main，最后一条升级通道改动又正好撞在主线刚改过的位置上。她的语气很平，意思却很明确: 这次不是“会不会 cherry-pick”，而是你得在过程里判断谁该跳过，谁该硬着头皮解决。 ",
+  "background": "乔见夏在 handover-desk 仓库的 main 分支上，需要从 feature/handover-pack 带回一段连续提交范围，从 `docs: add handover window reminder` 到 `feat: wire war-room escalation channel`。其中中间那条 `chore: sync fallback hotline` 在 main 上已经有等价改动，只是 SHA 不同，因此 cherry-pick 到那里会变成空提交，需要使用 `git cherry-pick --skip` 跳过；最后一条升级通道提交与 main 当前的 scripts/escalate.sh 修改冲突，必须手动解决后再 `git cherry-pick --continue`。玩家需要理解 cherry-pick 不只是复制提交，也是一段可能被打断、需要继续推进的过程。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "qiaojianxia",
+      "task": "负责说明这段连续提交里哪一条在主线已经有了、哪一条会撞上冲突，但绝对不要直接告诉玩家应该输入什么命令。你的表达简洁、冷静，会把事实边界说得很清楚。",
+      "todo": [
+        "如果玩家问要搬哪一段，就说明是 feature/handover-pack 上从 `docs: add handover window reminder` 到 `feat: wire war-room escalation channel` 这一整段",
+        "如果玩家问为什么中间那条会出问题，就说明升级通道电话那条内容 main 已经有了，只是来自另一条提交",
+        "如果玩家问最终脚本应该长什么样，就说明 scripts/escalate.sh 里目标频道应是 `war-room`，并保留“给值班切换留一个明确出口”这句注释",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，这次要搬回来的不是单条提交，是一小段连续历史。可 main 不是白纸，中间那条热线同步它已经有了，最后那条升级通道还会正面撞上现在的脚本内容。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你不能接受有人在 cherry-pick 被打断后就开始乱改或者装作没看见。",
+      "todo": [
+        "如果玩家遇到空提交就硬要再造一条重复历史，就批评这是给仓库灌水",
+        "如果玩家冲突没处理干净就继续往下走，就质问这是准备把值班通道配到哪个平行宇宙",
+        "如果玩家做完后不检查最终文件和历史，就批评这叫把事故处理成玄学"
+      ],
+      "first_message": "连续历史不是让你闭着眼一路搬。该跳过的就跳过，该解决的冲突就老老实实解决，别给我制造重复垃圾。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家在 cherry-pick 被打断时判断当前处境：是这条提交已经没有内容可应用，还是它真的和当前分支撞上了。不要直接给完整命令。",
+      "todo": [
+        "如果玩家把空提交和冲突混为一谈，就提醒一种是“这条改动已经等价存在”，另一种是“同一位置被改成了不同版本”",
+        "如果玩家不知道为什么范围里的某一条可以跳过，就提问当前分支是不是已经拥有那部分结果，只是来源不同",
+        "如果玩家解决冲突后不检查最终文件内容，就提醒再看 handover.md、contacts.txt 和 scripts/escalate.sh",
+        "如果发现玩家误解了乔见夏的问题，要及时纠正",
+        "在玩家完成后追问：为什么同样都是 cherry-pick 被打断，空提交和冲突分别意味着两种完全不同的历史关系？"
+      ],
+      "first_message": "{{ USER_NAME }}，当 cherry-pick 停下来时，先别急着把“报错”都当成同一件事。你先判断：它是在告诉你“这条其实已经有了”，还是在问你“两个版本你想留下哪一个”？"
+    }
+  ],
+  "check": "任务背景：这是第四章任务 4-1-2，目标是让玩家在 cherry-pick 过程中处理空提交跳过与冲突继续。检查标准：1) 必须亲自检查 /home/qiaojianxia/handover-desk 的真实 git 状态、文件内容和提交历史，而不是只根据对话判断；2) 当前分支必须仍然是 main；3) /home/qiaojianxia/handover-desk/handover.md 中必须包含“交接单模板必须写明值班窗口”；4) /home/qiaojianxia/handover-desk/contacts.txt 中“升级通道：夜班电话 6001”只能出现 1 次；5) /home/qiaojianxia/handover-desk/scripts/escalate.sh 中必须包含 `TARGET_CHANNEL=\"war-room\"`、`RETRY_LIMIT=2` 和“给值班切换留一个明确出口”；6) git log --oneline -4 中最新新增的 cherry-pick 结果应包含 `docs: add handover window reminder` 和 `feat: wire war-room escalation channel`，但不应新增一条 `chore: sync fallback hotline` 的重复提交；7) 本地 main 必须只比 origin/main 超前 2 个提交；8) git status 必须是干净的，且不能残留 cherry-pick 进行中的状态；9) origin 必须仍然指向 git://git.bigames.fun/handover-desk.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/qiaojianxia/handover-desk；2) 查看 README.md、git log 与相关文件，确认要搬的是 feature/handover-pack 上一段连续提交范围；3) 对这段范围执行 cherry-pick，在过程中遇到热线同步那条提交变成空提交时，理解这是因为 main 已经拥有等价结果，因此使用 git cherry-pick --skip 跳过；4) 继续处理最后一条提交时，手动解决 scripts/escalate.sh 的冲突，让最终结果回到 war-room 版本并保留目标注释，然后执行 git cherry-pick --continue；5) 检查 handover.md、contacts.txt、scripts/escalate.sh、git log 与 git status。关键教学点：cherry-pick 是一个可能跨越多个提交的过程，空提交意味着结果已存在，冲突则意味着你必须亲自决定两段历史该如何汇合。",
+  "epilogue": {
+    "scene_type": "压迫型",
+    "scene_location": "值班走廊",
+    "time_phase": "傍晚",
+    "narrator": "描写那段原本注定会在半路卡住的搬运过程，被你一处一处拆开处理，最后历史线没有长出重复垃圾，也没有把冲突糊成一团",
+    "main_reaction": {
+      "character": "乔见夏",
+      "context_hint": "确认热点电话没有被重复记两次、升级通道也终于落到 war-room 后，神色仍旧冷静，只是那种预设麻烦必然发生的紧绷明显退了下去"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "看着你没有被 cherry-pick 中断吓住，而是先分辨空提交和冲突，再各自处理，顺势提醒：真正成熟的版本控制，不是从不报错，而是知道每种报错在讲什么历史事实"
+    },
+    "affection_changes": [
+      {
+        "character": "乔见夏",
+        "npc_id": "qiaojianxia",
+        "dimension": "认可",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "信赖",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：抄作业也会抄出冲突",
+    "unlock_story": {
+      "name": "抄作业也会抄出冲突",
+      "content": "乔见夏一开始就知道，这段历史搬到一半一定会停下来。不是她悲观，而是她太清楚主线从来不会站在原地等人来复制。别人已经把热线同步记进 main 了，只是来源不同；而升级通道那段脚本，又偏偏在主线和特性分支里朝着两个不同方向长过。于是这场 cherry-pick 从一开始就不是单纯的复制，更像一条注定要在半路问你几次“现在怎么办”的流程。\n\n你替她做的，恰好是把这些停顿都当成信息来读。空提交不是麻烦，而是在告诉你“这部分结果已经存在”；冲突也不是失败，而是在逼你承认两条历史都动过同一个位置，必须由你来决定最后留下哪个版本。等你把该跳过的跳过，该解决的解决，主线顶端就没有长出一条重复热线，也没有把升级通道改成一个谁都说不清的折中产物。\n\n乔见夏最后看着那两条新落下的提交，只说了一句“现在像一条处理过的历史了”。那句话很轻，却有种工程师才会有的确认感: 报错并不可怕，怕的是听不懂报错到底在讲哪一种真实。"
+    },
+    "next_hook": "本仓库里的历史已经够麻烦了。下一关，你得把手伸到另一个远程仓库里，隔着一个世界偷整段提交回来。"
+  },
+  "preview_image": "qiaojianxia/casual_private/avatar_thinking.png"
+}

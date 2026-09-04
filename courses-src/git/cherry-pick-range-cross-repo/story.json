@@ -1,0 +1,83 @@
+{
+  "title": "跨仓偷梁换柱",
+  "subtitle": "学习从独立远程仓库 fetch 提交，并用 cherry-pick 范围搬运连续历史",
+  "story": "顾沉星把两个完全不相干的仓库摆在你面前时，神情像在策划一场只许精准、不许露痕迹的剪辑。主仓里缺一段支付隧道适配器，偏偏那段实现不在自己仓库历史上，而在另一个外部仓库里。更麻烦的是，她不是只想要其中一条提交: 那个适配器后面紧跟着一条环境变量说明，也得整段一起带回来；与此同时，另一个外部分支上还有一条回调文案修正，单独也要拿。她说得很平静，意思却很清楚: 这次你得先把别的世界接进来，再从那里有选择地偷历史。 ",
+  "background": "顾沉星在 payment-gateway 仓库的 main 分支上，需要从一个完全独立的远程仓库 git://git.bigames.fun/partner-snippets.git 提取提交。玩家必须先为当前仓库添加外部 remote 并 fetch，之后从外部分支 `feature/pay-tunnel` 中带回连续两条提交 `feat: add pay tunnel adapter` 和 `chore: document tunnel provider env`，而且范围必须包含第一条本身，因此需要使用 `A^..B` 而不是 `A..B`；此外，还要从 `hotfix/callback-copy` 分支上再 cherry-pick 一条 `docs: clarify callback confirmation copy`。`docs: archive abandoned sdk note` 是无关提交，不应该进入当前仓库。玩家需要理解：远程只是名字到 URL 的映射，而 cherry-pick 既可以拿单个提交，也可以拿连续范围。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "guchenxing",
+      "task": "负责说明自己想从外部仓库借哪几段历史，以及为什么其中一段必须成片搬回来，但绝对不要直接告诉玩家应该输入什么命令。你的表达会把仓库和分支比作不同片场的素材卷。",
+      "todo": [
+        "如果玩家问外部仓库在哪，就说明地址是 git://git.bigames.fun/partner-snippets.git",
+        "如果玩家问要拿哪些提交，就说明是 `feature/pay-tunnel` 上连续两条 `feat: add pay tunnel adapter`、`chore: document tunnel provider env`，以及 `hotfix/callback-copy` 上的 `docs: clarify callback confirmation copy`",
+        "如果玩家问什么不能拿，就说明 `docs: archive abandoned sdk note` 是废片，不该带回主仓",
+        "如果玩家问最终结果应该看到什么，就说明主仓需要多出 lib/pay_tunnel.js、env 示例里的 `TUNNEL_PROVIDER=trusted-channel`，以及回调文案说明那一行",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，这次缺的素材不在我们自己仓库里，在另一个片场。支付隧道那两条提交得成片一起带回来，回调文案那条又是另一卷素材，但我一点也不想把那份废弃 SDK 备注顺手夹进来。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你不能接受有人连外部仓库都接不进来，就开始空谈借代码。",
+      "todo": [
+        "如果玩家没添加外部 remote 就开始瞎猜提交，就批评这是把跨仓操作做成玄学召唤",
+        "如果玩家把废弃 SDK 备注也带回主仓，就嘲讽这是偷梁换柱还顺手把建筑垃圾一起拖回来",
+        "如果玩家用错范围语法，导致连续两条里少拿第一条，就质问适配器本体去哪了",
+        "如果玩家做完后不检查 remote、文件内容和历史，就批评这是只顾表演，不顾落地"
+      ],
+      "first_message": "跨仓抄东西至少先把路搭通。连 remote 都没管明白，就别跟我说你能从别的仓库精准偷回什么。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家先理解外部 remote 只是另一个名字指向的新来源，再思考单提交和连续范围的差别。不要直接给完整命令。",
+      "todo": [
+        "如果玩家不知道为什么要先 fetch，就提醒当前仓库必须先拿到外部仓库的引用和提交对象，才谈得上 cherry-pick",
+        "如果玩家对 `A..B` 和 `A^..B` 混淆，就提问你想搬的那段范围，是否需要把第一条提交本身也包含进来",
+        "如果玩家做完后不检查 remote 配置和文件内容，就提醒再看 git remote -v、git log、lib/pay_tunnel.js、config/payment.env.example 与 docs/integration_note.md",
+        "如果发现玩家误解了顾沉星的问题，要及时纠正",
+        "在玩家完成后追问：为什么远程仓库看起来像“另一个世界”，但在 Git 里其实也只是你本地认识的另一组引用？"
+      ],
+      "first_message": "{{ USER_NAME }}，别急着把“外部仓库”想得太神秘。先想清楚：它对 Git 来说，究竟是一个完全不同的宇宙，还是你还没给当前仓库登记进来的另一组引用？"
+    }
+  ],
+  "check": "任务背景：这是第四章任务 4-1-3，目标是让玩家从独立远程仓库 fetch 提交，并用 cherry-pick 单提交与范围语法搬运历史。检查标准：1) 必须亲自检查 /home/chenxing/payment-gateway 的真实 git 状态、remote 配置、文件内容和提交历史，而不是只根据对话判断；2) 当前分支必须仍然是 main；3) 仓库里必须存在名为 partner 的 remote，且它的 URL 必须是 git://git.bigames.fun/partner-snippets.git；4) /home/chenxing/payment-gateway/lib/pay_tunnel.js 必须存在，并包含 `return \"trusted-channel\";`；5) /home/chenxing/payment-gateway/config/payment.env.example 中必须包含 `TUNNEL_PROVIDER=trusted-channel`；6) /home/chenxing/payment-gateway/docs/integration_note.md 中必须包含“回调文案需标注：异步到账以网关确认页为准”；7) 仓库中不应存在 notes/abandoned_sdk.txt；8) git log --oneline -5 中必须能看到 `feat: add pay tunnel adapter`、`chore: document tunnel provider env` 和 `docs: clarify callback confirmation copy` 这 3 条新增提交；9) 本地 main 必须只比 origin/main 超前 3 个提交；10) git status 必须是干净的；11) origin 必须仍然指向 git://git.bigames.fun/payment-gateway.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/chenxing/payment-gateway；2) 根据 README.md 先给当前仓库添加外部 remote，例如命名为 partner，并 fetch 这个远程，让外部分支引用进入本地可见范围；3) 查看 partner/feature/pay-tunnel 与 partner/hotfix/callback-copy 的提交历史，确认要带回的是连续两条 pay-tunnel 提交，以及单独一条回调文案提交；4) 对 pay-tunnel 那段连续历史使用包含起点的范围语法，也就是从第一条提交的父提交开始到第二条结束，把两条一起 cherry-pick 到 main；5) 再 cherry-pick `docs: clarify callback confirmation copy`；6) 检查 remote、git log、lib/pay_tunnel.js、config/payment.env.example、docs/integration_note.md，确认无关的废弃 SDK 备注没有进入主仓。关键教学点：跨仓操作的前提是先把外部远程接入并 fetch；而 cherry-pick 的范围语法必须根据“是否包含起点提交本身”来选择。",
+  "epilogue": {
+    "scene_type": "反差型",
+    "scene_location": "评审区",
+    "time_phase": "夜里",
+    "narrator": "描写两个原本互不相干的仓库历史，经过你有节制的接线与搬运，只在主仓里留下三段真正需要的痕迹，像把外片素材裁成了恰到好处的嵌入镜头",
+    "main_reaction": {
+      "character": "顾沉星",
+      "context_hint": "看到 pay tunnel 适配器、环境变量说明和回调文案都落在主仓里，而废弃 SDK 备注仍老老实实留在外部仓库，她的神情像终于认可这次偷梁换柱做得够干净"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "确认你先接入远程、再精确搬运单提交与连续范围，才慢慢点出：所谓“跨仓”看着像跨世界，其实只是你有没有把另一个来源纳入自己当前的坐标系"
+    },
+    "affection_changes": [
+      {
+        "character": "顾沉星",
+        "npc_id": "guchenxing",
+        "dimension": "灵感",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：跨仓偷梁换柱",
+    "unlock_story": {
+      "name": "跨仓偷梁换柱",
+      "content": "顾沉星看着主仓里新长出来的那几条提交，像在打量一段从别的片场借来的素材最终有没有剪进正确的位置。她最初把两个仓库摆到你面前时，并不是单纯想让你“抄点代码回来”。真正难的是，外部仓库里既有她想要的支付隧道适配器和环境变量说明，也有完全不该被带进来的废弃 SDK 备注。你必须先把那个来源接进当前仓库的视野里，再从一整段并不属于自己的历史中，只挑走它现在真正需要的那几帧。\n\n你做的不是偷懒式复制，而是一种很克制的搬运。先给主仓认识那个名为 partner 的外部来源，再 fetch，让那些原本遥远的提交对象在本地变得可见、可选、可判断。然后用一段包含起点的范围，把连续两条真正有价值的提交一起摘回来，再把回调文案那条单独补上。至于那份废弃 SDK 备注，则被你稳稳留在外部仓库里，没有让主仓多长一片无关阴影。\n\n等 `pay_tunnel.js`、环境变量说明和回调文案都落到位，顾沉星终于像看见一段跨片场借来的镜头被剪得既准确又干净。那一刻你也会明白，所谓跨仓从来不是魔法，它只是 Git 在提醒你：世界可以很多，但你要知道自己究竟在把哪一段历史接进当前这条时间线。"
+    },
+    "next_hook": "第四章的时间线已经被你玩得够熟了。下一课开始，真正的后悔药会把“以为丢了”的历史整个捞回来。"
+  },
+  "preview_image": "guchenxing/casual_private/avatar_peaceful.png"
+}

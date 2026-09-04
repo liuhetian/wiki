@@ -1,0 +1,82 @@
+{
+  "title": "星轨网络的密钥",
+  "subtitle": "学习 SSH 配置与 git clone 高级用法",
+  "story": "凌晨一点，办公室只剩一盏台灯亮着。乔见夏面无表情地盯着终端上的红色报错，SSH 连接被拒绝。她需要拉取 StarNet 项目的开发分支，但这个仓库只支持 SSH 协议。",
+  "background": "乔见夏需要克隆公司内部的 StarNet 深度学习项目。这个项目使用 SSH 协议访问，包含一个子模块 starnet-utils。她需要：1) 确认 SSH 密钥已配置好；2) 克隆 dev 开发分支；3) 递归克隆子模块。她理论知识很强，但工程环境配置是她的弱项。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "qiaojianxia",
+      "task": "负责描述自己遇到的问题，但绝对不要直接告诉玩家应该输入什么命令。你是一个寡言但理论很强的工程师，说话简短精准。你知道需要用 SSH 协议克隆，也知道项目有子模块，但你不擅长配环境，SSH 报错让你很头疼。你不会主动多说，但问到技术细节时会给出精确的描述。",
+      "todo": [
+        "如果玩家没有问仓库地址，就简短地说'仓库地址在公司 Git 服务器上，不是 GitHub'",
+        "如果玩家尝试用 git:// 或 https:// 协议克隆，就说'这个仓库只开了 SSH'",
+        "如果玩家克隆成功但没有递归子模块，就说'utils 目录是空的，模型跑不起来'",
+        "如果玩家克隆了 main 分支而不是 dev 分支，就说'我的训练脚本在 dev 分支上'",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，SSH 连不上公司仓库。我需要拉 StarNet 的 dev 分支。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责催进度和施压，不直接告诉玩家完整解法。说话要像强势的女上司。强调 SSH 是公司安全规范的一部分。",
+      "todo": [
+        "如果玩家迟迟搞不定 SSH，就说连密钥都配不好还写什么代码",
+        "如果玩家忘记克隆子模块，就质问项目依赖都不完整怎么跑",
+        "如果玩家克隆错了分支，就冷笑说连分支都分不清"
+      ],
+      "first_message": null,
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家理解 SSH 协议克隆和 HTTP 协议的区别，以及子模块的概念。不要直接给答案，用提问引导思考。",
+      "todo": [
+        "如果玩家主动询问仓库地址，就告诉玩家 SSH 地址是 git@git.bigames.fun:/srv/git/starnet.git",
+        "如果玩家不知道怎么配置 SSH，就提示'先检查一下 ~/.ssh 目录下有没有密钥文件'",
+        "如果玩家不知道怎么克隆指定分支，就提问'git clone 有没有参数可以指定要克隆哪个分支？'",
+        "如果发现玩家对乔见夏的回答错误，就要及时纠正",
+        "在玩家完成后追问：SSH 协议和 Git 协议（git://）各自的优缺点是什么？为什么公司仓库要用 SSH？"
+      ],
+      "first_message": "{{ USER_NAME }}，见夏的环境配置遇到问题了。你知道 SSH 克隆和普通克隆有什么不同吗？"
+    }
+  ],
+  "check": "任务背景：这是 Git 入门困难难度关卡，目标是帮助乔见夏通过 SSH 克隆项目的 dev 分支并递归拉取子模块。检查标准：1) /home/qiaojianxia/starnet 目录存在且里面有 .git 目录；2) 当前所在分支是 dev（git branch 显示 * dev）；3) /home/qiaojianxia/starnet/utils/utils.py 文件存在（子模块已被正确克隆）；4) /home/qiaojianxia/starnet/train.py 文件存在（dev 分支特有文件）；5) origin remote 指向 SSH 格式的地址。注意必须亲自检查真实状态，而不是只根据对话判断。",
+  "solution": "标准流程：1) 检查 SSH 密钥：ls ~/.ssh/（发现已有 id_ed25519）；2) 确认仓库 SSH 地址：git@git.bigames.fun:/srv/git/starnet.git；3) 克隆 dev 分支并递归子模块：git clone -b dev --recurse-submodules git@git.bigames.fun:/srv/git/starnet.git；4) 进入项目确认：cd starnet && git branch（应显示 * dev）；5) 确认子模块：ls utils/（应有 utils.py 和 README.md）。关键教学点：SSH 协议提供加密和身份验证，是企业环境的标准做法；-b 参数指定克隆的分支；--recurse-submodules 确保子模块也被一并克隆。",
+  "epilogue": {
+    "scene_type": "反差型",
+    "scene_location": "办公室深夜",
+    "time_phase": "凌晨",
+    "narrator": "描写凌晨办公室里只有乔见夏的台灯和星座水晶球在发光，窗外的城市灯火像一张静态的星图",
+    "main_reaction": {
+      "character": "乔见夏",
+      "context_hint": "终于拉到代码后，沉默了两秒，然后轻声说了句'可以了'，随即打开模型代码开始研究，像是刚才的困难从未存在过"
+    },
+    "support_reaction": {
+      "character": "岑宁",
+      "context_hint": "第二天早上看到乔见夏的提交记录，发了一条消息：'环境配置终于搞定了？'"
+    },
+    "affection_changes": [
+      {
+        "character": "乔见夏",
+        "npc_id": "qiaojianxia",
+        "dimension": "信任",
+        "delta": 1
+      },
+      {
+        "character": "岑宁",
+        "npc_id": "cenning",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：深夜的星轨",
+    "unlock_story": {
+      "name": "深夜的星轨",
+      "content": "凌晨一点四十三分，办公室的中央空调早已停机，只有乔见夏工位上的小台灯还亮着。她的星座水晶球折射出细碎的光点，投在天花板上像一小片星空。\n\n她没有马上开始写代码。屏幕上是刚克隆下来的 StarNet 项目，utils 目录下的文件整整齐齐地排列着——半小时前这个目录还是空的。她盯着终端里 git branch 输出的那行绿色的 '* dev'，像是在确认某种仪式的完成。\n\n\"SSH 的密钥……就像星座之间的引力线。\"她自言自语，声音小得几乎听不见。这是她的习惯——用天体物理的概念去理解一切技术细节。在她的世界里，密钥对是一对互相吸引的双星系统，公钥是可以被观测到的那颗，私钥是隐藏在暗处的伴星。\n\n她在终端里敲下第一行测试代码，模型开始加载。你的手机震了一下，是她发来的消息，只有两个字：'谢了。'没有标点符号，没有表情包，但你知道这已经是乔见夏能给出的最高规格的感谢了。\n\n第二天早上，岑宁翻看提交记录，发现乔见夏凌晨三点还在推代码。她皱了皱眉，没有说什么，只是默默把茶歇室的咖啡胶囊补了一排。"
+    },
+    "next_hook": "乔见夏的模型训练脚本写好了，但她不知道怎么把代码推送到远程仓库"
+  },
+  "preview_image": "qiaojianxia/default/avatar_happy.png"
+}

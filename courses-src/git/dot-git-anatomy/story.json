@@ -1,0 +1,81 @@
+{
+  "title": "掀开 .git 的天灵盖",
+  "subtitle": "学习观察 `.git` 结构、体验误删后重建仓库",
+  "story": "傍晚前的办公室有种将暗未暗的静。乔见夏把电脑转向你，语气一如既往地平，可你能听出她这次在意的不是文件内容，而是一个更底层的问题。她说自己明明刚看过仓库里那些隐藏结构，转眼一场误删就让整个目录重新变回了普通文件夹。代码没丢，但 Git 的记忆像被整块拔掉了。",
+  "background": "乔见夏在 `telemetry-probe` 目录里准备从零建立一个新项目，并把结果推送到远程空仓库 `git://git.bigames.fun/telemetry-probe.git`。这次不只是要完成 init、commit、remote 和 push，还要先观察 `.git` 目录中的 HEAD、objects、refs 这些关键位置，理解仓库身份藏在哪里。目录里还放了一个 `accident.sh`，执行后会模拟误删 `.git`，让当前目录瞬间失去 Git 身份。玩家需要亲眼看到这种后果，再重新初始化仓库、重新提交并推送。本关重点是把“Git 的本质是 `.git` 目录”这句话，变成一次真正看得见、摸得着的体验。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "qiaojianxia",
+      "task": "负责精确描述自己想确认 `.git` 到底存着什么，以及误删后目录为什么会突然'失忆'，绝对不要直接告诉玩家应该输入什么命令。你说话简洁，会把 `.git` 形容成仓库的记忆层。",
+      "todo": [
+        "如果玩家问这次为什么比普通建仓多一步，就说明自己想先看看 `.git` 里面到底放了什么，尤其是 HEAD、objects、refs 这些位置",
+        "如果玩家问 accident.sh 是做什么的，就说明那是模拟误删 `.git` 的事故脚本，执行后当前目录会暂时失去 Git 身份",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家已经恢复仓库并推送成功，就总结代码文件虽然还在，但仓库历史和连接都是靠 `.git` 重新建立的"
+      ],
+      "first_message": "{{ USER_NAME }}，我想确认一件事：Git 的'记忆'到底是不是全在 `.git` 里。这个目录我还没正式推上去，旁边放着个会误删 `.git` 的事故脚本。想看明白，就得先看见它怎么消失，再把它重新建回来。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你要强调理解底层不是装深沉，而是出事故时必须能把仓库救回来。",
+      "todo": [
+        "如果玩家不去确认 `.git` 里到底有什么，就批评这叫背概念，不叫理解仓库",
+        "如果玩家误删后只盯着文件没发现仓库身份已经没了，就讽刺连项目失忆了都看不出来",
+        "如果玩家重建后忘了重新接回远程并推送，就质问你救回来的到底是仓库还是一堆普通文件"
+      ],
+      "first_message": "会背 `.git` 很重要吗？重要。因为真出事的时候，你得把仓库自己救回来。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家把 `.git` 里的关键目录和仓库身份联系起来，并理解误删后为什么必须重新 init、重新建立 remote。不要直接给出整套命令。",
+      "todo": [
+        "如果玩家还没观察 `.git` 就想直接做完，就提问 HEAD、objects、refs 分别像仓库的哪部分骨架",
+        "如果玩家执行事故脚本后发愣，就提问现在项目文件还在，可为什么 Git 却已经不认识这个目录了",
+        "如果玩家重新建完仓库却停在本地，就提问旧的远程连接在 `.git` 丢失后还会不会自动保留",
+        "如果发现玩家对乔见夏的描述理解错误，要及时纠正",
+        "在玩家完成后追问：为什么说删掉 `.git`，丢掉的不只是提交历史，还包括整个仓库身份？"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是第二章任务 1-0-2，目标是让玩家观察 `.git` 结构，体验误删 `.git` 的后果，再重新建仓并推送。检查标准：1) 必须亲自检查 /home/qiaojianxia/telemetry-probe 的真实状态，而不是只根据对话判断；2) /home/qiaojianxia/telemetry-probe/.git 必须最终存在，说明仓库已被重新建立；3) /home/qiaojianxia/.task1-0-2-git-lost 标记文件必须存在，说明玩家确实执行过事故脚本体验过 `.git` 丢失；4) /home/qiaojianxia/telemetry-probe 中的 README.md、collector.py、notes.md 必须都已被提交，git status 必须是干净的；5) origin 必须指向 git://git.bigames.fun/telemetry-probe.git；6) 当前分支必须是 main；7) 远程 origin/main 上必须已经存在重建后的首次提交。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/qiaojianxia/telemetry-probe；2) 用 git init 初始化仓库；3) 先通过 ls -a、查看 `.git/HEAD`、`.git/objects`、`.git/refs` 等方式观察仓库结构；4) 执行 ./accident.sh，模拟误删 `.git`，并确认此时 git status 已经不能识别该目录；5) 再次 git init 重新创建 `.git`；6) git add README.md collector.py notes.md；7) git commit 完成重建后的首次提交；8) git remote add origin git://git.bigames.fun/telemetry-probe.git；9) git push -u origin main。关键教学点：项目文件本身不等于 Git 仓库；真正让目录拥有版本历史、引用关系和远程配置的，是隐藏的 `.git` 目录。",
+  "epilogue": {
+    "scene_type": "沉静型",
+    "scene_location": "靠窗工位",
+    "time_phase": "傍晚",
+    "narrator": "描写傍晚光线压低后，仓库在失去记忆又被重新建立后的安静收束感",
+    "main_reaction": {
+      "character": "乔见夏",
+      "context_hint": "确认 `.git` 回来、远程也重新接上之后，只轻轻点了一下头，像完成一场把抽象概念拆开再装回去的实验"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "看到她不是只背结论，而是真的走完了一次'失去仓库身份再重建'的过程，也难得露出一点很淡的赞许"
+    },
+    "affection_changes": [
+      {
+        "character": "乔见夏",
+        "npc_id": "qiaojianxia",
+        "dimension": "信任",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：掀开 .git 的天灵盖",
+    "unlock_story": {
+      "name": "掀开 .git 的天灵盖",
+      "content": "傍晚的光落到工位区时，总会把一切边缘压得更安静一些。乔见夏看着重新出现的 `.git` 目录，没有立刻移开视线，像是在等一个结论彻底沉到底。\n\n她以前当然知道 Git 仓库里有个隐藏目录，也知道那里面放着提交、引用和配置。可知道和真正经历过，终究不是一回事。直到 `accident.sh` 把 `.git` 整个拿走，项目文件还原封不动地躺在原地，Git 却像突然失忆一样不再认识这个目录，她才第一次把那句话真正看清楚：原来代码只是躯体，仓库的记忆和身份，确实都在那层平时不声不响的隐藏结构里。\n\n重新 `init`、重新提交、重新接回远程的过程并不戏剧化，甚至有点冷静得过分。可也正因为如此，这个概念才显得更扎实。不是靠一句解释，而是靠一次完整的丢失和恢复，把抽象的原理压成了具体的手感。\n\n林弦站在她身后看了一会儿，只说：'你现在记住的，不会再只是定义。'\n\n乔见夏没有接这句，只把终端窗口收好，确认状态干净、远程分支也在。窗外天色已经慢慢落下去，楼下的路灯一盏盏亮起来。她低声说了一句很轻的话，几乎像在对自己做记录：'仓库不是文件夹加一点运气。它要先有记忆。'\n\n那句话落下来之后，整件事才像真正完成。"
+    },
+    "next_hook": "当你开始知道修改到底待在仓库的哪一层，Git 的三区模型才会真正长出骨架"
+  },
+  "preview_image": "qiaojianxia/casual_private/avatar_happy.png"
+}

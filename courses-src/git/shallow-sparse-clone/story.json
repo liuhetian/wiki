@@ -1,0 +1,89 @@
+{
+  "title": "调色板里的灵感",
+  "subtitle": "学习浅克隆、稀疏检出与历史恢复",
+  "story": "顾沉星戴着耳机，手指在桌上打着只有她能听到的节拍。她需要拉取 Palette-AI 项目的模型代码，但整个仓库塞满了巨大的素材文件，全部克隆要等到天荒地老。",
+  "background": "顾沉星需要拉取 Palette-AI 项目来继续她的'色彩音乐理论'研究。但这个仓库非常大（assets 目录占了大部分体积），全量克隆太慢了。她只需要 models/ 目录下的代码。但是，她之前写过一个灵感笔记提交到了仓库里，需要在 git log 中找到那次提交的记录来回忆之前的思路。这要求她先浅克隆节省时间，用 sparse-checkout 只检出 models/ 目录，最后 unshallow 恢复完整历史来查看 log。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "guchenxing",
+      "task": "负责描述自己的需求和遇到的问题，但绝对不要直接告诉玩家应该输入什么命令。你是一个创意型的人，说话跳跃、爱用比喻。你知道仓库很大、你只需要模型代码、你还需要找到之前的灵感笔记。但你不知道具体该怎么操作。描述问题时用你独特的比喻风格。",
+      "todo": [
+        "如果玩家没有问仓库地址，就说'那个项目在公司服务器上，不是 GitHub 上的开源项目'",
+        "如果玩家直接 git clone 不带任何参数，就说'等太久了，这仓库里有一堆素材文件，像塞满了颜料的画箱'",
+        "如果玩家浅克隆后想看完整 log 但看不到，就说'我之前写的灵感笔记的提交记录不见了，那可是最重要的和弦啊'",
+        "如果玩家检出了全部文件而不是只检出 models 目录，就说'我只需要模型那个文件夹，其他的都是噪音'",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，Palette-AI 仓库太大了，克隆半天都没完。我只想要 models 那部分代码，有没有办法只下载一部分？",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责催进度和施压，不直接告诉玩家完整解法。说话要像强势的女上司。对'浪费带宽和磁盘空间'特别敏感。",
+      "todo": [
+        "如果玩家直接全量克隆，就质问'公司带宽不要钱？几个 G 的素材文件你也要全拉下来？'",
+        "如果玩家折腾很久还没搞定，就催促'一个克隆操作要搞多久'",
+        "如果玩家成功完成了浅克隆但还没开始 sparse-checkout，就追问'代码拿到了吗'"
+      ],
+      "first_message": null,
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家理解浅克隆、sparse-checkout 和 unshallow 的概念。不要直接给出完整命令，用提问引导玩家一步步解决。",
+      "todo": [
+        "如果玩家主动询问仓库地址，就告诉玩家地址是 git://git.bigames.fun/palette-ai.git",
+        "如果玩家不知道怎么加速克隆，就提问'如果你不需要全部历史记录，Git 有没有办法只下载最新的一次提交？'",
+        "如果玩家浅克隆成功了但不知道怎么只检出部分目录，就提问'git sparse-checkout 听说过吗？它可以让你只检出仓库的某些目录'",
+        "如果玩家需要查看完整历史但浅克隆里没有，就提问'浅克隆省了时间但也丢了历史，有没有办法把丢掉的历史补回来？'",
+        "如果发现玩家对顾沉星的回答错误，就要及时纠正",
+        "在玩家完成后追问：浅克隆适合什么场景？什么场景下不应该用浅克隆？"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是 Git 入门地狱难度关卡，目标是帮助顾沉星高效克隆大型仓库并查看完整历史。检查标准：1) /home/chenxing/palette-ai 目录存在且有 .git 目录；2) /home/chenxing/palette-ai/models/ 目录下有 generator.py、train.py、discriminator.py、creative_notes.md 等文件；3) 执行 git log --oneline 能看到完整的提交历史（至少7条提交记录），说明已经 unshallow；4) origin remote 指向 git://git.bigames.fun/palette-ai.git。注意必须亲自检查真实状态，而不是只根据对话判断。",
+  "solution": "标准流程：1) 确认仓库地址：git://git.bigames.fun/palette-ai.git；2) 浅克隆：git clone --depth 1 git://git.bigames.fun/palette-ai.git；3) 进入目录：cd palette-ai；4) 开启 sparse-checkout：git sparse-checkout init --cone；5) 设置只检出 models 目录：git sparse-checkout set models；6) 确认 models 目录存在且 assets 等大目录不存在：ls；7) 查看 git log 发现只有一条记录（浅克隆的限制）；8) 恢复完整历史：git fetch --unshallow；9) 再次查看 git log --oneline，能看到全部7条提交历史，找到'顾沉星的色彩音乐理论灵感'那条记录。关键教学点：--depth 1 只下载最新快照，大幅减少传输量；sparse-checkout 让工作区只显示需要的目录；fetch --unshallow 可以在需要时补全历史，三者组合是处理大型仓库的标准策略。",
+  "epilogue": {
+    "scene_type": "轻松型",
+    "scene_location": "茶歇室",
+    "time_phase": "下午",
+    "narrator": "描写顾沉星在茶歇室里一边听音乐一边翻看 git log 的场景，阳光透过百叶窗在她的笔记本上画出条纹",
+    "main_reaction": {
+      "character": "顾沉星",
+      "context_hint": "找到自己之前的灵感笔记后兴奋地打了个响指，开始哼歌，拿着笔记本跑回工位继续研究"
+    },
+    "support_reaction": {
+      "character": "岑宁",
+      "context_hint": "路过茶歇室看到顾沉星在哼歌，翻了个白眼但没说什么"
+    },
+    "affection_changes": [
+      {
+        "character": "顾沉星",
+        "npc_id": "guchenxing",
+        "dimension": "依赖",
+        "delta": 1
+      },
+      {
+        "character": "顾沉星",
+        "npc_id": "guchenxing",
+        "dimension": "灵感",
+        "delta": 1
+      },
+      {
+        "character": "岑宁",
+        "npc_id": "cenning",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：调色板里的和弦",
+    "unlock_story": {
+      "name": "调色板里的和弦",
+      "content": "下午四点的茶歇室里，顾沉星占据了靠窗的小圆桌，笔记本电脑前摊着一堆彩色便利贴。她的耳机线垂在肩膀上，隐约能听到里面传出的爵士乐。\n\n她反复翻着 git log 的输出，终于找到了那条提交——'顾沉星的色彩音乐理论灵感'。她打了一个响指，声音清脆得把隔壁桌的同事吓了一跳。\n\n\"找到了！\"她小声欢呼，眼睛亮得像发现了新和弦的作曲家。便利贴上开始出现新的涂鸦：RGB 色环旁边画着五线谱，C 大调的音阶和暖色系用箭头连在一起，旁边潦草地写着'和弦进行 = 配色渐变？'\n\n你好奇地凑过去看了一眼，她立刻把便利贴护住，然后又想了想，大方地摊开来：'欸你听我说这个思路超酷的——如果把 loss function 里加一个音乐和谐度的正则项……'她越说越快，手指在桌上打着节拍，仿佛那不是一个数学公式而是一段即兴 solo。\n\n岑宁端着咖啡路过，看了一眼满桌的便利贴和手舞足蹈的顾沉星，翻了个白眼。但她没有阻止，甚至脚步放慢了一些。走远之后，她低声对手机那头说了句：'那个会画画的实习生，脑子倒是转得快。'\n\n你回到工位时收到了顾沉星的消息——一个音符 emoji，后面跟着一句'多谢前辈教我那个 sparse-checkout，省了我半小时等仓库下载的时间，这半小时刚好够我把新想法整理出来'。"
+    },
+    "next_hook": "顾沉星把灵感变成了代码，但她不知道怎么把修改提交到仓库里"
+  },
+  "preview_image": "cenning/default/avatar_depressed.png"
+}

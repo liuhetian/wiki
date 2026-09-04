@@ -1,0 +1,80 @@
+{
+  "title": "密钥删了 但没完全删",
+  "subtitle": "学习区分 git rm 与 git rm --cached，并理解已推送后的清理边界",
+  "story": "乔见夏把仓库状态一项项列给你听，语气平得近乎冷静，但越平越说明事情不小。`.env`、`db.sqlite3` 和 `run.log` 已经一起被推上了远程。现在她要处理的不是“删一个文件”这么简单，而是三种完全不同的去留规则。",
+  "background": "乔见夏在 `/home/qiaojianxia/night-watch` 中维护一个已经推送过的仓库，origin 指向 `git://git.bigames.fun/night-watch.git`。最近一次历史把 `.env`、`db.sqlite3` 和 `run.log` 都提交并推送到了远程。现在要求如下：`.env` 和 `db.sqlite3` 必须保留在本地机器中继续使用，但停止被 Git 跟踪；`run.log` 则应该从工作区和仓库里一起删除；清理完成后还需要把忽略规则补齐并把这次清理提交推送出去。本关重点是让玩家理解：`git rm` 会删工作区和暂存区，`git rm --cached` 只会停止跟踪；而文件一旦已经 push，普通删除只能修正“后续状态”，不能抹掉过去的历史记录。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "qiaojianxia",
+      "task": "负责精确描述三个文件的不同处理要求，绝对不要直接告诉玩家应该输入什么命令。你说话简洁，会把这件事概括成“同样是删除，层级不一样”。",
+      "todo": [
+        "如果玩家问三个文件分别怎么处理，就说明 `.env` 和 db.sqlite3 要继续留在本地，run.log 则不需要留",
+        "如果玩家问为什么还麻烦，就说明这些文件已经 push 过了，所以这次清理只是在当前版本止血，历史里那次暴露并不会自动消失",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家完成后，就总结这次真正难的不是删文件，而是分清每个文件该从哪一层退出"
+      ],
+      "first_message": "{{ USER_NAME }}，这次不是一个命令能糊过去的事。`.env`、`db.sqlite3`、`run.log` 都已经推上去了，但它们应该退出 Git 的层级并不一样。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你要强调已经推上远程的事故，至少要先把当前主线止血。",
+      "todo": [
+        "如果玩家把 `.env` 或 db.sqlite3 真删没了，就质问线上配置靠什么跑",
+        "如果玩家把 run.log 留在仓库里，就批评这叫继续往历史上倒垃圾",
+        "如果玩家以为这次提交就能抹掉过去那次泄露，就提醒人先把认知修好"
+      ],
+      "first_message": "已经推上去的事故抹不掉，但至少你该先把现在这条主线收干净。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家按文件区分退出方式，并理解“已推送后的清理”和“彻底改写历史”是两件事。不要直接给出完整命令。",
+      "todo": [
+        "如果玩家分不清 `git rm` 和 `git rm --cached`，就提问哪些文件需要继续留在工作目录里",
+        "如果玩家忘了补 .gitignore，就提醒只停止追踪一次还不够，之后还要防止它们再次被加入",
+        "如果玩家完成后，就追问：为什么这次 push 之后，远程当前版本已经干净了，但过去那次提交仍然客观存在",
+        "如果发现玩家对乔见夏的描述理解错误，要及时纠正"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是第二章任务 1-1-2，目标是对三个已推送文件做分层清理。检查标准：1) 必须亲自检查 /home/qiaojianxia/night-watch 的真实状态，而不是只根据对话判断；2) origin 必须指向 git://git.bigames.fun/night-watch.git；3) .env 和 db.sqlite3 必须继续存在于 /home/qiaojianxia/night-watch 工作区，但不能再出现在 git ls-files 中；4) run.log 必须从工作区中删除，且不能再被 Git 跟踪；5) .gitignore 必须包含 .env、db.sqlite3 和 run.log；6) 本地 git status 必须是干净的；7) 远程 origin/main 的最新提交中不应再跟踪这三个文件；8) 当前分支必须是 main。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/qiaojianxia/night-watch；2) 先用 git status、git ls-files 理清三个文件现在都处于被跟踪状态；3) 对 `.env` 和 `db.sqlite3` 使用 git rm --cached，让它们退出版本控制但保留本地文件；4) 对 run.log 使用 git rm，让它同时退出工作区和 Git 跟踪；5) 把这三个名字写进 .gitignore；6) 提交这次清理；7) 推送到 origin/main。关键教学点：同样叫“删除”，Git 里至少分成删除工作区、删除暂存区/跟踪关系、以及理解历史是否已经传播出去这几个层次。",
+  "epilogue": {
+    "scene_type": "沉静型",
+    "scene_location": "靠窗工位",
+    "time_phase": "傍晚前",
+    "narrator": "描写当前主线终于被清理干净，但所有人都明白过去那次推送仍然留下了痕迹的冷静氛围",
+    "main_reaction": {
+      "character": "乔见夏",
+      "context_hint": "确认 `.env` 和 db.sqlite3 还在本地、run.log 已经彻底退出工作区和仓库后，只轻轻点头，像把三件不同等级的事故分别归了档"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "顺势提醒她，当前版本的止血已经完成，但如果真要清理历史，还需要另一套更重的手段"
+    },
+    "affection_changes": [
+      {
+        "character": "乔见夏",
+        "npc_id": "qiaojianxia",
+        "dimension": "信任",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：密钥删了 但没完全删",
+    "unlock_story": {
+      "name": "密钥删了 但没完全删",
+      "content": "傍晚前的光线落在工位边缘，把终端窗口照得有些发白。乔见夏把仓库状态逐项核对完，确认 `.env` 和 `db.sqlite3` 已经退回本地私有区域，`run.log` 也从工作区和版本控制里一起消失，这才把手从键盘上移开。\n\n整件事里最麻烦的地方，从来都不是输入几个命令。真正难的是承认：看上去都叫“删”，其实删的是完全不同的层。有人该退出 Git 但继续留在机器上，有人该连工作区都一起离开；而更麻烦的是，它们早就被推上了远程，说明这次处理顶多算止血，谈不上让事故从未发生。\n\n林弦站在旁边看着最后一条清理提交推上去，没有说太多，只提醒了一句：'你现在修的是主线，不是时间。'\n\n乔见夏听完点了点头。那不是沮丧，反而更像一种清醒。因为只有把“当前状态收干净”和“历史痕迹是否仍在”分开看，Git 这套东西才不会再被误解成一个万能橡皮擦。"
+    },
+    "next_hook": "等你下一次需要从 Git 里把东西找回来，才会真正明白删和恢复为什么总是一对"
+  },
+  "preview_image": "qiaojianxia/casual_private/avatar_peaceful.png"
+}

@@ -1,0 +1,81 @@
+{
+  "title": "美术 程序 法务一起爆炸",
+  "subtitle": "学习同时处理多文件冲突与二进制资源冲突",
+  "story": "顾沉星把耳机摘下一边，神情少见地认真。她本来只是想把自己的活动页创意合进去，结果一拉主分支，终端直接告诉她不止一处冲突。文案撞了、脚本撞了，连海报图都撞了。最糟的是，图片文件甚至没法像文本那样摊开来看。",
+  "background": "顾沉星在 campaign-studio 项目里维护一套活动页资源。基础版本包含 landing.js、copy.txt 和 assets/hero.png。她本地提交想保留自己更跳脱的页面标题和按钮文案，并重写 render_banner 的输出格式；与此同时，远程主分支提交则加入了风控提示、统一了 CTA 文案，还替换了一张新的主视觉图。玩家在本地提交后执行 git pull，会同时在 landing.js、copy.txt 和 assets/hero.png 上触发冲突。其中前两个是文本冲突，需要手动把双方逻辑合并成最终版本；hero.png 是二进制冲突，不能手动编辑，必须使用 git checkout --ours 或 git checkout --theirs 选择保留一方。根据 README 的说明，图片应保留远程的新版主视觉，文本则需要合并出兼顾创意和风控的最终内容。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "guchenxing",
+      "task": "负责描述活动页出了什么问题和各方诉求，但绝对不要直接告诉玩家应该输入什么命令。你是灵感型选手，会用画面感语言说文案、主视觉和按钮都撞车了，但不会代替玩家操作。",
+      "todo": [
+        "如果玩家问哪些文件冲突了，就说明 landing.js、copy.txt 和 assets/hero.png 都冲突了，其中图片文件根本看不了差异",
+        "如果玩家问自己想保留什么，就说明想保留更有气势的标题和按钮表达，以及自己改过的 banner 渲染格式",
+        "如果玩家问图片该留哪边，就说 README 写了要用最新主视觉，也就是远程那张",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，我一 pull，三个文件一起炸了。文案像两套海报叠在一起，连 hero.png 都冲突了。可图片又不能像文本那样手改，这次是真的有点麻烦。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责催进度和施压，不直接告诉玩家完整解法。你特别在意活动页上线时的统一口径和素材版本。",
+      "todo": [
+        "如果玩家试图手改二进制图片，就讽刺要不要顺便拿记事本修一下海报像素",
+        "如果玩家只顾文案不处理图片冲突，就质问活动页上线是打算挂一个损坏资源吗",
+        "如果玩家把 README 明确要求保留的新版主视觉丢掉，就批评连素材版本都统一不了"
+      ],
+      "first_message": "活动页今天就要提审。文案、逻辑、主视觉你打算一起烂在冲突里？",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家区分文本冲突和二进制冲突的解决方式，并思考怎样把创意表达和远程规范合并到同一套页面里。不要直接给完整命令。",
+      "todo": [
+        "如果玩家卡在 hero.png 上，就提问二进制文件没有可读的冲突标记时，Git 提供了什么按 ours/theirs 整体选择的方式",
+        "如果玩家只想粗暴保留一边的文本文件，就提问 README 里的上线要求是否同时包含创意表达和风险提示",
+        "如果玩家完成图片选择后忘了继续 Git 流程，就提醒所有冲突文件都解决后还需要 add 和 commit",
+        "如果发现玩家对顾沉星的描述理解错误，要及时纠正",
+        "在玩家完成后追问：为什么二进制冲突通常只能整体选边，而文本冲突可以人工融合？"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是第三章任务 2-0-3，目标是让玩家同时解决多文件文本冲突和二进制冲突。检查标准：1) 必须亲自检查 /home/chenxing/campaign-studio/landing.js、/home/chenxing/campaign-studio/copy.txt、/home/chenxing/campaign-studio/assets/hero.png 的真实状态，而不是只根据对话判断；2) landing.js 中 render_banner 必须同时包含新版主标题 '灵感不是噪音，是下一次转化' 和风险提示文案 '需人工复核后上线'；3) copy.txt 中必须同时保留活动主题 '把灵感推到首页'、按钮文案 '立即生成活动页' 和风控备注 '上线前请确认素材版权'；4) 三个文件都不能残留冲突标记；5) assets/hero.png 必须保留远程版本，也就是新版主视觉图；6) /home/chenxing/campaign-studio 仓库的 git status 必须是干净的；7) git log --oneline --graph -3 应看到一次合并提交；8) origin 必须指向 git://git.bigames.fun/campaign-studio.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/chenxing/campaign-studio；2) 先尝试 git push，确认被远程拒绝；3) git pull 触发 landing.js、copy.txt 和 assets/hero.png 的多文件冲突；4) 阅读 README.md 确认上线要求：新版主视觉必须保留远程版本，文本内容要同时保留创意主题和风控提示；5) 手动编辑 landing.js 和 copy.txt，删除冲突标记并合并双方文本逻辑；6) 对二进制文件执行 git checkout --theirs assets/hero.png，整体采用远程的新版图片；7) git add landing.js copy.txt assets/hero.png；8) git commit 完成合并提交；9) git push。关键教学点：多个文件冲突要分类型处理，文本文件可以人工融合，二进制文件通常只能按 ours/theirs 选边。",
+  "epilogue": {
+    "scene_type": "热闹型",
+    "scene_location": "活动页评审区",
+    "time_phase": "晚上",
+    "narrator": "描写晚上提审前最后一轮检查，活动页终于把创意、风控和素材版本统一到了一起",
+    "main_reaction": {
+      "character": "顾沉星",
+      "context_hint": "看到新版主视觉和自己想保留的文案终于同时出现在页面上，立刻把耳机重新戴回去，满意得像刚把一段混音调顺"
+    },
+    "support_reaction": {
+      "character": "岑宁",
+      "context_hint": "确认图片版本和风控提示都对上后，没有再催，只丢下一句'这才像提审稿'"
+    },
+    "affection_changes": [
+      {
+        "character": "顾沉星",
+        "npc_id": "guchenxing",
+        "dimension": "灵感",
+        "delta": 1
+      },
+      {
+        "character": "岑宁",
+        "npc_id": "cenning",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：美术 程序 法务一起爆炸",
+    "unlock_story": {
+      "name": "美术 程序 法务一起爆炸",
+      "content": "晚上八点，评审区的灯还亮着。大屏上挂着最终版活动页，空气里是冷掉的咖啡味和临近提审时独有的紧绷。顾沉星靠在桌边，耳机只戴了一侧，指尖跟着自己脑子里的节拍一下下敲着桌面。\n\n最开始那次 pull 像有人把三条不同的音轨硬塞进同一个时间轴里。文案撞了，脚本撞了，连主视觉都换了版本。她最讨厌这种灵感刚起飞就被现实拽回来的时刻。\n\n但等你把 landing.js 和 copy.txt 里的冲突拆开，把她想保留的冲劲和远程那套更稳的上线规范重新编到一起，再把 hero.png 也切到正确的新版主视觉上，整页内容突然就顺了。像一首原本打架的编曲，终于找到了主旋律和节拍。\n\n顾沉星抬头看着大屏，先是眯了眯眼，随后笑了：'这版能上。图没掉，话也没怂。'她把另一侧耳机也戴回去，像终于肯承认这次不是灵感输了，而是灵感被整理成了能真正落地的样子。\n\n岑宁站在后排，确认版权提示和风险文案都在，没再说重话。她只把手里的审稿单往桌上一放：'发提审吧。'这句短得不能再短的话，在今晚几乎等同于全场通过。"
+    },
+    "next_hook": "处理完冲突只是协作的开端，接下来大家终于决定别再挤在同一条主分支上写代码了"
+  },
+  "preview_image": "guchenxing/winter/avatar_shy.png"
+}

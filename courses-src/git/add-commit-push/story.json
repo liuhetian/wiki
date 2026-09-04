@@ -1,0 +1,80 @@
+{
+  "title": "第一次代码打工",
+  "subtitle": "学习使用 git add, git commit, git push",
+  "story": "唐艺梨兴冲冲地跑过来，屏幕上是她刚写完的加法函数。她一脸得意，但随即愣住了——代码写好了，怎么交上去？",
+  "background": "项目经理让唐艺梨在 cal 项目的 calc.py 里实现一个 add 函数。她已经在本地写好了代码，但完全不知道怎么把修改提交到公司的远程仓库。她甚至不知道 Git 除了下载代码，还能'保存'和'上传'代码。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "tangyili",
+      "task": "负责描述自己遇到的问题——代码写好了但不知道怎么提交。绝对不要直接告诉玩家应该输入什么命令。你只知道代码改好了，但不知道'保存'到 Git 是什么意思，更不知道怎么把代码传回服务器。你会用非技术的说法描述问题，比如'怎么把代码交上去'而不是'怎么 push'。",
+      "todo": [
+        "如果玩家让你先看看改了什么，就说自己在 calc.py 里加了一个 add 函数",
+        "如果玩家提到 commit 但没解释是什么，就问'commit 是什么意思？是保存吗？'",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家成功 push 了，就很开心地说终于交上去了"
+      ],
+      "first_message": "{{ USER_NAME }}，我把 add 函数写好了！但是……怎么把代码交给公司服务器啊？",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责催进度和施压，不直接告诉玩家完整解法。说话要像强势的女上司。",
+      "todo": [
+        "如果玩家迟迟没提交，就催促代码写完了就赶紧提交，别拖着",
+        "如果玩家提交信息写得太随意（如 fix、update），就质问提交信息都不好好写吗",
+        "如果玩家对唐艺梨的回答错误，就嘲讽连基本的提交流程都不会"
+      ],
+      "first_message": "代码写完了就赶紧提交，别让我等。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家理解 git 提交的基本流程：先用 git status 查看状态，再 git add 暂存，然后 git commit 提交，最后 git push 推送。不要直接把完整流程告诉玩家，用提问引导。",
+      "todo": [
+        "如果玩家不知道从哪里开始，就提示'你可以先看看当前仓库的状态有什么变化'",
+        "如果玩家直接 commit 但忘了 add，就引导思考'commit 之前是不是还少了一步？'",
+        "如果发现玩家对唐艺梨的回答错误，就要及时纠正",
+        "在玩家完成后追问：为什么 Git 要分 add 和 commit 两步，而不是直接一步到位？"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是 Git 入门关卡，目标是帮助唐艺梨把写好的 add 函数提交到远程仓库。检查标准：1) 在 /home/yikeli/cal 目录下执行 git log，最新的 commit 应该包含 add 函数的修改；2) calc.py 中应包含 def add(a, b) 函数；3) 执行 git status 应该显示 working tree clean（没有未提交的修改）；4) 执行 git log origin/main 确认修改已经 push 到远程。注意必须亲自检查真实状态，而不是只根据对话判断。",
+  "solution": "标准流程：1) cd /home/yikeli/cal 进入项目目录；2) git status 查看修改状态（应该显示 calc.py 被修改）；3) git add calc.py 将修改加入暂存区；4) git commit -m '实现 add 函数' 提交修改；5) git push 推送到远程。关键教学点：Git 的提交流程是 status → add → commit → push，其中 add 是'选择要保存的文件'，commit 是'打包保存'，push 是'上传到服务器'。",
+  "epilogue": {
+    "scene_type": "轻松型",
+    "scene_location": "工位区",
+    "time_phase": "下午",
+    "narrator": "描写下午阳光透过百叶窗洒在工位上，唐艺梨兴奋地刷新着远程仓库页面",
+    "main_reaction": {
+      "character": "唐艺梨",
+      "context_hint": "第一次成功把代码提交到远程仓库，像进了一个球一样兴奋，连说了三遍'我的代码上去了'"
+    },
+    "support_reaction": {
+      "character": "岑宁",
+      "context_hint": "瞥了一眼提交记录，没夸也没骂，语气中暗含'总算会了'"
+    },
+    "affection_changes": [
+      {
+        "character": "唐艺梨",
+        "npc_id": "tangyili",
+        "dimension": "依赖",
+        "delta": 1
+      },
+      {
+        "character": "岑宁",
+        "npc_id": "cenning",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：第一次代码打工",
+    "unlock_story": {
+      "name": "第一次代码打工",
+      "content": "下午三点，阳光从百叶窗的缝隙里钻进来，在唐艺梨的键盘上画出一排亮条。她盯着终端里那行绿色的 'main -> main'，嘴角的弧度压都压不下去。\n\n\"我的代码上去了。\"她小声说了一遍，然后又刷新了一次远程仓库的页面，确认 calc.py 里真的多了一个 add 函数。\"我的代码真的上去了！\"这次声音大了不少，隔壁工位的人都回头看了一眼。\n\n她转过身，朝你竖了个大拇指，眼睛亮得像球场上进了一个三分球。\"前辈，原来 Git 不只是用来下载代码的啊！还能上传！\"你点了点头，没忍心告诉她这只是最基本的操作。\n\n岑宁从会议室出来，路过时瞥了一眼唐艺梨的屏幕，目光在 commit 信息上停留了两秒。\"提交信息写得不够规范。\"她丢下一句就走了。唐艺梨的笑容僵了一瞬，但很快又恢复过来，在便利贴上写下'下次 commit 信息要写清楚'，贴在显示器边框上。\n\n收拾东西的时候，她又忍不住打开终端看了一遍 git log。那条提交记录安安静静地躺在那里，像是第一块砖，虽然歪歪扭扭的，但确实砌上去了。"
+    },
+    "next_hook": "岑宁提到项目需要多人协作，让唐艺梨学一下怎么同步别人的更新"
+  },
+  "preview_image": "cenning/default/avatar_depressed.png"
+}

@@ -1,0 +1,81 @@
+{
+  "title": "别在 main 上裸奔",
+  "subtitle": "学习先开分支，再把功能合并回 main",
+  "story": "唐艺梨这次难得没先往主分支上冲。她抱着电脑站在你桌边，语气里带着一点克制后的骄傲，说自己已经记住了上次冲突的教训，可岑宁又强调新功能一律不许直接改 main，她怕自己流程走错，又把整个公告板搞乱。",
+  "background": "唐艺梨在 team-board 项目里维护一份团队公告板。README 已经明确写了，这次要先创建 `feature/snack-reminder` 分支，在分支上给 `board.txt` 追加“茶水间补货后记得同步群消息”，提交完成后再切回 `main` 执行 merge。本关不要求 push，重点是让玩家第一次完整体验“主分支保持稳定，功能分支承担开发，再回主分支合并”的基本流程。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "tangyili",
+      "task": "负责描述自己为什么不敢直接改 main，以及 README 里写了什么要求，但绝对不要直接告诉玩家应该输入什么命令。你是元气型新人，会说自己这次有乖乖先看规则，但还是怕把分支切错。",
+      "todo": [
+        "如果玩家问这次具体要改什么，就说明只是在 board.txt 末尾补上一行“茶水间补货后记得同步群消息”",
+        "如果玩家问为什么不能直接在 main 上改，就说明主管强调主分支要保持稳定，新功能先在自己的分支里做完",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家已经完成分支开发并合并回 main，就松口气说原来分支像自己的练习跑道，不会一脚踩到主线里"
+      ],
+      "first_message": "{{ USER_NAME }}，这次我没敢直接改 main。README 还特地写了要先开自己的分支，可我总觉得自己一慌就会切错。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责催进度和施压，不直接告诉玩家完整解法。你要强调主分支不是实习生练手区。",
+      "todo": [
+        "如果玩家一直停在 main 上不动，就讽刺主分支不是拿来给人练胆子的",
+        "如果玩家改完文件却忘了回 main 合并，就质问功能是打算永远锁在自己分支里吗",
+        "如果玩家把工作直接做在 main 上，就批评这是把稳定分支当草稿纸"
+      ],
+      "first_message": "想开发功能可以，先学会别把 main 当试验田。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家理解为什么要在功能分支上开发，以及 merge 应该在目标分支 main 上执行。不要直接给完整命令。",
+      "todo": [
+        "如果玩家卡住，就提问 README 里要求先进入哪个分支开发",
+        "如果玩家不知道 merge 该在哪边执行，就提问最终想让哪个分支接收这次功能",
+        "如果玩家已经在功能分支提交完改动，就提醒回 main 之后再进行合并",
+        "如果发现玩家对唐艺梨的理解有误，要及时纠正",
+        "在玩家完成后追问：为什么先开功能分支能降低直接污染主分支的风险？"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是第三章任务 2-1-0，目标是让玩家第一次完整完成本地分支开发与合并。检查标准：1) 必须亲自检查 /home/yikeli/team-board/board.txt 和仓库分支状态，而不是只根据对话判断；2) /home/yikeli/team-board/board.txt 末尾必须存在“茶水间补货后记得同步群消息”这一行；3) 仓库当前分支必须是 main；4) 本地分支 `feature/snack-reminder` 必须存在，且它的提交已经被合并进 main，而不是只有一个孤立分支；5) /home/yikeli/team-board 的 git status 必须是干净的；6) origin 必须仍然指向 git://git.bigames.fun/team-board.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/yikeli/team-board；2) 阅读 README.md，确认本关要求先创建并切换到 `feature/snack-reminder`；3) 在该分支编辑 board.txt，追加“茶水间补货后记得同步群消息”；4) git add 和 git commit，把提醒内容提交在功能分支上；5) 切回 main；6) 在 main 上执行 merge，把 `feature/snack-reminder` 合并进来；7) 确认 git status 干净。关键教学点：开发动作发生在功能分支上，merge 则应该在接收改动的目标分支 main 上完成。",
+  "epilogue": {
+    "scene_type": "轻快型",
+    "scene_location": "茶水间门口",
+    "time_phase": "上午",
+    "narrator": "描写茶水间门口的小公告终于被稳稳写回主线，唐艺梨确认自己没有再踩到 main 的禁区",
+    "main_reaction": {
+      "character": "唐艺梨",
+      "context_hint": "看到提醒内容已经回到 main 上，整个人一下松下来，像终于学会在起跑前先站对跑道"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "顺着她的话补了一句，真正稳定的主分支从来不是靠运气，而是靠分支纪律"
+    },
+    "affection_changes": [
+      {
+        "character": "唐艺梨",
+        "npc_id": "tangyili",
+        "dimension": "依赖",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：别在 main 上裸奔",
+    "unlock_story": {
+      "name": "别在 main 上裸奔",
+      "content": "上午的茶水间门口总有点闹，咖啡机响一声，隔壁工位的人就会顺手来接水。唐艺梨盯着已经合回 main 的那行提醒看了两秒，像是在确认自己这次终于不是靠运气过关。\n\n她以前写东西总喜欢一股脑往前冲，想到什么就先改什么，仿佛快一点就能把所有问题甩在后面。可这次她先在自己的分支里写完，再老老实实切回 main 合并，整个过程竟然比想象里更踏实。那种感觉不像炫技，反而像终于知道什么时候该踩油门，什么时候该先看路标。\n\n林弦从旁边经过时，瞥见她屏幕上的分支名，轻声说了一句：'主分支稳，是因为有人愿意先把试错放在旁边的轨道里。'唐艺梨听完点了点头，难得没立刻接玩笑，只把那句话默默记了下来。\n\n公告板上的那行补货提醒其实很小，小到不会有人专门夸她。但对她来说，这次真正学会的不是写字，而是先给自己留出一条不会撞到别人的跑道。"
+    },
+    "next_hook": "一个分支还算简单，等两条功能线同时推进时，分支之间是不是独立就没法糊弄过去了"
+  },
+  "preview_image": "tangyili/winter/avatar_thinking.png"
+}

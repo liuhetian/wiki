@@ -1,0 +1,81 @@
+{
+  "title": "把一坨史诗拆成史书",
+  "subtitle": "学习在交互式 rebase 中拆分大提交并重排历史顺序",
+  "story": "顾沉星把提交记录摊给你看时，神情难得有点嫌弃自己。她赶 deadline 的时候把布局、脚本、交接说明一股脑塞进了一个 `wip: finish dashboard`，后来又补了一条页脚检查项。功能现在能看，但历史像把分镜、配乐和旁白全挤在同一页脚本里，乱得没法交审。",
+  "background": "顾沉星在 ops-dashboard 仓库里完成值班面板原型。当前本地比 origin/main 超前 3 条提交：较早一条 `docs: add incident review outline`、中间一个巨大的 `wip: finish dashboard`、最新一条 `feat: add release checklist footer`。README.md 要求在代码审查前，把这 3 条历史整理成 5 条逻辑清晰的提交，并按顺序排列为：`feat: build dashboard layout`、`feat: wire metrics renderer`、`docs: add dashboard handoff notes`、`docs: add incident review outline`、`feat: add release checklist footer`。玩家需要在 rebase -i 中对 `wip: finish dashboard` 标记 edit，停下后把这个大提交打散，再按文件与职责重新分批提交，同时把原本排在最前面的 incident review 文档移动到更合适的位置。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "guchenxing",
+      "task": "负责说明那个大提交里混了哪些内容，以及最终希望历史按什么叙事顺序展开，但绝对不要直接告诉玩家应该输入什么命令。你的表达带画面感，会把历史比作分镜和编曲。",
+      "todo": [
+        "如果玩家问那个大提交混了什么，就说明里面同时塞了 dashboard 布局、metrics 脚本和交接说明",
+        "如果玩家问最终顺序应该怎样，就提醒 README 里写了五条目标历史，先搭界面，再接脚本，再补说明，最后才是复盘提纲和页脚检查项",
+        "如果玩家问为什么 review 文档还要换位置，就说明它是配套文档，不该抢在功能提交前面出现",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，我把一个 `wip: finish dashboard` 写得像把整部片子的分镜、配乐和字幕都塞进同一轨。现在功能能跑，可这段历史拿去审查，谁看都得先皱眉。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你要求提交历史必须能体现清楚的工程顺序。",
+      "todo": [
+        "如果玩家只改了 message 却没把大提交拆开，就批评这是给一锅乱炖换了个好听名字",
+        "如果玩家把 review 文档仍然放在功能提交前面，就质问审查人为什么要先看复盘提纲，再看面板是怎么长出来的",
+        "如果玩家拆历史时把最终文件内容弄坏，就批评这是拿演示稿去换一个更整洁的事故记录"
+      ],
+      "first_message": "大提交不是史诗，是偷懒。把历史拆清楚，再来谈什么交审。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家理解：拆分历史时不仅要改 commit message，更要真正把改动拆成多个逻辑单元；而重排顺序则是在让历史叙事符合工程阅读习惯。不要直接给完整命令。",
+      "todo": [
+        "如果玩家只想着改名字，就提问一个同时包含布局、脚本和说明的提交，改名后真的会更好读吗",
+        "如果玩家不知道怎么把大提交拆开，就提醒在 rebase 暂停时可以先把该提交打散，再按逻辑重新暂存和提交",
+        "如果玩家忽略顺序问题，就提问 review 文档和功能实现谁更应该先出现在历史里",
+        "如果发现玩家误解了顾沉星的诉求，要及时纠正",
+        "在玩家完成后追问：为什么优秀的提交历史像讲故事，需要既分段清楚又先后合理？"
+      ],
+      "first_message": "{{ USER_NAME }}，你可以先把这三条历史当成一份写坏的目录。真正的问题不是标题难看，而是哪几件事本来就不该被揉成同一章。"
+    }
+  ],
+  "check": "任务背景：这是第三章任务 3-0-3，目标是让玩家拆分一个大提交并重排历史顺序。检查标准：1) 必须亲自检查 /home/chenxing/ops-dashboard 的真实 git 状态、文件内容和提交历史，而不是只根据对话判断；2) git log --reverse --oneline HEAD~5..HEAD 显示的最近 5 条提交说明，按从旧到新的顺序，必须依次是 `feat: build dashboard layout`、`feat: wire metrics renderer`、`docs: add dashboard handoff notes`、`docs: add incident review outline`、`feat: add release checklist footer`；3) dashboard.html 中必须同时包含 `<h1>值班总览面板</h1>` 和 `发布前检查：日志、告警、回滚预案`；4) scripts/metrics.js 中必须包含 `renderMetrics` 函数；5) README.md 中必须包含“交接说明：值班前先确认告警联系人”；6) review.md 中必须包含“事故复盘提纲”；7) 仓库的 git status 必须是干净的；8) 本地 main 最终只应比 origin/main 超前 5 个提交；9) origin 必须仍然指向 git://git.bigames.fun/ops-dashboard.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/chenxing/ops-dashboard；2) 查看 git log --oneline -3 与 README.md，明确当前三条本地历史中，中间那条 wip: finish dashboard 需要被拆成三条，且 docs: add incident review outline 还要后移；3) 对最近 3 条提交执行 git rebase -i，把 wip: finish dashboard 标记为 edit，并把 incident review 文档那条移到目标顺序的位置；4) rebase 停下后，把大提交打散，再按逻辑把 dashboard.html、scripts/metrics.js、README.md 分别重新提交为 feat: build dashboard layout、feat: wire metrics renderer、docs: add dashboard handoff notes；5) 继续 rebase，让 docs: add incident review outline 和 feat: add release checklist footer 落到正确顺序；6) 最后检查 git log --reverse --oneline HEAD~5..HEAD、各文件内容与 git status。关键教学点：高级历史整理不只是压缩提交，而是把一个混杂的大改动重新拆成清晰的逻辑单元，并让提交顺序符合工程阅读路径。",
+  "epilogue": {
+    "scene_type": "热闹型",
+    "scene_location": "评审区大屏前",
+    "time_phase": "深夜",
+    "narrator": "描写深夜评审区只剩几盏灯，大屏上的值班面板和终端里的提交历史终于像同一份成熟作品的两个侧面",
+    "main_reaction": {
+      "character": "顾沉星",
+      "context_hint": "看到提交历史终于从乱作一团的草稿变成有起承转合的五段后，像把一首过载的编曲拆回了清晰分轨，整个人都顺了"
+    },
+    "support_reaction": {
+      "character": "岑宁",
+      "context_hint": "确认历史顺序终于配得上代码审查流程后，没有再讽刺，只把目光从 log 移回了真正的面板内容"
+    },
+    "affection_changes": [
+      {
+        "character": "顾沉星",
+        "npc_id": "guchenxing",
+        "dimension": "灵感",
+        "delta": 1
+      },
+      {
+        "character": "岑宁",
+        "npc_id": "cenning",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：把一坨史诗拆成史书",
+    "unlock_story": {
+      "name": "把一坨史诗拆成史书",
+      "content": "深夜的评审区只剩大屏和桌角的小灯还亮着，整个空间像舞台谢幕之后还没来得及散场。顾沉星站在你旁边，一开始看那段三条本地历史时，眉头就没松开过。她最清楚那句 `wip: finish dashboard` 里到底塞了多少东西，正因为清楚，才更知道这有多不像一份该交出去的记录。\n\n功能当然已经做出来了。面板有了，脚本接上了，交接说明也补了，页脚还列着上线前检查项。可这些东西原本该有自己的段落、自己的节奏，而不是被胡乱挤在一个巨大提交里，像把所有灵感和收尾都压进同一段鼓点，响是响了，却谁也听不清层次。\n\n等你把那条大提交拆开，再把复盘提纲放回它更合理的位置，整段历史终于像一份能读的目录。先搭界面，再接逻辑，再写说明，之后才是复盘文档和最后的上线检查。每一条都不再互相抢镜，每一条都说得清自己为什么存在。\n\n顾沉星盯着整理后的 log 看了好一会儿，忽然笑了一下：'这样才像成片。'不是因为它更漂亮，而是因为这一次，代码和历史终于在讲同一个故事。"
+    },
+    "next_hook": "提交历史终于学会了讲道理，下一章开始，真正的灾难会逼你学会把已经做错的事再救回来"
+  },
+  "preview_image": "guchenxing/default/avatar_thinking.png"
+}

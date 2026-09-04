@@ -1,0 +1,81 @@
+{
+  "title": "漏带文件还想装镇定",
+  "subtitle": "学习用 amend 补充最近一次提交内容，并用 rebase -i reword 更早的提交说明",
+  "story": "闻书遥把窗口停在提交记录那一栏，表情平静得像什么都没发生，但手指敲桌面的频率已经把她出卖了。她最近两次本地提交里，一次提交说明写得过于敷衍，另一次则少带了一个配套文件。代码审查还没开始，历史却已经先显得不太体面。",
+  "background": "闻书遥在 brand-copy 仓库里准备一组首屏文案和按钮资源。当前本地比 origin/main 超前两次提交：较早那次 commit message 被写成了 `update stuff`，但 README.md 已明确要求它应改成 `docs: polish hero headline`；最新一次提交 `feat: add launch CTA assets` 只纳入了 button_copy.txt，却漏掉了同属这一改动的 palette_notes.txt。玩家需要在不新增多余历史的前提下，把漏掉的文件补进最近一次提交，并通过交互式 rebase 把较早那次提交说明 reword 成有意义的文本。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "wenshuyao",
+      "task": "负责说明最近两次本地提交分别出了什么问题，但绝对不要直接告诉玩家应该输入什么命令。你的语气克制、冷静，像在陈述实验误差，而不是大呼小叫。",
+      "todo": [
+        "如果玩家问现在的问题是什么，就说明较早那次提交说明写成了 update stuff，最新一次提交又漏掉了 palette_notes.txt",
+        "如果玩家问正确目标，就说明 README 里写了较早那次要改成 docs: polish hero headline，最新一次仍应叫 feat: add launch CTA assets",
+        "如果玩家问漏掉的文件属于哪次改动，就说明色板备注和按钮文案是同一组交付物，应该放进最近一次提交",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，我这里有两处历史不太对。前一条提交说明写得很敷衍，后一条看起来像完整提交，其实漏掉了 palette_notes.txt。现在拿去做 code review，有点像故意装没看见。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你很反感那种看似提交完成、实际还漏文件的历史。",
+      "todo": [
+        "如果玩家为了补文件再新开一个 commit，就批评这会把本来应该是一个逻辑单元的改动拆得更碎",
+        "如果玩家只改最近一次却放过 update stuff，就嘲讽这是把垃圾塞到历史中间，假装没人会翻",
+        "如果玩家把 palette_notes.txt 留在工作区不管，就质问是准备让审查人帮她猜少了什么"
+      ],
+      "first_message": "一条提交写 update stuff，另一条还漏文件。你们提交历史是打算拿来糊弄谁？",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家区分两个层次的问题：最近一次提交漏了内容，应该补进原提交；更早的提交只是说明不合格，需要在交互式 rebase 里 reword。不要直接给完整命令。",
+      "todo": [
+        "如果玩家想给漏文件单独再来一条提交，就提问这样是否会把本来同一批资源拆成两段历史",
+        "如果玩家只盯着最近一次提交，不处理更早那条 update stuff，就提醒还有一条旧说明会出现在审查记录里",
+        "如果玩家不知道最终目标，就提醒先读 README.md 里的三条要求",
+        "如果发现玩家误读了闻书遥的意图，要及时纠正",
+        "在玩家完成后追问：为什么 amend 适合修最近一次，而更早的提交说明则需要借助 rebase -i？"
+      ],
+      "first_message": "{{ USER_NAME }}，你先想想，这里其实是两种不同的问题。一个是最近一次提交少了内容，另一个是更早那条历史写得不像话。它们应该用同一种方式修吗？"
+    }
+  ],
+  "check": "任务背景：这是第三章任务 3-0-1，目标是让玩家同时修正最近一次提交内容和更早的提交说明。检查标准：1) 必须亲自检查 /home/yaoyao/brand-copy 的真实 git 状态，而不是只根据对话判断；2) git log --oneline -2 中，较新的提交说明必须是 `feat: add launch CTA assets`，更早的提交说明必须是 `docs: polish hero headline`；3) palette_notes.txt 必须已经被纳入版本控制，并且内容中要包含“主按钮：珊瑚橙”与“次按钮：雾蓝灰”；4) button_copy.txt 必须仍然存在于最新一次提交对应的结果中；5) 仓库的 git status 必须是干净的；6) 本地 main 只能比 origin/main 超前 2 个提交，不应因为补文件或改说明额外长出新历史；7) origin 必须仍然指向 git://git.bigames.fun/brand-copy.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/yaoyao/brand-copy；2) 先查看 git log --oneline -2 和 git status，确认一条旧提交说明写成了 update stuff，且工作区还有漏掉的 palette_notes.txt；3) 阅读 README.md，明确最终应保留两条本地提交，且名称分别是 docs: polish hero headline 与 feat: add launch CTA assets；4) 先把 palette_notes.txt git add 进去，再用 git commit --amend 把它补进最近一次提交；5) 再对最近两条提交执行 git rebase -i，通过 reword 把较早的那条 update stuff 改成 docs: polish hero headline；6) 完成后再次检查 git log --oneline -2、git status 和 palette_notes.txt 是否都符合要求。关键教学点：最近一次提交的内容漏了，用 amend 补最自然；更早的提交说明要改，就需要交互式 rebase 精确定位到那一条历史。",
+  "epilogue": {
+    "scene_type": "反差型",
+    "scene_location": "靠窗工位",
+    "time_phase": "傍晚",
+    "narrator": "描写傍晚窗边的光线落在终端上，两条原本显得敷衍又心虚的提交记录被整理成真正能拿去审查的样子",
+    "main_reaction": {
+      "character": "闻书遥",
+      "context_hint": "确认两条提交终于各归其位后，才慢慢停下敲桌面的手，语气依旧平静，但明显比刚才放松"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "看见你把最近一次内容和更早的说明分开处理，顺势点明：整理历史不是洁癖，是在替后来读记录的人省时间"
+    },
+    "affection_changes": [
+      {
+        "character": "闻书遥",
+        "npc_id": "wenshuyao",
+        "dimension": "信任",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：漏带文件还想装镇定",
+    "unlock_story": {
+      "name": "漏带文件还想装镇定",
+      "content": "傍晚的光从窗边斜着压进来，工位区的声音也比白天轻了很多。闻书遥站在你旁边，看着那两条已经修整好的提交记录，神色和来找你时一样平，但那种本来绷在肩背上的劲已经慢慢退了下去。\n\n她最开始说问题时几乎没带情绪，像只是通报两项偏差：一条说明不合格，一次提交漏了文件。可真正让人不舒服的，从来不是某个字眼写丑了，而是历史里那种若无其事的敷衍感。看起来像完成了，细看却又少了一块，像把实验报告少贴了一页附录，还假装没人会发现。\n\n等你把 palette_notes.txt 补回它该在的位置，再把那句 `update stuff` 换成和内容相称的说明，整段历史突然就有了边界。哪一条是在修正文案，哪一条是在补齐按钮资源，终于一眼能看出来了。\n\n闻书遥垂眼看着终端，低声说：'这样就能交差了。'停了两秒，她又补了一句：'不，是这样才算写完。'那点近乎听不见的改口，让傍晚的空气都显得比刚才松了些。"
+    },
+    "next_hook": "两三条历史还能逐个修，可要是最近五条里塞了三条 fix typo，接下来就得真正拿起交互式 rebase 了"
+  },
+  "preview_image": "wenshuyao/default/avatar_thinking.png"
+}

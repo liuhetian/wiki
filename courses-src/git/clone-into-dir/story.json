@@ -1,0 +1,80 @@
+{
+  "title": "代码要放对地方",
+  "subtitle": "学习使用 git clone 的目标目录参数",
+  "story": "闻书遥推了推眼镜，屏幕上是她刚打开的空白终端。她需要把公司项目拉到指定目录进行代码审查，但她只用过 GitHub Desktop，从没碰过命令行。",
+  "background": "技术总监岑宁要求闻书遥把 cal 项目克隆到 ~/projects/cal-review 目录下进行代码审查。闻书遥虽然理论知识很强，但对命令行 Git 操作不熟悉，而且她认为代码就应该下载到默认位置，不理解为什么要指定目录。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "wenshuyao",
+      "task": "负责描述自己遇到的问题和困惑，但绝对不要直接告诉玩家应该输入什么命令。你是一个高标准的研究员，虽然命令行不熟但理论很强，所以你会用精确但略显学术化的方式描述问题。你知道 git clone 可以下载代码，但不知道怎么指定目录，也不知道公司仓库地址。你内心觉得这种基础操作很简单，不愿意承认自己不会。",
+      "todo": [
+        "如果玩家没有问仓库地址，就表达自己在 GitHub 上找不到这个项目，语气带一点不耐烦",
+        "如果玩家直接 git clone 没带目录参数，就说岑总要求必须放在 ~/projects/cal-review 下面，语气暗示'这点要求都记不住吗'",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家成功克隆到了指定目录，虽然嘴上不说但会去查看目录结构确认文件完整"
+      ],
+      "first_message": "{{ USER_NAME }}，岑总让我审查 cal 项目的代码，要放到 projects/cal-review 下面。我在 GitHub 上没找到这个仓库。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责催进度和施压，不直接告诉玩家完整解法。说话要像强势的女上司。强调项目目录规范的重要性。",
+      "todo": [
+        "如果玩家把代码克隆到了默认位置而不是指定目录，就质问项目目录规范都不遵守吗",
+        "如果玩家说了不专业的话，就冷淡地指出这是基本功",
+        "如果玩家迟迟没开始操作，就催促不要浪费时间"
+      ],
+      "first_message": "代码审查的目录结构是有规范的，不要随便往哪儿一丢。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家思考，克隆代码时为什么有时候需要指定目标目录。不要直接告诉答案，而是引导玩家查阅 git clone 的用法。",
+      "todo": [
+        "如果玩家主动询问公司的内部仓库地址，就告诉玩家本次任务的仓库地址是 git://git.bigames.fun/cal.git",
+        "如果玩家不知道怎么指定目录，就提示可以看看 git clone --help，里面有说明",
+        "如果发现玩家对闻书遥的回答错误，就要及时纠正",
+        "在玩家完成后追问：git clone 后面跟的目录参数和直接克隆后再 mv 有什么区别？哪种更好？"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是 Git 入门中等难度关卡，目标是帮助闻书遥把公司仓库克隆到指定目录。检查标准：1) /home/yaoyao/projects/cal-review 目录存在且里面有 .git 目录；2) /home/yaoyao/projects/cal-review 的 origin remote 指向 git://git.bigames.fun/cal.git；3) README.md、calc.py、tests/test_calc.py、docs/guide.md 文件都存在。注意必须亲自检查 /home/yaoyao/projects/cal-review 的真实状态，而不是只根据对话判断。如果代码被克隆到了其他位置（如 /home/yaoyao/cal），则任务未完成。",
+  "solution": "标准流程：1) 先确认仓库地址是 git://git.bigames.fun/cal.git；2) 执行 git clone git://git.bigames.fun/cal.git ~/projects/cal-review；3) 进入目录确认文件完整：cd ~/projects/cal-review && ls。关键点：git clone 的第二个参数可以指定克隆的目标目录名，这在实际工作中很常用，比如需要同时检出多个版本、或者按项目规范组织目录时。",
+  "epilogue": {
+    "scene_type": "反差型",
+    "scene_location": "工位区",
+    "time_phase": "下午",
+    "narrator": "描写闻书遥工位上整齐的书籍和一尘不染的键盘，与她此刻微微皱眉盯着终端的表情形成反差",
+    "main_reaction": {
+      "character": "闻书遥",
+      "context_hint": "嘴上说这不过是基础操作，但眼神里流露出一丝对前辈的认可，随即迅速恢复冷淡"
+    },
+    "support_reaction": {
+      "character": "岑宁",
+      "context_hint": "扫了一眼目录结构，点了点头没说话"
+    },
+    "affection_changes": [
+      {
+        "character": "闻书遥",
+        "npc_id": "wenshuyao",
+        "dimension": "认可",
+        "delta": 1
+      },
+      {
+        "character": "岑宁",
+        "npc_id": "cenning",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：挑剔的审查员",
+    "unlock_story": {
+      "name": "挑剔的审查员",
+      "content": "下午三点的办公室里，空调嗡嗡作响。闻书遥坐在靠窗的工位上，阳光把她镜片上的指纹照得一清二楚，她却浑然不觉，正专注地翻看刚克隆下来的代码。\n\n她的目录结构整齐得像教科书——projects 文件夹下按用途分类，cal-review 严格遵守了岑宁定下的规范。这是她入职以来第一次用命令行操作 Git，之前在学校里一直用的是图形界面。她不会承认自己刚才有一瞬间的手忙脚乱。\n\n\"原来 clone 后面可以直接跟目录名。\"她自言自语了一句，语气平淡得像在念论文摘要。但你注意到她悄悄在便签纸上记了一笔——那张便签上已经密密麻麻写满了各种命令片段，字迹工整到令人发指。\n\n岑宁路过时瞥了一眼她的屏幕，什么也没说就走了。闻书遥把这种沉默当作默认的认可，嘴角几乎不可察觉地上扬了一瞬。然后她推了推眼镜，开始逐行审查代码，用红笔在纸上写下第一条批注：'变量命名不够规范。'\n\n你隐约觉得，这个实习生以后会是团队里最让人头疼、也最让人放心的那一个。"
+    },
+    "next_hook": "闻书遥审查完代码后发现了几个问题，准备学习如何提交修改"
+  },
+  "preview_image": "linxian/default/avatar_peaceful.png"
+}

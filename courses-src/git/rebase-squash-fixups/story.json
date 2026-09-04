@@ -1,0 +1,81 @@
+{
+  "title": "fix typo 三连击的忏悔",
+  "subtitle": "学习用交互式 rebase 压缩并重写杂乱的提交历史",
+  "story": "乔见夏把最近几条提交记录翻给你看时，表情明显带着那种‘我知道这看起来很丢人’的沉默。她本来只是反复修邀请函里的措辞，结果一回头，最近五条历史里居然塞了三条一模一样的“fix typo”。文件现在是对的，提交历史却像在公开承认自己每五分钟就后悔一次。",
+  "background": "乔见夏在 event-invite 仓库里维护一份发布会邀请函。当前本地最近 5 条提交中，有 3 条 commit message 都是 `fix typo`，它们夹在两条有意义的提交之间。README.md 明确要求：在发起代码审查前，必须把最近 5 条历史整理成 3 条有意义的提交，顺序为 `docs: draft launch invitation`、`docs: add venue reminder`、`docs: polish invitation wording`。当前最终文件应保留标题、地点、地点提示、RSVP 和附注；其中三条 `fix typo` 分别对应对标题/措辞的润色、RSVP 时间的精确化与附注措辞修正。由于这些 typo 提交分散在历史中间，玩家需要通过 `git rebase -i` 对最近 5 条提交进行重排、squash，并重写合并后的 commit message。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "qiaojianxia",
+      "task": "负责描述为什么最近几条提交看起来一团糟，以及最终 invite.md 应该保留哪些内容，但绝对不要直接告诉玩家应该输入什么命令。你的语气利落，承认问题时也不拖泥带水。",
+      "todo": [
+        "如果玩家问哪里难看，就说明最近 5 条里有 3 条都叫 fix typo，像在历史里连续道歉",
+        "如果玩家问最终要保留什么，就说明 invite.md 最终应保留标题、地点、地点提示、RSVP 和“入场时请佩戴工牌”这几项",
+        "如果玩家问目标历史是什么，就提醒 README 里写了最后只应剩下 3 条有意义的提交说明",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，文件现在是对的，但我最近五条提交像在反复写悔过书。三条一模一样的 `fix typo` 挂在那儿，拿去做审查实在太丢脸了。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你不能接受把整理历史的成本丢给审查人。",
+      "todo": [
+        "如果玩家打算保留那三条 fix typo 不动，就批评这是把阅读成本全部甩给队友",
+        "如果玩家把有意义的提交顺序弄乱，就质问是不是准备让人倒着理解项目演进",
+        "如果玩家把最终文件内容改坏了，只顾着修 log，不顾结果，就批评这叫拿历史美容换业务事故"
+      ],
+      "first_message": "三条 `fix typo` 连着摆在审查记录里，是想让别人读你一整套后悔轨迹？",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家理解交互式 rebase 的列表顺序、为什么要把分散的 typo 提交挪到一起再 squash，以及重写后的提交说明应该概括什么。不要直接给完整命令。",
+      "todo": [
+        "如果玩家不知道从哪几条开始整理，就提醒先看最近 5 条 git log，并注意 rebase 列表是从旧到新",
+        "如果玩家不确定该怎么处理分散的 fix typo，就提问这些提交是不是都在服务同一件事：润色邀请函文案",
+        "如果玩家只完成 squash 却没改 message，就提醒合并后的那条提交说明仍然需要表达这组改动的实际意义",
+        "如果发现玩家误解了乔见夏的问题，要及时纠正",
+        "在玩家完成后追问：为什么历史整理不是撒谎，而是在把真实的修改过程压缩成对队友更友好的叙述？"
+      ],
+      "first_message": "{{ USER_NAME }}，先别急着嫌 log 难看。你看看最近 5 条里，真正有业务意义的是哪几条，剩下那几次“fix typo”到底是在描述什么？"
+    }
+  ],
+  "check": "任务背景：这是第三章任务 3-0-2，目标是让玩家用交互式 rebase 压缩并重写杂乱历史。检查标准：1) 必须亲自检查 /home/qiaojianxia/event-invite 的真实 git 状态和提交历史，而不是只根据对话判断；2) git log --reverse --oneline HEAD~3..HEAD 显示的最近 3 条提交说明，按从旧到新的顺序，必须依次是 `docs: draft launch invitation`、`docs: add venue reminder`、`docs: polish invitation wording`；3) 最近 5 条历史里不应再出现任何 `fix typo` 提交；4) /home/qiaojianxia/event-invite/invite.md 的最终内容必须同时包含首行 `# 春季发布会邀请函`、`地点：A 栋 3 层多功能厅`、`地点提示：请从南侧电梯入场`、`RSVP：请在周四 18:00 前回复`、`附注：入场时请佩戴工牌`；5) 仓库的 git status 必须是干净的；6) 本地 main 最终只应比 origin/main 超前 3 个提交；7) origin 必须仍然指向 git://git.bigames.fun/event-invite.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/qiaojianxia/event-invite；2) 查看 git log --oneline -5 和 README.md，确认最近 5 条历史里有 3 条分散的 fix typo，目标是把它们压成 1 条有意义的提交；3) 对最近 5 条提交执行 git rebase -i，在编辑列表时注意顺序是从旧到新；4) 通过调整顺序，把三条 fix typo 挪到一起并 squash 成一条；5) 在编辑合并后的提交说明时，把 message 改成 docs: polish invitation wording；6) 完成 rebase 后，再检查 git log --oneline、invite.md 和 git status，确认邀请函仍然同时保留地点提示、精确的 RSVP 时间和修正后的附注措辞。关键教学点：rebase -i 不只是改文字，还能重排和压缩提交，把凌乱的修修补补整理成能表达逻辑单元的历史。",
+  "epilogue": {
+    "scene_type": "冷静型",
+    "scene_location": "会议室外侧长桌",
+    "time_phase": "晚上",
+    "narrator": "描写夜里会议室外安静下来的走廊，原本像碎碎念一样的多条 typo 提交被压成了三段清楚的项目演进",
+    "main_reaction": {
+      "character": "乔见夏",
+      "context_hint": "看着历史终于不再像连发检讨，而是三条干净利落的推进记录后，表情明显顺眼了很多"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "确认你不只压了提交，还保住了邀请函最终内容，才点出整理历史真正省下的是后来每个读记录的人脑力"
+    },
+    "affection_changes": [
+      {
+        "character": "乔见夏",
+        "npc_id": "qiaojianxia",
+        "dimension": "认可",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "信赖",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：fix typo 三连击的忏悔",
+    "unlock_story": {
+      "name": "fix typo 三连击的忏悔",
+      "content": "夜里的走廊比白天安静得多，会议室门缝里漏出来的光把桌面切成一块一块的。乔见夏站在旁边，看着终端里那串终于整理过的提交记录，像是在确认某种不该被留下的狼狈，真的已经被收拾好了。\n\n原本那三条 `fix typo` 连在一起时，像某种公开展示的犹豫。明明只是同一份邀请函的措辞打磨，却硬生生被切成三段没头没尾的小动作，任何人翻到这里，都会先看见混乱，再看见内容。\n\n可等你把它们压回一条真正有意义的历史，再把其余两条提交留在该有的位置，整份 log 突然就像理顺了脊梁。先起草，再补地点提醒，最后统一润色措辞，顺序清楚，目的清楚，连邀请函本身看起来都像稳了一层。\n\n乔见夏垂眼看了两秒，轻轻哼了一声：'这才像能给别人看的记录。'那语气不算夸奖，却比任何客气话都更像认同。她不是在为删掉三条 `fix typo` 感到轻松，而是在确认，自己留下的痕迹终于配得上别人来读。"
+    },
+    "next_hook": "压几条零碎提交还不算终点。真碰上一坨全搅在一起的大提交，接下来就得学会把历史重新拆开了"
+  },
+  "preview_image": "qiaojianxia/default/avatar_peaceful.png"
+}

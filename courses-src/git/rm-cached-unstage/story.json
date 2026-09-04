@@ -1,0 +1,79 @@
+{
+  "title": "手滑暂存的废料",
+  "subtitle": "学习用 git rm --cached 把文件从暂存区移走",
+  "story": "上午刚过，唐艺梨抱着电脑坐到你旁边，神情里带着那种典型的“我只是点快了一下”的心虚。她说自己顺手把一个调试日志也塞进了暂存区，可那东西本来就不该进 Git。",
+  "background": "唐艺梨在 `/home/yikeli/leak-lab` 里已经有一个干净的 Git 仓库，README.md 和 app.py 早就提交好了。现在她只是手滑把 `scratch.log` 加进了暂存区，但这个日志文件还没有 commit。她希望把它从 Git 的暂存区里拿出来，同时保留文件本身继续留在本地目录中。本关重点是理解：`git rm --cached` 只影响暂存区，不会删除工作区里的文件。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "tangyili",
+      "task": "负责描述自己只是手滑把日志暂存了、还没提交的状况，绝对不要直接告诉玩家应该输入什么命令。你会把暂存区形容成“被 Git 盯上的那一层”。",
+      "todo": [
+        "如果玩家问现在仓库是什么状态，就说明 README.md 和 app.py 已经提交过了，只有 scratch.log 还只是暂存状态",
+        "如果玩家问文件能不能直接删，就说明自己还想把 scratch.log 留在电脑里当调试记录，不想把文件本身删掉",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家完成后，就感叹原来可以只让 Git 别盯着它，不用把文件真删掉"
+      ],
+      "first_message": "{{ USER_NAME }}，我刚刚手一快，把 `scratch.log` 也弄进 Git 盯着的那层了。但这个日志我只想留在本地，不想真的交上去。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你要强调日志废料别往版本历史里倒。",
+      "todo": [
+        "如果玩家想直接把文件删掉，就质问调试记录也不要了是吗",
+        "如果玩家一直不处理暂存区，就批评连要提交什么都管不住",
+        "如果玩家把日志真的提交了，就嘲讽这是嫌仓库还不够脏"
+      ],
+      "first_message": "暂存区都筛不干净，你是准备把垃圾也一起交付？",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家区分“让 Git 不再跟踪暂存内容”和“把文件从磁盘删掉”这两件事。不要直接给出完整命令。",
+      "todo": [
+        "如果玩家分不清该不该删文件，就提问这次目标到底是删本地文件，还是只让它离开暂存区",
+        "如果玩家完成后，就追问：为什么这次文件还留在工作区里，但 Git 已经不准备把它放进下一次提交了",
+        "如果发现玩家对唐艺梨的描述理解错误，要及时纠正"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是第二章任务 1-1-0，目标是把误暂存的日志文件从暂存区移走，但保留本地文件。检查标准：1) 必须亲自检查 /home/yikeli/leak-lab 的真实状态，而不是只根据对话判断；2) /home/yikeli/leak-lab/.git 必须存在；3) scratch.log 必须仍然存在于 /home/yikeli/leak-lab 工作区中；4) git diff --cached --name-only 不能再包含 scratch.log，说明它已经离开暂存区；5) README.md 和 app.py 仍然要保持已提交状态；6) 当前分支必须是 main。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/yikeli/leak-lab；2) 用 git status 确认 scratch.log 只是 staged 但还没 commit；3) 用 git rm --cached scratch.log 把它从暂存区移走；4) 再次 git status，确认 scratch.log 还在本地，但不会进入下一次提交。关键教学点：git rm --cached 只改 Git 的跟踪状态，不删工作区文件。",
+  "epilogue": {
+    "scene_type": "轻松型",
+    "scene_location": "工位区",
+    "time_phase": "上午",
+    "narrator": "描写一份本该留在本地的调试日志终于从暂存区退场，仓库边界重新变清楚的感觉",
+    "main_reaction": {
+      "character": "唐艺梨",
+      "context_hint": "看到 scratch.log 还躺在目录里、却不再出现在待提交列表里，像终于学会把草稿和正式文件分开放"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "顺势提醒她，Git 最重要的能力之一就是决定什么该被记住，什么只该留在手边"
+    },
+    "affection_changes": [
+      {
+        "character": "唐艺梨",
+        "npc_id": "tangyili",
+        "dimension": "依赖",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：手滑暂存的废料",
+    "unlock_story": {
+      "name": "手滑暂存的废料",
+      "content": "唐艺梨盯着终端看了两遍，才慢慢把肩膀放松下来。`scratch.log` 还在目录里，调试内容一行没少，可它已经不在下一次提交的名单里了。\n\n她以前总觉得“删掉”只有一种意思，不是留下，就是消失。可这次她第一次真切地意识到，Git 里还有另一层边界：文件可以还在手边，却不必再被版本历史记住。那种感觉很像把桌上临时写的演算纸抽出来，夹回旁边，而不是直接揉掉。\n\n林弦看了她一眼，只说了一句：'不是所有碰过的文件，都值得进历史。'\n\n唐艺梨点点头，像把一句原本模糊的话终于听懂了。她把电脑抱回自己工位时，脚步都比刚来时轻了一点。"
+    },
+    "next_hook": "当文件已经真的进过一次提交，你就会发现，想撤回它可没这么轻松"
+  },
+  "preview_image": "tangyili/casual_private/avatar_happy.png"
+}

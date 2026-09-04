@@ -1,0 +1,81 @@
+{
+  "title": "连环翻车现场",
+  "subtitle": "学习连续 revert 多个已推送提交，并用 reset --hard 丢弃本地废提交",
+  "story": "机房那边的灯还亮着，乔见夏把终端停在一串最近提交上，眼神里是那种很克制的烦躁。她不是只翻了一次车，而是连续三次。先放松了审批条件，又把负责人确认砍掉，最后连 README 里的呼叫提醒都删了。更雪上加霜的是，她本地还多出一条没推送的临时废提交，像事故现场旁边又停了一辆没熄火的车。",
+  "background": "乔见夏在 night-watch 仓库里已经把 3 个有问题的提交推送到了 origin/main：它们依次放宽了发布守卫规则、去掉了负责人确认，并删掉了值班呼叫提醒。除此之外，本地还多一条没有 push 的 `wip: add local panic toggle`，只是临时试验，应该直接丢弃。README.md 要求主线恢复到安全版本。玩家需要理解：远程上公开过的 3 条坏提交必须用 revert 逐条撤销，而且最好按从新到旧的顺序处理；本地那个尚未推送、也没有保留价值的废提交，则可以用 reset --hard 直接回退掉。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "qiaojianxia",
+      "task": "负责说明这次到底连着推坏了什么，以及本地还有什么多余实验，但绝对不要直接告诉玩家应该输入什么命令。你的语气短、准，不会额外渲染情绪。",
+      "todo": [
+        "如果玩家问远程上坏了什么，就说明最近 3 条已推送提交分别删掉了呼叫提醒、去掉了 owner_ack、还把发布守卫放宽到了演练模式",
+        "如果玩家问本地还有什么，就说明有一条没推送的 wip: add local panic toggle，只是临时试验，不需要保留",
+        "如果玩家问最终应恢复成什么，就提醒 README 和 release_guard.py 里都写着正式规则：只允许 staging 且需要 approved 和 owner_ack",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，我这里不是一条坏提交，是三条连着炸。远程 main 已经被我推成了松垮版本，本地还挂着一条没推送的废试验。现在看 log，像在读事故时间线。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你不能接受有人把主线连着炸三次还处理得像在擦白板。",
+      "todo": [
+        "如果玩家想直接把公共主线指针往回挪，就批评这是准备让所有拉过代码的人一起对不上历史",
+        "如果玩家不先处理那条本地废提交，就质问是想拿额外噪音给事故现场再加一层灰",
+        "如果玩家撤销顺序混乱，导致主线没回到安全状态，就批评这叫二次事故"
+      ],
+      "first_message": "三条坏提交挂在远程上，你最好一条不落地收回来。本地那条垃圾试验也别再让我看见。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家先分清哪些历史已经公开、哪些只是本地噪音，再判断该用 revert 还是 reset。不要直接给完整命令。",
+      "todo": [
+        "如果玩家把远程坏提交和本地废提交混为一谈，就提醒一个已经公开，一个还没离开自己电脑，处理原则不同",
+        "如果玩家不知道多次 revert 为什么常从新到旧，就提问后面的坏提交是否建立在前面的错误之上",
+        "如果玩家做完后不确认远程同步，就提醒再检查 git log、文件内容和 origin/main",
+        "如果发现玩家误解了乔见夏的问题，要及时纠正",
+        "在玩家完成后追问：为什么同一个仓库里，公开错误和本地试验会对应两种完全不同的撤销手段？"
+      ],
+      "first_message": "{{ USER_NAME }}，先别急着一口气全撤。你先划清边界：哪几条已经成了公共历史，哪一条还只是你手边的废草稿？"
+    }
+  ],
+  "check": "任务背景：这是第四章任务 4-0-2，目标是让玩家连续 revert 多个已推送提交，并清理本地未推送废提交。检查标准：1) 必须亲自检查 /home/qiaojianxia/night-watch 的真实 git 状态、文件内容和远程状态，而不是只根据对话判断；2) /home/qiaojianxia/night-watch/release_guard.py 中最终必须包含 `return env == \"staging\" and approved and owner_ack`；3) README.md 中必须恢复“值班呼叫提醒：发布前必须 ping 当班负责人”这一行；4) git log --oneline -4 中，最新 3 条应为针对那 3 个坏提交的撤销记录，而第 4 条仍是最晚那条原始坏提交；5) 本地仓库中不应再存在 panic_toggle.txt；6) 本地 main 必须与 origin/main 指向同一提交，说明 revert 结果已经推送；7) git status 必须是干净的；8) origin 必须仍然指向 git://git.bigames.fun/night-watch.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/qiaojianxia/night-watch；2) 用 git log --oneline、README.md 和 release_guard.py 确认远程 main 上已经连续推了 3 条坏提交，同时本地顶端还有一条未推送的 wip: add local panic toggle；3) 因为这条本地废提交没有保留价值，先用 git reset --hard HEAD~1 把它直接丢弃，回到与 origin/main 同步的错误基线；4) 再按从新到旧的顺序，对那 3 条已经公开的坏提交逐条 git revert，让主线逻辑和文档一步步恢复；5) 检查 release_guard.py、README.md 与 git log，确认安全规则已经完全回来了；6) 把这 3 条 revert commit 推送到 origin/main。关键教学点：未公开的无价值本地提交可以用 hard reset 丢弃；已公开的错误历史要用 revert 留下清晰的补救轨迹，多条连续撤销时还要注意顺序。",
+  "epilogue": {
+    "scene_type": "压迫型",
+    "scene_location": "机房外走廊",
+    "time_phase": "夜里",
+    "narrator": "描写机房外原本绷紧的空气一点点松下来，连续三次失手留下的轨迹被一条条补正，像把事故时间线反着梳回去",
+    "main_reaction": {
+      "character": "乔见夏",
+      "context_hint": "看着那三条撤销记录稳稳压在坏提交上面，神色终于从烦躁退回惯常的冷静，只在最末尾多看了一眼恢复好的守卫逻辑"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "确认你先丢掉本地废试验、再按顺序回收公共错误后，才指出：救火最怕的不是火大，而是边界不清，什么都想用同一种办法处理"
+    },
+    "affection_changes": [
+      {
+        "character": "乔见夏",
+        "npc_id": "qiaojianxia",
+        "dimension": "认可",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "信赖",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：连环翻车现场",
+    "unlock_story": {
+      "name": "连环翻车现场",
+      "content": "夜里的走廊比白天更容易放大错误。乔见夏把那串提交记录停在屏幕中央时，没有多解释什么，可谁都看得出来，这不是一次手滑能概括的场面。连续三条坏提交压在远程主线上，再加一条本地没推送的废试验，像一份层层叠上去的事故记录。\n\n真正让人头疼的，不只是错了三次，而是这四条痕迹根本不属于同一种层级。有的已经成了所有人都能看见的公共历史，必须用公开、清楚、可追溯的方式一条条撤回；有的却还只是自己电脑里的无效折腾，干脆丢掉才是最干净的处理。你替她做的，就是先把这些层级分开，再把该认的错认真认回来，把该扔的噪音干脆扔掉。\n\n等最后一条 revert 落下去，守卫逻辑回到安全状态，README 里的呼叫提醒也重新站回该站的位置，乔见夏才轻轻吐出一口气。她没说“幸好”，只说了一句“现在主线终于能看了”。那句话里没有自嘲，只有一种工程师式的确认：事故已经被收束，不会再继续蔓延。"
+    },
+    "next_hook": "几条普通提交还能一条条撤，可要是闯祸的是一整个 merge 呢？下一关，时光倒流得先选主时间线。"
+  },
+  "preview_image": "qiaojianxia/casual_private/avatar_peaceful.png"
+}

@@ -1,0 +1,81 @@
+{
+  "title": "半成品先塞抽屉里",
+  "subtitle": "学习用 git stash 暂存半成品并切回主分支救火",
+  "story": "乔见夏把终端转向你时，屏幕上停着一份尚未提交的 summary 卡片。她本来已经在自己的功能分支上埋头写到一半，结果岑宁忽然丢来一句: main 上有个紧急 hotfix 现在就要补。她并不慌，只是知道这种时候最麻烦的不是改哪一行，而是手头这份半成品如果处理不好，会在切分支时一起乱掉。",
+  "background": "乔见夏当前就在 incident-console 仓库的 `feature/live-summary` 分支上，且 `status_panel.py` 中有未提交修改，目标是把 `render_summary_card()` 完成到 `summary: backlog synced`。但 README 规定她必须先回 `main` 处理紧急 hotfix，在 `hotfix.txt` 中写入“修复 stale cache 导致的旧状态展示”并提交。由于当前工作区不干净，直接切回 `main` 会卡住，所以玩家需要先用 stash 暂存半成品，再切分支修 hotfix，之后回到 `feature/live-summary` 用 stash pop 恢复工作、完成功能提交，最后把该功能分支合并回 `main`。本关的核心是理解 stash 不是丢代码，而是临时把未完成工作收进抽屉里。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "qiaojianxia",
+      "task": "负责精确描述当前卡在半成品和紧急 hotfix 之间的状态，但绝对不要直接告诉玩家应该输入什么命令。你寡言、逻辑清晰，会强调自己现在人在 feature/live-summary 上，而且手头修改还没提交完。",
+      "todo": [
+        "如果玩家问当前分支和未完成内容，就说明自己在 `feature/live-summary` 上，status_panel.py 里的目标是让 render_summary_card() 返回 `summary: backlog synced`",
+        "如果玩家问 main 上的紧急任务，就说明 README 要求先补 hotfix.txt，内容是“修复 stale cache 导致的旧状态展示”",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家担心 stash 之后代码没了，就说明那只是临时收起来，稍后还要恢复回来继续写"
+      ],
+      "first_message": "{{ USER_NAME }}，我现在在 `feature/live-summary` 上写到一半，main 却突然要我立刻补 hotfix。status_panel.py 还没提交完，直接切分支感觉会出事。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你要强调主分支热修不能等，但半成品也不能乱丢。",
+      "todo": [
+        "如果玩家在脏工作区里硬切分支失败，就嘲讽连半成品都收不好还想救火",
+        "如果玩家修完 hotfix 却忘了回来恢复原来的功能工作，就质问是不是准备把自己的开发进度埋进抽屉里",
+        "如果玩家最后 stash 还留着没处理干净，就批评现场救完了，工具箱却摊了一地"
+      ],
+      "first_message": "主分支的热修现在就要，半成品也别给我弄丢。两边都处理好。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家理解 stash 的用途，以及为什么 merge 前要先让 hotfix 和功能提交都各自落在正确分支上。不要直接给完整命令。",
+      "todo": [
+        "如果玩家想直接切回 main，就提问当前工作区不干净时 Git 通常会如何保护这些未提交修改",
+        "如果玩家已经暂存好工作，就提醒先回 main 完成 hotfix 的独立提交",
+        "如果玩家修完 hotfix 却停住，就提问那份被临时收起来的功能修改该怎样拿回来",
+        "如果发现玩家对乔见夏的描述理解错误，要及时纠正",
+        "在玩家完成后追问：为什么 stash 特别适合处理中途被打断、但又不想随便 commit 半成品的场景？"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是第三章任务 2-1-2，目标是让玩家在功能开发中途用 stash 暂存工作，切回 main 修 hotfix，再恢复并完成功能分支。检查标准：1) 必须亲自检查 /home/qiaojianxia/incident-console 的真实文件和分支状态，而不是只根据对话判断；2) main 分支最终必须已经包含 `hotfix.txt`，且文件内容为“修复 stale cache 导致的旧状态展示”；3) main 分支最终也必须包含 `status_panel.py` 中的 `render_summary_card()`，且返回值为 `summary: backlog synced`；4) 本地分支 `feature/live-summary` 必须存在，并且它的功能提交已被合并进 main；5) git stash list 应为空，说明玩家确实恢复并收尾了暂存工作；6) /home/qiaojianxia/incident-console 的 git status 必须是干净的；7) 当前分支必须是 main；8) origin 必须仍然指向 git://git.bigames.fun/incident-console.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/qiaojianxia/incident-console；2) 查看 README.md，确认当前在 `feature/live-summary` 且存在未提交修改；3) 用 git stash 暂存这份半成品；4) 切回 main；5) 新建或编辑 hotfix.txt，写入“修复 stale cache 导致的旧状态展示”，并提交 hotfix；6) 再切回 `feature/live-summary`；7) 使用 git stash pop 恢复之前暂存的 status_panel.py 修改；8) 完成功能分支提交；9) 切回 main，merge `feature/live-summary`；10) 确认 git stash list 为空且工作区干净。关键教学点：stash 让未完成工作可以暂时离开工作区，但它不是结束开发，而是为了稍后安全地回来继续。",
+  "epilogue": {
+    "scene_type": "沉静型",
+    "scene_location": "靠窗工位",
+    "time_phase": "傍晚",
+    "narrator": "描写傍晚的工位逐渐安静下来，热修和功能都各自落回了正确的位置，像把被打断的思路重新接好",
+    "main_reaction": {
+      "character": "乔见夏",
+      "context_hint": "确认 stash 已经清空、summary 卡片也回到主线上后，只轻轻点了下头，像把中断的实验重新接回原来的轨迹"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "看到她没有因为紧急任务乱提一个半成品 commit，顺势肯定了这种先收起再切换的节奏"
+    },
+    "affection_changes": [
+      {
+        "character": "乔见夏",
+        "npc_id": "qiaojianxia",
+        "dimension": "信任",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：半成品先塞抽屉里",
+    "unlock_story": {
+      "name": "半成品先塞抽屉里",
+      "content": "傍晚的办公室总会慢慢沉下来，外面的光一点点变暗，只剩屏幕把每个人桌面的边缘照得发白。乔见夏原本最讨厌开发中途被打断，那种思路刚要成形却被迫回头处理别的事，像把一段推导生生掐断。\n\n可这一次，她先把未完成的 summary 卡片暂时收进 stash，再回 main 把 hotfix 单独落成一条清清楚楚的提交，最后又把那份半成品原样取回来继续写。整个过程像是把一张摊开的草稿纸认真折好，放进抽屉，等别的事处理完再拿出来，连折痕都还在。\n\n当她看到 `git stash list` 终于空掉，`render_summary_card()` 也已经稳稳回到 main 上时，神情里那种被打断的不快才彻底散掉。她没有多说什么，只把终端窗口往后缩了点，像替这场临时插队的混乱画上了一个规整的句号。\n\n原来真正让人安心的，不是永远不被打断，而是即使中途被拉走，也知道怎样把手里的工作妥帖收好，再一丝不乱地接回来。"
+    },
+    "next_hook": "一个 stash 还只是临时抽屉，等抽屉里堆了好几份旧稿，连编号都开始打架时，真正的整理能力才会见分晓"
+  },
+  "preview_image": "cenning/winter/avatar_happy.png"
+}

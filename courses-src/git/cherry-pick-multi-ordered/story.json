@@ -1,0 +1,81 @@
+{
+  "title": "有选择地抄作业",
+  "subtitle": "学习从多个分支挑选多个 commit，并按正确顺序 cherry-pick",
+  "story": "闻书遥把演示文档的几条分支线列给你看时，像在给一份实验报告做筛选。卡片骨架在一个分支里，风险横幅和交接备注在另一个分支里，偏偏前者后面还夹着一条完全没必要带进正式稿的页脚灵感。她不缺内容，缺的是判断力: 到底该拿哪几条，先拿哪一条，才能让 release-candidate 长成一份能交的版本，而不是一锅拼装感很重的杂糅。 ",
+  "background": "闻书遥在 invoice-deck 仓库的 release-candidate 分支上，需要从多个分支挑选 3 条提交：`feat: add payment flow slide skeleton`、`docs: add risk banner to payment flow slide`、`docs: add review handoff note`。其中风险横幅提交依赖前面的骨架提交，因为它修改的是那份新建的 slides/payment_flow.md；而 `docs: note playful footer idea` 只是草稿，不应该进入 release-candidate。玩家需要理解：cherry-pick 可以跨多个分支精确搬运提交，但仍要注意依赖关系和顺序。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "wenshuyao",
+      "task": "负责说明哪几条提交是正式稿需要的、哪条只是草稿，并提醒这些内容分散在不同分支上，但绝对不要直接告诉玩家应该输入什么命令。你的表达准确、克制，会把依赖关系说清楚。",
+      "todo": [
+        "如果玩家问该拿哪几条提交，就明确说明目标是 `feat: add payment flow slide skeleton`、`docs: add risk banner to payment flow slide` 和 `docs: add review handoff note`",
+        "如果玩家问顺序为什么重要，就说明风险横幅那条是接在 payment_flow 骨架上的，没有骨架它就没有落点",
+        "如果玩家问什么不能带进来，就说明 `docs: note playful footer idea` 只是发散草稿，不属于 release-candidate",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，我这里不是缺内容，而是内容散得太开。正式要的三条提交分布在两个分支里，中间还夹着一条完全不该进正式稿的页脚灵感。顺序如果拿错，看起来就会很像拼装件。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你不接受那种看见多个分支就开始无差别搬运的做法。",
+      "todo": [
+        "如果玩家把草稿页脚也带进 release-candidate，就批评这是审稿标准低到连废话都舍不得删",
+        "如果玩家提交顺序混乱，导致关键文件没长成正确样子，就质问这份演示稿到底是照着哪条逻辑线拼的",
+        "如果玩家做完后不检查当前分支最新历史和文件内容，就批评这是把版本控制当抽奖"
+      ],
+      "first_message": "多个分支不是让你乱翻仓库的借口。你要的是能交付的三条提交，不是搜罗感想。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家先梳理提交依赖，再决定从哪些分支搬哪些提交。不要直接给完整命令。",
+      "todo": [
+        "如果玩家只盯着提交消息，不看它们改的是哪个文件，就提醒先想想哪条提交是在给另一条提交铺路",
+        "如果玩家把顺序看得无所谓，就提问一条修改新文件内容的提交，在没有那份文件之前要落到哪里",
+        "如果玩家做完后不确认 release-candidate 的历史和文件状态，就提醒再检查 git log、slides/payment_flow.md 和 copy/review_note.txt",
+        "如果发现玩家误解了闻书遥的问题，要及时纠正",
+        "在玩家完成后追问：为什么 cherry-pick 虽然很自由，但依赖关系仍然不会因为你“想拿”就自动消失？"
+      ],
+      "first_message": "{{ USER_NAME }}，这题真正考的不是你会不会搬提交，而是你能不能先读懂它们之间的依赖。先想一想：哪条提交是在给另一条提交搭台？"
+    }
+  ],
+  "check": "任务背景：这是第四章任务 4-1-1，目标是让玩家从多个分支挑选多个提交并按正确顺序 cherry-pick。检查标准：1) 必须亲自检查 /home/yaoyao/invoice-deck 的真实 git 状态、分支状态和文件内容，而不是只根据对话判断；2) 当前分支必须是 release-candidate；3) git log --oneline -3 中，较旧到较新的 3 条新增提交必须依次对应 `feat: add payment flow slide skeleton`、`docs: add risk banner to payment flow slide`、`docs: add review handoff note`；4) /home/yaoyao/invoice-deck/slides/payment_flow.md 中必须同时包含“## 卡片结构”和“## 风险横幅”；5) /home/yaoyao/invoice-deck/copy/review_note.txt 必须存在，并包含“演示时先展示卡片结构，再补风险横幅说明”；6) 仓库中不应存在 draft/footer.txt；7) 本地 release-candidate 必须只比 origin/release-candidate 超前 3 个提交；8) git status 必须是干净的；9) origin 必须仍然指向 git://git.bigames.fun/invoice-deck.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/yaoyao/invoice-deck；2) 查看 README.md 与相关分支上的提交历史，确认正式目标是从不同分支挑出 3 条提交，并识别出 `docs: add risk banner to payment flow slide` 依赖前面的骨架提交；3) 保持当前在 release-candidate，先 cherry-pick `feat: add payment flow slide skeleton`，再 cherry-pick 风险横幅提交，最后再带回 `docs: add review handoff note`；4) 确认 `docs: note playful footer idea` 没有被带进当前分支；5) 检查 git log、slides/payment_flow.md、copy/review_note.txt 与 git status。关键教学点：cherry-pick 虽然可以跨多个分支自由选取提交，但选取顺序仍要服从文件依赖与业务语义。",
+  "epilogue": {
+    "scene_type": "冷静型",
+    "scene_location": "靠窗长桌",
+    "time_phase": "下午",
+    "narrator": "描写原本零散在不同分支里的演示内容，被你按逻辑顺序一条条拣回 release-candidate，像把散页讲稿重新订成了一本能递交的册子",
+    "main_reaction": {
+      "character": "闻书遥",
+      "context_hint": "看到 release-candidate 顶端那三条提交终于排成一条干净的叙述线后，原本那点明显的烦躁退下去，像实验数据终于重新对齐"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "看着你没有被“多个分支”吓到，而是先梳理依赖再搬运，顺势点出：版本控制的自由从来不是随便来，而是给有判断力的人用的"
+    },
+    "affection_changes": [
+      {
+        "character": "闻书遥",
+        "npc_id": "wenshuyao",
+        "dimension": "信任",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：有选择地抄作业",
+    "unlock_story": {
+      "name": "有选择地抄作业",
+      "content": "闻书遥把整理好的 release-candidate 又看了一遍，像是在确认一组原本分散的变量终于回到了同一张表格里。她最烦的，从来不是内容多，而是内容来源太杂。不同分支上各有一小段能用的东西，可一旦顺序拿错，或者把不该带的草稿也顺手塞进来，最终交出去的就会像缝合痕迹明显的拼装件。\n\n你替她做的，不只是“把三条提交搬回来”这么简单。你先看清哪条提交是在搭骨架，哪条是在顺着骨架补风险横幅，哪条只是补一份交接说明；再把那条毫无必要的页脚灵感留在原地，不让它污染正式稿。于是 release-candidate 顶端长出来的，不是三块东拼西凑的补丁，而是一条逻辑清楚、先后有序的工作痕迹。\n\n闻书遥最后只说了一句“这样就能交了”，语气还是平静的，但已经没有先前那种看什么都嫌杂的冷意。像是她终于确认，Git 里所谓的选择，不只是会挑提交，更是会对顺序和边界负责。"
+    },
+    "next_hook": "会挑、会排，还不算最难。下一关，你会发现有些提交抄到一半会自己撞墙，甚至还得当场决定跳过谁、解决谁。"
+  },
+  "preview_image": "wenshuyao/casual_private/avatar_thinking.png"
+}

@@ -1,0 +1,81 @@
+{
+  "title": "薅隔壁组一根羊毛",
+  "subtitle": "学习从另一个分支 cherry-pick 单个 commit 到当前分支",
+  "story": "午后的工位区有种项目都快贴着截点跑的安静。唐艺梨把屏幕转过来时，像捧来一张不太体面的求助单。隔壁分支上有一小段支付徽章渲染正好能救她这边的展示稿，可那条分支后面又跟着一份明显还在发散期的草稿。她不敢整段照抄，只敢问你能不能“只拿那一口最干净的”。",
+  "background": "唐艺梨在 checkout-spark 仓库的 main 分支上，只需要从 feature/payment-badge 借用一条提交 `feat: add payment badge renderer`。该分支后面还有一条 `docs: jot badge brainstorm` 草稿提交，不应该进入 main。README.md 已说明最终只需要把支付徽章渲染逻辑复制到当前分支，且 cherry-pick 是复制提交变更到当前分支，不会让原分支上的提交消失。玩家需要掌握最基础的 git cherry-pick 单提交用法。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "tangyili",
+      "task": "负责说明自己只想借哪一小段实现、又不想把哪份草稿一起搬过来，但绝对不要直接告诉玩家应该输入什么命令。你的语气带点讨好和心虚，会把需求说得很具体。",
+      "todo": [
+        "如果玩家问要借哪条提交，就说明是 feature/payment-badge 上那条 `feat: add payment badge renderer`",
+        "如果玩家问什么不能一起拿，就说明后面的 `docs: jot badge brainstorm` 只是随手记，不该进 main",
+        "如果玩家问最终应该看到什么，就说明 ui/payment_panel.js 里要出现“支付方式已校验”这句返回值",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，隔壁分支上有一小段支付徽章正好能救我这边的展示，可它后面还跟着一份明显没写完的草稿。我只想拿那条干净提交，不想把人家随手记也一起端回来。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你不接受那种为了省事就把整串历史连锅端回来的做法。",
+      "todo": [
+        "如果玩家想把整个分支都合过来，就批评这是不会做筛选，只会整锅倒",
+        "如果玩家把草稿文件也带进当前分支，就嘲讽这叫抄作业还把对方演算纸一起交了",
+        "如果玩家做完后不检查当前分支最新历史和文件内容，就批评这是运气驱动工程"
+      ],
+      "first_message": "你要的是一条能用的提交，不是一整车杂物。连“只拿需要的那一条”都做不到，就别跟我说你懂版本控制。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家意识到：现在的目标不是切换去别的分支开发，而是把那个分支上的某一次变更复制到自己当前分支。不要直接给完整命令。",
+      "todo": [
+        "如果玩家想直接切到 feature/payment-badge 上改，就提醒当前需求是让 main 拿到那次变更，而不是在源分支上继续工作",
+        "如果玩家分不清该拿哪条提交，就提醒先看 feature/payment-badge 的提交顺序和提交说明",
+        "如果玩家做完后不验证 main 的最新提交和文件内容，就提醒再检查 git log 和 ui/payment_panel.js",
+        "如果发现玩家误解了唐艺梨的问题，要及时纠正",
+        "在玩家完成后追问：为什么 cherry-pick 之后，源分支上的那条提交并不会消失？"
+      ],
+      "first_message": "{{ USER_NAME }}，这里不是“要不要借代码”的问题，而是“你要借的是哪个提交本身”。想一想：你现在需要把人带走，还是只把那次改动复印到自己手里？"
+    }
+  ],
+  "check": "任务背景：这是第四章任务 4-1-0，目标是让玩家从另一个分支 cherry-pick 单个提交。检查标准：1) 必须亲自检查 /home/yikeli/checkout-spark 的真实 git 状态和文件内容，而不是只根据对话判断；2) 当前分支必须仍然是 main；3) git log --oneline -1 的最新提交必须是 `feat: add payment badge renderer`；4) /home/yikeli/checkout-spark/ui/payment_panel.js 中必须包含 `return \"支付方式已校验\";` 和 `renderPaymentBadge`；5) 仓库中不应存在 scratchpad.md；6) 本地 main 必须只比 origin/main 超前 1 个提交；7) git status 必须是干净的；8) origin 必须仍然指向 git://git.bigames.fun/checkout-spark.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/yikeli/checkout-spark；2) 用 git log --oneline feature/payment-badge 或等价方式查看源分支上的提交，确认要拿的是 `feat: add payment badge renderer`，而不是后面的草稿提交；3) 保持当前在 main 分支，对那条目标提交执行 git cherry-pick；4) 检查 ui/payment_panel.js 已经出现支付徽章渲染逻辑，同时 scratchpad.md 没有进入当前分支；5) 再确认 git log、git status 与本地分支相对 origin/main 的状态。关键教学点：cherry-pick 的本质是把指定提交的变更复制到当前分支，并生成新的提交历史，而不是移动原来的提交。",
+  "epilogue": {
+    "scene_type": "轻松型",
+    "scene_location": "工位区",
+    "time_phase": "下午",
+    "narrator": "描写原本像在偷借别人作业边角料的小插曲，被你收束成一次很干净的手术式操作，屏幕上的主线只长出它真正需要的那一小段功能",
+    "main_reaction": {
+      "character": "唐艺梨",
+      "context_hint": "看到 main 上真的只多出那条刚刚好的提交，草稿一点没沾上，明显松了口气，像总算不用担心自己把别人未完成的东西一起抄进来"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "看着你精准地只拿走目标提交，顺势点明：Git 里很多高阶操作，难的不是会不会敲，而是你有没有筛选意识"
+    },
+    "affection_changes": [
+      {
+        "character": "唐艺梨",
+        "npc_id": "tangyili",
+        "dimension": "依赖",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：薅隔壁组一根羊毛",
+    "unlock_story": {
+      "name": "薅隔壁组一根羊毛",
+      "content": "唐艺梨盯着主线顶端那条新出现的提交，像在确认自己是不是终于学会了“拿一点”和“全搬走”之间的区别。她原本最怕的，不是借代码这件事本身，而是一个没刹住手，把别人分支后面那些还在发散的想法也一起拖回来。真要那样，主线就会像借来一件外套，袖子里还塞着对方没掏干净的购物小票。\n\n可你替她做的，恰好是最干净的那种处理。你没有跑去源分支继续折腾，也没有为了省事整串照抄，只是把那条刚好能救场的变更复印到眼前这条时间线上。于是主线仍然是主线，隔壁分支也还是原来的样子，只有那段真正需要的支付徽章逻辑，安安静静落到了它该在的位置。\n\n唐艺梨小声说了句“原来还能这么精确”，像是在重新认识 Git 不是只有大开大合。它也允许人从混杂的历史里，稳稳挑出自己真正需要的那一根线。"
+    },
+    "next_hook": "单条提交会挑了，接下来就不会只满足于薅一根羊毛。下一关，你要开始学会从几堆历史里有选择地抄整套答案。"
+  },
+  "preview_image": "tangyili/casual_private/avatar_happy.png"
+}

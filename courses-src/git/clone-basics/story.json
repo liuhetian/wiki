@@ -1,0 +1,83 @@
+{
+  "title": "初来乍到的实习生",
+  "subtitle": "学习使用 git clone",
+  "story": "今天是实习生唐艺梨入职的第一天，她抱着新电脑站在工位旁边，一脸茫然地看着你。",
+  "background": "技术总监岑宁让唐艺梨把公司内部的 cal 项目拉到本地开始看代码，但她只会去 GitHub 搜索，怎么都找不到，于是来找你帮忙。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "tangyili",
+      "task": "负责描述自己遇到的问题和现象，但不要直接告诉玩家应该输入什么命令。你可以说自己在 GitHub 上找不到仓库，也可以说岑宁只提到了 cal 这个名字。你不会使用git clone ，要引导玩家交给你 git clone 命令。",
+      "todo": [
+        "如果玩家没有问仓库地址，就持续表达自己不知道从哪里下载",
+        "如果玩家不知道克隆到电脑的哪个目录，就说岑宁说了一嘴克隆到唐艺梨的主目录下，并且反问主目录是什么",
+        "如果玩家只说怎么办,而不是实际运行命令,需要调用computer_suggestion工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，岑宁让我把 cal 项目拉下来，可我在 GitHub 上搜不到。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责催进度和施压，不直接告诉玩家完整解法。说话要像强势的女上司。",
+      "todo": [
+        "如果玩家一直跑偏，就嘲讽玩家连仓库都不会找",
+        "如果玩家说了不专业的话，就嘲讽这都不知道",
+        "如果玩家对唐艺梨的回答错误，就要进行嘲讽"
+      ],
+      "first_message": "公司仓库都拉不下来，你打算第一天就让我替你收尾？",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家意识到，下载代码前必须先确认仓库地址，而且 Git 服务不只有 GitHub。",
+      "todo": [
+        "如果玩家主动询问公司的内部仓库地址，就告诉玩家本次任务的仓库地址是 git://git.bigames.fun/cal.git",
+        "如果发现玩家对唐艺梨的回答错误，就要及时发现并进行纠正",
+        "在玩家完成后追问 Git 和 GitHub 有什么区别"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是 Git 入门关卡，目标是帮助实习生把公司内部仓库克隆到本地。检查标准：1) /home/yikeli/cal 目录存在且里面有 .git；2) /home/yikeli/cal 的 origin 指向 git://git.bigames.fun/cal.git；3) README.md 和 calc.py 存在。注意必须亲自检查 /home/yikeli/cal 的真实状态，而不是只根据对话判断。",
+  "solution": "标准流程：1) 先确认仓库地址是 git://git.bigames.fun/cal.git；2) 切换到用户家目录：cd /home/yikeli；3) 执行 git clone git://git.bigames.fun/cal.git；4) 进入项目确认文件存在：cd cal && ls。关键点：Git 可以从公司内部仓库下载代码，仓库地址不一定在 GitHub。",
+  "achievement": {
+    "id": "first-clone",
+    "title": "第一次上手",
+    "description": "完成第一个任务，成功帮唐艺梨把仓库克隆到本地。"
+  },
+  "epilogue": {
+    "scene_type": "轻松型",
+    "scene_location": "工位区",
+    "time_phase": "傍晚",
+    "narrator": "描写工位区傍晚安静下来的氛围",
+    "main_reaction": {
+      "character": "唐艺梨",
+      "context_hint": "第一次成功克隆仓库，对前辈充满感激和依赖"
+    },
+    "support_reaction": {
+      "character": "岑宁",
+      "context_hint": "简短评价，语气稍有松动"
+    },
+    "affection_changes": [
+      {
+        "character": "唐艺梨",
+        "npc_id": "tangyili",
+        "dimension": "依赖",
+        "delta": 1
+      },
+      {
+        "character": "岑宁",
+        "npc_id": "cenning",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：初来乍到的实习生",
+    "unlock_story": {
+      "name": "初来乍到的实习生",
+      "content": "傍晚的工位区终于安静下来，显示器的光一排排亮着，把唐艺梨抱在怀里的新电脑也映得发白。她站在你桌边，小心翼翼地把刚刚 clone 下来的仓库又点开看了一遍，像是在确认那串命令不是运气。\n\n“原来公司里的仓库，不一定会挂在 GitHub 上啊。”她小声感叹，语气里还有点没完全散掉的紧张。你随口应了一声，她却像是得到确认一样，眼睛一下亮了起来，抱着电脑坐回工位，又立刻回头看你，认真地说了句谢谢。\n\n不远处的岑宁从文件堆后抬起头，只丢来一句“至少第一天没把自己卡死”，就又低头去看屏幕。话还是一贯不算好听，但已经足够让唐艺梨偷偷松一口气。她把这句评价当成了表扬，连收拾数据线的动作都轻快了些。\n\n临下班前，她忽然探头问你，明天是不是就该学会把代码放到指定的位置。你还没回答，她已经自己抱着电脑点了点头，像是给自己下了某种决心。"
+    },
+    "next_hook": "岑宁提到明天的任务是把代码克隆到指定目录"
+  },
+  "preview_image": "tangyili/default/avatar_happy.png"
+}

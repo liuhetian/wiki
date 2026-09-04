@@ -1,0 +1,81 @@
+{
+  "title": "挑剔的代码审查",
+  "subtitle": "学习使用 git status 和选择性 git add",
+  "story": "闻书遥推了推眼镜，终端里是她刚运行完的测试结果——全部通过。但当她准备提交时，发现工作目录里多了好几个不该提交的文件，而且项目经理要求的 README.md 还没写。",
+  "background": "闻书遥在 cal 项目中实现了 add 和 multiply 函数，还写了测试文件。但工作目录里混着调试日志 debug.log 和编译缓存 __pycache__，这些不应该被提交。同时项目经理岑宁要求所有项目必须有 README.md 文件。闻书遥虽然代码写得很好，但对 Git 的选择性提交不熟悉，也不知道该怎么处理这些多余的文件。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "wenshuyao",
+      "task": "负责描述自己遇到的问题，但绝对不要直接告诉玩家应该输入什么命令。你是一个高标准的研究员，代码质量很高但对 Git 操作不太熟。你知道不应该把日志和缓存提交上去，但不知道怎么选择性地提交。你觉得 Git 应该能自动判断哪些该提交哪些不该提交。",
+      "todo": [
+        "如果玩家问目前的情况，就精确地列举自己改了 calc.py、新建了 test_calc.py，还有调试产生的 debug.log 和 __pycache__",
+        "如果玩家用 git add . 把所有文件都加了，就皱眉说'日志和缓存也混进去了，这样不行'",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家提到需要写 README.md，就说'岑总确实要求了，但我不知道该写什么内容'",
+        "如果玩家完成了所有步骤，虽然嘴上淡淡的，但会默默检查一遍提交内容是否干净"
+      ],
+      "first_message": "{{ USER_NAME }}，代码和测试都写完了，但目录里多了一堆乱七八糟的文件。我不想把这些垃圾也传上去。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责催进度和施压，不直接告诉玩家完整解法。说话要像强势的女上司。强调提交规范和 README 的重要性。",
+      "todo": [
+        "如果玩家把日志或缓存文件提交了，就严厉批评提交质量",
+        "如果玩家忘记写 README.md，就质问连项目说明都没有，谁知道这个仓库是干什么的",
+        "如果玩家提交信息写得太随意，就要求重新写一个有意义的提交信息"
+      ],
+      "first_message": "提交之前看清楚了，别把垃圾文件也传上来。还有，README 呢？",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家学会用 git status 查看工作区状态，理解选择性 add 的意义。不要直接给答案，用提问引导思考。",
+      "todo": [
+        "如果玩家不知道从哪里开始，就提示'在提交之前，是不是应该先看看工作区里到底有哪些变化？'",
+        "如果玩家不知道怎么排除不需要的文件，就提问'git add 是不是只能一次全部添加？有没有办法只添加特定文件？'",
+        "如果发现玩家对闻书遥的回答错误，就要及时纠正",
+        "在玩家完成后追问：如果每次提交都要手动排除这些文件，是不是太麻烦了？有没有一劳永逸的办法？（引出 .gitignore 的概念，为困难难度埋伏笔）"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是 Git 入门中等难度关卡，目标是帮助闻书遥选择性提交代码并补上 README.md。检查标准：1) 在 /home/yaoyao/cal 目录下执行 git log，最新的 commit 应该包含 calc.py、test_calc.py 和 README.md 的修改；2) README.md 文件存在且内容不为空；3) git status 显示 debug.log 和 __pycache__ 没有被提交（应仍显示为 untracked 或不在 git log 中出现）；4) 执行 git log origin/main 确认修改已经 push 到远程。注意必须亲自检查真实状态，而不是只根据对话判断。",
+  "solution": "标准流程：1) cd /home/yaoyao/cal 进入项目目录；2) git status 查看工作区状态（应看到 calc.py 已修改，test_calc.py、debug.log、__pycache__/ 为 untracked）；3) git add calc.py test_calc.py 只添加需要提交的文件；4) 创建 README.md 文件，写上项目说明；5) git add README.md 将 README 也加入暂存区；6) git commit -m '添加 add/multiply 函数、测试和项目说明' 提交；7) git push 推送到远程。关键教学点：git add 可以指定具体文件名，不一定要用 git add . ；提交前应该用 git status 确认哪些文件会被提交；不该提交的文件（日志、缓存）要排除在外。",
+  "epilogue": {
+    "scene_type": "反差型",
+    "scene_location": "工位区",
+    "time_phase": "傍晚",
+    "narrator": "描写闻书遥工位上整齐的代码笔记和精心分类的文件夹，与终端里刚刚完成的干净提交形成呼应",
+    "main_reaction": {
+      "character": "闻书遥",
+      "context_hint": "检查了提交记录后，满意地点了点头，嘴上说'这才是基本的提交规范'，但手指不自觉地在笔记本上记下了 git add 的用法"
+    },
+    "support_reaction": {
+      "character": "岑宁",
+      "context_hint": "翻了一下提交记录和 README，说了句'勉强及格'就走了"
+    },
+    "affection_changes": [
+      {
+        "character": "闻书遥",
+        "npc_id": "wenshuyao",
+        "dimension": "认可",
+        "delta": 1
+      },
+      {
+        "character": "岑宁",
+        "npc_id": "cenning",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：挑剔的代码审查",
+    "unlock_story": {
+      "name": "挑剔的代码审查",
+      "content": "傍晚六点，大部分人已经开始收拾东西了。闻书遥还坐在工位上，面前摊着一本黑色硬壳笔记本，正用蓝色钢笔一笔一划地记录着什么。\n\n她写下了'git add <文件名> — 只暂存指定文件'，然后在旁边用红笔标注了'重要：不要用 git add .'，下面画了一条整齐的下划线。这是她今天学到的最有用的东西——原来提交代码不是把整个目录打包扔上去，而是像做实验一样，精确控制每一个变量。\n\n她翻看了一遍自己的提交记录，README.md 的格式工整，提交信息清晰明确，没有一个多余的文件混进去。那个 debug.log 和 __pycache__ 安安静静地躺在工作目录里，没有被提交。她对此感到一种微妙的满足。\n\n岑宁下班前路过，停了两秒看了看她的屏幕。\"README 写得还行。\"只有这五个字。闻书遥没有回头，但你注意到她握笔的手指微微收紧了一下——那是她极力克制表情时的小动作。\n\n等岑宁走远了，她才低声自言自语：\"不过是基本功而已。\"然后合上笔记本，把钢笔帽推回去的声音格外清脆。你知道她今晚回去一定会把今天学的东西整理成一份完美的笔记。"
+    },
+    "next_hook": "闻书遥注意到项目经理推送了新的需求文档，她需要学习如何同步最新代码"
+  },
+  "preview_image": "cenning/default/avatar_peaceful.png"
+}

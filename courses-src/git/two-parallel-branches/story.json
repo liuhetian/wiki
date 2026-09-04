@@ -1,0 +1,81 @@
+{
+  "title": "一个脑子切两条线",
+  "subtitle": "学习同时维护两条独立的功能分支",
+  "story": "闻书遥把两份文档并排摊在屏幕上，眉头压得很低。她最讨厌把不同目的的改动揉成一团，可项目经理偏偏让她同时补 QA 检查单和发布说明。她担心自己一个不留神，就把两项工作搅进同一条分支里，最后谁也分不清哪段改动属于哪件事。",
+  "background": "闻书遥在 launch-playbook 项目里需要同时补两份上线文档。README 要求她从 `main` 分别创建 `feature/qa-checklist` 和 `feature/release-note` 两个功能分支：前者在 `checklist.md` 中追加“回归测试完成后在群里同步结果”，后者在 `release_notes.md` 中追加“发布说明需附上回滚负责人”。完成各自提交后，需要回到 `main` 逐一 merge。这一关的重点是理解分支的独立性，不能把两项工作全堆在一个分支里再假装拆开。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "wenshuyao",
+      "task": "负责描述这次同时维护两项工作的压力和文档要求，但绝对不要直接告诉玩家应该输入什么命令。你高标准、很在意改动边界，会反复强调两件事不该混在一起。",
+      "todo": [
+        "如果玩家问两项任务分别是什么，就说明一个是 checklist.md 的 QA 同步提醒，一个是 release_notes.md 的回滚负责人说明",
+        "如果玩家问为什么要开两个分支，就说明这两项工作是不同主题，不能混成一个提交边界不清的分支",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家把两项改动都做在同一个分支里，要指出这样以后根本无法单独审查或回退其中一项"
+      ],
+      "first_message": "{{ USER_NAME }}，这次不是一条功能线，是两条。QA 检查单和发布说明都要补，但我不想把它们写成一团脏历史。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你要强调多人协作里提交边界混乱会直接拖累评审。",
+      "todo": [
+        "如果玩家只建了一个分支就全做完，讽刺这是把两份工单塞进同一个口袋里",
+        "如果玩家忘了回 main 逐一合并，就质问改动是准备永远挂在分支上给自己欣赏吗",
+        "如果玩家把文档改动做错文件，就批评连任务边界都没读清"
+      ],
+      "first_message": "两项工作两条线，别又拿一个分支糊弄我。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家理解为什么不同主题的工作要拆成不同分支，以及 merge 之前要先确认各分支各自只承载自己的改动。不要直接给完整命令。",
+      "todo": [
+        "如果玩家犹豫先做哪条线，就提醒先明确两个分支名和各自负责的文件",
+        "如果玩家把第二项工作叠在第一条分支上，就提问这样还能不能单独审查其中一个功能",
+        "如果玩家已经做完两个分支的提交，就提醒切回 main 后再逐一合并",
+        "如果发现玩家对闻书遥的要求理解有误，要及时纠正",
+        "在玩家完成后追问：为什么协作里同主题的提交边界清晰，比'一次性全改完'更重要？"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是第三章任务 2-1-1，目标是让玩家维护两条彼此独立的功能分支并合并回 main。检查标准：1) 必须亲自检查 /home/yaoyao/launch-playbook 的真实分支和文件状态，而不是只根据对话判断；2) main 分支中的 checklist.md 必须包含“回归测试完成后在群里同步结果”，release_notes.md 必须包含“发布说明需附上回滚负责人”；3) 本地必须同时存在 `feature/qa-checklist` 和 `feature/release-note` 两个分支；4) `feature/qa-checklist` 分支不应承载 release_notes.md 的那条新增说明，`feature/release-note` 分支也不应承载 checklist.md 的新增提醒，说明两条分支确实独立；5) main 必须已经合并了这两个分支的成果；6) /home/yaoyao/launch-playbook 的 git status 必须是干净的；7) origin 必须仍然指向 git://git.bigames.fun/launch-playbook.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/yaoyao/launch-playbook；2) 阅读 README.md，明确两个功能分支名和各自要修改的文件；3) 从 main 创建并切换到 `feature/qa-checklist`，编辑 checklist.md，提交该分支；4) 回到 main，再创建并切换到 `feature/release-note`，编辑 release_notes.md，提交该分支；5) 切回 main，先后 merge 这两个功能分支；6) 确认 main 上两处文档都已生效且工作区干净。关键教学点：多个功能并行时，分支的价值不只是“能切换”，更是把不同主题的改动边界隔离开。",
+  "epilogue": {
+    "scene_type": "克制型",
+    "scene_location": "工位区靠窗一侧",
+    "time_phase": "午后",
+    "narrator": "描写两份文档终于各归其位，闻书遥确认分支边界没有被写乱后的短暂松弛",
+    "main_reaction": {
+      "character": "闻书遥",
+      "context_hint": "把两个分支分别核对完后，神情才稍微缓下来，像终于允许自己接受这次历史至少是整洁的"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "看到两项改动真的分开存在，没有混成一团，顺势提醒她这就是分支最实际的价值"
+    },
+    "affection_changes": [
+      {
+        "character": "闻书遥",
+        "npc_id": "wenshuyao",
+        "dimension": "认可",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "信任",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：一个脑子切两条线",
+    "unlock_story": {
+      "name": "一个脑子切两条线",
+      "content": "午后的阳光斜斜照进工位区，把桌面上的纸张边缘照得很亮。闻书遥把 checklist.md 和 release_notes.md 最终都切回 main 之后，还是没有第一时间合上电脑，而是又去各自的分支上看了一遍。\n\n她不信那种'结果对了就行'的说法。对她来说，过程如果脏，结果只是在侥幸。可当她确认 `feature/qa-checklist` 里只装着 QA 相关的提醒，`feature/release-note` 里只装着回滚负责人的说明时，原本一直绷着的肩线终于松下去一点。\n\n同样是写完两行字，混在一起和分开落位，给人的感觉完全不同。前者像把实验数据随手塞进一个文件夹，后者才像真的做过归档。她看着干净的分支关系，低声说：'至少以后谁来审，都知道每一笔改动在回答什么问题。'\n\n那句话很轻，却比平时任何一句挑剔都更像认可。原来分支不只是多开几条线，而是在协作里替每一项工作保住它该有的边界。"
+    },
+    "next_hook": "分支边界理顺了，真正狼狈的情况才要开始: 功能写到一半，偏偏主分支突然喊你回去救火"
+  },
+  "preview_image": "linxian/winter/avatar_depressed.png"
+}

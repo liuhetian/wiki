@@ -1,0 +1,81 @@
+{
+  "title": "后悔药分软硬两款",
+  "subtitle": "学习用 git reset --soft 和默认 mixed 模式回退未推送提交",
+  "story": "闻书遥把最近两次本地提交翻出来时，语气平静得像是在陈述一组实验偏差。可你一看就知道她烦得不轻。她上一条提交里本来只是想补回滚负责人，却顺手把一份临时草稿也塞了进去，而且负责人称呼还没改到最终版。东西都还没推送，但再拖下去，只会让错误长得更像真的。",
+  "background": "闻书遥在 release-brief 仓库里本地有两条尚未推送的提交。较早一条 `docs: add launch checklist skeleton` 是正确的；最新一条 `wip: note rollback owner` 同时带进了应该删除的 brainstorm.txt，并且 rollout.md 里的负责人称呼还只是临时写法。README.md 要求最终只保留两条本地提交，其中最新一条应整理为 `docs: add rollback owner note`，且只包含 rollout.md 的正式内容。玩家需要理解：未推送提交可以安全回退；如果想先把最近一条提交拉回来继续改，但保留暂存状态，可用 reset --soft；如果还要重新挑选哪些文件进入提交，就要再用默认的 mixed reset 把暂存区放开。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "wenshuyao",
+      "task": "负责描述最近一条本地提交的问题，但绝对不要直接告诉玩家应该输入什么命令。你的表达克制、准确，不会把自己的失误说得像闹剧。",
+      "todo": [
+        "如果玩家问哪里不对，就说明最新一条本地提交既带了 rollout.md，也把 brainstorm.txt 这种临时草稿一起塞进去了",
+        "如果玩家问正式目标是什么，就说明 README 里写了最新一条应改成 docs: add rollback owner note，且负责人应是“值班发布经理”",
+        "如果玩家问这些提交有没有 push，就明确说明都还没推到远程",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，我最近一条本地提交写得不够干净。负责人备注还停在临时说法，外加一份 brainstorm 草稿也被一起带进去了。幸好还没 push，不然我会更不想看它。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你不接受那种明知没推送、却还把垃圾历史硬着头皮交上来的做法。",
+      "todo": [
+        "如果玩家打算保留 wip 提交直接往上推，就批评这是把草稿纸订进正式周报里",
+        "如果玩家只改 message 不处理多带的草稿文件，就质问这份历史到底整理了什么",
+        "如果玩家把较早那条正确提交也一并折腾坏了，就批评这是为了擦桌子把桌腿锯了"
+      ],
+      "first_message": "没推送的历史都懒得整理，你是准备让审查人替你做最后一轮脑内筛选？",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家区分两个层次：先把最近一次提交拉回到可修改状态，再重新决定哪些文件该进入这次提交。不要直接给完整命令。",
+      "todo": [
+        "如果玩家不知道为什么能回退，就提醒这些提交还没推送，公共历史还没受影响",
+        "如果玩家只想着改文字，不处理暂存内容，就提问 brainstorm.txt 这种草稿是否真的该留在正式提交里",
+        "如果玩家改完后不检查历史和工作区，就提醒再看一次 git log、git status 和文件内容",
+        "如果发现玩家误解了闻书遥的问题，要及时纠正",
+        "在玩家完成后追问：为什么同样是 reset，soft 和 mixed 关注的层次不一样？"
+      ],
+      "first_message": "{{ USER_NAME }}，这里不是“要不要撤回”的问题，而是“先把哪一层撤回来”。你要改的只是 HEAD，还是连暂存区也要一起重新整理？"
+    }
+  ],
+  "check": "任务背景：这是第四章任务 4-0-1，目标是让玩家在未推送提交上理解 reset --soft 与 mixed reset。检查标准：1) 必须亲自检查 /home/yaoyao/release-brief 的真实 git 状态和提交历史，而不是只根据对话判断；2) git log --oneline -2 中，较早一条必须是 `docs: add launch checklist skeleton`，最新一条必须是 `docs: add rollback owner note`；3) rollout.md 中必须包含“回滚负责人：值班发布经理”这行正式内容；4) 仓库中不应再存在 brainstorm.txt；5) 本地 main 应只比 origin/main 超前 2 个提交，说明没有额外长出多余历史；6) git status 必须是干净的；7) origin 必须仍然指向 git://git.bigames.fun/release-brief.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/yaoyao/release-brief；2) 查看 git log --oneline -2、git status 和 README.md，确认较早一条提交正确，最新一条未推送提交同时带了错误 message、临时草稿 brainstorm.txt 和未整理好的负责人备注；3) 对最近一次提交使用 git reset --soft HEAD~1，把 HEAD 回退一格但保留暂存内容，回到“这次提交还没正式定稿”的状态；4) 因为还需要重新挑选文件，再执行默认 mixed 的 git reset，把 rollout.md 与 brainstorm.txt 从暂存区放回工作区；5) 删除 brainstorm.txt，修正文案为“回滚负责人：值班发布经理”，只重新 add rollout.md 并提交为 docs: add rollback owner note；6) 再确认 git log、git status 和 rollout.md 都符合要求。关键教学点：soft 适合只把提交拉回暂存区继续改；mixed 适合进一步清空暂存区，重新选择哪些文件进入这次提交。",
+  "epilogue": {
+    "scene_type": "冷静型",
+    "scene_location": "靠窗长桌",
+    "time_phase": "傍晚",
+    "narrator": "描写窗边的光线一点点收窄，原本带着临时口气和草稿痕迹的本地历史，被重新拣回成两条干净的工作记录",
+    "main_reaction": {
+      "character": "闻书遥",
+      "context_hint": "确认最新一条提交终于只剩下该留下的正式内容后，语气还是平的，但那种明显不耐已经退了下去"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "看着你先回退提交、再重新筛暂存内容，顺势点明：reset 真正难的不是会不会敲，而是你得清楚自己想把哪一层历史拉回来"
+    },
+    "affection_changes": [
+      {
+        "character": "闻书遥",
+        "npc_id": "wenshuyao",
+        "dimension": "信任",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：后悔药分软硬两款",
+    "unlock_story": {
+      "name": "后悔药分软硬两款",
+      "content": "傍晚的窗光落在终端边缘，把那两条本地提交照得格外分明。闻书遥看着整理后的历史，没有立刻说话，只是把原来那条显得有些心虚的 `wip` 重新过了一遍，像是在确认它终于配得上留在那里。\n\n真正让人烦躁的，从来不是犯了错，而是明明还有补救空间，却不知道该把哪一层先拉回来。是只把提交本身撤掉，保留已经组织好的内容？还是连暂存区也一起清空，再重新判断哪些东西根本不该进正式记录？这回你替她做的，不只是把一条提交改顺眼，而是把那种“草稿和正式稿混在一起”的状态彻底拆开。\n\n等 brainstorm.txt 从仓库里消失，负责人备注也换成了最终版本，最近一条本地提交终于变回一件完整、明确、能交出去的事。闻书遥低声说了一句“现在才算像样”，语气仍旧克制，却已经不再有先前那种把自己都看烦了的冷意。"
+    },
+    "next_hook": "一条没推送的历史还好收拾。可如果远程上已经连着炸了三次，后悔药就不能只挑一粒吞了。"
+  },
+  "preview_image": "wenshuyao/casual_private/avatar_thinking.png"
+}

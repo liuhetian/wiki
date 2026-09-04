@@ -1,0 +1,80 @@
+{
+  "title": "还没发出去 赶紧撤回",
+  "subtitle": "学习用 git reset 撤回未推送的错误提交并重新整理暂存内容",
+  "story": "闻书遥把终端窗口推到你面前，脸色比平时还冷一点。她说自己刚改完部署脚本，顺手把 `staging.pem` 也一起 commit 进去了。好消息是这次提交还没 push，坏消息是她已经看见那条错误历史躺在本地分支顶端了。",
+  "background": "闻书遥在 `/home/yaoyao/deploy-guard` 中维护一个已连接远程仓库的项目，origin 指向 `git://git.bigames.fun/deploy-guard.git`。远程 main 目前还只有初始提交。她本地最新一条提交把 `deploy.sh` 的安全改动和 `staging.pem` 这个敏感密钥一起交了进去，但还没有 push。玩家需要先用 `git reset HEAD~` 撤回这次错误提交，让改动回到工作区，再把 `staging.pem` 从 Git 跟踪中剥离，只重新提交安全的脚本改动，并避免密钥再次被误加。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "wenshuyao",
+      "task": "负责描述错误提交还停留在本地、尚未推送的紧急状况，绝对不要直接告诉玩家应该输入什么命令。你会强调现在还有补救空间，但动作要干净。",
+      "todo": [
+        "如果玩家问现状，就说明最新一条本地提交里同时包含 deploy.sh 和 staging.pem，但远程还没收到",
+        "如果玩家问目标是什么，就说明 deploy.sh 的改动要留下，staging.pem 只允许留在本地，不能继续被 Git 跟踪",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家完成后，就评价至少这次把脏东西拦在发出去之前了"
+      ],
+      "first_message": "{{ USER_NAME }}，我刚才那条本地提交里把 `staging.pem` 也一起带进去了。还没 push，现在撤回还来得及，但我不想留下一点多余痕迹。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你要强调没发出去不等于可以拖着不管。",
+      "todo": [
+        "如果玩家不先处理错误提交，就批评明知道有密钥还把错误历史顶在分支最前面",
+        "如果玩家把 deploy.sh 的正常改动也一起丢了，就质问你撤的是密钥还是整份工作",
+        "如果玩家没阻止 staging.pem 再次被 Git 盯上，就讽刺这是准备下一次继续犯"
+      ],
+      "first_message": "还没 push 是你唯一的好运气。别把这点好运也浪费掉。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家理解 reset 是把错误提交拿下来，而不是直接解决敏感文件的所有问题。不要直接给出完整命令。",
+      "todo": [
+        "如果玩家卡住，就提问既然错误提交还没发出去，能不能先把整条提交撤回到工作区再重新挑选内容",
+        "如果玩家撤回后忘了处理 staging.pem，就提醒文件虽然离开了提交历史，但如果还被 Git 跟踪，下一次还是会出事",
+        "如果玩家完成后，就追问：为什么 reset 之后还需要重新整理暂存区和忽略规则",
+        "如果发现玩家对闻书遥的描述理解错误，要及时纠正"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是第二章任务 1-1-1，目标是撤回一条尚未推送的错误提交，并重新提交安全内容。检查标准：1) 必须亲自检查 /home/yaoyao/deploy-guard 的真实状态，而不是只根据对话判断；2) origin 必须仍然指向 git://git.bigames.fun/deploy-guard.git；3) 本地当前分支必须是 main；4) 当前 HEAD 提交中必须包含 deploy.sh 的修改，但不能再跟踪 staging.pem；5) /home/yaoyao/deploy-guard/staging.pem 文件必须仍然存在于本地工作区；6) .gitignore 必须包含 staging.pem，防止再次误加；7) git status 必须是干净的；8) 远程 origin/main 仍然只保留初始化历史，说明玩家没有把错误提交推送出去。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/yaoyao/deploy-guard；2) 用 git log 或 git status 确认最新一条提交尚未 push；3) 用 git reset HEAD~ 把错误提交撤回，让 deploy.sh 和 staging.pem 的改动回到工作区；4) 处理 staging.pem，让它不再被 Git 跟踪，同时保留文件本身；5) 把 staging.pem 写入 .gitignore，避免再次误加；6) 重新只提交 deploy.sh 和 .gitignore。关键教学点：未推送的错误提交可以先用 reset 拿下来，再重新组织要进入下一次提交的内容。",
+  "epilogue": {
+    "scene_type": "克制型",
+    "scene_location": "靠窗工位区",
+    "time_phase": "中午前",
+    "narrator": "描写一条错误提交被及时撤回后，分支历史重新恢复整洁的收束感",
+    "main_reaction": {
+      "character": "闻书遥",
+      "context_hint": "看到本地最新提交只剩 deploy.sh 的安全改动，staging.pem 退回到本地私有范围，眉眼里的紧绷终于松了一点"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "顺着这次补救提醒她，提交不是垃圾桶，真正的熟练是能在发出去前把边界重新收紧"
+    },
+    "affection_changes": [
+      {
+        "character": "闻书遥",
+        "npc_id": "wenshuyao",
+        "dimension": "认可",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "信任",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：还没发出去 赶紧撤回",
+    "unlock_story": {
+      "name": "还没发出去 赶紧撤回",
+      "content": "闻书遥把最新的提交记录来回确认了一遍，才终于把手从键盘边缘收回来。那条本来混着 `staging.pem` 的错误提交已经被撤下去了，分支顶端重新变得干净，像把一页写坏的正式稿及时抽走，只留下应该归档的版本。\n\n她平时最不能忍的就是边界含糊。什么东西该进仓库，什么东西只能留在本地，她一直觉得这是最基础的职业习惯。也正因为如此，刚看到那条错误提交的时候，她脸色才会比平时更难看。不是因为不会补救，而是因为这种错误根本不该出现。\n\n可真正做完这轮撤回、整理、重提之后，她反而平静了下来。Git 没有替人自动长脑子，但它确实给了人一次在错误发出去之前重新收拾现场的机会。\n\n窗外的光斜斜照进来，落在终端最上面那条干净的提交记录上。闻书遥低声说：'至少这次，脏东西没离开这台机器。'那句话不算庆幸，更像一次冷静的结案。"
+    },
+    "next_hook": "可一旦密钥已经被推上远程，事情就不会再只靠 reset 这么简单"
+  },
+  "preview_image": "wenshuyao/casual_private/avatar_thinking.png"
+}

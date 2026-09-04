@@ -1,0 +1,81 @@
+{
+  "title": "顺序一乱 功德全散",
+  "subtitle": "学习在冲突中判断正确的代码顺序",
+  "story": "闻书遥把笔记本转过来时，神情比平时更冷一点。她不是不会处理报错，她只是讨厌一个本来排得整整齐齐的处理流程，被一次粗暴的合并撞得前后顺序全乱了。",
+  "background": "闻书遥在 notifier-service 项目里负责消息发送流程。基础版本的 dispatch 函数原本只有 normalize_message 和 deliver_message 两步。她本地提交把 sign_message 插入到发送前，确保消息出站前会带签名；与此同时，远程主分支提交则把 validate_message 插入到流程最前面，确保非法消息不会继续处理。两边都改的是 dispatch 中同一段顺序列表，git pull 后 notifier.py 会产生冲突。这个难度的关键不是简单地两边都留下来，而是理解处理顺序必须是 validate -> normalize -> sign -> deliver，才能既合法、又整洁、又能签名发送。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "wenshuyao",
+      "task": "负责描述问题现象和业务要求，但绝对不要直接告诉玩家应该输入什么命令。你是高标准、讨厌脏乱顺序的人，会强调'顺序错了就不是同一个流程'，但不会直接说出解法命令。",
+      "todo": [
+        "如果玩家问冲突双方各自改了什么，就说明本地加了 sign_message，远程加了 validate_message",
+        "如果玩家问正确顺序应该是什么，就说明非法消息必须先拦住，格式整理完才能签名，最后才发送",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作",
+        "如果玩家只是机械地保留两边内容但顺序错了，就指出流程顺序有问题，签名前至少要先验证"
+      ],
+      "first_message": "{{ USER_NAME }}，我的 push 被拒了。pull 之后 notifier.py 里直接炸出了冲突标记。更糟的是，这不是随便拼一拼就行，消息处理顺序错了整个流程就不成立。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责催进度和施压，不直接告诉玩家完整解法。你最不能接受'功能看起来都在，流程其实是错的'这种低级失误。",
+      "todo": [
+        "如果玩家只想把两边代码并排堆起来，就讽刺这叫把流水线拧成麻花",
+        "如果玩家不检查 notifier.py 里的业务顺序，只顾着消掉标记，就质问是修冲突还是伪装没看见问题",
+        "如果玩家把 validate_message 放在后面，就批评先发再验是等着线上背锅"
+      ],
+      "first_message": "冲突标记删掉不等于问题解决。顺序错了，出事故的时候可没人替你读代码。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家思考消息处理链的正确顺序，以及为什么有些冲突不能机械地'两边都留着'。不要直接给完整命令。",
+      "todo": [
+        "如果玩家卡在冲突文件前，就提问两边新增的步骤分别是做什么的",
+        "如果玩家不知道顺序怎么排，就提问一条非法消息应不应该先通过验证再继续后续处理",
+        "如果玩家解决完文件但还没完成 Git 流程，就提问冲突解决后怎样告诉 Git 可以继续合并",
+        "如果发现玩家对闻书遥的描述理解有误，要及时纠正",
+        "在玩家完成后追问：遇到顺序敏感的冲突时，为什么只会删标记还不够？"
+      ],
+      "first_message": null
+    }
+  ],
+  "check": "任务背景：这是第三章任务 2-0-1，目标是让玩家处理顺序敏感的文本冲突。检查标准：1) 必须亲自检查 /home/yaoyao/notifier-service/notifier.py 的真实内容，而不是只根据对话判断；2) 文件中的 dispatch 函数必须按 validate_message(message)、normalize_message(message)、sign_message(message)、deliver_message(message) 的顺序执行；3) notifier.py 中不能残留 <<<<<<<、=======、>>>>>>> 等冲突标记；4) /home/yaoyao/notifier-service 仓库的 git status 必须是干净的；5) git log --oneline --graph -3 应看到一次合并提交；6) origin 必须指向 git://git.bigames.fun/notifier-service.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/yaoyao/notifier-service；2) 先尝试 git push，看到远程拒绝；3) 执行 git pull 触发 notifier.py 冲突；4) 阅读冲突内容和注释，理解本地新增的是 sign_message，远程新增的是 validate_message；5) 手动编辑 dispatch 函数，按 validate -> normalize -> sign -> deliver 的顺序保留四步，并删除所有冲突标记；6) git add notifier.py；7) git commit 完成合并提交；8) git push。关键教学点：顺序敏感的冲突不能靠机械保留两边完成，必须结合业务语义决定最终排列。",
+  "epilogue": {
+    "scene_type": "克制型",
+    "scene_location": "会议室外走廊",
+    "time_phase": "午前",
+    "narrator": "描写会议开始前短暂安静的走廊，闻书遥确认流程顺序恢复正确后，紧绷的情绪稍微放松了一点",
+    "main_reaction": {
+      "character": "闻书遥",
+      "context_hint": "重新看了一遍 dispatch 的调用顺序，确认验证终于回到最前面后，才把电脑合上，语气也没那么冷了"
+    },
+    "support_reaction": {
+      "character": "岑宁",
+      "context_hint": "从走廊尽头扫了一眼屏幕，见流程顺序没再乱套，只留下一句'至少还知道先拦风险'"
+    },
+    "affection_changes": [
+      {
+        "character": "闻书遥",
+        "npc_id": "wenshuyao",
+        "dimension": "认可",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "信任",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：顺序一乱 功德全散",
+    "unlock_story": {
+      "name": "顺序一乱 功德全散",
+      "content": "会议开始前十分钟，走廊里的人都在往会议室赶，脚步声和文件翻页声混在一起。闻书遥却还站在玻璃墙边，盯着屏幕上的 notifier.py，像在确认一份实验报告最后一行数字有没有错位。\n\n她最烦别人说'代码都在不就行了'。在她看来，顺序就是逻辑本身。验证放错一步，后面再精致的签名和发送都只是错误流程上的漂亮包装。\n\n你把冲突里的两段改动拆开，再按业务含义重新排回去时，她没有立刻说话，只是把指尖压在桌沿上轻轻敲了两下。直到看到 validate_message 重新站回最前面，她才低声说了一句：'这样才像样。'\n\n那句评价听起来依旧冷淡，但和她平时刀子一样的口气比，已经接近某种罕见的认可。她把电脑扣上，发丝从肩侧滑下来，整个人终于没有刚才那样紧绷。\n\n会议室门被推开前，她忽然又补了一句：'多人协作最烦的不是冲突本身，是有人以为删掉标记就算理解了代码。'说完她先一步走了进去，背影仍旧利落，但脚步明显比刚才轻了半分。"
+    },
+    "next_hook": "顺序问题还算温和，下一次冲突会把两种互相掣肘的逻辑直接撞在同一行上"
+  },
+  "preview_image": "linxian/winter/avatar_happy.png"
+}

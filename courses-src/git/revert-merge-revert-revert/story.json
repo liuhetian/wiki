@@ -1,0 +1,81 @@
+{
+  "title": "撤回一次 还得再撤回一次",
+  "subtitle": "学习撤销 merge commit，并在修复后通过 revert the revert 重新合并",
+  "story": "顾沉星把历史线摊开给你看时，像在展示一段剪错了节奏的片子。她之前把 `feature/live-canvas` 整支分支合进了主线，结果线上大屏刷新得像发疯一样，只能先整体回退。可她那边其实已经把 bug 修好了，问题是这类回退不是按普通提交那样“撤掉就完”，时间线已经打了一个结。",
+  "background": "顾沉星在 ops-stage 仓库里，main 上已经有一个合并提交 `merge feature/live-canvas for ops screen`，它把整支 live-canvas 功能分支带进了主线。这个 merge 引入了过于频繁的刷新逻辑，因此需要先把整次合并撤回。与此同时，feature/live-canvas 分支上已经额外补了一条修复提交 `fix: calm live canvas refresh rate`。README.md 说明：如果只是撤销 merge 后直接再 merge 修复分支，之前被回退掉但未在修复提交中改动的文件不会自动回来，所以需要先撤销那次 revert，再重新合并修好的分支。玩家需要掌握：revert merge commit 时必须指定主线父提交 `-m 1`，而当想重新引入整支已被 revert 过的分支时，要先做 revert the revert。",
+  "background_image": "background.jpg",
+  "characters": [
+    {
+      "id": "guchenxing",
+      "task": "负责说明那次 merge 为什么要整支撤回，以及为什么修好后不能像没事一样直接再 merge，但绝对不要直接告诉玩家应该输入什么命令。你的表达会把提交历史比作剪辑和镜头。",
+      "todo": [
+        "如果玩家问出了什么 bug，就说明 live_canvas.js 的刷新节奏被写得太急，线上大屏像在抽搐",
+        "如果玩家问分支现在怎样，就说明 main 上已经合过一次 feature/live-canvas，而功能分支上后来又补了一条 fix: calm live canvas refresh rate",
+        "如果玩家问为什么不能直接再 merge，就说明第一次整体回退时把 dashboard.html 和 assets/palette.txt 这些旧改动也一起撤掉了，后面的修复提交并不会把这些没再改过的部分自动带回来",
+        "如果玩家只说怎么办而不是实际运行命令，需要调用 computer_suggestion 工具提醒玩家如何操作"
+      ],
+      "first_message": "{{ USER_NAME }}，我之前把 `feature/live-canvas` 整段镜头并进主线，结果刷新节奏快得像镜头抽帧，只能先整段撤掉。现在 bug 我已经补好了，但这条时间线不是普通倒放一次就能接回去的。",
+      "computer": true
+    },
+    {
+      "id": "cenning",
+      "task": "只负责施压和验收，不直接告诉玩家完整解法。你要求历史上每一次撤回和重新引入都必须说得清清楚楚。",
+      "todo": [
+        "如果玩家把 merge commit 当普通提交撤，忘了处理主线父提交，就批评这是连自己站在哪条时间线上都没搞清楚",
+        "如果玩家只把 bug 修复那一条 merge 回来，却没恢复整支功能原本被撤掉的部分，就质问上线的人到底该看什么界面",
+        "如果玩家做完后不检查主线最终内容和历史顺序，就批评这是把复杂补救写成玄学表演"
+      ],
+      "first_message": "整支分支你敢合，出了事就得整支说清楚怎么撤、怎么再引回来。别给我装成一次普通修补。",
+      "final_check": true
+    },
+    {
+      "id": "linxian",
+      "task": "通过提问引导玩家理解 merge commit 的撤销为什么要选主线父提交，以及“revert the revert”本质上是在恢复那次整支功能的语义。不要直接给完整命令。",
+      "todo": [
+        "如果玩家不知道为什么 revert merge 要带 -m，就提问 Git 需要把哪一边当作主线继续保留",
+        "如果玩家想在撤销 merge 后直接再合修复分支，就提醒想一想第一次回退时被一起拿掉、而修复提交并没有再次修改的那些文件",
+        "如果玩家完成后没有验证最终文件和分支历史，就提醒再检查 dashboard.html、assets/palette.txt、scripts/live_canvas.js 与最新几条 log",
+        "如果发现玩家误解了顾沉星的问题，要及时纠正",
+        "在玩家完成后追问：为什么“撤销一次撤销”听起来绕，却是重新引入已回退分支时最诚实的做法？"
+      ],
+      "first_message": "{{ USER_NAME }}，这里真正难的不是把 bug 那条线撤掉，而是你得回答：第一次整段撤回时，Git 到底记住了你撤掉的是哪一整个分支语义？"
+    }
+  ],
+  "check": "任务背景：这是第四章任务 4-0-3，目标是让玩家撤销 merge commit，并在分支修复后通过 revert the revert 重新合并。检查标准：1) 必须亲自检查 /home/chenxing/ops-stage 的真实 git 状态、文件内容和提交历史，而不是只根据对话判断；2) git log --oneline --decorate -5 中必须能看到一条针对 `merge feature/live-canvas for ops screen` 的 revert 记录，以及一条对这次 revert 的再次 revert 记录；3) HEAD 必须是一次新的 merge 提交，而不是单纯停在 revert the revert 上；4) dashboard.html 中必须包含 `<section id=\"live-canvas\">实时大屏画布</section>`；5) assets/palette.txt 必须存在，且包含“主视觉：霓虹青”；6) scripts/live_canvas.js 中必须包含 `refresh_ms = 30` 和“给值班屏幕留一点喘息时间”这句注释；7) 本地 main 必须与 origin/main 指向同一提交，说明最终结果已经推送；8) git status 必须是干净的；9) origin 必须仍然指向 git://git.bigames.fun/ops-stage.git。",
+  "solution": "标准流程：1) 进入项目目录 cd /home/chenxing/ops-stage；2) 用 git log --graph --oneline --all、README.md 和文件内容确认 main 上已有 merge feature/live-canvas for ops screen 这次合并，而 feature/live-canvas 分支后来又补了一条 fix: calm live canvas refresh rate；3) 先在 main 上用 git revert -m 1 撤销那次 merge commit，把整支功能安全回退；4) 确认线上主线暂时回到不带 live-canvas 的状态后，因为要重新引入这整支功能，先对刚才那条 revert 再执行一次 git revert，也就是 revert the revert，恢复原始合并语义；5) 再把已经修好的 feature/live-canvas 合并回 main，让那条 fix 进入主线；6) 最后检查 dashboard.html、assets/palette.txt、scripts/live_canvas.js、git log 与 origin/main，确认历史和结果都完整。关键教学点：merge commit 的撤销必须指定主线父提交；而当一整支分支曾被 revert 过，想重新引入时，revert the revert 是恢复那次分支语义的关键步骤。",
+  "epilogue": {
+    "scene_type": "反差型",
+    "scene_location": "评审区大屏前",
+    "time_phase": "深夜",
+    "narrator": "描写大屏前原本闪得人头疼的画面终于稳下来，历史线里那两次互相对照的撤回像打过结又被耐心解开的胶片",
+    "main_reaction": {
+      "character": "顾沉星",
+      "context_hint": "看到 live-canvas 被完整带回主线、刷新节奏也终于稳住后，像是把一段剪坏又重剪的镜头重新接回了正确拍点"
+    },
+    "support_reaction": {
+      "character": "林弦",
+      "context_hint": "确认你没有偷懒跳步，而是把 merge 的撤销、撤销的撤销和重新合并都写成了清楚历史，才慢慢点出：复杂补救最怕的是只修结果，不修语义"
+    },
+    "affection_changes": [
+      {
+        "character": "顾沉星",
+        "npc_id": "guchenxing",
+        "dimension": "灵感",
+        "delta": 1
+      },
+      {
+        "character": "林弦",
+        "npc_id": "linxian",
+        "dimension": "认可",
+        "delta": 1
+      }
+    ],
+    "unlock_text": "解锁事件：撤回一次 还得再撤回一次",
+    "unlock_story": {
+      "name": "撤回一次 还得再撤回一次",
+      "content": "深夜的大屏终于不再像受惊一样频繁闪动。顾沉星站在屏幕前，看着终端里那几条彼此咬合的历史，神情有种难得的专注安静。她最开始把 live-canvas 合进主线时，是想让整个值班面板更有表现力；后来不得不整支撤掉，又像亲手把一段刚成形的镜头从成片里剪了出去。\n\n难的从来不是承认那次 merge 出了问题，而是要在修复之后把整条语义重新接回来。一次普通的 bug fix 不够，因为第一次回退带走的不止那处刷新节奏，还包括整支分支原本已经进入主线的挂载结构、配色说明和页面入口。你替她做的，不只是把功能带回来，而是把“这支分支曾经存在、被撤回、又以修正后的姿态重新回归”完整写回了历史里。\n\n等最后那次 merge 落在主线顶端，dashboard.html、palette.txt 和 live_canvas.js 都重新回到应有的位置，顾沉星终于轻轻笑了一下。不是那种松了口气的笑，更像看见一段剪坏的片子被重新接回节奏之后，终于愿意承认：这次成片了。"
+    },
+    "next_hook": "时间线终于学会了怎么倒放和接回。下一课，你会开始学会从别的宇宙里精准偷一段需要的提交。"
+  },
+  "preview_image": "guchenxing/casual_private/avatar_thinking.png"
+}
