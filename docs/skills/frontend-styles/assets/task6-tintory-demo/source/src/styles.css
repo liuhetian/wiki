@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;600;700&display=swap');
+/* 字体不出网：本站线上零 CDN 依赖，Manrope / Noto Sans SC 有就用、没有回退系统无衬线 */
 
 :root{--brown:#57382e;--blue:#345fc2;--paper:#e6d8c5;--white:#eee4df;--gold:#e7b965;--line:rgba(238,228,223,.18)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--brown);color:var(--white);font-family:Manrope,"Noto Sans SC",sans-serif;overflow-x:hidden}
+body{margin:0;background:var(--brown);color:var(--white);font-family:Manrope,"Noto Sans SC",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;overflow-x:hidden}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;z-index:99;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");mix-blend-mode:soft-light}
 button,a{font:inherit;color:inherit}
 button{border:0;background:none;cursor:pointer}

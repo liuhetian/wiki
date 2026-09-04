@@ -9,10 +9,18 @@ mkdir -p docs/vendor/mathjax
 curl -fsSL --max-time 120 -o docs/vendor/mathjax/tex-svg.js \
   https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js
 
-# ECharts 5.6.0：```echarts 代码块的图表真身（vendor/echarts-init.js 按需加载）
+# ECharts 6.1.0：```echarts 代码块的图表真身（vendor/echarts-init.js 按需加载），
+# 也是 lieflat-charts 那 20 个 demo 的运行时 —— 它们原先各自引 jsdelivr 的 echarts@6，
+# 统一收进这里后线上零 CDN；升级要同时看站内 fence 图和那批 demo
 mkdir -p docs/vendor/echarts
 curl -fsSL --max-time 120 -o docs/vendor/echarts/echarts.min.js \
-  https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js
+  https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js
+
+# Chart.js 4.5.1：lieflat-charts 里 18 个 demo 与 ECharts 混用的第二个图表运行时
+# （同一页两个库各画各的，用来对比同一种图在两边的实现差异），只被那批 demo 引用
+mkdir -p docs/vendor/chartjs
+curl -fsSL --max-time 120 -o docs/vendor/chartjs/chart.umd.js \
+  https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.js
 
 # Mermaid 11.17.1：```mermaid 图的渲染真身。Zensical 自带的加载器写死了 unpkg CDN，但只在
 # window.mermaid 未定义时才去拉；overrides/main.html 在有 mermaid 块的页面里先同步引入本地真身，
