@@ -47,7 +47,7 @@
           </h1>
 
           <p class="zx-hero__lede" data-reveal style="--reveal-delay: 120ms">
-            项目复盘、学科笔记和可挂载执行的 AI skills。写给人看，也写给 agent 读：
+            项目复盘、学科笔记、动手做的课程，和可挂载执行的 AI skills。写给人看，也写给 agent 读：
             每个页面在同域提供 Markdown 源，整站可以当作你的 agent 的远程知识库。
           </p>
 
@@ -113,6 +113,10 @@ curl https://wiki.liuhetian.work/index.md</code></pre>
             <div><h3>推导出来的笔记</h3><p>算法、概率、统计、机器学习，从具体问题一步步推到结论，跟着走一遍就是一次练习。</p></div>
           </li>
           <li class="zx-expect__item" data-reveal>
+            <span class="zx-expect__icon">{% include ".icons/material/console.svg" %}</span>
+            <div><h3>动手做的课程</h3><p>一个脚本在你机器上造出真实事故现场，提问写成 git 冲突标记的形状 —— 答完才算数。</p></div>
+          </li>
+          <li class="zx-expect__item" data-reveal>
             <span class="zx-expect__icon">{% include ".icons/material/toolbox-outline.svg" %}</span>
             <div><h3>拿来即用的 skills</h3><p>按 Claude skill 标准目录组织的成套资产：约定、模板和活 demo，复制路径就能挂载。</p></div>
           </li>
@@ -153,7 +157,7 @@ curl https://wiki.liuhetian.work/index.md</code></pre>
               <pre><code><span class="k">$</span> curl wiki.liuhetian.work/llms.txt
 <span class="c"># 牛合天's wiki</span>
 <span class="c">&gt; AI 友好的个人知识库：每个页面在同域提供 .md 源…</span>
-<span class="c">## 文章 / ## 笔记 / ## Skills …</span></code></pre>
+<span class="c">## 文章 / ## 笔记 / ## 课程 / ## Skills …</span></code></pre>
             </div>
           </div>
         </div>
@@ -226,8 +230,8 @@ curl https://wiki.liuhetian.work/index.md</code></pre>
             <h3>条 curl</h3><p>/llms.txt 一口气拿到全站地图。</p>
           </div>
           <div class="zx-statcard" data-drag-var data-reveal style="--tilt:-.8deg; --reveal-delay:180ms">
-            <span class="zx-statcard__num">3</span>
-            <h3>个板块</h3><p>文章、笔记、skills，各管一摊。</p>
+            <span class="zx-statcard__num">4</span>
+            <h3>个板块</h3><p>文章、笔记、课程、skills，各管一摊。</p>
           </div>
           <div class="zx-statcard" data-drag-var data-reveal style="--tilt:1.6deg; --reveal-delay:270ms">
             <span class="zx-statcard__num">∞</span>
@@ -246,6 +250,7 @@ curl https://wiki.liuhetian.work/index.md</code></pre>
           <div class="zx-stage__actions">
             <a class="zx-btn zx-btn--stage" href="{{ 'posts/' | url }}">文章索引</a>
             <a class="zx-btn zx-btn--stage" href="{{ 'notes/' | url }}">笔记索引</a>
+            <a class="zx-btn zx-btn--stage" href="{{ 'courses/' | url }}">课程索引</a>
             <a class="zx-btn zx-btn--stage" href="{{ 'skills/' | url }}">Skills 索引</a>
           </div>
         </div>

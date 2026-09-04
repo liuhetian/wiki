@@ -566,6 +566,102 @@
   box-shadow: var(--shadow);
 }
 
+/* 可运行代码块（vendor/js-runner.js 把 ```{.js .run} 的 .highlight 裹进 .js-run）。
+   「运行」按钮压在代码框**内部**右下角，参数照抄 modern 自带的复制按钮（.md-code__nav 用
+   right/top .25em + z-index 1），两颗按钮因此左右对称、看着像一套。代码块的 padding-bottom
+   撑开一截给它让位，否则最后一行会被按钮盖住。
+   输出面板做成独立的圆角卡片、不跟代码块贴合：结果和代码本来是两种东西，贴合还得处理
+   「面板显隐时代码块下方圆角要不要切平」，独立反而更简单。
+   圆角只给这个组件，全站其它代码块仍是方的 —— 想统一得改 .md-typeset pre>code，那是 189 篇的事。 */
+.md-typeset .js-run { margin: 1.2em 0 1.6em; }
+.md-typeset .js-run > .highlight { position: relative; margin: 0; }
+.md-typeset .js-run > .highlight > pre { margin: 0; }
+/* 圆角要 !important：本文件顶部的「直角总闸」用 border-radius:0 !important 点名了
+   pre>code 和 .md-code__nav（Zensical 自带 .4rem，被那道闸抹平）。这里同样 !important
+   加更高特异性压回来，作用域只在 .js-run 内 —— 全站其它代码块仍是直角。
+   复制按钮一起开圆角，否则同一个框里一方一圆，两颗按钮不像一套。 */
+.md-typeset .js-run > .highlight > pre > code { border-radius: .5rem !important; }
+/* 不给按钮留 padding：它像复制按钮那样**浮在内容上**，不占布局。
+   曾撑开 2.7em 的 padding-bottom 给它让位，但按钮平时是隐藏的，那截空白就成了纯突兀。
+   代价是最后一行特别长时会被按钮压住一截 —— 只发生在 hover 的瞬间，而那时读者的意图
+   本来就是点按钮；移开鼠标即可看全。 */
+.md-typeset .js-run > .highlight .md-code__nav { border-radius: .4rem !important; }
+.md-typeset .js-run__btn {
+  position: absolute;
+  right: .4rem;
+  bottom: .4rem;
+  z-index: 1;
+  font-family: var(--md-code-font-family);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  line-height: 1.5;
+  padding: .32rem .72rem;
+  border: 0;
+  border-radius: .4rem;
+  cursor: pointer;
+  background: var(--coral);            /* 令牌规矩：--coral 只做背景块，同 .md-top:hover 的绿底黑字 */
+  color: var(--ink);
+  transition: background .15s, transform .1s;
+}
+/* 不加投影：全站是硬边平面语言，软阴影只给 mermaid 卡片和贴纸（那两处是刻意的硬阴影） */
+.md-typeset .js-run__btn:hover { background: var(--coral-soft); }
+.md-typeset .js-run__btn:active { transform: translateY(1px); }
+/* 平时藏起来，指针移到代码块上才浮出 —— 静态阅读时页面上不该有一排绿块抢注意力。
+   三个例外必须照顾到，否则是功能缺陷而不是审美选择：
+   1. @media (hover: hover) 包住：触屏设备没有 hover 态，藏了就永远点不到，那里保持常显；
+   2. --stop 态无条件可见：代码正在跑时鼠标可能早已移开，「停止」按钮藏起来就没法中断死循环；
+   3. :focus-visible 可见：键盘 Tab 过来要看得见焦点落在哪。
+   隐藏时一并关掉 pointer-events，避免「看不见却能点中」；hover 判定挂在 .js-run 上，
+   指针进入代码块区域按钮就已经恢复可点，不影响操作。 */
+@media (hover: hover) {
+  .md-typeset .js-run__btn {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, background .15s, transform .1s;
+  }
+  .md-typeset .js-run:hover .js-run__btn,
+  .md-typeset .js-run__btn:focus-visible,
+  .md-typeset .js-run__btn--stop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+/* 停止态的 :hover 必须一起写：光写 --stop（特异性 0,2,0）会被上面的 __btn:hover（0,3,0）
+   压掉，鼠标放上去时红按钮会变绿 —— 正在跑的东西显示成「可以运行」是误导信号。 */
+.md-typeset .js-run__btn--stop,
+.md-typeset .js-run__btn--stop:hover {
+  background: var(--zx-alert);
+  color: var(--paper);
+}
+.md-typeset .js-run__out {
+  margin-top: .5rem;
+  background: var(--bone);
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  padding: .6em 1.2em .7em;
+  font-family: var(--md-code-font-family);
+  font-size: .8em;
+  line-height: 1.65;
+}
+/* 输出行的类型标记走 ::before，不靠颜色单独承担语义 —— 打印出来或色觉差异下仍分得清 */
+.md-typeset .js-run__line {
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--ink-soft);
+}
+.md-typeset .js-run__line::before {
+  content: "\25b8";
+  color: var(--ink-faint);
+  margin-right: .6em;
+}
+.md-typeset .js-run__line--warn { color: var(--ink); }
+.md-typeset .js-run__line--warn::before { content: "\26a0"; color: var(--coral-deep); }
+.md-typeset .js-run__line--err { color: var(--zx-alert); }
+.md-typeset .js-run__line--err::before { content: "\2717"; color: var(--zx-alert); }
+.md-typeset .js-run__line--sys { color: var(--ink-faint); font-style: italic; }
+.md-typeset .js-run__line--sys::before { content: "\2014"; }
+
 /* ================================================================
    9. 页脚 / 回到顶部 / 复制提示
    ================================================================ */
@@ -590,3 +686,32 @@
 
 .md-dialog { background-color: var(--ink); }      /* 默认吃 accent，会是一块绿 toast */
 .md-dialog__inner { color: var(--paper); }
+
+/* 课程提问块（vendor/conflict-init.js 把 pre.conflict 的 <code> 内部重排成 span）。
+   形状照抄 git 冲突：上半是课程的问，下半是我要填的答，中间一道 =======。
+   不用红绿：--zx-alert 按令牌层的规矩只留给「出错 / 打断」，冲突块不是错误。
+   改用「问=灰、答=coral」——coral 在全站就是「我的动作 / 交互」那一档，答案区正是要动手的地方。
+   不加圆角：本文件顶部的直角总闸点名了 pre>code，这里不去压它，课程块跟全站代码块一致。
+   未作答时左侧加一条 coral 竖条，扫一眼就知道哪些题还空着。 */
+.md-typeset pre.conflict > code {
+  display: block;
+  padding: 0;
+}
+.md-typeset .conflict__mark,
+.md-typeset .conflict__q,
+.md-typeset .conflict__a {
+  display: block;
+  padding: .55em .9em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.md-typeset .conflict__mark {
+  font-weight: 700;
+  color: var(--ink-faint);
+  background: var(--paper-dark);
+  padding-block: .3em;
+}
+.md-typeset .conflict__q { background: var(--paper); }
+.md-typeset .conflict__a { background: var(--coral-wash); }
+.md-typeset .conflict__a--empty { color: var(--ink-faint); font-style: italic; }
+.md-typeset pre.conflict.conflict--unresolved > code { box-shadow: inset 3px 0 0 var(--coral); }

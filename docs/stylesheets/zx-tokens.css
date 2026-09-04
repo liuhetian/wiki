@@ -36,7 +36,9 @@
      用它的 font-family 声明全部失效退回继承值 —— 表面上"看起来还对"，
      实际是靠继承兜的，一旦父层字体变了就跟着漂。所以这里写字面栈。 */
   --zx-serif: "Maple Mono", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
-  /* 整套皮肤里唯一有意引入的新色相：只给 danger / failure / bug 三类 admonition，别处不得再用 */
+  /* 整套皮肤里唯一有意引入的新色相。可用范围限定在「出错 / 打断」语义：danger / failure / bug
+     三类 admonition，以及可运行代码块（.js-run）的报错行与「停止」按钮。别处不得再用 —— 
+     一旦拿它当普通强调色，红色就不再是信号了。 */
   --zx-alert: #a8071a;
 
   /* ---- 基色 ---- */
@@ -60,19 +62,22 @@
   --md-primary-fg-color: var(--ink);         /* modern 里只剩 .md-button--primary 一个用户 */
   --md-primary-bg-color: var(--paper);
 
-  /* ---- 代码：近单色，绿只给字符串 ---- */
+  /* ---- 代码 ---- */
+  /* 语法配色**不覆盖**，用 Zensical 自带的那一套（keyword #3f6ec6 靛蓝 / function #a846b9 紫 /
+     number #d52a2a 砖红 / constant #6e59d9 紫蓝 / string #1c7d4d 墨绿）。它本来就是给浅色纸白
+     调的沉色系，和 Atelier Zero 不冲突。
+     这里曾把上面 6 项全部覆盖成墨色（"近单色，绿只给字符串"），实测代价太大：Pygments 该分的
+     token 一个都没少，全被压成同一个墨色，代码结构在页面上读不出来 —— 2026-09-03 撤掉。
+     两件事保持覆盖，因为它们不是语法配色：
+     - hl_lines 命中行的标记色走 --coral（那是"看这里"的信号，和 token 无关）；
+       字符串因此不能再用 --coral-deep，否则跟命中行标记撞成一个颜色。
+     - comment / operator / punctuation 等灰档在下面单独给，比默认的一档灰更分明。 */
   --md-code-fg-color: var(--ink-soft);
   --md-code-bg-color: var(--bone);           /* 白纸卡浮在 paper 底上，靠 zx-theme 的 1px 线定形 */
   --md-code-bg-color--light: rgba(255, 255, 255, .9);
   --md-code-bg-color--lighter: rgba(255, 255, 255, .6);
   --md-code-hl-color: var(--coral);          /* hl_lines 命中行左侧 2px */
   --md-code-hl-color--light: var(--coral-wash);
-  --md-code-hl-keyword-color: var(--ink);
-  --md-code-hl-function-color: var(--ink);
-  --md-code-hl-string-color: var(--coral-deep);
-  --md-code-hl-number-color: var(--ink);     /* 不用警示红：别让每个数字都像报错 */
-  --md-code-hl-special-color: var(--ink);
-  --md-code-hl-constant-color: var(--ink-soft);
   --md-code-hl-name-color: var(--md-code-fg-color);
   --md-code-hl-comment-color: var(--ink-faint);
   --md-code-hl-operator-color: var(--ink-mute);
