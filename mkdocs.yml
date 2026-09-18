@@ -110,6 +110,9 @@ nav:
           - 越狱与显示通道: posts/kindle-dashboard/reference/jailbreak.md
           - 上报接口交接: posts/kindle-dashboard/reference/report-api.md
           - 决策日志: posts/kindle-dashboard/reference/decision-log.md
+      - 搭建 AI 助手:
+          - posts/ai-assistant/index.md
+          - 邮件采集：自己说 SMTP: posts/ai-assistant/mail-intake.md
       - 工作方法:
           - posts/methods/index.md
           - 精力管理:

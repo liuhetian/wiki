@@ -75,6 +75,7 @@ scripts/
 - [超级轻量的自用 AI 编程 Harness 框架](docs/posts/ai-code-skeleton/index.md) —— 骨架的正逆两个方向风险相反
 - [自己想用例一定漏：AI 项目验收的三层测试集](docs/posts/release-acceptance.md) —— 黄金用例保下限、evals 保变更不退化、线上差评回灌保覆盖面增长
 - [让 Kindle 常显一块 Token 看板](docs/posts/kindle-dashboard/index.md) —— 墨水屏两条硬约束反推出的整套设计，附越狱、上报接口与决策日志
+- [搭建 AI 助手](docs/posts/ai-assistant/index.md) —— 给常驻 Agent 接输入输出通道；第一条是[不装邮件服务、自己在 25 端口说 SMTP](docs/posts/ai-assistant/mail-intake.md)
 
 **笔记**（[docs/notes/](docs/notes/index.md)，每个分类有统一骨架，索引里每篇只留一行钩子）：
 
