@@ -1,3 +1,7 @@
+---
+description: "G16 · 动态条形竞赛：排名随时间演变的 Glance 真实参考实现。示例结论为“八款产品竞逐收入”"
+---
+
 # G16 · 动态条形竞赛
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g16-bar-race.html"

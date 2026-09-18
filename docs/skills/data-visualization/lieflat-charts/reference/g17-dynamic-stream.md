@@ -1,3 +1,7 @@
+---
+description: "G17 · 动态流图：实时滚动序列的 Glance 真实参考实现。示例结论为“并发用户，实时流动”"
+---
+
 # G17 · 动态流图
 
 <iframe src="/skills/data-visualization/lieflat-charts/assets/g17-dynamic-stream.html"

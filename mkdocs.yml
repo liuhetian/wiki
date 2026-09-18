@@ -59,12 +59,36 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
 
-# zensical 的链接校验有并行竞态：同一份内容偶发（约 1/15 次构建）误报大量
-# "page does not exist"，产物 HTML 实测无差异（0.0.46 与 0.0.53 均复现）。
-# 死链检查由 scripts/check-links.py 在部署前把关（会阻断部署），这里关掉不丢保障；
-# invalid_link_anchors（锚点校验）check-links.py 不覆盖，保留 —— 若它也出现偶发误报，同样对待。
+# MkDocs 插件。zensical 0.0.58 起把这几个插件用 Rust 重写进了本体，不用额外装 pip 包，
+# 写上名字即可。显式声明 plugins 不会关掉搜索 —— 实测 site/search.json 照常产出。
+plugins:
+
+  # 目录级 frontmatter 默认值：某目录放一个 .meta.yml，里面的键给该目录**及其子目录**下
+  # 所有页面当默认，页面自己的 frontmatter 优先。用来给两类不能动的文件补 description：
+  # 上游原文照录的存档（改了就不是原文），和被 --8<-- 当 snippet 引用的真身（加 frontmatter
+  # 会把 --- 和 description: 漏进引用它的正文里）。.meta.yml 不进 site/，也不会被
+  # deploy.sh 那行只捞 *.md 的 rsync 带上桶。
+  - meta
+
+  # 挪文件时留重定向，替代旧地址存根页。左旧右新，都写 docs/ 内的相对路径；
+  # 支持 old.md#anchor 形式的锚点级重定向（0.0.61+），改标题不炸别人的书签。
+  # 注意它只修好人那一半：产物是 site/<旧路径>/index.html 里一条 meta refresh，
+  # 而 .md 那一半是 deploy.sh 从 docs/ 实镜像出来的，旧的 /<旧路径>.md 仍然 404。
+  # 所以挪文件依旧要把站内引用一并改掉，redirects 兜的是站外链接和别人的书签。
+  - redirects:
+      redirect_maps: {}
+        # 例：posts/old-name.md: posts/new-name.md
+        #     posts/guide.md#installation: posts/guide.md#getting-started
+
+# 链接校验。0.0.53 及更早版本有并行竞态：同一份内容偶发（约 1/15 次构建）误报大量
+# "page does not exist"，产物 HTML 实测无差异，只能关掉。0.0.62 上复现不出来了 ——
+# 8 次 clean + 12 次增量构建零误报，并用一个故意的死链探针确认校验本身仍在工作，故重新打开。
+# 用 warn 不用 fail：阻断部署的职责仍归 scripts/check-links.py（它还管另外四项 zensical
+# 不看的事——父级索引挂载、nav 注册、笔记未答题、资源死链）。zensical 的价值是报错带
+# 文件:行:列 定位，serve 时改错一个链接当场就能看见。竞态若复发，改回 false 即可，不丢保障。
+# invalid_link_anchors（锚点校验）check-links.py 不覆盖，保持默认开启。
 validation:
-  invalid_links: false
+  invalid_links: warn
 
 nav:
   - 首页:

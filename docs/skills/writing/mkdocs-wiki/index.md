@@ -332,6 +332,21 @@ description: "一句话说清这页在回答什么问题，120 字以内，不�
 | 死链 | 指向不存在的 `.md` | 阻断部署 |
 | `nav` 注册 | 路径出现在 `mkdocs.yml` 里（`MIRROR.md` 按规范豁免） | 阻断部署 |
 | 笔记未答题 | `docs/notes/` 下不许出现 `<<<<<<<` 冲突标记（那是课程的题，答完才归档） | 阻断部署 |
+#### 不能动的文件：目录级 `.meta.yml` { #meta-yml }
+
+有两类文件不能往里塞 frontmatter：
+
+- **上游原文照录的存档** —— 改了就不是原文，`MIRROR.md` 里那句「未做任何改动」也就成了假话；
+- **被 `--8<--` 当 snippet 引用的真身** —— 加了 frontmatter，`---` 和 `description:` 会原样漏进引用它的那篇正文里。
+
+这两类交给 `meta` 插件：在目录里放一个 `.meta.yml`，键值给该目录**及其所有子目录**下的页面当默认，页面自己写了的优先。
+
+```yaml title="docs/skills/writing/qu-ai-wei/references/.meta.yml"
+description: "qu-ai-wei 上游 references/ 九份规则表之一，原文照录自 ……"
+```
+
+一个目录一句话，所以写的是「这批文件是什么、从哪来、人读的分析在哪」，不是逐篇摘要 —— 逐篇摘要该由页面自己的 frontmatter 写。`.meta.yml` 不进 `site/`，也不会被 `deploy.sh` 那行只捞 `*.md` 的 rsync 带上桶。
+
 | 资源死链 | 代码块之外引用的图片、iframe demo、本地 `href` 必须存在 | 阻断部署 |
 
 写作时只需记两条例外，别为了过校验去改错地方：
