@@ -178,7 +178,15 @@ nav:
       - courses/index.md
       - 统计学（教材伴读）:
           - courses/statistics-book/index.md
+          - 第 1 章 总论: courses/statistics-book/ch01-overview.md
+          - 第 2 章 数据的收集、整理与显示: courses/statistics-book/ch02-collect-organize.md
+          - 第 3 章 统计指标: courses/statistics-book/ch03-indicators.md
+          - 第 4 章 时间序列分析: courses/statistics-book/ch04-time-series.md
+          - 第 5 章 统计指数与综合评价: courses/statistics-book/ch05-index-numbers.md
           - 第 6 章 统计量与抽样分布: courses/statistics-book/ch06-sampling-distribution.md
+          - 第 7 章 参数估计: courses/statistics-book/ch07-estimation.md
+          - 第 8 章 假设检验与方差分析: courses/statistics-book/ch08-hypothesis-anova.md
+          - 第 9 章 相关与回归分析: courses/statistics-book/ch09-regression.md
   - Skills:
       - skills/index.md
       - FastAPI 后端:

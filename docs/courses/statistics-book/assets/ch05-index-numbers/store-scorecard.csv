@@ -1,0 +1,5 @@
+indicator,unit,direction,weight,industry_avg,satisfactory,unacceptable,store_a,store_b,store_c,store_d
+人均产出,元/人·天,positive,0.40,800,1000,600,900,700,1000,640
+毛利率,%,positive,0.30,50,60,40,56,44,60,46
+食材损耗率,%,negative,0.20,4,2,6,5,2,4,6
+翻台率,次/天,positive,0.10,4,6,2,3,5,4,6

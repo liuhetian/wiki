@@ -1,0 +1,7 @@
+metric,value
+inspected_bottles,900
+underfill_bottles,90
+day_output_bottles,18000
+pallets_in_day,9
+bottles_per_pallet,2000
+pallets_measured,5
