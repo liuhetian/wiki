@@ -29,8 +29,7 @@ docs/
 ├── index.md          # 站点首页，也是 AI 的入口（浏览器里由 overrides/home.html 开屏渲染，正文仍发布为 .md 源）
 ├── posts/            # 文章：完整可独立阅读的复盘、观点与方法整理
 ├── notes/            # 笔记：概率与算法 / 统计学 / 机器学习 / Git / JavaScript，专业科目的学习与推导
-├── courses/          # 课程：带空白的实操题。提问写成 git 冲突标记，答完才归档进 notes/ 同名文件
-│   └── git/assets/         #   每课一个 init.sh（无 root、本地裸仓库当 remote）+ 公共 lib.sh
+├── courses/          # 课程：讲解在前、题在后。题写成 git 冲突标记，答完才归档进 notes/ 同名文件
 ├── skills/           # 给 AI 挂载执行的成套资产：按 Claude skill 标准目录组织
 │   ├── fastapi/            #   FastAPI 后端开发约定（14 篇 reference）
 │   ├── dashboard/          #   后台形状目录：36 形状全成文（35 篇），每篇配可玩活 demo
@@ -47,11 +46,12 @@ overrides/            # 主题模板覆盖：home.html 首页开屏；main.html 
 mkdocs.yml            # Zensical 兼容配置；nav 只是给人的策展层，不在 AI 链路上
 deploy.sh             # git pull → 链路校验 → 构建 → md 源镜像 + llms.txt → 钉 Content-Type 同步 COS（一键部署）
 deploy-cert/          # HTTPS 证书自动续期（acme.sh → DNSPod → COS API）
-courses-src/          # 不发布：课程的参考解法与原关卡存档，以及把它们生成成课程页的一次性脚本
+courses-src/          # 不发布：Git 课的参考解法、33 个关卡 init.sh 与生成脚本（那批课 2026-09-17 下线，
+                      #   素材留着待重做）
 scripts/
 ├── check-links.py              # AI 链路闸门（父级链接 + 死链 + nav 注册 + 笔记未答题 + 资源死链），deploy.sh 构建前强制跑
 ├── course.py                   # 课程闸门：checkout 领题 / status 看进度 / add 归档（每题都答了才通过）
-├── course-smoke.sh             # 33 个课程 init.sh 各跑两遍，验证可重复重建
+├── course-smoke.sh             # courses-src/git/assets 下 33 个 init.sh 各跑两遍，验证可重复重建（Git 课素材用）
 ├── lfs-cos-agent.py            # 自制 git-lfs custom transfer agent：媒体 blob ↔ 备份桶
 ├── setup-lfs.sh                # 新 clone 一次性接入上面的 LFS 后端
 ├── backup-media.sh             # 备份桶根下路径镜像（LFS 之前的历史双轨，仍可用）
@@ -62,7 +62,7 @@ scripts/
 
 ## 内容导览
 
-四个顶层分区各管一类内容：**文章**把来龙去脉讲完整，**笔记**记专业科目的学习推导，**课程**是要自己动手做完才算数的实操题，**Skills** 是能直接交给 AI 执行的成套资产。
+四个顶层分区各管一类内容：**文章**把来龙去脉讲完整，**笔记**记专业科目的学习推导，**课程**是讲解在前、题在后、答完才算数的伴读，**Skills** 是能直接交给 AI 执行的成套资产。
 
 **文章**（[docs/posts/](docs/posts/index.md)）：
 
@@ -85,10 +85,10 @@ scripts/
 - [Git](docs/notes/git/index.md) —— fork 吸收上游、stash 与 worktree 的心智模型
 - [JavaScript](docs/notes/javascript/index.md) —— 语言与运行时机制；代码块可直接在页面上跑（Worker 沙箱，见 [`vendor/js-runner.js`](docs/vendor/js-runner.js)）
 
-**课程**（[docs/courses/](docs/courses/index.md)，做完才有笔记，题在课程、答卷在笔记）：
+**课程**（[docs/courses/](docs/courses/index.md)，讲解在前、题在后，答完才归档成笔记）：
 
-- [课程是怎么设计的](docs/courses/index.md) —— 为什么把提问写成 git 冲突标记、checkout → 答题 → add 的环路、给 Claude Code 的上课流程
-- [Git](docs/courses/git/index.md) —— 33 课 5 章，从 clone 到跨仓库 cherry-pick；每课一个 `init.sh` 在本机造出真实事故现场，冲突、误删、写歪的历史都是真的
+- [课程是怎么设计的](docs/courses/index.md) —— 为什么把题写成 git 冲突标记、checkout → 答题 → add 的环路、给 AI 的上课流程
+- [统计学（教材伴读）](docs/courses/statistics-book/index.md) —— 跟着向蓉美《统计学》第三版走，一章一课；公式全部对着原书页图重排，不信 OCR
 
 **Skills**（[docs/skills/](docs/skills/index.md)，每套讲「怎么做、为什么这么做」，不是教程）：
 

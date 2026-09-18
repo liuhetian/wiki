@@ -14,8 +14,8 @@ uv run zensical build              # 构建到 site/
 python3 scripts/check-links.py     # AI 链路校验：父级链接 + 死链 + nav 注册 + 笔记未答题 + 图片/demo 资源死链；写完文章必跑
 ./deploy.sh                        # git pull --ff-only → check-links → 构建 → md 源镜像 + llms.txt → 同步 COS
 node scripts/validate-lieflat-charts.mjs   # 只在改 data-visualization/lieflat-charts 时跑：48 篇 reference ↔ 48 个 demo 一一对应
-python3 scripts/course.py checkout git/<slug>   # 课程：领题到 docs/notes/ 同名文件；status 看进度，add 归档（答完才通过）
-bash scripts/course-smoke.sh               # 只在改 docs/courses/git/assets/ 时跑：33 个 init.sh 各跑两遍
+python3 scripts/course.py checkout <分类>/<slug>   # 课程：领题到 docs/notes/ 同名文件；status 看进度，add 归档（答完才通过）
+bash scripts/course-smoke.sh               # 只在改 courses-src/git/assets/ 时跑：33 个 init.sh 各跑两遍
 ```
 
 正式上线在部署机执行，本地只负责 commit + push：
@@ -56,7 +56,7 @@ ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lh
 4. git commit + push。
 5. SSH 部署机跑 `./deploy.sh`。
 
-四个顶层分区分工：`posts/` 讲完整来龙去脉，`notes/` 记专业科目的学习推导（每个分类有统一骨架），`courses/` 是带空白的实操题（提问写成 git 冲突标记，答完才用 `scripts/course.py add` 归档进 `notes/` 同名文件，详见 `docs/courses/index.md`），`skills/` 是能直接交给 AI 执行的成套资产。引外部资料三步：真身存档进 `assets/` + 正文摘句 + 自己的分析。图表优先用 ```` ```mermaid ```` / ```` ```echarts ```` 代码块声明式写。
+四个顶层分区分工：`posts/` 讲完整来龙去脉，`notes/` 记专业科目的学习推导（每个分类有统一骨架），`courses/` 是**讲解在前、题在后**的伴读（题写成 git 冲突标记，答完才用 `scripts/course.py add` 归档进 `notes/` 同名文件，详见 `docs/courses/index.md`），`skills/` 是能直接交给 AI 执行的成套资产。原来那 33 课 Git 课程 2026-09-17 下线（一课都没答完，门槛太高），素材留在不发布的 `courses-src/git/`。引外部资料三步：真身存档进 `assets/` + 正文摘句 + 自己的分析。图表优先用 ```` ```mermaid ```` / ```` ```echarts ```` 代码块声明式写。
 
 ## 已知的构建怪癖
 

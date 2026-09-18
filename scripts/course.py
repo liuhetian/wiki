@@ -129,8 +129,13 @@ def cmd_checkout(ref):
     note.parent.mkdir(parents=True, exist_ok=True)
     note.write_text("\n".join(body), encoding="utf-8")
     print("✅ 已领题 → %s（%d 道）" % (note.relative_to(ROOT), len(blocks)))
-    print("   环境：bash docs/courses/%s/assets/%s/init.sh"
-          % (ref.split("/")[0], slug))
+    # 环境类的课（Git 那种）有 init.sh 造现场；数据类的课（教材伴读）没有，
+    # 现场就是一份数据表，怎么搭写在课程页的「准备」小节里。
+    init = ARCHIVE / ref.split("/")[0] / "assets" / slug / "init.sh"
+    if init.exists():
+        print("   环境：bash %s" % init.relative_to(ROOT))
+    else:
+        print("   现场：照课程页的「准备」小节做")
     return 0
 
 
