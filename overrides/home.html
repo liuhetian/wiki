@@ -1,6 +1,6 @@
 <!--
   首页开屏模板。骨架仿 mkdocs-material 官网首页（hero → 特性网格 → 聚光灯 → CTA），
-  视觉与动效照抄 docs/skills/frontend-styles/open-design/ 的拆解（Atelier Zero：
+  视觉与动效照抄 docs/gallery/web/frontend-styles/open-design/ 的拆解（Atelier Zero：
   纸白 + 黑墨 + 荧光绿 #63fe13，只做点缀不做大色块）：
   - 蓝图选择框标题 + BlurText 逐字模糊落定（blur-text-demo）
   - data-reveal 滚动入场体系 + left/right 方向变体 + 波浪错峰（scroll-reveal-demo）
@@ -47,7 +47,7 @@
           </h1>
 
           <p class="zx-hero__lede" data-reveal style="--reveal-delay: 120ms">
-            项目复盘、学科笔记、动手做的课程，和可挂载执行的 AI skills。写给人看，也写给 agent 读：
+            项目复盘、学科笔记、动手做的课程、可挂载执行的 AI skills，和图配 prompt 的图库。写给人看，也写给 agent 读：
             每个页面在同域提供 Markdown 源，整站可以当作你的 agent 的远程知识库。
           </p>
 
@@ -119,6 +119,10 @@ curl https://wiki.liuhetian.work/index.md</code></pre>
           <li class="zx-expect__item" data-reveal>
             <span class="zx-expect__icon">{% include ".icons/material/toolbox-outline.svg" %}</span>
             <div><h3>拿来即用的 skills</h3><p>按 Claude skill 标准目录组织的成套资产：约定、模板和活 demo，复制路径就能挂载。</p></div>
+          </li>
+          <li class="zx-expect__item" data-reveal>
+            <span class="zx-expect__icon">{% include ".icons/material/image-multiple-outline.svg" %}</span>
+            <div><h3>图配 prompt 的图库</h3><p>一张图配一段生成它的 prompt，原样收录别人整理好的图库，看中哪张就拿走它的 prompt。</p></div>
           </li>
           <li class="zx-expect__item" data-reveal>
             <span class="zx-expect__icon">{% include ".icons/material/robot-outline.svg" %}</span>
@@ -230,8 +234,8 @@ curl https://wiki.liuhetian.work/index.md</code></pre>
             <h3>条 curl</h3><p>/llms.txt 一口气拿到全站地图。</p>
           </div>
           <div class="zx-statcard" data-drag-var data-reveal style="--tilt:-.8deg; --reveal-delay:180ms">
-            <span class="zx-statcard__num">4</span>
-            <h3>个板块</h3><p>文章、笔记、课程、skills，各管一摊。</p>
+            <span class="zx-statcard__num">5</span>
+            <h3>个板块</h3><p>文章、笔记、课程、skills、gallery，各管一摊。</p>
           </div>
           <div class="zx-statcard" data-drag-var data-reveal style="--tilt:1.6deg; --reveal-delay:270ms">
             <span class="zx-statcard__num">∞</span>
@@ -252,6 +256,7 @@ curl https://wiki.liuhetian.work/index.md</code></pre>
             <a class="zx-btn zx-btn--stage" href="{{ 'notes/' | url }}">笔记索引</a>
             <a class="zx-btn zx-btn--stage" href="{{ 'courses/' | url }}">课程索引</a>
             <a class="zx-btn zx-btn--stage" href="{{ 'skills/' | url }}">Skills 索引</a>
+            <a class="zx-btn zx-btn--stage" href="{{ 'gallery/' | url }}">Gallery 索引</a>
           </div>
         </div>
       </div>

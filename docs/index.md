@@ -3,7 +3,7 @@ template: home.html
 hide:
   - navigation
   - toc
-description: "AI 友好的个人知识库：每个页面在同域提供 .md 源，把 URL 结尾的 / 换成 .md 即可，LLM 可顺相对链接一层层读进去。收录项目复盘、学科笔记、教材伴读课程与可挂载的 AI skills。"
+description: "AI 友好的个人知识库：每个页面在同域提供 .md 源，把 URL 结尾的 / 换成 .md 即可，LLM 可顺相对链接一层层读进去。收录项目复盘、学科笔记、教材伴读课程、可挂载的 AI skills 与图配 prompt 的图库。"
 ---
 
 <!-- 浏览器里首页由 overrides/home.html（SaaS 开屏）渲染，下面的正文不上屏，
@@ -44,5 +44,12 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 - [FastAPI 后端](skills/fastapi/index.md) —— 依赖注入、SQLModel 分层建模、按需参考的一整套后端约定
 - [Dashboard 后台](skills/dashboard/index.md) —— 形状目录 + 每形状一个可玩的活 demo
 - [写作口味](skills/writing/index.md) —— MkDocs Wiki 文档、报纸版 HTML、去 AI 味
-- [前端风格收集](skills/frontend-styles/index.md) —— 有特色的前端美学，一种风格一个可抄的活 demo
-- [和 AI 协作](skills/collab/index.md) —— CLAUDE.md 模板 + 盘问式协作
+- [和 AI 协作](skills/collab/index.md) —— CLAUDE.md 模板 + 盘问式协作 + 两个图片提示词反推 skill
+
+## Gallery
+
+原样收录的成品参考，按媒介分图片 / 视频 / 音频 / 网页四区，全部在 [Gallery 索引](gallery/index.md)：
+
+- [图片](gallery/images/index.md) —— 一张图配一段生成它的 prompt，7 大类共 175 条：GPT Image 2 的 163 条（译成中文）+ [二次元平面设计风格](gallery/images/linux-do-style/gallery-anime-graphic-design.md) 12 组
+- [网页](gallery/web/index.md) —— [前端风格收集](gallery/web/frontend-styles/index.md)：有特色的前端美学，一种风格一个可抄的活 demo
+- 视频、音频两区还没有收录

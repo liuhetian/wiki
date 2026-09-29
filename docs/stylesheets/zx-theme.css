@@ -715,3 +715,25 @@
 .md-typeset .conflict__a { background: var(--coral-wash); }
 .md-typeset .conflict__a--empty { color: var(--ink-faint); font-style: italic; }
 .md-typeset pre.conflict.conflict--unresolved > code { box-shadow: inset 3px 0 0 var(--coral); }
+
+/* 长 prompt 代码块：fence 写 ```{.text .wrap} 时自动换行，不横向滚动。
+   活例：gallery/images/linux-do-style/gallery-anime-graphic-design.md */
+.md-typeset .wrap > pre > code {
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding-right: 2.6em;   /* 给右上角的复制按钮让位，换行后的文字不钻到按钮底下 */
+}
+
+/* 测试图并排：<div class="gallery-pair" markdown> 包一到两张图，固定两栏，
+   单张图也只占一栏，不撑满整页；窄屏叠成一列 */
+.md-typeset .gallery-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .8rem;
+  align-items: start;
+}
+.md-typeset .gallery-pair > p { margin: 0; display: contents; }
+.md-typeset .gallery-pair img { width: 100%; height: auto; }
+@media (max-width: 40em) {
+  .md-typeset .gallery-pair { grid-template-columns: 1fr; }
+}

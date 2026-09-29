@@ -36,13 +36,17 @@ docs/
 │   ├── data-visualization/ #   Lieflat Charts：48 张单色编辑型图表，每张一篇 + 一个 demo
 │   ├── canvas/             #   前端画布 L1–L4 四级选型，每级一个活 demo
 │   ├── writing/            #   写作口味：MkDocs Wiki（本 wiki 自用）/ 报纸版 HTML / 滚动 deck / 去 AI 味 / 檄文
-│   ├── frontend-styles/    #   前端风格收集：15 种风格 + Open Design / HAOQI / ORYZO 三个官网拆解
-│   └── collab/             #   和 AI 协作：CLAUDE.md 模板、盘问我、带文档盘问
+│   └── collab/             #   和 AI 协作：CLAUDE.md 模板、盘问我、带文档盘问、两个图片提示词反推 skill
+├── gallery/          # 原样收录的成品参考库，按媒介分四区
+│   ├── images/             #   图配 prompt，7 大类 175 条：GPT Image 2 的 163 条（中译）+ linux.do 二次元平面设计风格 12 组
+│   ├── video/              #   视频（暂空）
+│   ├── audio/              #   音频（暂空）
+│   └── web/                #   网页：frontend-styles/ 前端风格收集，15 种风格 + Open Design / HAOQI / ORYZO 三个官网拆解
 ├── stylesheets/      # 全站令牌层 zx-tokens.css + 皮肤层 zx-theme.css + 首页 home.css
 ├── vendor/           # 本地化运行时，全部不走 CDN：React UMD + htm、React ESM、three / r3f、
 │                     # MathJax、ECharts、Chart.js、Mermaid，以及 Maple Mono 字体（拉丁官方 woff2 + 自建中文子集）
 └── robots.txt        # 全站开放抓取 + 指向 sitemap.xml
-overrides/            # 主题模板覆盖：home.html 首页开屏；main.html 给有 mermaid 块的页面同步引入本地真身
+overrides/            # 主题模板覆盖：home.html 首页开屏；main.html 给有 mermaid 块的页面同步引入本地真身，并给 gallery/images/ 下的 text 块开自动换行
 mkdocs.yml            # Zensical 兼容配置；nav 只是给人的策展层，不在 AI 链路上
 deploy.sh             # git pull → 链路校验 → 构建 → md 源镜像 + llms.txt → 钉 Content-Type 同步 COS（一键部署）
 deploy-cert/          # HTTPS 证书自动续期（acme.sh → DNSPod → COS API）
@@ -62,7 +66,7 @@ scripts/
 
 ## 内容导览
 
-四个顶层分区各管一类内容：**文章**把来龙去脉讲完整，**笔记**记专业科目的学习推导，**课程**是讲解在前、题在后、答完才算数的伴读，**Skills** 是能直接交给 AI 执行的成套资产。
+五个顶层分区各管一类内容：**文章**把来龙去脉讲完整，**笔记**记专业科目的学习推导，**课程**是讲解在前、题在后、答完才算数的伴读，**Skills** 是能直接交给 AI 执行的成套资产，**Gallery** 是原样收录的图配 prompt 图库。
 
 **文章**（[docs/posts/](docs/posts/index.md)）：
 
@@ -96,9 +100,15 @@ scripts/
 - [Dashboard 后台](docs/skills/dashboard/index.md) —— 不 clone 样板按「形状目录」组装：36 个页面形状，一形状一篇小文 + 一个 iframe 内嵌的可玩 React demo
 - [数据可视化](docs/skills/data-visualization/index.md) —— [Lieflat Charts](docs/skills/data-visualization/lieflat-charts/index.md)：模板驱动的单色编辑型图表，基础型 / 编辑型 / 快读型 / 交互大图共 48 张
 - [前端画布](docs/skills/canvas/index.md) —— 原生无限画布 → React 手写 → 数据驱动节点图 → 白板，四级比成本与实用性
-- [写作口味](docs/skills/writing/index.md) —— [MkDocs Wiki 文档](docs/skills/writing/mkdocs-wiki/index.md)（本 wiki 就在用）、[报纸版 HTML](docs/skills/writing/newspaper/index.md)、[滚动 deck 工程手册](docs/skills/writing/deck/index.md)，以及吸收自开源项目的[去 AI 味](docs/skills/writing/qu-ai-wei/index.md)与[檄文](docs/skills/writing/xi-wen/index.md)
-- [前端风格收集](docs/skills/frontend-styles/index.md) —— 一种风格一个可抄走的活 demo，另有 Open Design / HAOQI / ORYZO 三个官网逐效果拆解
-- [和 AI 协作](docs/skills/collab/index.md) —— CLAUDE.md 初始化模板、盘问我、带文档盘问
+- [本 wiki 写作规范](docs/skills/wiki-guide/index.md) —— [MkDocs Wiki 文档](docs/skills/wiki-guide/mkdocs-wiki/index.md)（总规矩）、[课程页怎么写](docs/skills/wiki-guide/course-page.md)、[收纳远程 skill](docs/skills/wiki-guide/remote-skill.md)
+- [写作口味](docs/skills/writing/index.md) —— [报纸版 HTML](docs/skills/writing/newspaper/index.md)、[滚动 deck 工程手册](docs/skills/writing/deck/index.md)，以及吸收自开源项目的[去 AI 味](docs/skills/writing/qu-ai-wei/index.md)与[檄文](docs/skills/writing/xi-wen/index.md)
+- [和 AI 协作](docs/skills/collab/index.md) —— CLAUDE.md 初始化模板、盘问我、带文档盘问，以及两个各自独立的图片提示词反推 skill：[七维拆解](docs/skills/collab/analysis_image/index.md)（整理自 linux.do）和 [get-prompt-from-image](docs/skills/collab/get-prompt-from-image/index.md)（吸收自 GPT-Image2-Skill）
+
+**Gallery**（[docs/gallery/](docs/gallery/index.md)）：
+
+- [Gallery 索引](docs/gallery/index.md) —— 按媒介分图片 / 视频 / 音频 / 网页四区
+- [图片](docs/gallery/images/index.md) —— 7 大类，每条就是一张图加一段中文 prompt。GPT Image 2 的 163 条收录自 [wuyoscar/GPT-Image2-Skill](https://github.com/wuyoscar/GPT-Image2-Skill)（MIT，已中译）；[二次元平面设计风格](docs/gallery/images/linux-do-style/gallery-anime-graphic-design.md) 12 组整理自 linux.do
+- [网页 · 前端风格收集](docs/gallery/web/frontend-styles/index.md) —— 一种风格一个可抄走的活 demo，另有 Open Design / HAOQI / ORYZO 三个官网逐效果拆解
 
 ## 本地开发与部署
 
@@ -131,7 +141,7 @@ HTTPS 证书自动续期见 [`deploy-cert/install.sh`](deploy-cert/)，来龙去
 
 ## 写作与维护约定
 
-规矩都沉淀在文章里，改内容前先读 [MkDocs Wiki 写作规范](docs/skills/writing/mkdocs-wiki/index.md)。几条最容易踩的：
+规矩都沉淀在文章里，改内容前先读 [MkDocs Wiki 写作规范](docs/skills/wiki-guide/mkdocs-wiki/index.md)。几条最容易踩的：
 
 - **引外部资料三步**：真身存档进 `assets/`（软链或 clone）+ 正文摘句 + 自己的分析；吸收整个开源项目时例外 —— 原文不本地存档，Invariants 提炼进文章、钉 commit 的 GitHub 永链指路（范例：[dashboard 的 MIRROR.md](docs/skills/dashboard/assets/open-dashboard/MIRROR.md)）
 - **吸收型 skill 的 `index.md` 是上游原文照录，不许改**：本地归档的链接责任落在同目录的 `MIRROR.md` 上（范例：[xi-wen](docs/skills/writing/xi-wen/index.md)、[qu-ai-wei](docs/skills/writing/qu-ai-wei/index.md)）

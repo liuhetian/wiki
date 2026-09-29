@@ -1,6 +1,6 @@
 /* 首页开屏样式，仅被 overrides/home.html 加载（其它页面零开销）。
    骨架仿 mkdocs-material 官网首页，视觉令牌与效果参数照抄
-   docs/skills/frontend-styles/open-design/ 的拆解（Atelier Zero）：
+   docs/gallery/web/frontend-styles/open-design/ 的拆解（Atelier Zero）：
    纸白底 + 黑墨字 + 荧光绿 #63fe13 只做点缀。
    版心与正文一致（Material md-grid 的 61rem ≈ 1220px），不做全屏 splash。
    Material 的 html { font-size: 125% }，即 1rem = 20px，下面统一用 px 免换算。 */

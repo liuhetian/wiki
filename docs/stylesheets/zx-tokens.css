@@ -1,5 +1,5 @@
 /* 全站唯一令牌源（Atelier Zero）：纸白 + 黑墨 + 荧光绿只做点缀。
-   风格出处：docs/skills/frontend-styles/open-design/ 的拆解。
+   风格出处：docs/gallery/web/frontend-styles/open-design/ 的拆解。
    分层：fonts.css（字体）→ 本文件（令牌 + Material 变量映射）→ zx-theme.css（选择器皮肤）
    → 首页 home.css（只用令牌不定义令牌，经 overrides/home.html 的 extrahead 最后加载）。
 

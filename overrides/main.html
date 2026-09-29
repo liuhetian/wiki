@@ -6,8 +6,21 @@
   DOMContentLoaded 触发前 window.mermaid 已就位 → 加载器直接复用，不出网。
   按页面内容条件引入：真身约 3MB，只让有图的页面付这个代价（对应 vendor/echarts-init.js 的按需思路）。
   版本与下载见 scripts/fetch-vendor.sh。
+
+  第二件事：图库 gallery/images/ 里，长 prompt 都写在 ```text 块里，
+  而上游原文不能加 {.text .wrap}，于是按 URL 前缀给这一目录的 text 块开自动换行，规则跟 zx-theme.css
+  里的 .wrap 一致。不做成全站规则，是因为站内的 ```text 大多是目录树、ASCII 图，一换行就乱了。
 #}
 {% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  {% if page and page.url and page.url[:15] == "gallery/images/" %}
+    <style>
+      .md-typeset .language-text > pre > code { white-space: pre-wrap; word-break: break-word; padding-right: 2.6em; }
+    </style>
+  {% endif %}
+{% endblock %}
 
 {% block scripts %}
   {{ super() }}

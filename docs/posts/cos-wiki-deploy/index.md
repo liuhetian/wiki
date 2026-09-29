@@ -151,7 +151,7 @@ llms.txt 提案解决的是普通网站从 html 到 md 的问题，本文场景�
 ### 部署在远程，比 clone 到本地强在哪
 
 - **最新版本**：每次读到的是最新版本，对skill会不断优化很重要
-- **图片渲染效果人可以看**：同一套内容，AI 读 `.md` 源，人看渲染页 —— mermaid 架构图、表格、截图全渲染出来。对**设计类 skill**（系统架构、页面布局、视觉规范）帮助很大，而且不止图：连**可交互的 HTML 单页**都能嵌进文章直接玩 —— 纯客户端的自包含 SPA（比如一个 React demo）丢进 `assets/` 随 wiki 一起发布，iframe 同域嵌入，人玩交互效果、AI 读同一 URL 下未压缩的源码，规矩与活例见[写作规范·嵌入交互单页](../../skills/writing/mkdocs-wiki/index.md#iframe-demo)。
+- **图片渲染效果人可以看**：同一套内容，AI 读 `.md` 源，人看渲染页 —— mermaid 架构图、表格、截图全渲染出来。对**设计类 skill**（系统架构、页面布局、视觉规范）帮助很大，而且不止图：连**可交互的 HTML 单页**都能嵌进文章直接玩 —— 纯客户端的自包含 SPA（比如一个 React demo）丢进 `assets/` 随 wiki 一起发布，iframe 同域嵌入，人玩交互效果、AI 读同一 URL 下未压缩的源码，规矩与活例见[写作规范·嵌入交互单页](../../skills/wiki-guide/mkdocs-wiki/index.md#iframe-demo)。
 
 
 ```mermaid

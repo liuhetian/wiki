@@ -76,9 +76,94 @@ plugins:
   # 而 .md 那一半是 deploy.sh 从 docs/ 实镜像出来的，旧的 /<旧路径>.md 仍然 404。
   # 所以挪文件依旧要把站内引用一并改掉，redirects 兜的是站外链接和别人的书签。
   - redirects:
-      redirect_maps: {}
+      redirect_maps:
         # 例：posts/old-name.md: posts/new-name.md
         #     posts/guide.md#installation: posts/guide.md#getting-started
+        # 2026-09-29 本 wiki 自己的写作规范从「写作口味」拆出，单开 skills/wiki-guide/
+        skills/writing/mkdocs-wiki/index.md: skills/wiki-guide/mkdocs-wiki/index.md
+        skills/writing/mkdocs-wiki/reference/course-page.md: skills/wiki-guide/course-page.md
+        # 2026-09-29 前端风格收集从 skills/ 挪进 gallery/web/（Gallery 分图片/视频/音频/网页四区）
+        skills/frontend-styles/haoqi/01-opening.md: gallery/web/frontend-styles/haoqi/01-opening.md
+        skills/frontend-styles/haoqi/index.md: gallery/web/frontend-styles/haoqi/index.md
+        skills/frontend-styles/index.md: gallery/web/frontend-styles/index.md
+        skills/frontend-styles/open-design/blur-text.md: gallery/web/frontend-styles/open-design/blur-text.md
+        skills/frontend-styles/open-design/drag-sticker.md: gallery/web/frontend-styles/open-design/drag-sticker.md
+        skills/frontend-styles/open-design/falling-chips.md: gallery/web/frontend-styles/open-design/falling-chips.md
+        skills/frontend-styles/open-design/globe-orbit.md: gallery/web/frontend-styles/open-design/globe-orbit.md
+        skills/frontend-styles/open-design/gradual-blur.md: gallery/web/frontend-styles/open-design/gradual-blur.md
+        skills/frontend-styles/open-design/headroom-nav.md: gallery/web/frontend-styles/open-design/headroom-nav.md
+        skills/frontend-styles/open-design/index.md: gallery/web/frontend-styles/open-design/index.md
+        skills/frontend-styles/open-design/magnetic-dock.md: gallery/web/frontend-styles/open-design/magnetic-dock.md
+        skills/frontend-styles/open-design/scroll-reveal.md: gallery/web/frontend-styles/open-design/scroll-reveal.md
+        skills/frontend-styles/open-design/scrolly-steps.md: gallery/web/frontend-styles/open-design/scrolly-steps.md
+        skills/frontend-styles/open-design/stat-cards.md: gallery/web/frontend-styles/open-design/stat-cards.md
+        skills/frontend-styles/open-design/statement-reveal.md: gallery/web/frontend-styles/open-design/statement-reveal.md
+        skills/frontend-styles/oryzo/blueprint-intro.md: gallery/web/frontend-styles/oryzo/blueprint-intro.md
+        skills/frontend-styles/oryzo/index.md: gallery/web/frontend-styles/oryzo/index.md
+        skills/frontend-styles/oryzo/rgb-glow-border.md: gallery/web/frontend-styles/oryzo/rgb-glow-border.md
+        skills/frontend-styles/oryzo/scene-morph.md: gallery/web/frontend-styles/oryzo/scene-morph.md
+        skills/frontend-styles/oryzo/splat-system.md: gallery/web/frontend-styles/oryzo/splat-system.md
+        skills/frontend-styles/oryzo/wearable-scene.md: gallery/web/frontend-styles/oryzo/wearable-scene.md
+        skills/frontend-styles/reference/atelier-kinetic.md: gallery/web/frontend-styles/reference/atelier-kinetic.md
+        skills/frontend-styles/reference/celestia-collection.md: gallery/web/frontend-styles/reference/celestia-collection.md
+        skills/frontend-styles/reference/nexus-2030.md: gallery/web/frontend-styles/reference/nexus-2030.md
+        skills/frontend-styles/reference/onehub-berry-admin.md: gallery/web/frontend-styles/reference/onehub-berry-admin.md
+        skills/frontend-styles/reference/pip-boy-terminal.md: gallery/web/frontend-styles/reference/pip-boy-terminal.md
+        skills/frontend-styles/reference/syzygy-astral.md: gallery/web/frontend-styles/reference/syzygy-astral.md
+        skills/frontend-styles/reference/task1-platter.md: gallery/web/frontend-styles/reference/task1-platter.md
+        skills/frontend-styles/reference/task2-parallax-archive.md: gallery/web/frontend-styles/reference/task2-parallax-archive.md
+        skills/frontend-styles/reference/task3-line-system.md: gallery/web/frontend-styles/reference/task3-line-system.md
+        skills/frontend-styles/reference/task4-world-files.md: gallery/web/frontend-styles/reference/task4-world-files.md
+        skills/frontend-styles/reference/task5-pixel-bloom.md: gallery/web/frontend-styles/reference/task5-pixel-bloom.md
+        skills/frontend-styles/reference/task6-tintory.md: gallery/web/frontend-styles/reference/task6-tintory.md
+        skills/frontend-styles/reference/task7-neat-annotations.md: gallery/web/frontend-styles/reference/task7-neat-annotations.md
+        skills/frontend-styles/reference/vercel-lanyard.md: gallery/web/frontend-styles/reference/vercel-lanyard.md
+        skills/frontend-styles/reference/verdant-glass.md: gallery/web/frontend-styles/reference/verdant-glass.md
+        # 2026-09-29 图库从 skills/collab/ 挪到顶层 gallery/；gpt-image2-skill 里没收的页面（CHANGELOG、gpt-image 手册等）不跳，诚实 404
+        skills/collab/analysis_image/reference/style-extraction.md: gallery/images/linux-do-style/gallery-anime-graphic-design.md
+        gallery/gpt-image2/index.md: gallery/images/index.md
+        gallery/linux-do-style/index.md: gallery/images/linux-do-style/gallery-anime-graphic-design.md
+        gallery/gpt-image2/sunburst-samples.md: gallery/images/index.md
+        skills/collab/gpt-image2-skill/README.md: gallery/images/index.md
+        skills/collab/gpt-image2-skill/README.zh.md: gallery/images/index.md
+        skills/collab/gpt-image2-skill/MIRROR.md: gallery/images/gpt-image2/MIRROR.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery.md: gallery/images/index.md
+        skills/collab/gpt-image2-skill/docs/sunburst-samples.md: gallery/images/index.md
+        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/SKILL.md: skills/collab/get-prompt-from-image/index.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-anime-and-manga.md: gallery/images/gpt-image2/gallery-anime-and-manga.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-gaming.md: gallery/images/gpt-image2/gallery-gaming.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-retro-and-cyberpunk.md: gallery/images/gpt-image2/gallery-retro-and-cyberpunk.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-cinematic-and-animation.md: gallery/images/gpt-image2/gallery-cinematic-and-animation.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-character-design.md: gallery/images/gpt-image2/gallery-character-design.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-typography-and-posters.md: gallery/images/gpt-image2/gallery-typography-and-posters.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-illustration.md: gallery/images/gpt-image2/gallery-illustration.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-watercolor.md: gallery/images/gpt-image2/gallery-watercolor.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-ink-and-chinese.md: gallery/images/gpt-image2/gallery-ink-and-chinese.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-pixel-art.md: gallery/images/gpt-image2/gallery-pixel-art.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-isometric.md: gallery/images/gpt-image2/gallery-isometric.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-product-and-food.md: gallery/images/gpt-image2/gallery-product-and-food.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-brand-systems-and-identity.md: gallery/images/gpt-image2/gallery-brand-systems-and-identity.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-photography.md: gallery/images/gpt-image2/gallery-photography.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-infographics-and-field-guides.md: gallery/images/gpt-image2/gallery-infographics-and-field-guides.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-research-paper-figures.md: gallery/images/gpt-image2/gallery-research-paper-figures.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-official-openai-cookbook-examples.md: gallery/images/gpt-image2/gallery-official-openai-cookbook-examples.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-edit-endpoint-showcase.md: gallery/images/gpt-image2/gallery-edit-endpoint-showcase.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-ui-ux-mockups.md: gallery/images/gpt-image2/gallery-ui-ux-mockups.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-data-visualization.md: gallery/images/gpt-image2/gallery-data-visualization.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-technical-illustration.md: gallery/images/gpt-image2/gallery-technical-illustration.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-architecture-and-interior.md: gallery/images/gpt-image2/gallery-architecture-and-interior.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-scientific-and-educational.md: gallery/images/gpt-image2/gallery-scientific-and-educational.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-fashion-editorial.md: gallery/images/gpt-image2/gallery-fashion-editorial.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-fine-art-painting.md: gallery/images/gpt-image2/gallery-fine-art-painting.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-more-illustration-styles.md: gallery/images/gpt-image2/gallery-more-illustration-styles.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-cinematic-film-references.md: gallery/images/gpt-image2/gallery-cinematic-film-references.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-beauty-and-lifestyle.md: gallery/images/gpt-image2/gallery-beauty-and-lifestyle.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-events-and-experience.md: gallery/images/gpt-image2/gallery-events-and-experience.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-tattoo-design.md: gallery/images/gpt-image2/gallery-tattoo-design.md
+        skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-screen-photography.md: gallery/images/gpt-image2/gallery-screen-photography.md
+        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/analysis-framework.md: skills/collab/get-prompt-from-image/references/analysis-framework.md
+        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/category-guides.md: skills/collab/get-prompt-from-image/references/category-guides.md
+        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/illustration-style.md: skills/collab/get-prompt-from-image/references/illustration-style.md
 
 # 链接校验。0.0.53 及更早版本有并行竞态：同一份内容偶发（约 1/15 次构建）误报大量
 # "page does not exist"，产物 HTML 实测无差异，只能关掉。0.0.62 上复现不出来了 ——
@@ -105,6 +190,10 @@ nav:
       - 动画网页 PPT: posts/animated-ppt/index.md
       - 超级轻量的自用AI编程Harness框架: posts/ai-code-skeleton/index.md
       - 上线前的三层验收: posts/release-acceptance.md
+      - 如何分析数据:
+          - posts/data-analysis/index.md
+          - 单维度分布: posts/data-analysis/distribution.md
+          - 联合分析: posts/data-analysis/cross-analysis.md
       - Kindle 常显信息屏:
           - posts/kindle-dashboard/index.md
           - 越狱与显示通道: posts/kindle-dashboard/reference/jailbreak.md
@@ -310,10 +399,13 @@ nav:
           - L2 · React 手写画布: skills/canvas/reference/l2-react.md
           - L3 · 数据驱动节点图: skills/canvas/reference/l3-nodegraph.md
           - L4 · 白板: skills/canvas/reference/l4-whiteboard.md
+      - 本 wiki 写作规范:
+          - skills/wiki-guide/index.md
+          - MkDocs Wiki 文档: skills/wiki-guide/mkdocs-wiki/index.md
+          - 课程页怎么写: skills/wiki-guide/course-page.md
+          - 收纳远程 skill: skills/wiki-guide/remote-skill.md
       - 写作口味:
           - skills/writing/index.md
-          - MkDocs Wiki 文档: skills/writing/mkdocs-wiki/index.md
-          - 课程页怎么写: skills/writing/mkdocs-wiki/reference/course-page.md
           - 报纸版 HTML: skills/writing/newspaper/index.md
           - 滚动 deck 工程手册: skills/writing/deck/index.md
           - 去 AI 味:
@@ -338,46 +430,6 @@ nav:
               - 底本·为徐敬业讨武曌檄: skills/writing/xi-wen/references/originals/为徐敬业讨武曌檄.md
               - 底本·谕中原檄: skills/writing/xi-wen/references/originals/谕中原檄.md
               - 底本·讨粤匪檄: skills/writing/xi-wen/references/originals/讨粤匪檄.md
-      - 前端风格收集:
-          - skills/frontend-styles/index.md
-          - PIP-BOY 琥珀终端: skills/frontend-styles/reference/pip-boy-terminal.md
-          - Celestia 主题收藏卡: skills/frontend-styles/reference/celestia-collection.md
-          - Verdant Glass 苔光用量台: skills/frontend-styles/reference/verdant-glass.md
-          - Syzygy 克莱因蓝星穹: skills/frontend-styles/reference/syzygy-astral.md
-          - NEXUS 2030 酸绿深空首屏: skills/frontend-styles/reference/nexus-2030.md
-          - ATELIER 纸白动力学: skills/frontend-styles/reference/atelier-kinetic.md
-          - PLATTER 平面音乐档案: skills/frontend-styles/reference/task1-platter.md
-          - PARALLAX 三态作品档案: skills/frontend-styles/reference/task2-parallax-archive.md
-          - LINE//SYSTEM 线性工业图形: skills/frontend-styles/reference/task3-line-system.md
-          - WORLD FILES 档案袋叙事: skills/frontend-styles/reference/task4-world-files.md
-          - PIXEL BLOOM 网格揭示: skills/frontend-styles/reference/task5-pixel-bloom.md
-          - TINTORY 视觉考古编辑部: skills/frontend-styles/reference/task6-tintory.md
-          - NEAT ANNOTATIONS 手绘标注标本: skills/frontend-styles/reference/task7-neat-annotations.md
-          - One Hub 翡翠管理台: skills/frontend-styles/reference/onehub-berry-admin.md
-          - Vercel Lanyard 可拖拽 3D 工牌: skills/frontend-styles/reference/vercel-lanyard.md
-          - Open Design 官网拆解:
-              - skills/frontend-styles/open-design/index.md
-              - 滚动感知吸顶导航: skills/frontend-styles/open-design/headroom-nav.md
-              - 标题逐词模糊入场: skills/frontend-styles/open-design/blur-text.md
-              - 滚动入场编排: skills/frontend-styles/open-design/scroll-reveal.md
-              - 宣言逐字点亮: skills/frontend-styles/open-design/statement-reveal.md
-              - 滚动锁定步骤联动: skills/frontend-styles/open-design/scrolly-steps.md
-              - 可拖拽贴纸: skills/frontend-styles/open-design/drag-sticker.md
-              - 磁性 Dock 预览切换: skills/frontend-styles/open-design/magnetic-dock.md
-              - 图标物理掉落: skills/frontend-styles/open-design/falling-chips.md
-              - 点阵地球与贡献者轨道: skills/frontend-styles/open-design/globe-orbit.md
-              - 贴纸统计卡与数字滚动: skills/frontend-styles/open-design/stat-cards.md
-              - 页底渐进高斯模糊: skills/frontend-styles/open-design/gradual-blur.md
-          - HAOQI 3D 官网拆解:
-              - skills/frontend-styles/haoqi/index.md
-              - 3D 开场专题: skills/frontend-styles/haoqi/01-opening.md
-          - ORYZO 官网拆解:
-              - skills/frontend-styles/oryzo/index.md
-              - 蓝图开场动画: skills/frontend-styles/oryzo/blueprint-intro.md
-              - 高斯泼溅渲染系统: skills/frontend-styles/oryzo/splat-system.md
-              - 滚动叙事与场景切换: skills/frontend-styles/oryzo/scene-morph.md
-              - Wearable 一幕: skills/frontend-styles/oryzo/wearable-scene.md
-              - RGB 呼吸光边: skills/frontend-styles/oryzo/rgb-glow-border.md
       - 和 AI 协作:
           - skills/collab/index.md
           - CLAUDE.md 初始化模板: skills/collab/claude-md-template/index.md
@@ -387,6 +439,104 @@ nav:
               - Domain Modeling: skills/collab/grill-with-docs/domain-modeling/SKILL.md
               - CONTEXT.md 格式: skills/collab/grill-with-docs/domain-modeling/CONTEXT-FORMAT.md
               - ADR 格式: skills/collab/grill-with-docs/domain-modeling/ADR-FORMAT.md
+          - 提示词卡牌:
+              - skills/collab/prompt-cards/index.md
+              - 角色卡: skills/collab/prompt-cards/reference/persona.md
+              - 流程卡: skills/collab/prompt-cards/reference/playbook.md
+              - 约束卡: skills/collab/prompt-cards/reference/guard.md
+          - 图片提示词反推: skills/collab/analysis_image/index.md
+          - 从图反推 prompt:
+              - skills/collab/get-prompt-from-image/index.md
+              - 分析框架: skills/collab/get-prompt-from-image/references/analysis-framework.md
+              - 题材与媒介: skills/collab/get-prompt-from-image/references/category-guides.md
+              - 插画风格: skills/collab/get-prompt-from-image/references/illustration-style.md
       - AI 调研写手册:
           - skills/book-writer/index.md
           - SillyTavern 调研计划: skills/book-writer/reference/goal-st.md
+  - Gallery:
+      - gallery/index.md
+      - 图片:
+          - gallery/images/index.md
+          - 动漫、角色与游戏:
+              - gallery/images/gpt-image2/gallery-anime-and-manga.md
+              - gallery/images/gpt-image2/gallery-character-design.md
+              - gallery/images/gpt-image2/gallery-gaming.md
+              - gallery/images/gpt-image2/gallery-retro-and-cyberpunk.md
+          - 插画与绘画:
+              - gallery/images/gpt-image2/gallery-illustration.md
+              - gallery/images/gpt-image2/gallery-more-illustration-styles.md
+              - gallery/images/gpt-image2/gallery-watercolor.md
+              - gallery/images/gpt-image2/gallery-ink-and-chinese.md
+              - gallery/images/gpt-image2/gallery-pixel-art.md
+              - gallery/images/gpt-image2/gallery-fine-art-painting.md
+              - gallery/images/gpt-image2/gallery-tattoo-design.md
+              - gallery/images/linux-do-style/gallery-anime-graphic-design.md
+          - 海报、字体与品牌:
+              - gallery/images/gpt-image2/gallery-typography-and-posters.md
+              - gallery/images/gpt-image2/gallery-brand-systems-and-identity.md
+              - gallery/images/gpt-image2/gallery-events-and-experience.md
+          - 摄影与电影感:
+              - gallery/images/gpt-image2/gallery-photography.md
+              - gallery/images/gpt-image2/gallery-fashion-editorial.md
+              - gallery/images/gpt-image2/gallery-beauty-and-lifestyle.md
+              - gallery/images/gpt-image2/gallery-screen-photography.md
+              - gallery/images/gpt-image2/gallery-cinematic-and-animation.md
+              - gallery/images/gpt-image2/gallery-cinematic-film-references.md
+          - 产品与空间:
+              - gallery/images/gpt-image2/gallery-product-and-food.md
+              - gallery/images/gpt-image2/gallery-architecture-and-interior.md
+              - gallery/images/gpt-image2/gallery-isometric.md
+          - 信息与知识:
+              - gallery/images/gpt-image2/gallery-infographics-and-field-guides.md
+              - gallery/images/gpt-image2/gallery-scientific-and-educational.md
+              - gallery/images/gpt-image2/gallery-data-visualization.md
+              - gallery/images/gpt-image2/gallery-research-paper-figures.md
+              - gallery/images/gpt-image2/gallery-technical-illustration.md
+              - gallery/images/gpt-image2/gallery-ui-ux-mockups.md
+          - 官方示例:
+              - gallery/images/gpt-image2/gallery-official-openai-cookbook-examples.md
+              - gallery/images/gpt-image2/gallery-edit-endpoint-showcase.md
+      - 视频: gallery/video/index.md
+      - 音频: gallery/audio/index.md
+      - 网页:
+          - gallery/web/index.md
+          - 前端风格收集:
+              - gallery/web/frontend-styles/index.md
+              - PIP-BOY 琥珀终端: gallery/web/frontend-styles/reference/pip-boy-terminal.md
+              - Celestia 主题收藏卡: gallery/web/frontend-styles/reference/celestia-collection.md
+              - Verdant Glass 苔光用量台: gallery/web/frontend-styles/reference/verdant-glass.md
+              - Syzygy 克莱因蓝星穹: gallery/web/frontend-styles/reference/syzygy-astral.md
+              - NEXUS 2030 酸绿深空首屏: gallery/web/frontend-styles/reference/nexus-2030.md
+              - ATELIER 纸白动力学: gallery/web/frontend-styles/reference/atelier-kinetic.md
+              - PLATTER 平面音乐档案: gallery/web/frontend-styles/reference/task1-platter.md
+              - PARALLAX 三态作品档案: gallery/web/frontend-styles/reference/task2-parallax-archive.md
+              - LINE//SYSTEM 线性工业图形: gallery/web/frontend-styles/reference/task3-line-system.md
+              - WORLD FILES 档案袋叙事: gallery/web/frontend-styles/reference/task4-world-files.md
+              - PIXEL BLOOM 网格揭示: gallery/web/frontend-styles/reference/task5-pixel-bloom.md
+              - TINTORY 视觉考古编辑部: gallery/web/frontend-styles/reference/task6-tintory.md
+              - NEAT ANNOTATIONS 手绘标注标本: gallery/web/frontend-styles/reference/task7-neat-annotations.md
+              - One Hub 翡翠管理台: gallery/web/frontend-styles/reference/onehub-berry-admin.md
+              - Vercel Lanyard 可拖拽 3D 工牌: gallery/web/frontend-styles/reference/vercel-lanyard.md
+              - Open Design 官网拆解:
+                  - gallery/web/frontend-styles/open-design/index.md
+                  - 滚动感知吸顶导航: gallery/web/frontend-styles/open-design/headroom-nav.md
+                  - 标题逐词模糊入场: gallery/web/frontend-styles/open-design/blur-text.md
+                  - 滚动入场编排: gallery/web/frontend-styles/open-design/scroll-reveal.md
+                  - 宣言逐字点亮: gallery/web/frontend-styles/open-design/statement-reveal.md
+                  - 滚动锁定步骤联动: gallery/web/frontend-styles/open-design/scrolly-steps.md
+                  - 可拖拽贴纸: gallery/web/frontend-styles/open-design/drag-sticker.md
+                  - 磁性 Dock 预览切换: gallery/web/frontend-styles/open-design/magnetic-dock.md
+                  - 图标物理掉落: gallery/web/frontend-styles/open-design/falling-chips.md
+                  - 点阵地球与贡献者轨道: gallery/web/frontend-styles/open-design/globe-orbit.md
+                  - 贴纸统计卡与数字滚动: gallery/web/frontend-styles/open-design/stat-cards.md
+                  - 页底渐进高斯模糊: gallery/web/frontend-styles/open-design/gradual-blur.md
+              - HAOQI 3D 官网拆解:
+                  - gallery/web/frontend-styles/haoqi/index.md
+                  - 3D 开场专题: gallery/web/frontend-styles/haoqi/01-opening.md
+              - ORYZO 官网拆解:
+                  - gallery/web/frontend-styles/oryzo/index.md
+                  - 蓝图开场动画: gallery/web/frontend-styles/oryzo/blueprint-intro.md
+                  - 高斯泼溅渲染系统: gallery/web/frontend-styles/oryzo/splat-system.md
+                  - 滚动叙事与场景切换: gallery/web/frontend-styles/oryzo/scene-morph.md
+                  - Wearable 一幕: gallery/web/frontend-styles/oryzo/wearable-scene.md
+                  - RGB 呼吸光边: gallery/web/frontend-styles/oryzo/rgb-glow-border.md
