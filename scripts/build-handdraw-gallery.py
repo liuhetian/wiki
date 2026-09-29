@@ -69,14 +69,14 @@ def build_styles():
         slug, name = STYLE_GROUPS[letter]
         body = []
         for s in items:
-            head = f"#{s['number']} · {s['generation_name']}"
+            head = s["generation_name"]
             body += [f"### {head}", "",
                      f'<img src="{style_image(s["number"])}" alt="{head}" width="320"/>', ""]
             # 只留画法特征；编号、风格名、参考作者对出图没用，不进 prompt
             body.append(fence(s["traits"]) if s["traits"] else NO_TRAITS)
         page(ROOT / f"{slug}.md",
-             f"手绘风格 {letter} 组：{name}，{len(items)} 种，每条一张样片加一段画法特征 prompt",
-             f"{letter} · {name}", body)
+             f"手绘风格·{name}，{len(items)} 种，每条一张样片加一段画法特征 prompt",
+             name, body)
 
 
 def build_layouts():
@@ -87,7 +87,7 @@ def build_layouts():
         for x in items:
             src = (REF / x["prompt_file"]).read_text(encoding="utf-8")
             m = re.search(r"<!-- zh -->(.*?)(?:<!-- en -->|\Z)", src, re.S)
-            head = f"{x['id']} · {x['name']}"
+            head = x["name"]
             body += [f"### {head}", "",
                      f'<img src="{asset(x["image"])}" alt="{head}" width="320"/>', "",
                      fence(m.group(1))]
@@ -103,7 +103,7 @@ def build_colors():
         if c["category_zh"] != cur:
             cur = c["category_zh"]
             body += [f"## {cur}", ""]
-        head = f"{c['id']} · {c['name_zh']} {c['name_en']}"
+        head = f"{c['name_zh']} {c['name_en']}"
         body += [f"### {head}", "",
                  f'<img src="{asset(c["image"])}" alt="{head}" width="320"/>', "",
                  fence(c["prompt_zh"])]

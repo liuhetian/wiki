@@ -13,7 +13,7 @@ description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘�
 跟下面各类不同，这里每条只是一段**片段**：风格管画法、版式管构图、主题色管颜色，挑好再加上主题，自己拼成完整 prompt，拼法见入口页。
 
 - [手绘风格库](handdraw-style/index.md) —— 入口与拼接方法：风格 + 版式 + 主题色 + 主题，何时要垫样片、怎么写隔离声明
-- 画风：[A 社论漫画](handdraw-style/styles-a.md) · 35 / [B 绘本叙事](handdraw-style/styles-b.md) · 19 / [C 现代平面](handdraw-style/styles-c.md) · 28 / [D 日本插画](handdraw-style/styles-d.md) · 41 / [E 中国插画](handdraw-style/styles-e.md) · 31 / [F 网感媒介](handdraw-style/styles-f.md) · 46 / [G 中国插画补充](handdraw-style/styles-g.md) · 16 / [H 其他](handdraw-style/styles-h.md) · 64
+- 画风：[社论漫画](handdraw-style/styles-a.md) · 35 / [绘本叙事](handdraw-style/styles-b.md) · 19 / [现代平面](handdraw-style/styles-c.md) · 28 / [日本插画](handdraw-style/styles-d.md) · 41 / [中国插画](handdraw-style/styles-e.md) · 31 / [网感媒介](handdraw-style/styles-f.md) · 46 / [中国插画补充](handdraw-style/styles-g.md) · 16 / [其他](handdraw-style/styles-h.md) · 64
 - 版式：[社媒卡](handdraw-style/layouts-social-cards.md) · 21 / [信息图](handdraw-style/layouts-infographics.md) · 35 / [漫画分镜](handdraw-style/layouts-comic-storyboards.md) · 68
 - [主题色](handdraw-style/colors.md) · 36 种
 
