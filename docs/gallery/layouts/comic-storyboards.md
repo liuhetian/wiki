@@ -1,14 +1,14 @@
 ---
-description: "手绘风格库的漫画分镜版式，68 种，每条一张版式示意图加一段中文版式 prompt"
+description: "漫画分镜排版，68 种，每条一张版式示意图加一段中文排版 prompt"
 ---
 
-# 版式 · 漫画分镜（68 种）
+# 漫画分镜（68 种）
 
-拼接方法见[手绘风格库](index.md)：风格片段 + 版式 + 主题色 + 你的主题。
+拼接方法见[手绘风格库](../images/handdraw-style/index.md)：画风片段 + 排版 + 色彩 + 你的主题。
 
 ### 规则网格
 
-<img src="assets/images/layouts/comic-storyboards/SB-001.webp" alt="规则网格" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-001.webp" alt="规则网格" width="320"/>
 
 ````text
 漫画分镜。排版：规则网格，所有面板大小接近、排列整齐，阅读顺序最稳定，适合日常和对白故事。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -16,7 +16,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 四格起承转合
 
-<img src="assets/images/layouts/comic-storyboards/SB-002.webp" alt="四格起承转合" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-002.webp" alt="四格起承转合" width="320"/>
 
 ````text
 漫画分镜。排版：四格起承转合，四个等格依次承担铺垫、发展、转折和包袱，适合短笑话。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -24,7 +24,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 大格 + 小格
 
-<img src="assets/images/layouts/comic-storyboards/SB-003.webp" alt="大格 + 小格" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-003.webp" alt="大格 + 小格" width="320"/>
 
 ````text
 漫画分镜。排版：大格 + 小格，一个主画面占据大面积，其余小格补充过程、反应或细节。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -32,7 +32,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 顶部大格开场
 
-<img src="assets/images/layouts/comic-storyboards/SB-004.webp" alt="顶部大格开场" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-004.webp" alt="顶部大格开场" width="320"/>
 
 ````text
 漫画分镜。排版：顶部大格开场，用横跨页面的大面板建立场景和人物关系，下面再进入连续叙事。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -40,7 +40,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 底部大格收尾
 
-<img src="assets/images/layouts/comic-storyboards/SB-005.webp" alt="底部大格收尾" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-005.webp" alt="底部大格收尾" width="320"/>
 
 ````text
 漫画分镜。排版：底部大格收尾，前面用小格推进，最后用大面板完成高潮、反转或情绪落点。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -48,7 +48,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 中央大格爆发
 
-<img src="assets/images/layouts/comic-storyboards/SB-006.webp" alt="中央大格爆发" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-006.webp" alt="中央大格爆发" width="320"/>
 
 ````text
 漫画分镜。排版：中央大格爆发，页面中心设置最大面板，用于动作高潮或视觉核心。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -56,7 +56,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 对角切割
 
-<img src="assets/images/layouts/comic-storyboards/SB-007.webp" alt="对角切割" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-007.webp" alt="对角切割" width="320"/>
 
 ````text
 漫画分镜。排版：对角切割，面板沿斜线分割页面，适合速度、冲突、追逐和对峙。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -64,7 +64,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### Z 字阅读
 
-<img src="assets/images/layouts/comic-storyboards/SB-008.webp" alt="Z 字阅读" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-008.webp" alt="Z 字阅读" width="320"/>
 
 ````text
 漫画分镜。排版：Z 字阅读，视觉焦点沿左上→右上→左下→右下流动，阅读路径清晰。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -72,7 +72,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### S 型阅读
 
-<img src="assets/images/layouts/comic-storyboards/SB-009.webp" alt="S 型阅读" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-009.webp" alt="S 型阅读" width="320"/>
 
 ````text
 漫画分镜。排版：S 型阅读，人物与构图沿柔和曲线移动，适合轻快、浪漫或旅行叙事。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -80,7 +80,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 螺旋阅读
 
-<img src="assets/images/layouts/comic-storyboards/SB-010.webp" alt="螺旋阅读" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-010.webp" alt="螺旋阅读" width="320"/>
 
 ````text
 漫画分镜。排版：螺旋阅读，面板和视线围绕中心旋转，逐步逼近核心事件。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -88,7 +88,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 放射型分镜
 
-<img src="assets/images/layouts/comic-storyboards/SB-011.webp" alt="放射型分镜" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-011.webp" alt="放射型分镜" width="320"/>
 
 ````text
 漫画分镜。排版：放射型分镜，多个面板向中心聚拢，适合爆发、揭示和强焦点事件。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -96,7 +96,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 碎片面板
 
-<img src="assets/images/layouts/comic-storyboards/SB-012.webp" alt="碎片面板" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-012.webp" alt="碎片面板" width="320"/>
 
 ````text
 漫画分镜。排版：碎片面板，画面像玻璃碎片般分割，适合混乱、战斗、记忆和心理冲击。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -104,7 +104,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 破框构图
 
-<img src="assets/images/layouts/comic-storyboards/SB-013.webp" alt="破框构图" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-013.webp" alt="破框构图" width="320"/>
 
 ````text
 漫画分镜。排版：破框构图，人物、动作或特效越过面板边界，增强力量、速度和空间突破感。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -112,7 +112,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 跨格人物
 
-<img src="assets/images/layouts/comic-storyboards/SB-014.webp" alt="跨格人物" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-014.webp" alt="跨格人物" width="320"/>
 
 ````text
 漫画分镜。排版：跨格人物，同一人物身体横跨多个面板，使连续动作更流畅。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -120,7 +120,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 跨格背景
 
-<img src="assets/images/layouts/comic-storyboards/SB-015.webp" alt="跨格背景" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-015.webp" alt="跨格背景" width="320"/>
 
 ````text
 漫画分镜。排版：跨格背景，多个面板共享同一背景，人物在不同格中代表不同时间点。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -128,7 +128,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 一镜到底
 
-<img src="assets/images/layouts/comic-storyboards/SB-016.webp" alt="一镜到底" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-016.webp" alt="一镜到底" width="320"/>
 
 ````text
 漫画分镜。排版：一镜到底，整页实际上是同一完整空间，人物在画面不同位置连续出现。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -136,7 +136,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 电影胶片式
 
-<img src="assets/images/layouts/comic-storyboards/SB-017.webp" alt="电影胶片式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-017.webp" alt="电影胶片式" width="320"/>
 
 ````text
 漫画分镜。排版：电影胶片式，面板像胶片帧连续排列，强调时间推进和电影感。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -144,7 +144,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 宽银幕横格
 
-<img src="assets/images/layouts/comic-storyboards/SB-018.webp" alt="宽银幕横格" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-018.webp" alt="宽银幕横格" width="320"/>
 
 ````text
 漫画分镜。排版：宽银幕横格，大量使用横向宽格，适合动作、风景和电影式场面。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -152,7 +152,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 竖向长格
 
-<img src="assets/images/layouts/comic-storyboards/SB-019.webp" alt="竖向长格" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-019.webp" alt="竖向长格" width="320"/>
 
 ````text
 漫画分镜。排版：竖向长格，使用细长垂直面板，强调坠落、高楼、人物全身或纵向运动。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -160,7 +160,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 超窄反应格
 
-<img src="assets/images/layouts/comic-storyboards/SB-020.webp" alt="超窄反应格" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-020.webp" alt="超窄反应格" width="320"/>
 
 ````text
 漫画分镜。排版：超窄反应格，用极窄小格快速插入眼睛、嘴、手或表情反应，提升节奏。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -168,7 +168,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 眼睛特写链
 
-<img src="assets/images/layouts/comic-storyboards/SB-021.webp" alt="眼睛特写链" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-021.webp" alt="眼睛特写链" width="320"/>
 
 ````text
 漫画分镜。排版：眼睛特写链，连续多个眼神特写形成对峙、犹豫或情绪升级。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -176,7 +176,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 手部动作链
 
-<img src="assets/images/layouts/comic-storyboards/SB-022.webp" alt="手部动作链" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-022.webp" alt="手部动作链" width="320"/>
 
 ````text
 漫画分镜。排版：手部动作链，连续用手、按钮、物品等局部特写推进关键动作。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -184,7 +184,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 由远到近
 
-<img src="assets/images/layouts/comic-storyboards/SB-023.webp" alt="由远到近" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-023.webp" alt="由远到近" width="320"/>
 
 ````text
 漫画分镜。排版：由远到近，远景→中景→近景→特写逐步逼近，让情绪和紧张感累积。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -192,7 +192,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 由近到远
 
-<img src="assets/images/layouts/comic-storyboards/SB-024.webp" alt="由近到远" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-024.webp" alt="由近到远" width="320"/>
 
 ````text
 漫画分镜。排版：由近到远，从极近特写逐渐拉远，用于揭晓环境真相或制造反差。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -200,7 +200,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 正反打
 
-<img src="assets/images/layouts/comic-storyboards/SB-025.webp" alt="正反打" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-025.webp" alt="正反打" width="320"/>
 
 ````text
 漫画分镜。排版：正反打，两个角色交替面对镜头出现，适合对话、争执和心理博弈。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -208,7 +208,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 三连特写
 
-<img src="assets/images/layouts/comic-storyboards/SB-026.webp" alt="三连特写" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-026.webp" alt="三连特写" width="320"/>
 
 ````text
 漫画分镜。排版：三连特写，连续三个关键细节快速切换，例如眼睛→手指→按钮。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -216,7 +216,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 动作分解
 
-<img src="assets/images/layouts/comic-storyboards/SB-027.webp" alt="动作分解" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-027.webp" alt="动作分解" width="320"/>
 
 ````text
 漫画分镜。排版：动作分解，把一个动作拆成起势、过程、接触、结果几个面板。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -224,7 +224,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 连续动作残影
 
-<img src="assets/images/layouts/comic-storyboards/SB-028.webp" alt="连续动作残影" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-028.webp" alt="连续动作残影" width="320"/>
 
 ````text
 漫画分镜。排版：连续动作残影，同一人物在单个或多个格子中重复出现，表现高速运动轨迹。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -232,7 +232,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 静止重复
 
-<img src="assets/images/layouts/comic-storyboards/SB-029.webp" alt="静止重复" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-029.webp" alt="静止重复" width="320"/>
 
 ````text
 漫画分镜。排版：静止重复，连续几格几乎不变，只改变极小细节，适合尴尬、冷笑话和停顿。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -240,7 +240,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 节奏骤停
 
-<img src="assets/images/layouts/comic-storyboards/SB-030.webp" alt="节奏骤停" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-030.webp" alt="节奏骤停" width="320"/>
 
 ````text
 漫画分镜。排版：节奏骤停，前面高速密集，突然切到大片留白或静态大格，制造反高潮。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -248,7 +248,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 爆发后留白
 
-<img src="assets/images/layouts/comic-storyboards/SB-031.webp" alt="爆发后留白" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-031.webp" alt="爆发后留白" width="320"/>
 
 ````text
 漫画分镜。排版：爆发后留白，强烈动作之后用空白和小人物收尾，放大荒诞或情绪余韵。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -256,7 +256,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 上下镜像
 
-<img src="assets/images/layouts/comic-storyboards/SB-032.webp" alt="上下镜像" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-032.webp" alt="上下镜像" width="320"/>
 
 ````text
 漫画分镜。排版：上下镜像，上下两部分构图相似但内容反转，用于前后对比。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -264,7 +264,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 左右对峙
 
-<img src="assets/images/layouts/comic-storyboards/SB-033.webp" alt="左右对峙" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-033.webp" alt="左右对峙" width="320"/>
 
 ````text
 漫画分镜。排版：左右对峙，左右两方人物或势力分别占据页面两侧，中间形成视觉冲突。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -272,7 +272,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 双线并行
 
-<img src="assets/images/layouts/comic-storyboards/SB-034.webp" alt="双线并行" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-034.webp" alt="双线并行" width="320"/>
 
 ````text
 漫画分镜。排版：双线并行，页面同时推进两组人物或两个地点，最终在同一点汇合。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -280,7 +280,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 交叉剪辑
 
-<img src="assets/images/layouts/comic-storyboards/SB-035.webp" alt="交叉剪辑" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-035.webp" alt="交叉剪辑" width="320"/>
 
 ````text
 漫画分镜。排版：交叉剪辑，A事件与B事件交替出现，通过快速切换制造紧张或误会。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -288,7 +288,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 闪回嵌套
 
-<img src="assets/images/layouts/comic-storyboards/SB-036.webp" alt="闪回嵌套" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-036.webp" alt="闪回嵌套" width="320"/>
 
 ````text
 漫画分镜。排版：闪回嵌套，主面板内嵌小格表现记忆、回忆或过去片段。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -296,7 +296,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 想象嵌套
 
-<img src="assets/images/layouts/comic-storyboards/SB-037.webp" alt="想象嵌套" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-037.webp" alt="想象嵌套" width="320"/>
 
 ````text
 漫画分镜。排版：想象嵌套，现实画面中插入角色脑内幻想格，适合喜剧和主观叙事。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -304,7 +304,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 监控屏幕式
 
-<img src="assets/images/layouts/comic-storyboards/SB-038.webp" alt="监控屏幕式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-038.webp" alt="监控屏幕式" width="320"/>
 
 ````text
 漫画分镜。排版：监控屏幕式，页面由多个监控视角组成，适合悬疑、职场和观察型叙事。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -312,7 +312,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 手机聊天式
 
-<img src="assets/images/layouts/comic-storyboards/SB-039.webp" alt="手机聊天式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-039.webp" alt="手机聊天式" width="320"/>
 
 ````text
 漫画分镜。排版：手机聊天式，现实场景与手机聊天界面交替或叠加，适合现代社交故事。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -320,7 +320,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 档案拼贴式
 
-<img src="assets/images/layouts/comic-storyboards/SB-040.webp" alt="档案拼贴式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-040.webp" alt="档案拼贴式" width="320"/>
 
 ````text
 漫画分镜。排版：档案拼贴式，照片、便签、文件、地图、漫画格混排，适合调查和设定展示。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -328,7 +328,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 杂志编辑式
 
-<img src="assets/images/layouts/comic-storyboards/SB-041.webp" alt="杂志编辑式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-041.webp" alt="杂志编辑式" width="320"/>
 
 ````text
 漫画分镜。排版：杂志编辑式，大标题、人物、说明文字和漫画格共同参与页面构成。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -336,7 +336,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 信息图漫画
 
-<img src="assets/images/layouts/comic-storyboards/SB-042.webp" alt="信息图漫画" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-042.webp" alt="信息图漫画" width="320"/>
 
 ````text
 漫画分镜。排版：信息图漫画，漫画分镜与图表、箭头、数据标签结合，适合知识或说明型故事。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -344,7 +344,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 地图路线式
 
-<img src="assets/images/layouts/comic-storyboards/SB-043.webp" alt="地图路线式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-043.webp" alt="地图路线式" width="320"/>
 
 ````text
 漫画分镜。排版：地图路线式，角色沿地图、道路或空间路径移动，读者顺着路线完成阅读。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -352,7 +352,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 时间轴式
 
-<img src="assets/images/layouts/comic-storyboards/SB-044.webp" alt="时间轴式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-044.webp" alt="时间轴式" width="320"/>
 
 ````text
 漫画分镜。排版：时间轴式，按照早→中→晚或过去→现在→未来沿页面顺序推进。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -360,7 +360,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 时钟式
 
-<img src="assets/images/layouts/comic-storyboards/SB-045.webp" alt="时钟式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-045.webp" alt="时钟式" width="320"/>
 
 ````text
 漫画分镜。排版：时钟式，面板围绕钟表、圆盘或时间刻度组织，适合一天或倒计时主题。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -368,7 +368,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 中心物件式
 
-<img src="assets/images/layouts/comic-storyboards/SB-046.webp" alt="中心物件式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-046.webp" alt="中心物件式" width="320"/>
 
 ````text
 漫画分镜。排版：中心物件式，咖啡机、手机、门、车辆等核心物件固定在中央，故事围绕它发生。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -376,7 +376,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 中心人物式
 
-<img src="assets/images/layouts/comic-storyboards/SB-047.webp" alt="中心人物式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-047.webp" alt="中心人物式" width="320"/>
 
 ````text
 漫画分镜。排版：中心人物式，主角固定在页面视觉中心，其他事件和人物围绕其展开。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -384,7 +384,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 环形阅读
 
-<img src="assets/images/layouts/comic-storyboards/SB-048.webp" alt="环形阅读" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-048.webp" alt="环形阅读" width="320"/>
 
 ````text
 漫画分镜。排版：环形阅读，面板首尾相接形成环形，适合循环故事或宿命结构。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -392,7 +392,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 上下坠落式
 
-<img src="assets/images/layouts/comic-storyboards/SB-049.webp" alt="上下坠落式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-049.webp" alt="上下坠落式" width="320"/>
 
 ````text
 漫画分镜。排版：上下坠落式，阅读路径持续向下，强调坠落、追逐、楼层变化或失控感。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -400,7 +400,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 阶梯式
 
-<img src="assets/images/layouts/comic-storyboards/SB-050.webp" alt="阶梯式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-050.webp" alt="阶梯式" width="320"/>
 
 ````text
 漫画分镜。排版：阶梯式，面板像楼梯一样逐级排列，视觉上强化推进和升级。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -408,7 +408,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 波浪式
 
-<img src="assets/images/layouts/comic-storyboards/SB-051.webp" alt="波浪式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-051.webp" alt="波浪式" width="320"/>
 
 ````text
 漫画分镜。排版：波浪式，面板边界和阅读路径呈波浪起伏，适合音乐、梦境和轻松故事。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -416,7 +416,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 自由漂浮式
 
-<img src="assets/images/layouts/comic-storyboards/SB-052.webp" alt="自由漂浮式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-052.webp" alt="自由漂浮式" width="320"/>
 
 ````text
 漫画分镜。排版：自由漂浮式，面板不规则悬浮在页面上，通过人物视线和文字引导阅读。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -424,7 +424,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 无边框分镜
 
-<img src="assets/images/layouts/comic-storyboards/SB-053.webp" alt="无边框分镜" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-053.webp" alt="无边框分镜" width="320"/>
 
 ````text
 漫画分镜。排版：无边框分镜，取消传统面板边框，让人物、背景和留白直接构成阅读区域。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -432,7 +432,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 白场分镜
 
-<img src="assets/images/layouts/comic-storyboards/SB-054.webp" alt="白场分镜" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-054.webp" alt="白场分镜" width="320"/>
 
 ````text
 漫画分镜。排版：白场分镜，大量空白分隔人物和对白，强调安静、尴尬、诗意或高级感。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -440,7 +440,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 满版冲击格
 
-<img src="assets/images/layouts/comic-storyboards/SB-055.webp" alt="满版冲击格" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-055.webp" alt="满版冲击格" width="320"/>
 
 ````text
 漫画分镜。排版：满版冲击格，单个画面直接铺满整页或几乎整页，用于高潮或视觉记忆点。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -448,7 +448,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 跨页式单页模拟
 
-<img src="assets/images/layouts/comic-storyboards/SB-056.webp" alt="跨页式单页模拟" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-056.webp" alt="跨页式单页模拟" width="320"/>
 
 ````text
 漫画分镜。排版：跨页式单页模拟，用中央缝或对称布局模拟双页展开效果，制造大场面感。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -456,7 +456,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 海报式漫画
 
-<img src="assets/images/layouts/comic-storyboards/SB-057.webp" alt="海报式漫画" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-057.webp" alt="海报式漫画" width="320"/>
 
 ````text
 漫画分镜。排版：海报式漫画，以一个强主视觉为核心，周围嵌入若干小格补足故事。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -464,7 +464,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 封面式叙事页
 
-<img src="assets/images/layouts/comic-storyboards/SB-058.webp" alt="封面式叙事页" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-058.webp" alt="封面式叙事页" width="320"/>
 
 ````text
 漫画分镜。排版：封面式叙事页，像杂志封面一样先建立标题和主角，再用多个小格讲完整情节。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -472,7 +472,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 舞台式分镜
 
-<img src="assets/images/layouts/comic-storyboards/SB-059.webp" alt="舞台式分镜" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-059.webp" alt="舞台式分镜" width="320"/>
 
 ````text
 漫画分镜。排版：舞台式分镜，页面像固定舞台，人物从不同方向进出，空间不变而时间推进。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -480,7 +480,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 横卷式分镜
 
-<img src="assets/images/layouts/comic-storyboards/SB-060.webp" alt="横卷式分镜" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-060.webp" alt="横卷式分镜" width="320"/>
 
 ````text
 漫画分镜。排版：横卷式分镜，仿长卷或横向连续场景，人物在同一环境中多次出现。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -488,7 +488,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 竖卷式分镜
 
-<img src="assets/images/layouts/comic-storyboards/SB-061.webp" alt="竖卷式分镜" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-061.webp" alt="竖卷式分镜" width="320"/>
 
 ````text
 漫画分镜。排版：竖卷式分镜，仿纵向长卷，人物和事件沿上下空间持续展开。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -496,7 +496,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 镜面反射式
 
-<img src="assets/images/layouts/comic-storyboards/SB-062.webp" alt="镜面反射式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-062.webp" alt="镜面反射式" width="320"/>
 
 ````text
 漫画分镜。排版：镜面反射式，利用左右、上下或真实镜面形成双重画面和心理对照。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -504,7 +504,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 窗口式分镜
 
-<img src="assets/images/layouts/comic-storyboards/SB-063.webp" alt="窗口式分镜" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-063.webp" alt="窗口式分镜" width="320"/>
 
 ````text
 漫画分镜。排版：窗口式分镜，以窗户、门框、屏幕等现实结构天然形成画框和面板。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -512,7 +512,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 物件遮挡式
 
-<img src="assets/images/layouts/comic-storyboards/SB-064.webp" alt="物件遮挡式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-064.webp" alt="物件遮挡式" width="320"/>
 
 ````text
 漫画分镜。排版：物件遮挡式，前景物件作为天然分隔线，把页面切成多个叙事区域。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -520,7 +520,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 文字主导式
 
-<img src="assets/images/layouts/comic-storyboards/SB-065.webp" alt="文字主导式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-065.webp" alt="文字主导式" width="320"/>
 
 ````text
 漫画分镜。排版：文字主导式，巨大标题或音效字本身成为页面骨架，人物与面板围绕文字布局。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -528,7 +528,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 音效主导式
 
-<img src="assets/images/layouts/comic-storyboards/SB-066.webp" alt="音效主导式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-066.webp" alt="音效主导式" width="320"/>
 
 ````text
 漫画分镜。排版：音效主导式，巨大拟声词穿过多个面板，统一动作节奏和视觉方向。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -536,7 +536,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 色块主导式
 
-<img src="assets/images/layouts/comic-storyboards/SB-067.webp" alt="色块主导式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-067.webp" alt="色块主导式" width="320"/>
 
 ````text
 漫画分镜。排版：色块主导式，不同色块充当面板边界或情绪区域，比传统黑框更设计化。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。
@@ -544,7 +544,7 @@ description: "手绘风格库的漫画分镜版式，68 种，每条一张版式
 
 ### 几何分割式
 
-<img src="assets/images/layouts/comic-storyboards/SB-068.webp" alt="几何分割式" width="320"/>
+<img src="../images/handdraw-style/assets/images/layouts/comic-storyboards/SB-068.webp" alt="几何分割式" width="320"/>
 
 ````text
 漫画分镜。排版：几何分割式，使用圆形、三角形、多边形等非矩形面板构成页面。让该分镜机制决定页面结构、阅读顺序、主次画格和镜头节奏；输出一张完整单页漫画页面，画格共同讲述连续情节，角色外观在各格保持一致。

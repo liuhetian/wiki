@@ -4,7 +4,7 @@ description: "手绘风格·日本作者与当代插画体系，41 种，每条�
 
 # 日本作者与当代插画体系
 
-拼接方法见[手绘风格库](index.md)：风格片段 + 版式 + 主题色 + 你的主题。
+拼接方法见[手绘风格库](index.md)：画风片段 + 排版 + 色彩 + 你的主题。
 
 ### Dynamic East-Asian Ink Editorial
 

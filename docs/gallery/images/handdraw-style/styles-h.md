@@ -4,7 +4,7 @@ description: "手绘风格·其他精选风格，64 种，每条一张样片加�
 
 # 其他精选风格
 
-拼接方法见[手绘风格库](index.md)：风格片段 + 版式 + 主题色 + 你的主题。
+拼接方法见[手绘风格库](index.md)：画风片段 + 排版 + 色彩 + 你的主题。
 
 ### Stylized 3D Cartoon Personality
 

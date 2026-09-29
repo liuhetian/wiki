@@ -77,6 +77,11 @@ plugins:
   # 所以挪文件依旧要把站内引用一并改掉，redirects 兜的是站外链接和别人的书签。
   - redirects:
       redirect_maps:
+        # 2026-09-29 手绘风格库的版式、主题色单独成区：gallery/layouts/、gallery/colors/
+        gallery/images/handdraw-style/layouts-social-cards.md: gallery/layouts/social-cards.md
+        gallery/images/handdraw-style/layouts-infographics.md: gallery/layouts/infographics.md
+        gallery/images/handdraw-style/layouts-comic-storyboards.md: gallery/layouts/comic-storyboards.md
+        gallery/images/handdraw-style/colors.md: gallery/colors/index.md
         # 例：posts/old-name.md: posts/new-name.md
         #     posts/guide.md#installation: posts/guide.md#getting-started
         # 2026-09-29 本 wiki 自己的写作规范从「写作口味」拆出，单开 skills/wiki-guide/
@@ -506,10 +511,12 @@ nav:
               - gallery/images/handdraw-style/styles-f.md
               - gallery/images/handdraw-style/styles-g.md
               - gallery/images/handdraw-style/styles-h.md
-              - gallery/images/handdraw-style/layouts-social-cards.md
-              - gallery/images/handdraw-style/layouts-infographics.md
-              - gallery/images/handdraw-style/layouts-comic-storyboards.md
-              - gallery/images/handdraw-style/colors.md
+      - 排版:
+          - gallery/layouts/index.md
+          - gallery/layouts/social-cards.md
+          - gallery/layouts/infographics.md
+          - gallery/layouts/comic-storyboards.md
+      - 色彩: gallery/colors/index.md
       - 视频: gallery/video/index.md
       - 音频: gallery/audio/index.md
       - 网页:

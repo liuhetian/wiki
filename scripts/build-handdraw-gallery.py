@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """从 gallery/images/handdraw-style/assets/（上游 yang0/handraw-style 原样镜像）生成图库页面。
 
+画风页写进 gallery/images/handdraw-style/，版式页写进 gallery/layouts/，色卡页写成
+gallery/colors/index.md；后两者的图片仍指回 images/handdraw-style/assets/。
+
 上游是一个 skill：风格、版式、色卡的真身是 references/ 下的 JSON 和版式 md，
 这里把它们排成本站图库的「一张图 + 一段 prompt」形态。页面是生成物，别手改；
 上游更新时先覆盖 assets/，再跑本脚本：
@@ -12,7 +15,11 @@ import os
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent / "docs/gallery/images/handdraw-style"
+GALLERY = Path(__file__).resolve().parent.parent / "docs/gallery"
+ROOT = GALLERY / "images/handdraw-style"
+LAYOUT_DIR = GALLERY / "layouts"
+COLOR_DIR = GALLERY / "colors"
+FROM_SIBLING = "../images/handdraw-style/"  # 从 gallery/layouts/、gallery/colors/ 指回本目录
 UP = ROOT / "assets"
 REF = UP / "skills/handdraw-style-prompter/references"
 
@@ -27,19 +34,19 @@ STYLE_GROUPS = {
     "H": ("styles-h", "其他精选风格"),
 }
 LAYOUT_GROUPS = {
-    "social-card": ("layouts-social-cards", "社媒卡"),
-    "infographic": ("layouts-infographics", "信息图"),
-    "comic-storyboard": ("layouts-comic-storyboards", "漫画分镜"),
+    "social-card": ("social-cards", "社媒卡"),
+    "infographic": ("infographics", "信息图"),
+    "comic-storyboard": ("comic-storyboards", "漫画分镜"),
 }
 NO_TRAITS = "上游没有给这一条写文字特征：出图时把样片当参考图垫进去，再加上[隔离声明](index.md#splice)。\n"
-BACK = "拼接方法见[手绘风格库](index.md)：风格片段 + 版式 + 主题色 + 你的主题。"
+BACK = "拼接方法见[手绘风格库]({}index.md)：画风片段 + 排版 + 色彩 + 你的主题。"
 
 
-def asset(rel_from_gallery_html: str) -> str:
+def asset(rel_from_gallery_html: str, prefix: str = "") -> str:
     """上游 JSON 里的图片路径相对 skills/handdraw-style-prompter/gallery/，换算成相对本目录。"""
     p = os.path.normpath(os.path.join("skills/handdraw-style-prompter/gallery", rel_from_gallery_html))
     assert (UP / p).exists(), p
-    return f"assets/{p}"
+    return f"{prefix}assets/{p}"
 
 
 def style_image(num: str) -> str:
@@ -51,8 +58,8 @@ def style_image(num: str) -> str:
     raise FileNotFoundError(num)
 
 
-def page(path: Path, desc: str, title: str, body: list):
-    text = f'---\ndescription: "{desc}"\n---\n\n# {title}\n\n{BACK}\n\n' + "\n".join(body).rstrip() + "\n"
+def page(path: Path, desc: str, title: str, body: list, prefix: str = ""):
+    text = f'---\ndescription: "{desc}"\n---\n\n# {title}\n\n{BACK.format(prefix)}\n\n' + "\n".join(body).rstrip() + "\n"
     path.write_text(text, encoding="utf-8")
 
 
@@ -89,11 +96,11 @@ def build_layouts():
             m = re.search(r"<!-- zh -->(.*?)(?:<!-- en -->|\Z)", src, re.S)
             head = x["name"]
             body += [f"### {head}", "",
-                     f'<img src="{asset(x["image"])}" alt="{head}" width="320"/>', "",
+                     f'<img src="{asset(x["image"], FROM_SIBLING)}" alt="{head}" width="320"/>', "",
                      fence(m.group(1))]
-        page(ROOT / f"{slug}.md",
-             f"手绘风格库的{name}版式，{len(items)} 种，每条一张版式示意图加一段中文版式 prompt",
-             f"版式 · {name}（{len(items)} 种）", body)
+        page(LAYOUT_DIR / f"{slug}.md",
+             f"{name}排版，{len(items)} 种，每条一张版式示意图加一段中文排版 prompt",
+             f"{name}（{len(items)} 种）", body, FROM_SIBLING)
 
 
 def build_colors():
@@ -105,14 +112,16 @@ def build_colors():
             body += [f"## {cur}", ""]
         head = f"{c['name_zh']} {c['name_en']}"
         body += [f"### {head}", "",
-                 f'<img src="{asset(c["image"])}" alt="{head}" width="320"/>', "",
+                 f'<img src="{asset(c["image"], FROM_SIBLING)}" alt="{head}" width="320"/>', "",
                  fence(c["prompt_zh"])]
-    page(ROOT / "colors.md",
-         f"手绘风格库的 {len(colors)} 种经典单色主题色，每条一张色卡加一句主题色 prompt",
-         f"主题色（{len(colors)} 种）", body)
+    page(COLOR_DIR / "index.md",
+         f"色彩参考：{len(colors)} 种经典单色主题色，蓝、绿、红绿、粉紫、大地、中性六个色系，每条一张色卡加一句主题色 prompt",
+         "色彩", body, FROM_SIBLING)
 
 
 if __name__ == "__main__":
+    LAYOUT_DIR.mkdir(exist_ok=True)
+    COLOR_DIR.mkdir(exist_ok=True)
     build_styles()
     build_layouts()
     build_colors()

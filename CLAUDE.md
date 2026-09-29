@@ -56,7 +56,7 @@ ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lh
 4. git commit + push。
 5. SSH 部署机跑 `./deploy.sh`。
 
-五个顶层分区分工：`posts/` 讲完整来龙去脉，`notes/` 记专业科目的学习推导（每个分类有统一骨架），`courses/` 是**讲解在前、题在后**的伴读（题写成 git 冲突标记，答完才用 `scripts/course.py add` 归档进 `notes/` 同名文件，详见 `docs/courses/index.md`），`skills/` 是能直接交给 AI 执行的成套资产，`gallery/` 是原样收录的成品参考库，按媒介分 `images/`（图配 prompt，只调排版和图片路径，来源写进各自的 `MIRROR.md`）、`video/`、`audio/`（暂空）、`web/`（前端风格收集，一种风格一个活 demo，2026-09-29 从 `skills/` 挪来）四区。原来那 33 课 Git 课程 2026-09-17 下线（一课都没答完，门槛太高），素材留在不发布的 `courses-src/git/`。引外部资料三步：真身存档进 `assets/` + 正文摘句 + 自己的分析。图表优先用 ```` ```mermaid ```` / ```` ```echarts ```` 代码块声明式写。
+五个顶层分区分工：`posts/` 讲完整来龙去脉，`notes/` 记专业科目的学习推导（每个分类有统一骨架），`courses/` 是**讲解在前、题在后**的伴读（题写成 git 冲突标记，答完才用 `scripts/course.py add` 归档进 `notes/` 同名文件，详见 `docs/courses/index.md`），`skills/` 是能直接交给 AI 执行的成套资产，`gallery/` 是原样收录的成品参考库，按媒介分 `images/`（图配 prompt，只调排版和图片路径，来源写进各自的 `MIRROR.md`）、`layouts/`（排版）、`colors/`（色彩）、`video/`、`audio/`（暂空）、`web/`（前端风格收集，一种风格一个活 demo，2026-09-29 从 `skills/` 挪来）六区；排版和色彩页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改。原来那 33 课 Git 课程 2026-09-17 下线（一课都没答完，门槛太高），素材留在不发布的 `courses-src/git/`。引外部资料三步：真身存档进 `assets/` + 正文摘句 + 自己的分析。图表优先用 ```` ```mermaid ```` / ```` ```echarts ```` 代码块声明式写。
 
 ## 已知的构建怪癖
 
