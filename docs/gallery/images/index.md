@@ -4,9 +4,18 @@ description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘�
 
 # 图片
 
-一张图配一段生成它的 prompt，看中哪张就把 prompt 拿走改一改。页面里只有图和 prompt；来源与授权记在各自的 MIRROR 里：[GPT Image 2 图库](gpt-image2/MIRROR.md)（收录自 wuyoscar/GPT-Image2-Skill，MIT，共 163 条，已译成中文）、[二次元平面设计风格](linux-do-style/assets/MIRROR.md)（整理自 linux.do @sallyn 的帖子，12 组）和 [提示词卡牌](../../skills/collab/prompt-cards/MIRROR.md)（照录自 prompt-cards.cyanfish.site，10 条，英文的已译成中文，分散在角色设计、摄影、插画、复古与赛博朋克、字体与海报、品牌系统六页的末尾）。
+一张图配一段生成它的 prompt，看中哪张就把 prompt 拿走改一改。页面里只有图和 prompt；来源与授权记在各自的 MIRROR 里：[GPT Image 2 图库](gpt-image2/MIRROR.md)（收录自 wuyoscar/GPT-Image2-Skill，MIT，共 163 条，已译成中文）、[手绘风格库](handdraw-style/MIRROR.md)（收录自 yang0/handraw-style，MIT，280 种画风 + 124 种版式 + 36 种主题色）、[二次元平面设计风格](linux-do-style/assets/MIRROR.md)（整理自 linux.do @sallyn 的帖子，12 组）和 [提示词卡牌](../../skills/collab/prompt-cards/MIRROR.md)（照录自 prompt-cards.cyanfish.site，10 条，英文的已译成中文，分散在角色设计、摄影、插画、复古与赛博朋克、字体与海报、品牌系统六页的末尾）。
 
 怎么从一张图反推出 prompt，看 skills 里的两个反推 skill：[图片提示词反推](../../skills/collab/analysis_image/index.md)（七维拆解）和 [get-prompt-from-image](../../skills/collab/get-prompt-from-image/index.md)。
+
+## 手绘风格库
+
+跟下面各类不同，这里每条只是一段**片段**：风格管画法、版式管构图、主题色管颜色，挑好再加上主题，自己拼成完整 prompt，拼法见入口页。
+
+- [手绘风格库](handdraw-style/index.md) —— 入口与拼接方法：风格 + 版式 + 主题色 + 主题，何时要垫样片、怎么写隔离声明
+- 画风：[A 社论漫画](handdraw-style/styles-a.md) · 35 / [B 绘本叙事](handdraw-style/styles-b.md) · 19 / [C 现代平面](handdraw-style/styles-c.md) · 28 / [D 日本插画](handdraw-style/styles-d.md) · 41 / [E 中国插画](handdraw-style/styles-e.md) · 31 / [F 网感媒介](handdraw-style/styles-f.md) · 46 / [G 中国插画补充](handdraw-style/styles-g.md) · 16 / [H 其他](handdraw-style/styles-h.md) · 64
+- 版式：[社媒卡](handdraw-style/layouts-social-cards.md) · 21 / [信息图](handdraw-style/layouts-infographics.md) · 35 / [漫画分镜](handdraw-style/layouts-comic-storyboards.md) · 68
+- [主题色](handdraw-style/colors.md) · 36 种
 
 ## 动漫、角色与游戏
 

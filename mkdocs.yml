@@ -496,6 +496,20 @@ nav:
           - 官方示例:
               - gallery/images/gpt-image2/gallery-official-openai-cookbook-examples.md
               - gallery/images/gpt-image2/gallery-edit-endpoint-showcase.md
+          - 手绘风格库:
+              - gallery/images/handdraw-style/index.md
+              - gallery/images/handdraw-style/styles-a.md
+              - gallery/images/handdraw-style/styles-b.md
+              - gallery/images/handdraw-style/styles-c.md
+              - gallery/images/handdraw-style/styles-d.md
+              - gallery/images/handdraw-style/styles-e.md
+              - gallery/images/handdraw-style/styles-f.md
+              - gallery/images/handdraw-style/styles-g.md
+              - gallery/images/handdraw-style/styles-h.md
+              - gallery/images/handdraw-style/layouts-social-cards.md
+              - gallery/images/handdraw-style/layouts-infographics.md
+              - gallery/images/handdraw-style/layouts-comic-storyboards.md
+              - gallery/images/handdraw-style/colors.md
       - 视频: gallery/video/index.md
       - 音频: gallery/audio/index.md
       - 网页:
