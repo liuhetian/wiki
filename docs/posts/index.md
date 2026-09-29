@@ -8,6 +8,7 @@ description: "完整、可独立阅读的内容放在这里：既有一件事从
 
 - [工作方法](methods/index.md) —— 精力管理、推进执行和做出决策；既收亲自验证的方法，也收准备尝试的候选方法
 - [用对象存储部署 AI 友好的个人知识库](cos-wiki-deploy/index.md) —— 这个站点本身的定位设计与部署过程，附[部署实操手册](cos-wiki-deploy/reference/deploy.md)与[建站手记](cos-wiki-deploy/reference/wiki-build-log.md)
+- [本 wiki 的目标与计划](wiki-roadmap.md) —— 2026-09-29 的审核：专业主干只到本科应用统计，要补数理统计与计算、计量、机器学习、深度学习四块并加论文板块；吸纳教材只留地图、压缩、手迹、连线四样，文末进度表做一项划一项
 - [用自己的对象存储做 git-lfs 后端](git-lfs-cos.md) —— standalone custom transfer agent：140 行脚本替掉整个 LFS 服务，协议、坑和换存储的改法
 - [预测项目闭环：把「写完就扔」的脚本养成能被 AI 运维的系统](prediction-loop.md) —— 留痕、回填、离线迭代，让预测项目长期可信
 - [AI 时代的产品经理：从点子到提测的完整复盘](ai-pm.md) —— 算法岗顶上 PM 缺位的一个月：五步框架、两条回边，和用卡片汇报谈判性进展
