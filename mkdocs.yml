@@ -226,9 +226,44 @@ nav:
       - notes/index.md
       - 概率与算法:
           - notes/probability/index.md
-          - 12 枚硬币的奇偶性: notes/probability/coin-parity.md
-          - 3 根绳子烧出 7 分钟: notes/probability/rope-timing.md
-          - 100 次抛硬币的最长连正: notes/probability/longest-head-run.md
+          - 对称性:
+              - "12 枚硬币的奇偶性": notes/probability/coin-parity.md
+              - "飞机上的最后一个座位": notes/probability/airplane-seat.md
+              - "断棍成三角形": notes/probability/broken-stick-triangle.md
+              - "圆上 n 点落在同一半圆": notes/probability/semicircle-points.md
+              - "100 个囚徒的红蓝帽": notes/probability/hat-parity.md
+              - "两个孩子问题": notes/probability/two-children.md
+              - "三门问题": notes/probability/monty-hall.md
+          - 期望:
+              - "100 次抛硬币的最长连正": notes/probability/longest-head-run.md
+              - "等 HH 与等 HT": notes/probability/hh-vs-ht.md
+              - "集卡问题：骰子掷几次六面全出": notes/probability/coupon-collector.md
+              - "随机排列的不动点": notes/probability/fixed-points.md
+              - "均匀随机数累加超过 1": notes/probability/uniform-sum-exceeds-one.md
+              - "面条打结成圈": notes/probability/noodle-loops.md
+              - "掷到 6、全程偶数的期望次数": notes/probability/dice-until-six-even.md
+              - "赌徒破产": notes/probability/gamblers-ruin.md
+          - 最优停止:
+              - "骰子最多掷 3 次": notes/probability/dice-reroll.md
+              - "秘书问题": notes/probability/secretary-problem.md
+              - "两个鸡蛋 100 层楼": notes/probability/two-eggs.md
+          - 几何概率:
+              - "约会问题：等 15 分钟": notes/probability/meeting-problem.md
+              - "Buffon 投针": notes/probability/buffon-needle.md
+          - 智力题:
+              - "3 根绳子烧出 7 分钟": notes/probability/rope-timing.md
+              - "1000 瓶酒找毒酒": notes/probability/poison-wine.md
+              - "100 个囚徒开 100 个盒子": notes/probability/prisoners-boxes.md
+              - "25 匹马找前 3 名": notes/probability/horse-race.md
+              - "12 个球找假球": notes/probability/twelve-balls.md
+              - "100 盏灯的开关": notes/probability/light-switches.md
+              - "杆上蚂蚁相撞掉头": notes/probability/ants-on-pole.md
+              - "过桥问题：1、2、5、10 分钟": notes/probability/bridge-crossing.md
+              - "5 个海盗分 100 枚金币": notes/probability/pirate-gold.md
+          - 估算与做市:
+              - "Fermi 估算：上海有多少加油站": notes/probability/fermi-estimation.md
+              - "做市游戏：10 枚骰子的和": notes/probability/market-making.md
+              - "Kelly 公式：每次押多少": notes/probability/kelly-criterion.md
       - LeetCode 热题 100:
           - notes/leetcode/index.md
           - 哈希:
@@ -409,6 +444,9 @@ nav:
           - 课程页怎么写: skills/wiki-guide/course-page.md
           - skill 怎么收纳: skills/wiki-guide/remote-skill.md
           - 远程 skill 探针: skills/wiki-guide/remote-skill-probe/index.md
+      - Agent 基础能力:
+          - skills/agent-io/index.md
+          - 阅读 PDF: skills/agent-io/reference/pdf.md
       - B站视频笔记:
           - skills/bili-note/index.md
           - 接口笔记: skills/bili-note/references/bilibili-api-notes.md
