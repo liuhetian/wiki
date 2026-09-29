@@ -31,6 +31,7 @@ LAYOUT_GROUPS = {
     "infographic": ("layouts-infographics", "信息图"),
     "comic-storyboard": ("layouts-comic-storyboards", "漫画分镜"),
 }
+NO_TRAITS = "上游没有给这一条写文字特征：出图时把样片当参考图垫进去，再加上[隔离声明](index.md#splice)。\n"
 BACK = "拼接方法见[手绘风格库](index.md)：风格片段 + 版式 + 主题色 + 你的主题。"
 
 
@@ -70,12 +71,10 @@ def build_styles():
         body = []
         for s in items:
             head = f"#{s['number']} · {s['generation_name']}"
-            frag = f"风格名称：{head}。参考作者/风格名称：{s['reference']}。"
-            if s["traits"]:
-                frag += f"核心风格特征：{s['traits']}"
             body += [f"### {head}", "",
-                     f'<img src="{style_image(s["number"])}" alt="{head}" width="320"/>', "",
-                     fence(frag)]
+                     f'<img src="{style_image(s["number"])}" alt="{head}" width="320"/>', ""]
+            # 只留画法特征；编号、风格名、参考作者对出图没用，不进 prompt
+            body.append(fence(s["traits"]) if s["traits"] else NO_TRAITS)
         page(ROOT / f"{slug}.md",
              f"手绘风格 {letter} 组 {lo}–{hi}：{name}，{len(items)} 种，每条一张样片加一段风格片段 prompt",
              f"{letter} · {name}（{lo}–{hi}）", body)
