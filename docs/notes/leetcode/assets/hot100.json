@@ -1,0 +1,792 @@
+{
+ "source": "https://leetcode.cn/studyplan/top-100-liked/",
+ "fetched": "2026-09-29",
+ "name": "LeetCode 热题 100",
+ "groups": [
+  {
+   "name": "哈希",
+   "questions": [
+    {
+     "questionFrontendId": "1",
+     "titleSlug": "two-sum",
+     "translatedTitle": "两数之和",
+     "title": "Two Sum",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "49",
+     "titleSlug": "group-anagrams",
+     "translatedTitle": "字母异位词分组",
+     "title": "Group Anagrams",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "128",
+     "titleSlug": "longest-consecutive-sequence",
+     "translatedTitle": "最长连续序列",
+     "title": "Longest Consecutive Sequence",
+     "difficulty": "MEDIUM"
+    }
+   ]
+  },
+  {
+   "name": "双指针",
+   "questions": [
+    {
+     "questionFrontendId": "283",
+     "titleSlug": "move-zeroes",
+     "translatedTitle": "移动零",
+     "title": "Move Zeroes",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "11",
+     "titleSlug": "container-with-most-water",
+     "translatedTitle": "盛最多水的容器",
+     "title": "Container With Most Water",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "15",
+     "titleSlug": "3sum",
+     "translatedTitle": "三数之和",
+     "title": "3Sum",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "42",
+     "titleSlug": "trapping-rain-water",
+     "translatedTitle": "接雨水",
+     "title": "Trapping Rain Water",
+     "difficulty": "HARD"
+    }
+   ]
+  },
+  {
+   "name": "滑动窗口",
+   "questions": [
+    {
+     "questionFrontendId": "3",
+     "titleSlug": "longest-substring-without-repeating-characters",
+     "translatedTitle": "无重复字符的最长子串",
+     "title": "Longest Substring Without Repeating Characters",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "438",
+     "titleSlug": "find-all-anagrams-in-a-string",
+     "translatedTitle": "找到字符串中所有字母异位词",
+     "title": "Find All Anagrams in a String",
+     "difficulty": "MEDIUM"
+    }
+   ]
+  },
+  {
+   "name": "子串",
+   "questions": [
+    {
+     "questionFrontendId": "560",
+     "titleSlug": "subarray-sum-equals-k",
+     "translatedTitle": "和为 K 的子数组",
+     "title": "Subarray Sum Equals K",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "239",
+     "titleSlug": "sliding-window-maximum",
+     "translatedTitle": "滑动窗口最大值",
+     "title": "Sliding Window Maximum",
+     "difficulty": "HARD"
+    },
+    {
+     "questionFrontendId": "76",
+     "titleSlug": "minimum-window-substring",
+     "translatedTitle": "最小覆盖子串",
+     "title": "Minimum Window Substring",
+     "difficulty": "HARD"
+    }
+   ]
+  },
+  {
+   "name": "普通数组",
+   "questions": [
+    {
+     "questionFrontendId": "53",
+     "titleSlug": "maximum-subarray",
+     "translatedTitle": "最大子数组和",
+     "title": "Maximum Subarray",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "56",
+     "titleSlug": "merge-intervals",
+     "translatedTitle": "合并区间",
+     "title": "Merge Intervals",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "189",
+     "titleSlug": "rotate-array",
+     "translatedTitle": "轮转数组",
+     "title": "Rotate Array",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "238",
+     "titleSlug": "product-of-array-except-self",
+     "translatedTitle": "除了自身以外数组的乘积",
+     "title": "Product of Array Except Self",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "41",
+     "titleSlug": "first-missing-positive",
+     "translatedTitle": "缺失的第一个正数",
+     "title": "First Missing Positive",
+     "difficulty": "HARD"
+    }
+   ]
+  },
+  {
+   "name": "矩阵",
+   "questions": [
+    {
+     "questionFrontendId": "73",
+     "titleSlug": "set-matrix-zeroes",
+     "translatedTitle": "矩阵置零",
+     "title": "Set Matrix Zeroes",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "54",
+     "titleSlug": "spiral-matrix",
+     "translatedTitle": "螺旋矩阵",
+     "title": "Spiral Matrix",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "48",
+     "titleSlug": "rotate-image",
+     "translatedTitle": "旋转图像",
+     "title": "Rotate Image",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "240",
+     "titleSlug": "search-a-2d-matrix-ii",
+     "translatedTitle": "搜索二维矩阵 II",
+     "title": "Search a 2D Matrix II",
+     "difficulty": "MEDIUM"
+    }
+   ]
+  },
+  {
+   "name": "链表",
+   "questions": [
+    {
+     "questionFrontendId": "160",
+     "titleSlug": "intersection-of-two-linked-lists",
+     "translatedTitle": "相交链表",
+     "title": "Intersection of Two Linked Lists",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "206",
+     "titleSlug": "reverse-linked-list",
+     "translatedTitle": "反转链表",
+     "title": "Reverse Linked List",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "234",
+     "titleSlug": "palindrome-linked-list",
+     "translatedTitle": "回文链表",
+     "title": "Palindrome Linked List",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "141",
+     "titleSlug": "linked-list-cycle",
+     "translatedTitle": "环形链表",
+     "title": "Linked List Cycle",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "142",
+     "titleSlug": "linked-list-cycle-ii",
+     "translatedTitle": "环形链表 II",
+     "title": "Linked List Cycle II",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "21",
+     "titleSlug": "merge-two-sorted-lists",
+     "translatedTitle": "合并两个有序链表",
+     "title": "Merge Two Sorted Lists",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "2",
+     "titleSlug": "add-two-numbers",
+     "translatedTitle": "两数相加",
+     "title": "Add Two Numbers",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "19",
+     "titleSlug": "remove-nth-node-from-end-of-list",
+     "translatedTitle": "删除链表的倒数第 N 个结点",
+     "title": "Remove Nth Node From End of List",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "24",
+     "titleSlug": "swap-nodes-in-pairs",
+     "translatedTitle": "两两交换链表中的节点",
+     "title": "Swap Nodes in Pairs",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "25",
+     "titleSlug": "reverse-nodes-in-k-group",
+     "translatedTitle": "K 个一组翻转链表",
+     "title": "Reverse Nodes in k-Group",
+     "difficulty": "HARD"
+    },
+    {
+     "questionFrontendId": "138",
+     "titleSlug": "copy-list-with-random-pointer",
+     "translatedTitle": "随机链表的复制",
+     "title": "Copy List with Random Pointer",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "148",
+     "titleSlug": "sort-list",
+     "translatedTitle": "排序链表",
+     "title": "Sort List",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "23",
+     "titleSlug": "merge-k-sorted-lists",
+     "translatedTitle": "合并 K 个升序链表",
+     "title": "Merge k Sorted Lists",
+     "difficulty": "HARD"
+    },
+    {
+     "questionFrontendId": "146",
+     "titleSlug": "lru-cache",
+     "translatedTitle": "LRU 缓存",
+     "title": "LRU Cache",
+     "difficulty": "MEDIUM"
+    }
+   ]
+  },
+  {
+   "name": "二叉树",
+   "questions": [
+    {
+     "questionFrontendId": "94",
+     "titleSlug": "binary-tree-inorder-traversal",
+     "translatedTitle": "二叉树的中序遍历",
+     "title": "Binary Tree Inorder Traversal",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "104",
+     "titleSlug": "maximum-depth-of-binary-tree",
+     "translatedTitle": "二叉树的最大深度",
+     "title": "Maximum Depth of Binary Tree",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "226",
+     "titleSlug": "invert-binary-tree",
+     "translatedTitle": "翻转二叉树",
+     "title": "Invert Binary Tree",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "101",
+     "titleSlug": "symmetric-tree",
+     "translatedTitle": "对称二叉树",
+     "title": "Symmetric Tree",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "543",
+     "titleSlug": "diameter-of-binary-tree",
+     "translatedTitle": "二叉树的直径",
+     "title": "Diameter of Binary Tree",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "102",
+     "titleSlug": "binary-tree-level-order-traversal",
+     "translatedTitle": "二叉树的层序遍历",
+     "title": "Binary Tree Level Order Traversal",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "108",
+     "titleSlug": "convert-sorted-array-to-binary-search-tree",
+     "translatedTitle": "将有序数组转换为二叉搜索树",
+     "title": "Convert Sorted Array to Binary Search Tree",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "98",
+     "titleSlug": "validate-binary-search-tree",
+     "translatedTitle": "验证二叉搜索树",
+     "title": "Validate Binary Search Tree",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "230",
+     "titleSlug": "kth-smallest-element-in-a-bst",
+     "translatedTitle": "二叉搜索树中第 K 小的元素",
+     "title": "Kth Smallest Element in a BST",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "199",
+     "titleSlug": "binary-tree-right-side-view",
+     "translatedTitle": "二叉树的右视图",
+     "title": "Binary Tree Right Side View",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "114",
+     "titleSlug": "flatten-binary-tree-to-linked-list",
+     "translatedTitle": "二叉树展开为链表",
+     "title": "Flatten Binary Tree to Linked List",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "105",
+     "titleSlug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+     "translatedTitle": "从前序与中序遍历序列构造二叉树",
+     "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "437",
+     "titleSlug": "path-sum-iii",
+     "translatedTitle": "路径总和 III",
+     "title": "Path Sum III",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "236",
+     "titleSlug": "lowest-common-ancestor-of-a-binary-tree",
+     "translatedTitle": "二叉树的最近公共祖先",
+     "title": "Lowest Common Ancestor of a Binary Tree",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "124",
+     "titleSlug": "binary-tree-maximum-path-sum",
+     "translatedTitle": "二叉树中的最大路径和",
+     "title": "Binary Tree Maximum Path Sum",
+     "difficulty": "HARD"
+    }
+   ]
+  },
+  {
+   "name": "图论",
+   "questions": [
+    {
+     "questionFrontendId": "200",
+     "titleSlug": "number-of-islands",
+     "translatedTitle": "岛屿数量",
+     "title": "Number of Islands",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "994",
+     "titleSlug": "rotting-oranges",
+     "translatedTitle": "腐烂的橘子",
+     "title": "Rotting Oranges",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "207",
+     "titleSlug": "course-schedule",
+     "translatedTitle": "课程表",
+     "title": "Course Schedule",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "208",
+     "titleSlug": "implement-trie-prefix-tree",
+     "translatedTitle": "实现 Trie (前缀树)",
+     "title": "Implement Trie (Prefix Tree)",
+     "difficulty": "MEDIUM"
+    }
+   ]
+  },
+  {
+   "name": "回溯",
+   "questions": [
+    {
+     "questionFrontendId": "46",
+     "titleSlug": "permutations",
+     "translatedTitle": "全排列",
+     "title": "Permutations",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "78",
+     "titleSlug": "subsets",
+     "translatedTitle": "子集",
+     "title": "Subsets",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "17",
+     "titleSlug": "letter-combinations-of-a-phone-number",
+     "translatedTitle": "电话号码的字母组合",
+     "title": "Letter Combinations of a Phone Number",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "39",
+     "titleSlug": "combination-sum",
+     "translatedTitle": "组合总和",
+     "title": "Combination Sum",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "22",
+     "titleSlug": "generate-parentheses",
+     "translatedTitle": "括号生成",
+     "title": "Generate Parentheses",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "79",
+     "titleSlug": "word-search",
+     "translatedTitle": "单词搜索",
+     "title": "Word Search",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "131",
+     "titleSlug": "palindrome-partitioning",
+     "translatedTitle": "分割回文串",
+     "title": "Palindrome Partitioning",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "51",
+     "titleSlug": "n-queens",
+     "translatedTitle": "N 皇后",
+     "title": "N-Queens",
+     "difficulty": "HARD"
+    }
+   ]
+  },
+  {
+   "name": "二分查找",
+   "questions": [
+    {
+     "questionFrontendId": "35",
+     "titleSlug": "search-insert-position",
+     "translatedTitle": "搜索插入位置",
+     "title": "Search Insert Position",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "74",
+     "titleSlug": "search-a-2d-matrix",
+     "translatedTitle": "搜索二维矩阵",
+     "title": "Search a 2D Matrix",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "34",
+     "titleSlug": "find-first-and-last-position-of-element-in-sorted-array",
+     "translatedTitle": "在排序数组中查找元素的第一个和最后一个位置",
+     "title": "Find First and Last Position of Element in Sorted Array",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "33",
+     "titleSlug": "search-in-rotated-sorted-array",
+     "translatedTitle": "搜索旋转排序数组",
+     "title": "Search in Rotated Sorted Array",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "153",
+     "titleSlug": "find-minimum-in-rotated-sorted-array",
+     "translatedTitle": "寻找旋转排序数组中的最小值",
+     "title": "Find Minimum in Rotated Sorted Array",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "4",
+     "titleSlug": "median-of-two-sorted-arrays",
+     "translatedTitle": "寻找两个正序数组的中位数",
+     "title": "Median of Two Sorted Arrays",
+     "difficulty": "HARD"
+    }
+   ]
+  },
+  {
+   "name": "栈",
+   "questions": [
+    {
+     "questionFrontendId": "20",
+     "titleSlug": "valid-parentheses",
+     "translatedTitle": "有效的括号",
+     "title": "Valid Parentheses",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "155",
+     "titleSlug": "min-stack",
+     "translatedTitle": "最小栈",
+     "title": "Min Stack",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "394",
+     "titleSlug": "decode-string",
+     "translatedTitle": "字符串解码",
+     "title": "Decode String",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "739",
+     "titleSlug": "daily-temperatures",
+     "translatedTitle": "每日温度",
+     "title": "Daily Temperatures",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "84",
+     "titleSlug": "largest-rectangle-in-histogram",
+     "translatedTitle": "柱状图中最大的矩形",
+     "title": "Largest Rectangle in Histogram",
+     "difficulty": "HARD"
+    }
+   ]
+  },
+  {
+   "name": "堆",
+   "questions": [
+    {
+     "questionFrontendId": "215",
+     "titleSlug": "kth-largest-element-in-an-array",
+     "translatedTitle": "数组中的第K个最大元素",
+     "title": "Kth Largest Element in an Array",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "347",
+     "titleSlug": "top-k-frequent-elements",
+     "translatedTitle": "前 K 个高频元素",
+     "title": "Top K Frequent Elements",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "295",
+     "titleSlug": "find-median-from-data-stream",
+     "translatedTitle": "数据流的中位数",
+     "title": "Find Median from Data Stream",
+     "difficulty": "HARD"
+    }
+   ]
+  },
+  {
+   "name": "贪心算法",
+   "questions": [
+    {
+     "questionFrontendId": "121",
+     "titleSlug": "best-time-to-buy-and-sell-stock",
+     "translatedTitle": "买卖股票的最佳时机",
+     "title": "Best Time to Buy and Sell Stock",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "55",
+     "titleSlug": "jump-game",
+     "translatedTitle": "跳跃游戏",
+     "title": "Jump Game",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "45",
+     "titleSlug": "jump-game-ii",
+     "translatedTitle": "跳跃游戏 II",
+     "title": "Jump Game II",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "763",
+     "titleSlug": "partition-labels",
+     "translatedTitle": "划分字母区间",
+     "title": "Partition Labels",
+     "difficulty": "MEDIUM"
+    }
+   ]
+  },
+  {
+   "name": "动态规划",
+   "questions": [
+    {
+     "questionFrontendId": "70",
+     "titleSlug": "climbing-stairs",
+     "translatedTitle": "爬楼梯",
+     "title": "Climbing Stairs",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "118",
+     "titleSlug": "pascals-triangle",
+     "translatedTitle": "杨辉三角",
+     "title": "Pascal's Triangle",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "198",
+     "titleSlug": "house-robber",
+     "translatedTitle": "打家劫舍",
+     "title": "House Robber",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "279",
+     "titleSlug": "perfect-squares",
+     "translatedTitle": "完全平方数",
+     "title": "Perfect Squares",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "322",
+     "titleSlug": "coin-change",
+     "translatedTitle": "零钱兑换",
+     "title": "Coin Change",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "139",
+     "titleSlug": "word-break",
+     "translatedTitle": "单词拆分",
+     "title": "Word Break",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "300",
+     "titleSlug": "longest-increasing-subsequence",
+     "translatedTitle": "最长递增子序列",
+     "title": "Longest Increasing Subsequence",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "152",
+     "titleSlug": "maximum-product-subarray",
+     "translatedTitle": "乘积最大子数组",
+     "title": "Maximum Product Subarray",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "416",
+     "titleSlug": "partition-equal-subset-sum",
+     "translatedTitle": "分割等和子集",
+     "title": "Partition Equal Subset Sum",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "32",
+     "titleSlug": "longest-valid-parentheses",
+     "translatedTitle": "最长有效括号",
+     "title": "Longest Valid Parentheses",
+     "difficulty": "HARD"
+    }
+   ]
+  },
+  {
+   "name": "多维动态规划",
+   "questions": [
+    {
+     "questionFrontendId": "62",
+     "titleSlug": "unique-paths",
+     "translatedTitle": "不同路径",
+     "title": "Unique Paths",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "64",
+     "titleSlug": "minimum-path-sum",
+     "translatedTitle": "最小路径和",
+     "title": "Minimum Path Sum",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "5",
+     "titleSlug": "longest-palindromic-substring",
+     "translatedTitle": "最长回文子串",
+     "title": "Longest Palindromic Substring",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "1143",
+     "titleSlug": "longest-common-subsequence",
+     "translatedTitle": "最长公共子序列",
+     "title": "Longest Common Subsequence",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "72",
+     "titleSlug": "edit-distance",
+     "translatedTitle": "编辑距离",
+     "title": "Edit Distance",
+     "difficulty": "MEDIUM"
+    }
+   ]
+  },
+  {
+   "name": "技巧",
+   "questions": [
+    {
+     "questionFrontendId": "136",
+     "titleSlug": "single-number",
+     "translatedTitle": "只出现一次的数字",
+     "title": "Single Number",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "169",
+     "titleSlug": "majority-element",
+     "translatedTitle": "多数元素",
+     "title": "Majority Element",
+     "difficulty": "EASY"
+    },
+    {
+     "questionFrontendId": "75",
+     "titleSlug": "sort-colors",
+     "translatedTitle": "颜色分类",
+     "title": "Sort Colors",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "31",
+     "titleSlug": "next-permutation",
+     "translatedTitle": "下一个排列",
+     "title": "Next Permutation",
+     "difficulty": "MEDIUM"
+    },
+    {
+     "questionFrontendId": "287",
+     "titleSlug": "find-the-duplicate-number",
+     "translatedTitle": "寻找重复数",
+     "title": "Find the Duplicate Number",
+     "difficulty": "MEDIUM"
+    }
+   ]
+  }
+ ]
+}

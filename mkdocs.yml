@@ -228,6 +228,125 @@ nav:
           - 12 枚硬币的奇偶性: notes/probability/coin-parity.md
           - 3 根绳子烧出 7 分钟: notes/probability/rope-timing.md
           - 100 次抛硬币的最长连正: notes/probability/longest-head-run.md
+      - LeetCode 热题 100:
+          - notes/leetcode/index.md
+          - 哈希:
+              - 1. 两数之和: notes/leetcode/0001-two-sum.md
+              - 49. 字母异位词分组: notes/leetcode/0049-group-anagrams.md
+              - 128. 最长连续序列: notes/leetcode/0128-longest-consecutive-sequence.md
+          - 双指针:
+              - 283. 移动零: notes/leetcode/0283-move-zeroes.md
+              - 11. 盛最多水的容器: notes/leetcode/0011-container-with-most-water.md
+              - 15. 三数之和: notes/leetcode/0015-3sum.md
+              - 42. 接雨水: notes/leetcode/0042-trapping-rain-water.md
+          - 滑动窗口:
+              - 3. 无重复字符的最长子串: notes/leetcode/0003-longest-substring-without-repeating-characters.md
+              - 438. 找到字符串中所有字母异位词: notes/leetcode/0438-find-all-anagrams-in-a-string.md
+          - 子串:
+              - 560. 和为 K 的子数组: notes/leetcode/0560-subarray-sum-equals-k.md
+              - 239. 滑动窗口最大值: notes/leetcode/0239-sliding-window-maximum.md
+              - 76. 最小覆盖子串: notes/leetcode/0076-minimum-window-substring.md
+          - 普通数组:
+              - 53. 最大子数组和: notes/leetcode/0053-maximum-subarray.md
+              - 56. 合并区间: notes/leetcode/0056-merge-intervals.md
+              - 189. 轮转数组: notes/leetcode/0189-rotate-array.md
+              - 238. 除了自身以外数组的乘积: notes/leetcode/0238-product-of-array-except-self.md
+              - 41. 缺失的第一个正数: notes/leetcode/0041-first-missing-positive.md
+          - 矩阵:
+              - 73. 矩阵置零: notes/leetcode/0073-set-matrix-zeroes.md
+              - 54. 螺旋矩阵: notes/leetcode/0054-spiral-matrix.md
+              - 48. 旋转图像: notes/leetcode/0048-rotate-image.md
+              - 240. 搜索二维矩阵 II: notes/leetcode/0240-search-a-2d-matrix-ii.md
+          - 链表:
+              - 160. 相交链表: notes/leetcode/0160-intersection-of-two-linked-lists.md
+              - 206. 反转链表: notes/leetcode/0206-reverse-linked-list.md
+              - 234. 回文链表: notes/leetcode/0234-palindrome-linked-list.md
+              - 141. 环形链表: notes/leetcode/0141-linked-list-cycle.md
+              - 142. 环形链表 II: notes/leetcode/0142-linked-list-cycle-ii.md
+              - 21. 合并两个有序链表: notes/leetcode/0021-merge-two-sorted-lists.md
+              - 2. 两数相加: notes/leetcode/0002-add-two-numbers.md
+              - 19. 删除链表的倒数第 N 个结点: notes/leetcode/0019-remove-nth-node-from-end-of-list.md
+              - 24. 两两交换链表中的节点: notes/leetcode/0024-swap-nodes-in-pairs.md
+              - 25. K 个一组翻转链表: notes/leetcode/0025-reverse-nodes-in-k-group.md
+              - 138. 随机链表的复制: notes/leetcode/0138-copy-list-with-random-pointer.md
+              - 148. 排序链表: notes/leetcode/0148-sort-list.md
+              - 23. 合并 K 个升序链表: notes/leetcode/0023-merge-k-sorted-lists.md
+              - 146. LRU 缓存: notes/leetcode/0146-lru-cache.md
+          - 二叉树:
+              - 94. 二叉树的中序遍历: notes/leetcode/0094-binary-tree-inorder-traversal.md
+              - 104. 二叉树的最大深度: notes/leetcode/0104-maximum-depth-of-binary-tree.md
+              - 226. 翻转二叉树: notes/leetcode/0226-invert-binary-tree.md
+              - 101. 对称二叉树: notes/leetcode/0101-symmetric-tree.md
+              - 543. 二叉树的直径: notes/leetcode/0543-diameter-of-binary-tree.md
+              - 102. 二叉树的层序遍历: notes/leetcode/0102-binary-tree-level-order-traversal.md
+              - 108. 将有序数组转换为二叉搜索树: notes/leetcode/0108-convert-sorted-array-to-binary-search-tree.md
+              - 98. 验证二叉搜索树: notes/leetcode/0098-validate-binary-search-tree.md
+              - 230. 二叉搜索树中第 K 小的元素: notes/leetcode/0230-kth-smallest-element-in-a-bst.md
+              - 199. 二叉树的右视图: notes/leetcode/0199-binary-tree-right-side-view.md
+              - 114. 二叉树展开为链表: notes/leetcode/0114-flatten-binary-tree-to-linked-list.md
+              - 105. 从前序与中序遍历序列构造二叉树: notes/leetcode/0105-construct-binary-tree-from-preorder-and-inorder-traversal.md
+              - 437. 路径总和 III: notes/leetcode/0437-path-sum-iii.md
+              - 236. 二叉树的最近公共祖先: notes/leetcode/0236-lowest-common-ancestor-of-a-binary-tree.md
+              - 124. 二叉树中的最大路径和: notes/leetcode/0124-binary-tree-maximum-path-sum.md
+          - 图论:
+              - 200. 岛屿数量: notes/leetcode/0200-number-of-islands.md
+              - 994. 腐烂的橘子: notes/leetcode/0994-rotting-oranges.md
+              - 207. 课程表: notes/leetcode/0207-course-schedule.md
+              - 208. 实现 Trie (前缀树): notes/leetcode/0208-implement-trie-prefix-tree.md
+          - 回溯:
+              - 46. 全排列: notes/leetcode/0046-permutations.md
+              - 78. 子集: notes/leetcode/0078-subsets.md
+              - 17. 电话号码的字母组合: notes/leetcode/0017-letter-combinations-of-a-phone-number.md
+              - 39. 组合总和: notes/leetcode/0039-combination-sum.md
+              - 22. 括号生成: notes/leetcode/0022-generate-parentheses.md
+              - 79. 单词搜索: notes/leetcode/0079-word-search.md
+              - 131. 分割回文串: notes/leetcode/0131-palindrome-partitioning.md
+              - 51. N 皇后: notes/leetcode/0051-n-queens.md
+          - 二分查找:
+              - 35. 搜索插入位置: notes/leetcode/0035-search-insert-position.md
+              - 74. 搜索二维矩阵: notes/leetcode/0074-search-a-2d-matrix.md
+              - 34. 在排序数组中查找元素的第一个和最后一个位置: notes/leetcode/0034-find-first-and-last-position-of-element-in-sorted-array.md
+              - 33. 搜索旋转排序数组: notes/leetcode/0033-search-in-rotated-sorted-array.md
+              - 153. 寻找旋转排序数组中的最小值: notes/leetcode/0153-find-minimum-in-rotated-sorted-array.md
+              - 4. 寻找两个正序数组的中位数: notes/leetcode/0004-median-of-two-sorted-arrays.md
+          - 栈:
+              - 20. 有效的括号: notes/leetcode/0020-valid-parentheses.md
+              - 155. 最小栈: notes/leetcode/0155-min-stack.md
+              - 394. 字符串解码: notes/leetcode/0394-decode-string.md
+              - 739. 每日温度: notes/leetcode/0739-daily-temperatures.md
+              - 84. 柱状图中最大的矩形: notes/leetcode/0084-largest-rectangle-in-histogram.md
+          - 堆:
+              - 215. 数组中的第K个最大元素: notes/leetcode/0215-kth-largest-element-in-an-array.md
+              - 347. 前 K 个高频元素: notes/leetcode/0347-top-k-frequent-elements.md
+              - 295. 数据流的中位数: notes/leetcode/0295-find-median-from-data-stream.md
+          - 贪心算法:
+              - 121. 买卖股票的最佳时机: notes/leetcode/0121-best-time-to-buy-and-sell-stock.md
+              - 55. 跳跃游戏: notes/leetcode/0055-jump-game.md
+              - 45. 跳跃游戏 II: notes/leetcode/0045-jump-game-ii.md
+              - 763. 划分字母区间: notes/leetcode/0763-partition-labels.md
+          - 动态规划:
+              - 70. 爬楼梯: notes/leetcode/0070-climbing-stairs.md
+              - 118. 杨辉三角: notes/leetcode/0118-pascals-triangle.md
+              - 198. 打家劫舍: notes/leetcode/0198-house-robber.md
+              - 279. 完全平方数: notes/leetcode/0279-perfect-squares.md
+              - 322. 零钱兑换: notes/leetcode/0322-coin-change.md
+              - 139. 单词拆分: notes/leetcode/0139-word-break.md
+              - 300. 最长递增子序列: notes/leetcode/0300-longest-increasing-subsequence.md
+              - 152. 乘积最大子数组: notes/leetcode/0152-maximum-product-subarray.md
+              - 416. 分割等和子集: notes/leetcode/0416-partition-equal-subset-sum.md
+              - 32. 最长有效括号: notes/leetcode/0032-longest-valid-parentheses.md
+          - 多维动态规划:
+              - 62. 不同路径: notes/leetcode/0062-unique-paths.md
+              - 64. 最小路径和: notes/leetcode/0064-minimum-path-sum.md
+              - 5. 最长回文子串: notes/leetcode/0005-longest-palindromic-substring.md
+              - 1143. 最长公共子序列: notes/leetcode/1143-longest-common-subsequence.md
+              - 72. 编辑距离: notes/leetcode/0072-edit-distance.md
+          - 技巧:
+              - 136. 只出现一次的数字: notes/leetcode/0136-single-number.md
+              - 169. 多数元素: notes/leetcode/0169-majority-element.md
+              - 75. 颜色分类: notes/leetcode/0075-sort-colors.md
+              - 31. 下一个排列: notes/leetcode/0031-next-permutation.md
+              - 287. 寻找重复数: notes/leetcode/0287-find-the-duplicate-number.md
       - 统计学:
           - notes/statistics/index.md
           - 基础:
