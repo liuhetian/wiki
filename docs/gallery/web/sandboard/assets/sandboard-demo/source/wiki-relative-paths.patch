@@ -1,0 +1,41 @@
+diff --git a/index.html b/index.html
+index 754b743..a40a760 100644
+--- a/index.html
++++ b/index.html
+@@ -9,7 +9,7 @@
+ 
+     <title>Sandboard — a study in sand</title>
+     <link rel="canonical" href="https://sand.scottsun.io" />
+-    <link rel="icon" type="image/png" href="/logo.png" />
++    <link rel="icon" type="image/png" href="./logo.png" />
+ 
+     <meta property="og:type" content="website" />
+     <meta property="og:site_name" content="Sandboard" />
+diff --git a/src/audio/sound.ts b/src/audio/sound.ts
+index 8e4c8b0..b2a9a09 100644
+--- a/src/audio/sound.ts
++++ b/src/audio/sound.ts
+@@ -48,8 +48,8 @@ function requestPlaybackAudioSession() {
+ }
+ 
+ export class SandSound {
+-  private readonly ambient = new Audio('/scene_assets/beach.mp3')
+-  private readonly wave = new Audio('/scene_assets/wave.mp3')
++  private readonly ambient = new Audio('scene_assets/beach.mp3')
++  private readonly wave = new Audio('scene_assets/wave.mp3')
+   private readonly gestures = new Map<number, GestureTrack>()
+   private readonly unlockController = new AbortController()
+   private context: AudioContext | undefined
+diff --git a/src/render/coconut-shadow.ts b/src/render/coconut-shadow.ts
+index fca869d..5c11788 100644
+--- a/src/render/coconut-shadow.ts
++++ b/src/render/coconut-shadow.ts
+@@ -386,7 +386,7 @@ function parseGlb(buffer: ArrayBuffer) {
+ }
+ 
+ async function loadTree(): Promise<ParsedTree> {
+-  const response = await fetch('/scene_assets/coconut_tree.glb')
++  const response = await fetch('scene_assets/coconut_tree.glb')
+   if (!response.ok) throw new Error(`Unable to load coconut tree (${response.status}).`)
+   const { gltf, binary } = parseGlb(await response.arrayBuffer())
+ 

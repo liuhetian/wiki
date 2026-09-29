@@ -540,3 +540,4 @@ nav:
                   - 滚动叙事与场景切换: gallery/web/frontend-styles/oryzo/scene-morph.md
                   - Wearable 一幕: gallery/web/frontend-styles/oryzo/wearable-scene.md
                   - RGB 呼吸光边: gallery/web/frontend-styles/oryzo/rgb-glow-border.md
+          - Sandboard WebGPU 沙盘: gallery/web/sandboard/index.md
