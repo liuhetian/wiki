@@ -67,7 +67,6 @@ def build_styles():
         out.setdefault(s["group"][0], []).append(s)
     for letter, items in out.items():
         slug, name = STYLE_GROUPS[letter]
-        lo, hi = items[0]["number"], items[-1]["number"]
         body = []
         for s in items:
             head = f"#{s['number']} · {s['generation_name']}"
@@ -76,8 +75,8 @@ def build_styles():
             # 只留画法特征；编号、风格名、参考作者对出图没用，不进 prompt
             body.append(fence(s["traits"]) if s["traits"] else NO_TRAITS)
         page(ROOT / f"{slug}.md",
-             f"手绘风格 {letter} 组 {lo}–{hi}：{name}，{len(items)} 种，每条一张样片加一段风格片段 prompt",
-             f"{letter} · {name}（{lo}–{hi}）", body)
+             f"手绘风格 {letter} 组：{name}，{len(items)} 种，每条一张样片加一段画法特征 prompt",
+             f"{letter} · {name}", body)
 
 
 def build_layouts():
