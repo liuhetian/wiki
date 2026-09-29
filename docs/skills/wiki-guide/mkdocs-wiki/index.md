@@ -2,7 +2,7 @@
 description: "写技术 wiki（本 wiki 就在用）"
 ---
 
-# MkDocs Wiki 写作
+# 格式怎么写
 
 本项目用 MkDocs Material / Zensical 渲染 Markdown。每种语法**直接演示使用** ——
 AI 读 markdown 源文件即看到写法，人类访问 wiki 看到渲染效果，**一份内容两个视图**，不再"写法/效果"双写。
@@ -460,7 +460,7 @@ docs/skills/writing/               # 分类目录
     └── MIRROR.md                  # 来源与吸收说明（目录里唯一自己写的文件）
 ```
 
-**吸收外部 skill 的归档规矩**：skill 目录**镜像上游布局**——主文件 `SKILL.md` 原文照录、仅改名为 `index.md`（真身就是入口，不另写落地文）；它引用的**全部依赖文件**（`references/`、依赖的其他 skill）按上游相对路径与 `index.md` 平级归档，主文件内部的相对链接因此原样有效；一律钉 commit 原文照录。安装脚本 / 多语言翻译 / CI 这类非行为定义可跳过，但取舍要写进 `MIRROR.md`（记上游仓库、commit 永链、吸收日期、漂移处置，是目录里唯一自己写的文件）。skill 目录名对齐上游 slug（如 `qu-ai-wei`、`grill-with-docs`）。上游带脚本或数据表的，按 [收纳 skill 作为远程 skill](../remote-skill.md) 把脚本分成预算 / 查表 / 本地执行三类处理，由此产出的预算页和数据导读是 `MIRROR.md` 之外仅有的自写文件。
+**吸收外部 skill 的归档规矩**：skill 目录**镜像上游布局**——主文件 `SKILL.md` 原文照录、仅改名为 `index.md`（真身就是入口，不另写落地文）；它引用的**全部依赖文件**（`references/`、依赖的其他 skill）按上游相对路径与 `index.md` 平级归档，主文件内部的相对链接因此原样有效；一律钉 commit 原文照录。安装脚本 / 多语言翻译 / CI 这类非行为定义可跳过，但取舍要写进 `MIRROR.md`（记上游仓库、commit 永链、吸收日期、漂移处置，是目录里唯一自己写的文件）。skill 目录名对齐上游 slug（如 `qu-ai-wei`、`grill-with-docs`）。上游带脚本或数据表的，按 [skill 怎么收纳](../remote-skill.md) 把脚本分成预算 / 查表 / 本地执行三类处理，由此产出的预算页和数据导读是 `MIRROR.md` 之外仅有的自写文件。
 
 **人读的介绍压到分类索引一句话**：吸收型 skill 的页面本身是给 AI 看的真身，人真正需要读的介绍——这个 skill 干什么、亮点在哪、吸收自谁——写在分类 `index.md` 的链接后面一句话即可，不单独维护落地文或中译页（2026-07-09 废除此前"落地文在前、`SKILL.md 真身`挂 nav 附件在后"的两层做法：人读内容太少，不值得两个页面）。nav 里吸收型 skill 的依赖文件（`references/`、依赖的其他 skill）**跟大 skill 的 `reference/` 同等待遇——展平进该 skill 的小节**：`index.md`（真身）在前、依赖平铺在后；无依赖的 skill（如 grilling）就是平条目。`MIRROR.md` 不进 nav，从分类索引可达。
 

@@ -41,9 +41,10 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 给 AI 挂载执行的成套资产，按 Claude skill 标准目录组织，每套都可以直接当远程 skill 用，全部在 [Skills 索引](skills/index.md)：
 
+- [本 wiki 写作规范](skills/wiki-guide/index.md) —— 往这个 wiki 写东西前先读：格式怎么写、课程页怎么写、skill 怎么收纳
 - [FastAPI 后端](skills/fastapi/index.md) —— 依赖注入、SQLModel 分层建模、按需参考的一整套后端约定
 - [Dashboard 后台](skills/dashboard/index.md) —— 形状目录 + 每形状一个可玩的活 demo
-- [写作口味](skills/writing/index.md) —— MkDocs Wiki 文档、报纸版 HTML、去 AI 味
+- [写作口味](skills/writing/index.md) —— 报纸版 HTML、滚动 deck、去 AI 味、檄文
 - [和 AI 协作](skills/collab/index.md) —— CLAUDE.md 模板 + 盘问式协作 + 两个图片提示词反推 skill
 
 ## Gallery

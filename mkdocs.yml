@@ -283,6 +283,15 @@ nav:
           - 第 9 章 相关与回归分析: courses/statistics-book/ch09-regression.md
   - Skills:
       - skills/index.md
+      - 本 wiki 写作规范:
+          - skills/wiki-guide/index.md
+          - 格式怎么写: skills/wiki-guide/mkdocs-wiki/index.md
+          - 课程页怎么写: skills/wiki-guide/course-page.md
+          - skill 怎么收纳: skills/wiki-guide/remote-skill.md
+          - 远程 skill 探针: skills/wiki-guide/remote-skill-probe/index.md
+      - B站视频笔记:
+          - skills/bili-note/index.md
+          - 接口笔记: skills/bili-note/references/bilibili-api-notes.md
       - FastAPI 后端:
           - skills/fastapi/index.md
           - 项目布局: skills/fastapi/reference/项目布局.md
@@ -404,11 +413,6 @@ nav:
           - L2 · React 手写画布: skills/canvas/reference/l2-react.md
           - L3 · 数据驱动节点图: skills/canvas/reference/l3-nodegraph.md
           - L4 · 白板: skills/canvas/reference/l4-whiteboard.md
-      - 本 wiki 写作规范:
-          - skills/wiki-guide/index.md
-          - MkDocs Wiki 文档: skills/wiki-guide/mkdocs-wiki/index.md
-          - 课程页怎么写: skills/wiki-guide/course-page.md
-          - 收纳远程 skill: skills/wiki-guide/remote-skill.md
       - 写作口味:
           - skills/writing/index.md
           - 报纸版 HTML: skills/writing/newspaper/index.md
@@ -487,6 +491,7 @@ nav:
               - gallery/images/gpt-image2/gallery-screen-photography.md
               - gallery/images/gpt-image2/gallery-cinematic-and-animation.md
               - gallery/images/gpt-image2/gallery-cinematic-film-references.md
+              - gallery/images/collected/gallery-portrait-templates.md
           - 产品与空间:
               - gallery/images/gpt-image2/gallery-product-and-food.md
               - gallery/images/gpt-image2/gallery-architecture-and-interior.md

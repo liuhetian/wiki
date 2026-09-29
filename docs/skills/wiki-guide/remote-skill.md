@@ -2,7 +2,7 @@
 description: "把外部 skill 收成远程 skill：文字原样照录，脚本按「预算 / 查表 / 本地执行」三类处理，同时照顾有 shell 和只能抓网页的两种调用方"
 ---
 
-# 收纳 skill 作为远程 skill
+# skill 怎么收纳
 
 本站的 skill 靠 URL 被读：调用方 GET `/skills/<name>/index.md`，顺着相对链接往下读。纯文字的 skill 这样读就够了；带脚本、带数据的 skill 要先想清楚一件事 —— **调用方不一定能执行任何东西**。
 
@@ -57,4 +57,5 @@ description: "把外部 skill 收成远程 skill：文字原样照录，脚本�
 
 - 纯文字、无脚本：[去 AI 味](../writing/qu-ai-wei/index.md)，来源见它的 [MIRROR](../writing/qu-ai-wei/MIRROR.md)
 - 追溯原作者 + 禁读上游声明：[get-prompt-from-image](../collab/get-prompt-from-image/MIRROR.md)
+- 第 3 类的测试探针（脚本按相对路径读 CSV，不打包，看客户端 AI 自己怎么下载）：[远程 skill 探针](remote-skill-probe/index.md)
 - 带数据和脚本：还没有。第一例预定是 [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)（`--design-system` 走第 1 类、数据表走第 2 类、不需要第 3 类），落地后补到这里
