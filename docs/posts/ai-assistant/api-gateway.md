@@ -69,10 +69,10 @@ HTTP 和 SSE 流式的每个请求都自带 key，换掉 header 就行。WebSock
 - `/var/log/caddy/deepseek-proxy/access.json`：访问日志，只剩时间和状态码。满 10 MiB 轮转，留 30 份，最多 90 天。
 - `/var/lib/caddy/.config/caddy/autosave.json`：Caddy 把展开后的配置存在这里，里面有明文 key，见[分开放](#secrets)一节。
 
-验收、统计用的脚本不放在服务器上，用的时候从本站下载。装机时家目录里留下的东西都不是配置，Caddy 不读，验收通过后可以删：
+验收、统计用的脚本不放在服务器上，用的时候从本站下载。装机时家目录里留下过三样东西，都不是配置，Caddy 也不读，2026-10-01 验收通过后已经删掉：
 
-- `~/deepseek-proxy-client.env`：当时的安装脚本顺手生成的「给调用方抄的配置」（`OPENAI_BASE_URL` 加 token）。现在 token 由用户手动写进 Agent 的 `.env`，这个文件没有用处，里面也还是改之前的旧 token。
-- `~/deepseek-proxy-upload/`、`~/caddy-maintenance/`：安装和升级时的工作目录，有当时的脚本和升级记录。
+- `~/deepseek-proxy-client.env`：当时的安装脚本顺手生成的「给调用方抄的配置」（`OPENAI_BASE_URL` 加 token）。token 改由用户手动写进 Agent 的 `.env` 之后，这个文件就没用了。
+- `~/deepseek-proxy-upload/`、`~/caddy-maintenance/`：安装和升级时的工作目录，放着当时的脚本和升级记录。升级前的备份还留在 `/var/backups/caddy-upgrade/`。
 
 `assets/gateway/` 里的 `deepseek.caddy`、`gateway.conf`、`verify.py`、`stats.py`、`audit.py` 是 2026-10-01 从这台机器原样拷来的，sha256 和机器上的一致。
 
