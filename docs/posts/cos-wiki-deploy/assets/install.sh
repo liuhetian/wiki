@@ -1,1 +1,0 @@
-../../../../deploy-cert/install.sh

@@ -53,7 +53,7 @@ Karpathy 在 2026 年 4 月发过一份只有 75 行的 gist —— [llm-wiki](h
 
         规矩层 —— 一份约定文档，告诉 LLM 材料怎么进、wiki 怎么组织、更新时要守什么规矩。
 
-其实这里也藏了一点从低级原始数据到中级中间过程再到最终高级结果接口的的演化过程和想法[完整项目](../prediction-loop.md)，可以参考里面。
+其实这里也藏了一点从低级原始数据到中级中间过程再到最终高级结果接口的的演化过程和想法[完整项目](../../prediction-loop.md)，可以参考里面。
 
 回到wiki主题上，他的想法是人只管选材料、提问题，wiki 全部由 LLM 写和维护 —— 一个研究主题他攒到了上百篇、几十万字，自己没直接写过一个字。文中解释"为什么这事现在成立了"：
 
@@ -72,7 +72,7 @@ Karpathy 在 2026 年 4 月发过一份只有 75 行的 gist —— [llm-wiki](h
     真身在本文 [`assets/llm-wiki.md`](assets/llm-wiki.md)，随 wiki 一起发布、线上有独立 URL 可直接 GET。以下为原文：
 
     ```markdown
-    --8<-- "posts/cos-wiki-deploy/assets/llm-wiki.md"
+    --8<-- "posts/wiki-tech/cos-deploy/assets/llm-wiki.md"
     ```
 
 ## 设计：一颗语法糖，两个约定 { #设计 }
@@ -117,7 +117,7 @@ Karpathy 在 2026 年 4 月发过一份只有 75 行的 gist —— [llm-wiki](h
 
 两个设计要点都是被真实数据逼出来的,不是设计时想到的：
 
-- **是"祖先"而不是"最近父级"**。吸收型 skill 的 `index.md` 是上游原文照录、不许改,它的归档文件只能由 `MIRROR.md`（目录里唯一自己写的文件）或分类索引挂链,隔着一层。活例：xi-wen 的 9 份归档全靠 [`MIRROR.md`](../../skills/writing/xi-wen/MIRROR.md) 的"本地归档"一栏挂住。按"最近父级"写的原型在这批文件上报了 14 个误报。
+- **是"祖先"而不是"最近父级"**。吸收型 skill 的 `index.md` 是上游原文照录、不许改,它的归档文件只能由 `MIRROR.md`（目录里唯一自己写的文件）或分类索引挂链,隔着一层。活例：xi-wen 的 9 份归档全靠 [`MIRROR.md`](../../../skills/writing/xi-wen/MIRROR.md) 的"本地归档"一栏挂住。按"最近父级"写的原型在这批文件上报了 14 个误报。
 - **吸收来的原文里的死链降级为警告**。原文里的路径常是举例（活例：`domain-modeling/CONTEXT-FORMAT.md` 举例 `./src/ordering/CONTEXT.md` 该放哪）,本地不可能存在;而往原文里加豁免注释就是改原文,违反照录规矩。判据是同级或祖先目录有 `MIRROR.md`。警告仍然打印 —— 归档真漏了一份依赖也会在这里现形。
 
 豁免写在文件顶部 `<!-- link-check-ok: 理由 -->`,理由跟着文件走、不躺在脚本白名单里：挪文件不会让豁免失效,读到那个文件的人也立刻知道为什么。**"已迁移存根"不是正当理由** —— 本 wiki 不给挪走的文件留存根页,要保住旧 URL 就别挪文件。存根页是天生的孤儿（无人链接、不进 nav）,留着只会逼校验开豁免口子,而每个口子都是下一次漏挂链接的藏身处。
@@ -127,7 +127,7 @@ Karpathy 在 2026 年 4 月发过一份只有 75 行的 gist —— [llm-wiki](h
 ??? abstract "`scripts/check-links.py` —— 真身，deploy.sh 构建前强制跑"
 
     ```python
-    --8<-- "posts/cos-wiki-deploy/assets/check-links.py"
+    --8<-- "posts/wiki-tech/cos-deploy/assets/check-links.py"
     ```
 
 ### 和 llms.txt 的对比 { #llmstxt }
@@ -143,7 +143,7 @@ llms.txt 提案解决的是普通网站从 html 到 md 的问题，本文场景�
     真身在本文 [`assets/llms-txt.md`](assets/llms-txt.md)，随 wiki 一起发布、线上有独立 URL 可直接 GET。以下为原文：
 
     ````markdown
-    --8<-- "posts/cos-wiki-deploy/assets/llms-txt.md"
+    --8<-- "posts/wiki-tech/cos-deploy/assets/llms-txt.md"
     ````
 
 所以本文建立标准，然后证明一个小语法糖能实现所要的需求，顺便再用一句 `cp` 兼容了 llms.txt 协议的"发现层"入口，最后再加上写作规范优化和工程层面部署的经验，构成了本篇文章的全部创新点。
@@ -151,7 +151,7 @@ llms.txt 提案解决的是普通网站从 html 到 md 的问题，本文场景�
 ### 部署在远程，比 clone 到本地强在哪
 
 - **最新版本**：每次读到的是最新版本，对skill会不断优化很重要
-- **图片渲染效果人可以看**：同一套内容，AI 读 `.md` 源，人看渲染页 —— mermaid 架构图、表格、截图全渲染出来。对**设计类 skill**（系统架构、页面布局、视觉规范）帮助很大，而且不止图：连**可交互的 HTML 单页**都能嵌进文章直接玩 —— 纯客户端的自包含 SPA（比如一个 React demo）丢进 `assets/` 随 wiki 一起发布，iframe 同域嵌入，人玩交互效果、AI 读同一 URL 下未压缩的源码，规矩与活例见[写作规范·嵌入交互单页](../../skills/wiki-guide/mkdocs-wiki/index.md#iframe-demo)。
+- **图片渲染效果人可以看**：同一套内容，AI 读 `.md` 源，人看渲染页 —— mermaid 架构图、表格、截图全渲染出来。对**设计类 skill**（系统架构、页面布局、视觉规范）帮助很大，而且不止图：连**可交互的 HTML 单页**都能嵌进文章直接玩 —— 纯客户端的自包含 SPA（比如一个 React demo）丢进 `assets/` 随 wiki 一起发布，iframe 同域嵌入，人玩交互效果、AI 读同一 URL 下未压缩的源码，规矩与活例见[写作规范·嵌入交互单页](../../../skills/wiki-guide/mkdocs-wiki/index.md#iframe-demo)。
 
 
 ```mermaid
@@ -205,14 +205,15 @@ flowchart TB
 
 **→ [腾讯云 COS + acme.sh：部署实操手册](reference/deploy.md)**
 
-如果你只想看"为什么这么设计"，读到这里就够了；要照着搭一套，顺链接进手册。搭好之后日常怎么写 —— 尤其多台机器协同（主机写作即部署机，副机 push 后搭车或一句 ssh 触发）—— 在手册的[日常写作流](reference/deploy.md#写作流)一节。这个站从搭起来到一路折腾的流水账，在[建站手记](reference/wiki-build-log.md)里按时间记着。
+如果你只想看"为什么这么设计"，读到这里就够了；要照着搭一套，顺链接进手册。搭好之后日常怎么写 —— 尤其多台机器协同（主机写作即部署机，副机 push 后搭车或一句 ssh 触发）—— 在手册的[日常写作流](reference/deploy.md#写作流)一节。
 
 ## 下一步：风格与管线 { #下一步 }
 
-发布机制到这里算闭环了，但还有两件事没做，先记在这：
+发布机制到这里算闭环了，但还有几件事没做，先记在这：
 
-- **个人 IP**。站点、配图、交互 demo 的风格现在各写各的，观感不统一。想把个人审美落成一份 **AI 可执行的 style spec**——色板、字体、构图规则、负面清单、示例对，进 git 当 skill——以后产出任何图和 HTML 都强制引用它防漂移。原型是[项目管理那篇](../ai-pm.md)里 changelog 卡片的纪律：第一张定死，之后只换皮。配图工具也倾向真身是文本的方案（如 Excalidraw，`.excalidraw` JSON 进 git、导出 SVG 发布），跟本文"真身进仓库"一脉。
-- **写作管线**。本文开头借了 Karpathy 的 raw → wiki 分层，但本 wiki 的 `raw/` 层还空着。想走"讲述式写作"：对着 AI 把事情讲一遍，讲述的 transcript 就是 `raw/`；中间攒成[原子笔记](../../notes/index.md)；攒够之后的长文总结由 AI 跑合成。
+- **CDN**。2026-06 用 [ping.chinaz.com](https://ping.chinaz.com/) 全国多节点测过首页（部署机自己 `curl` 不算数，它的出口跟普通用户不是一回事）：建连 20–50 ms，各地差不多；大头是冷 DNS 解析，0.15–0.3 秒；个别节点偶发 1–2 秒或超时；响应头没有 `Content-Encoding`，文本是裸传的。自用够了，上 CDN 能顺手开压缩、抹平偶发卡顿，更多是想借这个站练手，还没做。
+- **个人 IP**。站点、配图、交互 demo 的风格现在各写各的，观感不统一。想把个人审美落成一份 **AI 可执行的 style spec**——色板、字体、构图规则、负面清单、示例对，进 git 当 skill——以后产出任何图和 HTML 都强制引用它防漂移。原型是[项目管理那篇](../../ai-pm.md)里 changelog 卡片的纪律：第一张定死，之后只换皮。配图工具也倾向真身是文本的方案（如 Excalidraw，`.excalidraw` JSON 进 git、导出 SVG 发布），跟本文"真身进仓库"一脉。
+- **写作管线**。本文开头借了 Karpathy 的 raw → wiki 分层，但本 wiki 的 `raw/` 层还空着。想走"讲述式写作"：对着 AI 把事情讲一遍，讲述的 transcript 就是 `raw/`；中间攒成[原子笔记](../../../notes/index.md)；攒够之后的长文总结由 AI 跑合成。
 - **正文标注视觉**。想过给重点段落加"荧光笔 / 圈选 / 手绘箭头"这类批注效果，让长文里的关键处更抓眼。方案见过两条路：纯 CSS 的 [neat-annotations](https://github.com/syabro/neat-annotations)（观感最像手写批注，但字体只覆盖拉丁字符，中文标签要另配手写字），或 `pymdownx.critic` + Material 自带的正文 annotations（语义清晰、深浅色都稳，观感规矩）。没定要不要上 —— 顾虑是它容易从"标重点"滑到"分散注意力"，尤其中文长文更怕花哨；先记一笔，看以后写作里真的需要再选。
 
 做了再回来补。

@@ -204,6 +204,35 @@ Pygments 高亮和右上角复制按钮全都原样保留，[`vendor/js-runner.j
 - **故意写坏是预期用法**。死循环 5 秒后被砍、报错带行号（已扣掉包装偏移），坏例子和好例子一样值得放进来
 - **只能运行，不能在页面上改**。曾做过 textarea 编辑态，换进去就丢了 Pygments 高亮（零依赖下没法重新上色），为顺手改两行牺牲整块代码的可读性不值得；要试自己的想法，浏览器控制台比页面里的小框好用。所以例子要**自带对照组**（把"换成 X 会怎样"写成注释或第二个块），别指望读者动手改
 
+## 11. 打码：`age:…` 小字与 ```` ```age ```` 块 { #age-mosaic }
+
+不想公开、但泄露了也不致命的小字——服务器地址、域名、用户名——写进源文件时就已经是 age 密文。浏览器里显示成马赛克，点开输口令后就地还原。本站同时发布 HTML 和 `.md` 源，只有「源文件里就是密文」才不漏：HTML、`.md` 镜像、git、AI 拿到的全是密文。为什么这样选，见[打码：源文件里就是密文](../../../posts/wiki-tech/age-mosaic.md)。
+
+两种写法，密文都由 `scripts/age-seal.sh` 生成（只用 wiki 公钥，不碰任何秘密）：
+
+- **小字**：`bash scripts/age-seal.sh`，输入要打码的字（不回显、不进 shell 历史），打印一行 `age:…`，贴进反引号里。行内代码和代码块里都认，比如 `ssh ubuntu@age:…` 这样嵌在命令中间
+- **大段**：`bash scripts/age-seal.sh -a`，粘贴多行、Ctrl-D 结束，把打印出的 armor 放进 `age` 代码块：
+
+    ````markdown
+    ```age
+    -----BEGIN AGE ENCRYPTED FILE-----
+    …
+    -----END AGE ENCRYPTED FILE-----
+    ```
+    ````
+
+解锁：点马赛克，输口令，或者粘贴私钥 `AGE-SECRET-KEY-1…`。口令先解开 [`vendor/age-init.js`](../../../vendor/age-init.js) 里内嵌的 `WIKI_KEY_AGE`（用口令锁住的 wiki 私钥，scrypt 只跑一次），之后每段几毫秒。解开的私钥记在 sessionStorage：同一个标签页翻到别的页面自动还原，关掉标签页就忘，右下角「锁上打码」随时清掉。页面上没有密文就不加载 [`vendor/age-core.js`](../../../vendor/age-core.js)，零开销。
+
+硬性规矩：
+
+- **按泄露后果决定放不放**：口令被猜中时这些内容会一起漏。服务器地址、域名、用户名放心放；API key 写进来之前，先在厂商控制台设好用量上限；云主账号凭证、能直接接管账号的东西不放
+- **只写在反引号里**：行内代码或代码块。正文里裸写的 `age:…` 不认，markdown 也可能把它拆开
+- **wiki 钥匙对专用**，别的地方要用 age 另生成一对：私钥在 `~/.config/age/wiki.key`（不进仓库，另抄一份进密码管理器），公钥在 `scripts/age-seal.sh`，口令锁住的副本在 `age-init.js` 的 `WIKI_KEY_AGE`。换钥匙对时三处一起改，旧密文用新公钥重新加密
+- **文档里举例只写 `age:…`**：脚本认的是 `age:` 加上「age-encryption.org/v1」这串字的 base64 前缀，把前缀写全的例子会被当成密文打码、解不开标红
+- **块解开后是素 `<pre><code>`**，没有语法高亮；要高亮的内容别放进 `age` 块
+
+活例：[开发环境第 0 步](../../../posts/ai-assistant/dev-env.md#proxy)，代码块里的服务器地址和下面一行的登录密码；网关的厂商 key 打码写在 [API 中转](../../../posts/ai-assistant/api-gateway.md#keys)（DeepSeek 已上线，key 还没写进来）。
+
 ## 写作规范 { #写作规范 }
 
 - 同一功能有 Python / R 两种写法 → 用选项卡 `===`
@@ -213,6 +242,7 @@ Pygments 高亮和右上角复制按钮全都原样保留，[`vendor/js-runner.j
 - 读者需要看到实际输出的 JS 例子 → 用 `{.js .run}` 可运行块（Worker 沙箱、无 DOM、只运行不可编辑，规矩见[第 10 节](#js-run)）
 - 交互效果演示 → iframe 嵌**自包含静态单页**（纯客户端、真身进 `assets/`、vendor 不走 CDN、逻辑不压缩，规矩与活例见[第 9 节](#iframe-demo)）
 - AI 生成概念配图 → 用[白底黑色马克笔草图](#marker-doodle-images)，一张图只讲一个概念
+- 不想公开的小字（服务器地址、域名）→ 用 `scripts/age-seal.sh` 生成 `age:…` 写进反引号，浏览器里打码、解锁后还原（规矩见[第 11 节](#age-mosaic)）
 - **引用外部一手资料：有存档、有引用、有分析**。三步缺一不可：① 真身 clone / 下载进文章 `assets/` 存档（注明出处与获取日期），文中 `??? abstract` 折叠 + `--8<--` 展示原文；② 正文摘关键原句（`>` 引用块）；③ 每处引用**必须跟自己的分析** —— 只贴引用不给分析，等于没消化。**例外**：引用的是活跃开源仓库、且原文的关键契约（Invariants / 不变量 / API）已经在正文里消化成自己的语言，可以省掉真身存档，改用**钉具体 commit hash 的 GitHub 永链**代替。前提是永链钉的是 commit 而不是 branch（内容冻结不随上游变），且读者不依赖点开链接就能理解正文——链接只做溯源。活例：[Dashboard skill](../../dashboard/index.md) 的 open-dashboard 蓝本吸收
 - **收录外部 git 仓库：只取核心文件，不整仓 clone 进来**。挑对理解主题真正关键的那几个文件复制进 `assets/` 存档，其余一律不进 docs —— 本 wiki 不追求完整镜像，追求核心，因为**人也要读**；要完整原貌，顺钉 commit 的永链自己去 GitHub。活例：Dashboard 蓝本吸收曾把 84 篇原文全量镜像进 `assets/`，后来删到只剩 `PATTERNS.md` + `backends/CONTRACT.md` 两份切不进单篇文章的系统级契约。唯一例外是吸收型 skill：行为定义文件（主文件 + 它引用的 references）必须收齐才能跑，见附录的吸收规矩
 - **markdown 层级缩进** 统一用 **4 个空格**（折叠块 / 选项卡 / 提示框的子内容必须缩进 4 空格才被识别）。注意：这只指 markdown 写作时的缩进，**代码块内部的 Python / 其他语言缩进原样保留，不受影响**
@@ -284,7 +314,7 @@ geometric precision, dense infographic layout
 - **统一术语不换词**：真身、坑、规矩、钉 commit、软链……全站同一个词指同一件事，AI 顺链接连读多篇不用重新对齐概念
 - **技术词保留英文原形**（commit、nav、snippet、iframe），叙述用中文，不音译不生造
 - **规矩必须带活例**：立一条规范就指一个站内真实例子（「活例：Dashboard skill 的蓝本吸收」）；没有活例的规矩先别写进规范
-- **没做的事就说没做**：「做了再回来补」「待续」，不拿计划冒充成果（活例：手记里 CDN 那条、[COS 部署篇](../../../posts/cos-wiki-deploy/index.md#下一步)的下一步节）
+- **没做的事就说没做**：「做了再回来补」「待续」，不拿计划冒充成果（活例：[COS 部署篇](../../../posts/wiki-tech/cos-deploy/index.md#下一步)的下一步节，CDN 那条测过速、还没上）
 - 写完对照 [去 AI 味](../../writing/qu-ai-wei/index.md) 的模式清单自查一遍
 
 ---
@@ -374,7 +404,7 @@ description: "qu-ai-wei 上游 references/ 九份规则表之一，原文照录�
 
 **「已迁移存根」不是正当理由**，本 wiki 不留存根页。
 
-脚本真身与设计取舍（含它查不到什么）见 [COS 部署篇 · 闸门一节](../../../posts/cos-wiki-deploy/index.md#link-check)。
+脚本真身与设计取舍（含它查不到什么）见 [COS 部署篇 · 闸门一节](../../../posts/wiki-tech/cos-deploy/index.md#link-check)。
 
 ### 当前项目的 `mkdocs.yml`
 

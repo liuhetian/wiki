@@ -26,6 +26,7 @@ extra_javascript:
   - vendor/echarts-init.js   # ```echarts 代码块渲染器；真身按需动态加载，无图页面零开销
   - vendor/js-runner.js      # ```{.js .run} 代码块的运行器：Worker 沙箱执行 + 输出面板；零依赖，无可运行块的页面直接返回
   - vendor/conflict-init.js  # ```conflict 代码块（课程页的提问）染成上问下答两半；无此类块的页面直接返回
+  - vendor/age-init.js       # 打码：`age:…` 小字和 ```age 块显示成马赛克，解锁后还原；有密文才按需加载 vendor/age-core.js
 
 markdown_extensions:
   - admonition
@@ -56,6 +57,9 @@ markdown_extensions:
         - name: conflict  # 课程提问：fence 里写 git 冲突标记，上半是问、下半是答（见 courses/index.md）
           class: conflict
           format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: age       # 打码大段内容：fence 里放 age -a 的 armor 密文，vendor/age-init.js 显示成马赛克
+          class: age
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
 
@@ -83,6 +87,15 @@ plugins:
         gallery/images/handdraw-style/layouts-comic-storyboards.md: gallery/layouts/comic-storyboards.md
         gallery/images/handdraw-style/colors.md: gallery/colors/index.md
         # 例：posts/old-name.md: posts/new-name.md
+        # 2026-10-01 本 wiki 的技术归成一个系列 posts/wiki-tech/，建站手记删掉
+        posts/cos-wiki-deploy/index.md: posts/wiki-tech/cos-deploy/index.md
+        posts/cos-wiki-deploy/reference/deploy.md: posts/wiki-tech/cos-deploy/reference/deploy.md
+        posts/cos-wiki-deploy/reference/wiki-build-log.md: posts/wiki-tech/index.md
+        posts/git-lfs-cos.md: posts/wiki-tech/git-lfs.md
+        # 2026-10-01 新机器配开发环境挪进「搭建 AI 助手」当第一篇
+        posts/dev-env.md: posts/ai-assistant/dev-env.md
+        # 2026-10-01 存 key 那篇和打码合成一篇，key 本身改成打码写进 API 中转
+        posts/ai-assistant/key-storage.md: posts/wiki-tech/age-mosaic.md
         #     posts/guide.md#installation: posts/guide.md#getting-started
         # 2026-09-29 本 wiki 自己的写作规范从「写作口味」拆出，单开 skills/wiki-guide/
         skills/writing/mkdocs-wiki/index.md: skills/wiki-guide/mkdocs-wiki/index.md
@@ -185,12 +198,13 @@ nav:
       - index.md
   - 文章:
       - posts/index.md
-      - AI友好知识库:
-          - posts/cos-wiki-deploy/index.md
-          - 部署实操手册: posts/cos-wiki-deploy/reference/deploy.md
-          - 建站手记: posts/cos-wiki-deploy/reference/wiki-build-log.md
+      - 本 wiki 用到的技术:
+          - posts/wiki-tech/index.md
+          - 对象存储部署: posts/wiki-tech/cos-deploy/index.md
+          - 部署实操手册: posts/wiki-tech/cos-deploy/reference/deploy.md
+          - 自建 git-lfs 后端: posts/wiki-tech/git-lfs.md
+          - 打码：key 和小字: posts/wiki-tech/age-mosaic.md
       - 本 wiki 的目标与计划: posts/wiki-roadmap.md
-      - 自建 git-lfs 后端: posts/git-lfs-cos.md
       - 预测项目闭环: posts/prediction-loop.md
       - AI 时代的产品经理: posts/ai-pm.md
       - 动画网页 PPT: posts/animated-ppt/index.md
@@ -207,6 +221,8 @@ nav:
           - 决策日志: posts/kindle-dashboard/reference/decision-log.md
       - 搭建 AI 助手:
           - posts/ai-assistant/index.md
+          - 新机器配开发环境: posts/ai-assistant/dev-env.md
+          - API 中转：Caddy 换 key: posts/ai-assistant/api-gateway.md
           - 邮件采集：自己说 SMTP: posts/ai-assistant/mail-intake.md
       - 工作方法:
           - posts/methods/index.md
@@ -443,10 +459,10 @@ nav:
           - 格式怎么写: skills/wiki-guide/mkdocs-wiki/index.md
           - 课程页怎么写: skills/wiki-guide/course-page.md
           - skill 怎么收纳: skills/wiki-guide/remote-skill.md
-          - 远程 skill 探针: skills/wiki-guide/remote-skill-probe/index.md
       - Agent 基础能力:
           - skills/agent-io/index.md
           - 阅读 PDF: skills/agent-io/reference/pdf.md
+          - 调用 DeepSeek: skills/agent-io/reference/deepseek.md
       - B站视频笔记:
           - skills/bili-note/index.md
           - 接口笔记: skills/bili-note/references/bilibili-api-notes.md

@@ -11,16 +11,16 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 # 牛合天's wiki
 
-> AI 友好的个人知识库：每个页面在同域提供 `.md` 源（把 URL 结尾的 `/` 换成 `.md` 即可），LLM 可顺相对链接一层层读进去 —— 整份 wiki 可当远程 skill 用。设计与落地详见 [用对象存储部署 AI 友好的个人知识库](posts/cos-wiki-deploy/index.md)。
+> AI 友好的个人知识库：每个页面在同域提供 `.md` 源（把 URL 结尾的 `/` 换成 `.md` 即可），LLM 可顺相对链接一层层读进去 —— 整份 wiki 可当远程 skill 用。设计与落地详见 [用对象存储部署 AI 友好的个人知识库](posts/wiki-tech/cos-deploy/index.md)。
 
 ## 文章
 
 完整可独立阅读的复盘、观点与方法整理，全部在[文章索引](posts/index.md)。几篇代表：
 
 - [工作方法](posts/methods/index.md) —— 精力管理、推进执行和做出决策
-- [用对象存储部署 AI 友好的个人知识库](posts/cos-wiki-deploy/index.md) —— 讲这个站点本身的定位设计与部署过程
+- [用对象存储部署 AI 友好的个人知识库](posts/wiki-tech/cos-deploy/index.md) —— 讲这个站点本身的定位设计与部署过程
 - [预测项目闭环](posts/prediction-loop.md) —— 把「写完就扔」的脚本养成能被 AI 运维的系统
-- [建站手记](posts/cos-wiki-deploy/reference/wiki-build-log.md) —— 这个 wiki 是怎么一点点长起来的
+- [本 wiki 用到的技术](posts/wiki-tech/index.md) —— 一项技术一页：对象存储部署、自建 git-lfs、打码
 - [本 wiki 的目标与计划](posts/wiki-roadmap.md) —— 专业主干要补到应用统计研究生的水平：缺口审核、板块布局、内容清单与进度表
 
 ## 笔记
@@ -42,7 +42,7 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 给 AI 挂载执行的成套资产，按 Claude skill 标准目录组织，每套都可以直接当远程 skill 用，全部在 [Skills 索引](skills/index.md)：
 
-- [本 wiki 写作规范](skills/wiki-guide/index.md) —— 往这个 wiki 写东西前先读：格式怎么写、课程页怎么写、skill 怎么收纳
+- [本 wiki 写作规范](skills/wiki-guide/index.md) —— 往这个 wiki 写东西前先读：格式怎么写、课程页怎么写、skill 怎么收纳、怎么打码
 - [FastAPI 后端](skills/fastapi/index.md) —— 依赖注入、SQLModel 分层建模、按需参考的一整套后端约定
 - [Dashboard 后台](skills/dashboard/index.md) —— 形状目录 + 每形状一个可玩的活 demo
 - [写作口味](skills/writing/index.md) —— 报纸版 HTML、滚动 deck、去 AI 味、檄文

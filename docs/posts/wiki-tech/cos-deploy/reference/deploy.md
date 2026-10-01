@@ -405,18 +405,18 @@ ACME 挑战必须用 TXT，因为挑战值是随机字符串 —— 既不是 IP
     │   ├── index.md
     │   ├── posts/
     │   │   ├── index.md                    ← 文章栏目着陆页
-    │   │   ├── cos-wiki-deploy/            ← 本文（index.md 概览 + reference/ 手册 + 共享 assets/）
-    │   │   │   ├── index.md                ← 概览：标准 / 背景 / 设计 / 选型
-    │   │   │   ├── reference/
-    │   │   │   │   ├── deploy.md            ← 落地实操手册（本页）
-    │   │   │   │   └── wiki-build-log.md    ← 建站手记
-    │   │   │   └── assets/                 ← 运行文件放软链（真身在仓库根，不双写）
-    │   │   │       ├── deploy.sh           → ../../../../deploy.sh
-    │   │   │       ├── install.sh          → ../../../../deploy-cert/install.sh
-    │   │   │       ├── deploy_cert_to_cos.py → ../../../../deploy-cert/deploy_cert_to_cos.py
-    │   │   │       ├── pyproject.toml      → ../../../../pyproject.toml
-    │   │   │       ├── llm-wiki.md         ← 外部资料存档（真身，非软链）
-    │   │   │       └── llms-txt.md         ← 外部资料存档（真身，非软链）
+    │   │   ├── wiki-tech/                  ← 本 wiki 用到的技术，一项一页
+    │   │   │   └── cos-deploy/             ← 本文（index.md 概览 + reference/ 手册 + 共享 assets/）
+    │   │   │       ├── index.md            ← 概览：标准 / 背景 / 设计 / 选型
+    │   │   │       ├── reference/
+    │   │   │       │   └── deploy.md       ← 落地实操手册（本页）
+    │   │   │       └── assets/             ← 运行文件放软链（真身在仓库根，不双写）
+    │   │   │           ├── deploy.sh       → ../../../../../deploy.sh
+    │   │   │           ├── install.sh      → ../../../../../deploy-cert/install.sh
+    │   │   │           ├── deploy_cert_to_cos.py → ../../../../../deploy-cert/deploy_cert_to_cos.py
+    │   │   │           ├── pyproject.toml  → ../../../../../pyproject.toml
+    │   │   │           ├── llm-wiki.md     ← 外部资料存档（真身，非软链）
+    │   │   │           └── llms-txt.md     ← 外部资料存档（真身，非软链）
     │   └── skills/<skill>/                 ← 同样 index.md + reference/ + assets/
     ├── deploy-cert/                        ← SSL 证书续期（真身）
     │   ├── deploy_cert_to_cos.py
@@ -444,37 +444,37 @@ ACME 挑战必须用 TXT，因为挑战值是随机字符串 —— 既不是 IP
 ??? abstract "`deploy.sh` — 构建 + 同步两个视图到对象存储"
 
     ```bash
-    --8<-- "posts/cos-wiki-deploy/assets/deploy.sh"
+    --8<-- "posts/wiki-tech/cos-deploy/assets/deploy.sh"
     ```
 
 ??? abstract "`scripts/lfs-cos-agent.py` — mini LFS：COS 后端 standalone transfer agent"
 
     ```python
-    --8<-- "posts/cos-wiki-deploy/assets/lfs-cos-agent.py"
+    --8<-- "posts/wiki-tech/cos-deploy/assets/lfs-cos-agent.py"
     ```
 
 ??? abstract "`scripts/setup-lfs.sh` — 每个 clone 一次性接入 LFS"
 
     ```bash
-    --8<-- "posts/cos-wiki-deploy/assets/setup-lfs.sh"
+    --8<-- "posts/wiki-tech/cos-deploy/assets/setup-lfs.sh"
     ```
 
 ??? abstract "`deploy-cert/install.sh` — 首次配置 acme.sh + 注册 hook"
 
     ```bash
-    --8<-- "posts/cos-wiki-deploy/assets/install.sh"
+    --8<-- "posts/wiki-tech/cos-deploy/assets/install.sh"
     ```
 
 ??? abstract "`deploy-cert/deploy_cert_to_cos.py` — acme.sh 调用的证书推送脚本"
 
     ```python
-    --8<-- "posts/cos-wiki-deploy/assets/deploy_cert_to_cos.py"
+    --8<-- "posts/wiki-tech/cos-deploy/assets/deploy_cert_to_cos.py"
     ```
 
 ??? abstract "`pyproject.toml` — uv 依赖清单"
 
     ```toml
-    --8<-- "posts/cos-wiki-deploy/assets/pyproject.toml"
+    --8<-- "posts/wiki-tech/cos-deploy/assets/pyproject.toml"
     ```
 
     其中 `coscmd` 会带来 `cos-python-sdk-v5` 作为传递依赖，`deploy_cert_to_cos.py` 和 `lfs-cos-agent.py` 都用它。

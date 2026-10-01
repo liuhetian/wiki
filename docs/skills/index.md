@@ -6,7 +6,8 @@ description: "给 AI 挂载执行的成套资产：我自己在长期使用中�
 
 给 AI 挂载执行的成套资产：我自己在长期使用中沉淀下来的实践集合，按 Claude skill 的标准目录组织、作为给 Claude Code 的 skill 维护，同时整理成人可读的页面发到这里。每套讲的都是「怎么做、为什么这么做」，不是教程；URL 保持稳定，整棵树可以直接当远程 skill 用。
 
-- [本 wiki 写作规范](wiki-guide/index.md) —— 往这个 wiki 写东西前先读：MkDocs 语法与站点规矩、课程伴读怎么写、外部 skill 怎么收成远程 skill
+- [本 wiki 写作规范](wiki-guide/index.md) —— 往这个 wiki 写东西前先读：MkDocs 语法与站点规矩、课程伴读怎么写、外部 skill 怎么收成远程 skill、不想公开的东西怎么打码
+- [Agent 基础能力](agent-io/index.md) —— 给新 Agent 装上读 PDF、音视频、生成媒体、网络搜索等能力：每个能力一篇接入说明加一个 `uv run` 脚本，Agent 自带同等工具时优先用自带的；已接入：阅读 PDF、调用 DeepSeek
 - [FastAPI 后端](fastapi/index.md) —— 依赖注入、SQLModel 分层建模、按需参考的一整套后端约定
 - [Dashboard 后台](dashboard/index.md) —— 形状目录 + 每形状一个可玩的活 demo
 - [数据可视化](data-visualization/index.md) —— 可视化 skill 的大目录；每套方法独立维护规则、模板与可运行 demo

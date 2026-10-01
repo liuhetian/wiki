@@ -51,12 +51,13 @@ cd "$PROJECT_DIR/site"
 #    .ts 会猜成 video/mp2t（MPEG 视频流）、.tsx/.jsx/.mjs/.py 猜成 octet-stream——
 #    AI 抓取工具按 content-type 过滤文本时直接拒收，「完整实现」的链接摆得再对也读不回内容。
 #    .csv 同理进来（课程页的数据表）：AI 要能直接 GET 到表内容才做得了题。
+#    .caddy / .conf 同理（API 中转篇附的 Caddy 站点配置和 systemd drop-in），钉成文本，不留给 COS 去猜。
 #    无扩展名的 LICENSE 同理（MIT 收录要求随附许可证原文，活例 gallery/images/gpt-image2/LICENSE）；
 #    coscmd 拿 fnmatch 比本地路径，*/LICENSE 里的 * 能跨目录匹配。
 #    带 -s：-s 只比对 MD5 不看类型，新增/内容变动的文件会带着正确类型上传，没变的跳过。
 #    （桶里错类型的历史对象已在 2026-08 前的部署里全量重传修正过，此后无需再无条件重传；
 #    若哪天又混入错类型对象，临时去掉 -s 跑一次即可自愈）
-"$COSCMD" upload -rs --include '*.ts,*.tsx,*.jsx,*.mjs,*.py,*.sh,*.csv,*/LICENSE' -H 'Content-Type: text/plain; charset=utf-8' ./ /
+"$COSCMD" upload -rs --include '*.ts,*.tsx,*.jsx,*.mjs,*.py,*.sh,*.csv,*.caddy,*.conf,*/LICENSE' -H 'Content-Type: text/plain; charset=utf-8' ./ /
 # llms.txt 不带 -s：coscmd 单文件 upload -s 命中"MD5 一致跳过"时退出码是 254（且静默），
 # 会被 set -e 误杀、后面的全量镜像不再执行；2KB 每次直传换脚本必然走完。
 "$COSCMD" upload -H 'Content-Type: text/plain; charset=utf-8' llms.txt /llms.txt  # 内容是 markdown，扩展名按 llms.txt 规范用 .txt，浏览器直读用 text/plain

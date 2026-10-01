@@ -6,7 +6,7 @@ description: "standalone custom transfer agent：140 行脚本替掉整个 LFS �
 
 git-lfs 的存储后端是可插拔的 —— 不必买 GitHub 的 LFS 配额，也不必自建 LFS server。写一个 **standalone custom transfer agent** 就能把二进制真身指向自己的对象存储桶：git 在 push/pull 时把它当子进程拉起，stdin/stdout 上聊四种 JSON 事件，用完即退。**没有常驻进程，不监听端口，不需要域名和证书。**
 
-本站就这么跑着，agent 是 140 行 Python，凭证复用项目 `.env`，零新依赖。这篇把机制、协议和可迁移的部分提炼出来；本站为什么走到这一步、以及具体的桶划分，在[部署实操手册 · 资源备份](cos-wiki-deploy/reference/deploy.md#媒体备份)。
+本站就这么跑着，agent 是 140 行 Python，凭证复用项目 `.env`，零新依赖。这篇把机制、协议和可迁移的部分提炼出来；本站为什么走到这一步、以及具体的桶划分，在[部署实操手册 · 资源备份](cos-deploy/reference/deploy.md#媒体备份)。
 
 ## 为什么二进制不该进 git
 
@@ -177,4 +177,4 @@ git lfs pull                  # 还原全部真身
 
 ---
 
-活例是本站自己：全部图片、视频、字体和第三方 vendor 真身都走这条链路，GitHub 上只有文本和指针。演进过程（塞 git → 手动镜像 → 现在这套）和它带来的写作链路变化，见[部署实操手册 · 资源备份](cos-wiki-deploy/reference/deploy.md#媒体备份)与[建站手记](cos-wiki-deploy/reference/wiki-build-log.md)。
+活例是本站自己：全部图片、视频、字体和第三方 vendor 真身都走这条链路，GitHub 上只有文本和指针。演进过程（塞 git → 手动镜像 → 现在这套）和它带来的写作链路变化，见[部署实操手册 · 资源备份](cos-deploy/reference/deploy.md#媒体备份)。

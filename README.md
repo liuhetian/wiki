@@ -5,7 +5,7 @@
 - **人看**：<https://wiki.liuhetian.work/> —— 渲染页，排版、导航、mermaid / ECharts 图、可玩的交互 demo 齐全
 - **AI 读**：<https://wiki.liuhetian.work/index.md> —— 同一份内容的 markdown 源，顺相对链接一层层走进去，把整个 wiki 当**远程 skill** 用；<https://wiki.liuhetian.work/llms.txt> 是同一份首页源的 llms.txt 协议副本
 
-这个仓库特别的地方只有一件事：**构建产物不只有给人看的 HTML，还有一份随线上一起发布的 markdown 源**。为什么这样设计、"对 AI 友好"如何立成可检验的标准（人可读 / 可获取 / AI 可读 / 可寻址 / 单源），详见 [《用对象存储部署 AI 友好的个人知识库》](docs/posts/cos-wiki-deploy/index.md)。
+这个仓库特别的地方只有一件事：**构建产物不只有给人看的 HTML，还有一份随线上一起发布的 markdown 源**。为什么这样设计、"对 AI 友好"如何立成可检验的标准（人可读 / 可获取 / AI 可读 / 可寻址 / 单源），详见 [《用对象存储部署 AI 友好的个人知识库》](docs/posts/wiki-tech/cos-deploy/index.md)。
 
 ```mermaid
 flowchart LR
@@ -71,16 +71,15 @@ scripts/
 **文章**（[docs/posts/](docs/posts/index.md)）：
 
 - [工作方法](docs/posts/methods/index.md) —— 精力管理、推进执行和做出决策
-- [用对象存储部署 AI 友好的个人知识库](docs/posts/cos-wiki-deploy/index.md) —— 本仓库的定位设计与选型，配[腾讯云 COS + acme.sh 实操手册](docs/posts/cos-wiki-deploy/reference/deploy.md)与[建站手记](docs/posts/cos-wiki-deploy/reference/wiki-build-log.md)（过程记录，按时间做一段补一段，故意一直没写完）
+- [本 wiki 用到的技术](docs/posts/wiki-tech/index.md) —— 一项技术一页：[对象存储部署](docs/posts/wiki-tech/cos-deploy/index.md)（本仓库的定位设计与选型，配[腾讯云 COS + acme.sh 实操手册](docs/posts/wiki-tech/cos-deploy/reference/deploy.md)）、[自建 git-lfs 后端](docs/posts/wiki-tech/git-lfs.md)（140 行 standalone transfer agent 替掉整个 LFS 服务）、[打码](docs/posts/wiki-tech/age-mosaic.md)（源文件里就是 age 密文，浏览器里解锁还原）
 - [本 wiki 的目标与计划](docs/posts/wiki-roadmap.md) —— 2026-09-29 的审核：专业主干只到本科应用统计，要补数理统计与计算、计量、机器学习、深度学习并加论文板块；文末进度表做一项划一项
-- [用自己的对象存储做 git-lfs 后端](docs/posts/git-lfs-cos.md) —— 140 行 standalone transfer agent 替掉整个 LFS 服务
 - [预测项目闭环](docs/posts/prediction-loop.md) —— 把「写完就扔」的脚本养成能被 AI 运维的系统
 - [AI 时代的产品经理](docs/posts/ai-pm.md) —— 算法岗顶上 PM 缺位一个月的复盘
 - [会动的网页 PPT 是怎么做出来的](docs/posts/animated-ppt/index.md) —— 关键帧图 + 首尾帧视频 + 滚动叙事引擎
 - [超级轻量的自用 AI 编程 Harness 框架](docs/posts/ai-code-skeleton/index.md) —— 骨架的正逆两个方向风险相反
 - [自己想用例一定漏：AI 项目验收的三层测试集](docs/posts/release-acceptance.md) —— 黄金用例保下限、evals 保变更不退化、线上差评回灌保覆盖面增长
 - [让 Kindle 常显一块 Token 看板](docs/posts/kindle-dashboard/index.md) —— 墨水屏两条硬约束反推出的整套设计，附越狱、上报接口与决策日志
-- [搭建 AI 助手](docs/posts/ai-assistant/index.md) —— 给常驻 Agent 接输入输出通道；第一条是[不装邮件服务、自己在 25 端口说 SMTP](docs/posts/ai-assistant/mail-intake.md)
+- [搭建 AI 助手](docs/posts/ai-assistant/index.md) —— 给常驻 Agent 接输入输出通道；第一条是[不装邮件服务、自己在 25 端口说 SMTP](docs/posts/ai-assistant/mail-intake.md)，第二条是 [Caddy 换 key 的 API 中转](docs/posts/ai-assistant/api-gateway.md)（已接 DeepSeek）
 
 **笔记**（[docs/notes/](docs/notes/index.md)，每个分类有统一骨架，索引里每篇只留一行钩子）：
 
@@ -132,13 +131,13 @@ uv run zensical build            # 构建到 site/
 # 媒体不用单独管：git push 时 blob 自动上备份桶（LFS）
 ```
 
-同步上线先在本地 `git commit` 并 `git push`，确保远端部署机能拉到最新版本。然后执行 `ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lht/study/26.06/zensical-wiki && ./deploy.sh'`，由部署机 `git pull --ff-only` 拉取（本地有未推提交或冲突就停住，不静默合并）、构建并上传到 COS。图片等二进制媒体经 git-lfs 随 push 自动进备份桶、部署机 pull 时自动取回，不需要任何单独操作；机制与副机接入见[部署实操手册·资源备份](docs/posts/cos-wiki-deploy/reference/deploy.md#媒体备份)。
+同步上线先在本地 `git commit` 并 `git push`，确保远端部署机能拉到最新版本。然后执行 `ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lht/study/26.06/zensical-wiki && ./deploy.sh'`，由部署机 `git pull --ff-only` 拉取（本地有未推提交或冲突就停住，不静默合并）、构建并上传到 COS。图片等二进制媒体经 git-lfs 随 push 自动进备份桶、部署机 pull 时自动取回，不需要任何单独操作；机制与副机接入见[部署实操手册·资源备份](docs/posts/wiki-tech/cos-deploy/reference/deploy.md#媒体备份)。
 
 `.env` 需要（不入库）：`COS_BUCKET` / `COS_REGION` / `COS_SECRET_ID` / `COS_SECRET_KEY` / `COS_DOMAIN` / `COS_BACKUP_BUCKET`。前 5 项主桶用于部署；`COS_BACKUP_BUCKET` 是媒体真身的 LFS 桶（`lfs/` 前缀按内容寻址，历史版本永久保留，见 [`scripts/lfs-cos-agent.py`](scripts/lfs-cos-agent.py)），与部署桶隔离。只写文字的机器可以不配 `.env`（`GIT_LFS_SKIP_SMUDGE=1` clone 后照常写、push）。
 
 **第三方真身全部本地化**，不依赖任何 CDN：MathJax / ECharts / Chart.js / Mermaid 由 [`scripts/fetch-vendor.sh`](scripts/fetch-vendor.sh) 拉取，Maple Mono 字体由 [`scripts/build-fonts.py`](scripts/build-fonts.py) 加工（中文字形按 GB2312 + 本站用字子集化）；两者只在升级版本时跑一次，产物经 LFS 入库，日常恢复靠 `git lfs pull`。
 
-HTTPS 证书自动续期见 [`deploy-cert/install.sh`](deploy-cert/)，来龙去脉见[实操手册](docs/posts/cos-wiki-deploy/reference/deploy.md)。
+HTTPS 证书自动续期见 [`deploy-cert/install.sh`](deploy-cert/)，来龙去脉见[实操手册](docs/posts/wiki-tech/cos-deploy/reference/deploy.md)。
 
 ## 写作与维护约定
 

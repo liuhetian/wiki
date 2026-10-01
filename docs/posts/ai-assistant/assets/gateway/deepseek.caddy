@@ -1,0 +1,37 @@
+deepseek-proxy.liuhetian.work {
+    @authorized header Authorization "Bearer {$DEEPSEEK_GATEWAY_TOKEN}"
+
+    handle @authorized {
+        reverse_proxy https://api.deepseek.com {
+            header_up Host api.deepseek.com
+            header_up Authorization "Bearer {$DEEPSEEK_API_KEY}"
+            header_up -Proxy-Authorization
+            flush_interval -1
+        }
+    }
+
+    handle {
+        header Content-Type application/json
+        header WWW-Authenticate Bearer
+        respond `{"error":{"message":"A valid gateway token is required.","type":"authentication_error"}}` 401
+    }
+
+    log {
+        output file /var/log/caddy/deepseek-proxy/access.json {
+            roll_size 10MiB
+            roll_keep 30
+            roll_keep_for 2160h
+        }
+        format filter {
+            wrap json
+            fields {
+                request delete
+                resp_headers delete
+                duration delete
+                size delete
+                bytes_read delete
+                user_id delete
+            }
+        }
+    }
+}

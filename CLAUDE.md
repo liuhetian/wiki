@@ -45,6 +45,8 @@ ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lh
 
 **交互 demo。** 自包含静态单页放进各 skill 的 `assets/`，iframe 同域嵌入，`src` 用站点根绝对路径且写到具体 `.html` 文件；逻辑不压缩，AI 读同一 URL 下的源码。运行时库全部在 `docs/vendor/`（React UMD + htm、React ESM、three/r3f、MathJax、ECharts、Chart.js、Mermaid、Maple Mono 字体），线上不走任何 CDN —— demo 里写 `cdn.jsdelivr.net` 之类的 `<script src>` 一律要改成 `../../../../vendor/...` 的相对路径。真身大的按需加载，不给无关页面付代价：MathJax（2MB）由 `vendor/mathjax-init.js` 查到 `.arithmatex` 才拉，ECharts 由 `vendor/echarts-init.js` 查到 ```echarts 块才拉，`overrides/main.html` 只给含 mermaid 块的页面同步引入 mermaid 真身。升级 vendor 版本用 `scripts/fetch-vendor.sh`，换字体版本用 `scripts/build-fonts.py`（中文按 GB2312 + 本站用字子集化），两者只在升级时跑一次。
 
+**打码靠密文直接进源文件。** 不想公开的东西（API key、服务器地址等）写成 `` `age:…` `` 或 ```` ```age ```` 块，由 `scripts/age-seal.sh` 用 wiki 公钥加密生成；`vendor/age-init.js` 在浏览器里打码、解锁后还原，按需加载 `vendor/age-core.js`（age 解密核心，口令 / X25519 两种模式，解密演示页也用它）。私钥在部署机 `~/.config/age/wiki.key`，不进仓库；用口令锁住的副本内嵌在 `age-init.js`。encryptcontent 这类插件只加密 HTML，`.md` 镜像照样明文，所以不能用。规矩见写作规范「打码」一节，来龙去脉见 `posts/wiki-tech/age-mosaic.md`。
+
 **媒体走自制 git-lfs。** `.gitattributes` 把图/视频/字体/vendor 真身交给 LFS，blob 由 `scripts/lfs-cos-agent.py`（standalone custom transfer agent）存到备份桶 `lfs/` 前缀，与部署桶隔离。`git push` 自动上传，部署机 pull 自动取回。
 
 ## 写作规矩

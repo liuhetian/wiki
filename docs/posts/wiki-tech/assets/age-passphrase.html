@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>age 解密：在浏览器里解开 age -a 的密文</title>
+<link rel="stylesheet" href="../../../vendor/fonts/fonts.css">
+<style>
+  :root {
+    --paper: #fafafa; --bone: #fff; --ink: #262626; --mute: #595959; --faint: #8c8c8c;
+    --line: #d9d9d9; --accent: #16a005; --alert: #a8071a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 16px; background: var(--paper); color: var(--ink);
+    font: 14px/1.6 "Maple Mono", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  .top { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin-bottom: 12px; }
+  .top b { font-size: 16px; }
+  .top span { color: var(--mute); font-size: 13px; }
+  section { background: var(--bone); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  label { display: block; color: var(--mute); font-size: 13px; margin-bottom: 8px; }
+  input, textarea {
+    display: block; width: 100%; margin-top: 4px; padding: 6px 8px;
+    border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);
+    font: 13px/1.5 "Maple Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  textarea { resize: vertical; white-space: pre; overflow-wrap: normal; }
+  #cipher { height: 150px; }
+  #plain { height: 80px; }
+  .row { display: flex; gap: 8px; align-items: end; margin-bottom: 8px; }
+  .row label { flex: 1; margin: 0; }
+  button {
+    padding: 7px 14px; border: 1px solid var(--ink); border-radius: 6px; background: var(--ink); color: #fff;
+    font: inherit; font-size: 13px; cursor: pointer;
+  }
+  button.ghost { background: var(--bone); color: var(--ink); }
+  button:disabled { opacity: .4; cursor: wait; }
+  #status { margin: 10px 0 4px; min-height: 22px; font-size: 13px; }
+  #status.ok { color: var(--accent); }
+  #status.err { color: var(--alert); }
+  details { font-size: 13px; color: var(--mute); }
+  summary { cursor: pointer; }
+  ol { margin: 6px 0 0; padding-left: 22px; }
+  li { margin: 0 0 6px; color: var(--ink); }
+  li.fail { color: var(--alert); }
+  li .v { display: block; color: var(--accent); font-size: 12px; word-break: break-all; }
+  li .n { display: block; color: var(--faint); font-size: 12px; }
+  pre {
+    margin: 10px 0 0; padding: 8px 10px; background: var(--bone); border: 1px dashed var(--line); border-radius: 6px;
+    font: 12px/1.5 "Maple Mono", ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-all;
+  }
+  pre:empty { display: none; }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <b>age 解密</b>
+  <span>全在浏览器本地计算，页面不往外发数据；能解 <code>age -p -a</code>（口令）和 <code>age -r -a</code>（公钥）加密的文本</span>
+</div>
+
+<section>
+  <!-- 预填密文：换成自己 age -p -a 的输出，BEGIN 到 END 整段替换 -->
+  <label>密文<textarea id="cipher" spellcheck="false">-----BEGIN AGE ENCRYPTED FILE-----
+YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHNjcnlwdCBNQW82R1lJNUNqU25WZmJR
+bm1Wb0VnIDE4CmExOHBLWk5jbmJCaktVR0lGY3ZFcTQ5WEliWWJRODhSY1h4dTJh
+bmd3bWsKLS0tIEloQmJTMFFtK2ppdTRWL0RrZXQ3K3NROWF5b3FpWG42WHgwM2lh
+bkZIekkKGQpLakqtT/W+EkKerGg+inKqoADNa3TecGXv4pkcc6gEWA7orpvKj1lx
+B5vNO28NX2wcr8rT9tq8kSxqRuM=
+-----END AGE ENCRYPTED FILE-----</textarea></label>
+  <div class="row">
+    <label>口令或私钥<input id="pass" type="password" autocomplete="off" spellcheck="false" placeholder="加密时用的口令，或 AGE-SECRET-KEY-1…；回车解密"></label>
+    <button id="btnShow" class="ghost">显示</button>
+    <button id="btnDec">解密</button>
+  </div>
+  <label>明文<textarea id="plain" readonly spellcheck="false" placeholder="解密后显示在这里"></textarea></label>
+</section>
+
+<div id="status"></div>
+<details>
+  <summary>解密过程</summary>
+  <ol id="steps"></ol>
+  <pre id="headerView"></pre>
+</details>
+
+<!-- 密码学核心和全站打码共用一份：口令模式（scrypt）、公钥模式（X25519）都能解 -->
+<script src="../../../vendor/age-core.js"></script>
+
+<!-- ===== 第二段：页面交互 ===== -->
+<script>
+const $ = id => document.getElementById(id);
+
+function setStatus(text, kind) {
+  $("status").textContent = text;
+  $("status").className = kind || "";
+}
+
+function addStep({ title, value, note, fail }) {
+  const li = document.createElement("li");
+  if (fail) li.className = "fail";
+  li.append(title);
+  if (value) { const v = document.createElement("span"); v.className = "v"; v.textContent = value; li.append(v); }
+  if (note) { const n = document.createElement("span"); n.className = "n"; n.textContent = note; li.append(n); }
+  $("steps").append(li);
+}
+
+async function decrypt() {
+  $("btnDec").disabled = true;
+  $("steps").innerHTML = "";
+  $("headerView").textContent = "";
+  $("plain").value = "";
+  try {
+    const pass = $("pass").value;
+    if (!pass) throw new Error("先输入口令或私钥");
+    const file = AgeCore.dearmor($("cipher").value);
+    const secret = AgeCore.isIdentity(pass) ? { identity: AgeCore.parseIdentity(pass) } : { passphrase: pass };
+    setStatus("scrypt 计算中…");
+    await new Promise(f => setTimeout(f, 30));            // 让「计算中」先画出来
+    const { plaintext, header } = await AgeCore.ageDecrypt(file, secret, addStep, f => setStatus(`scrypt 计算中… ${Math.round(f * 100)}%`));
+    try { $("plain").value = new TextDecoder("utf-8", { fatal: true }).decode(plaintext); }
+    catch { throw new Error(`解密成功，但解出的 ${plaintext.length} 字节不是 UTF-8 文本，网页没法显示`); }
+    $("headerView").textContent = "armor 里面其实是这段文字头部，后面跟着二进制内容：\n\n" + header;
+    setStatus("✓ 解密完成", "ok");
+  } catch (e) {
+    const msg = e instanceof RangeError ? "浏览器分不出这么多内存" : e.message;
+    addStep({ title: "✗ " + msg, fail: true });
+    setStatus("✗ " + msg, "err");
+  } finally {
+    $("btnDec").disabled = false;
+  }
+}
+
+$("btnDec").onclick = decrypt;
+$("pass").onkeydown = e => { if (e.key === "Enter") decrypt(); };
+$("btnShow").onclick = () => {
+  const shown = $("pass").type === "text";
+  $("pass").type = shown ? "password" : "text";
+  $("btnShow").textContent = shown ? "显示" : "隐藏";
+};
+</script>
+</body>
+</html>

@@ -716,6 +716,72 @@
 .md-typeset .conflict__a--empty { color: var(--ink-faint); font-style: italic; }
 .md-typeset pre.conflict.conflict--unresolved > code { box-shadow: inset 3px 0 0 var(--coral); }
 
+/* 打码（vendor/age-init.js 把 `age:…` 小字换成 span.age-mosaic、把 pre.age 换成 div.age-mosaic--block）。
+   马赛克是灰底斜纹 + 固定 8 个 ▒，不暴露明文长度；能点，所以 hover 时描一道 coral（交互色）。
+   解不开的那段才用 --zx-alert：按令牌层的规矩，红色只留给「出错」。 */
+.md-typeset .age-mosaic {
+  display: inline-block;
+  padding: 0 .3em;
+  color: var(--ink-faint);
+  background: repeating-linear-gradient(45deg, var(--paper-dark) 0 4px, var(--line-soft) 4px 8px);
+  cursor: pointer;
+  user-select: none;
+  vertical-align: baseline;
+}
+.md-typeset .age-mosaic:hover,
+.md-typeset .age-mosaic:focus-visible { outline: 2px solid var(--coral); outline-offset: 1px; }
+.md-typeset .age-mosaic--block {
+  display: block;
+  margin: 1em 0;
+  padding: 1.6em 1em;
+  text-align: center;
+  font-size: .85em;
+  color: var(--ink-soft);
+}
+.md-typeset .age-mosaic--error { color: var(--zx-alert); outline: 1px solid var(--zx-alert); }
+
+.age-unlock {
+  width: min(26rem, 90vw);
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--line);
+  background: var(--bone);
+  color: var(--ink);
+  font-size: .8rem;
+}
+.age-unlock::backdrop { background: rgba(38, 38, 38, .35); }
+.age-unlock__title { margin: 0 0 .6rem; font-weight: 700; }
+.age-unlock input {
+  width: 100%;
+  padding: .4rem .5rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-family: var(--md-code-font-family, monospace);
+}
+.age-unlock__status { margin: .5rem 0; color: var(--ink-mute); }
+.age-unlock__status--error { color: var(--zx-alert); }
+.age-unlock__buttons { display: flex; justify-content: flex-end; gap: .5rem; }
+.age-unlock button,
+.age-lock {
+  padding: .35rem .9rem;
+  border: 1px solid var(--ink);
+  background: var(--bone);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.age-unlock button[type=submit] { background: var(--ink); color: var(--paper); }
+.age-unlock button:disabled { opacity: .4; cursor: wait; }
+.age-lock {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 5;
+  font-size: .7rem;
+  box-shadow: var(--shadow);
+}
+
 /* 长 prompt 代码块：fence 写 ```{.text .wrap} 时自动换行，不横向滚动。
    活例：gallery/images/linux-do-style/gallery-anime-graphic-design.md */
 .md-typeset .wrap > pre > code {
