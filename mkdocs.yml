@@ -224,6 +224,16 @@ nav:
           - 新机器配开发环境: posts/ai-assistant/dev-env.md
           - API 中转：Caddy 换 key: posts/ai-assistant/api-gateway.md
           - 邮件采集：自己说 SMTP: posts/ai-assistant/mail-intake.md
+          - 维护目录:
+              - posts/ai-assistant/maintenance/index.md
+              - 读 PDF 脚本: posts/ai-assistant/maintenance/pdf-reading.md
+              - 网络搜索: posts/ai-assistant/maintenance/web-search.md
+              - 语音合成: posts/ai-assistant/maintenance/tts.md
+              - 图片生成: posts/ai-assistant/maintenance/image.md
+              - 视频生成: posts/ai-assistant/maintenance/video.md
+              - 音乐生成: posts/ai-assistant/maintenance/music.md
+              - 音频转录: posts/ai-assistant/maintenance/transcribe.md
+              - 结构化判断: posts/ai-assistant/maintenance/jev.md
       - 工作方法:
           - posts/methods/index.md
           - 精力管理:
@@ -452,6 +462,21 @@ nav:
           - 第 7 章 参数估计: courses/statistics-book/ch07-estimation.md
           - 第 8 章 假设检验与方差分析: courses/statistics-book/ch08-hypothesis-anova.md
           - 第 9 章 相关与回归分析: courses/statistics-book/ch09-regression.md
+      - ISLP（统计学习）: courses/islp/index.md
+      - Blitzstein & Hwang（概率论）: courses/blitzstein-hwang/index.md
+      - Casella & Berger（数理统计）: courses/casella-berger/index.md
+      - Agresti（线性模型与 GLM）: courses/agresti-glm/index.md
+      - 曼昆 微观分册（初级微观）: courses/mankiw-micro/index.md
+      - Wooldridge（计量经济学）: courses/wooldridge/index.md
+      - What If（因果推断）: courses/what-if/index.md
+      - d2l（深度学习）: courses/d2l/index.md
+      - Givens & Hoeting（统计计算）: courses/givens-hoeting/index.md
+      - BDA3（贝叶斯）: courses/bda3/index.md
+      - Johnson & Wichern（多元统计）: courses/johnson-wichern/index.md
+      - 曼昆 宏观分册（初级宏观）: courses/mankiw-macro/index.md
+      - FPP3（时间序列）: courses/fpp3/index.md
+      - Lohr（抽样调查）: courses/lohr/index.md
+      - Kohavi 等（在线实验）: courses/kohavi/index.md
   - Skills:
       - skills/index.md
       - 本 wiki 写作规范:
@@ -459,10 +484,23 @@ nav:
           - 格式怎么写: skills/wiki-guide/mkdocs-wiki/index.md
           - 课程页怎么写: skills/wiki-guide/course-page.md
           - skill 怎么收纳: skills/wiki-guide/remote-skill.md
+          - 精简检查（按需引用）: skills/wiki-guide/trim-ai-knowledge.md
       - Agent 基础能力:
           - skills/agent-io/index.md
           - 阅读 PDF: skills/agent-io/reference/pdf.md
+          - 转录音频: skills/agent-io/reference/transcribe.md
+          - 网络搜索: skills/agent-io/reference/web-search.md
+          - 特定音色语音: skills/agent-io/reference/tts.md
+          - 生成音乐: skills/agent-io/reference/music.md
+          - 生成、编辑图片: skills/agent-io/reference/image.md
+          - 生成视频:
+              - skills/agent-io/reference/video/index.md
+              - 文生视频: skills/agent-io/reference/video/text-to-video.md
+              - 首尾帧: skills/agent-io/reference/video/first-last-frame.md
+              - 对口型: skills/agent-io/reference/video/lip-sync.md
+              - 动作迁移: skills/agent-io/reference/video/motion-transfer.md
           - 调用 DeepSeek: skills/agent-io/reference/deepseek.md
+          - 结构化判断（Jev）: skills/agent-io/reference/jev.md
       - B站视频笔记:
           - skills/bili-note/index.md
           - 接口笔记: skills/bili-note/references/bilibili-api-notes.md

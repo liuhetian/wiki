@@ -7,7 +7,7 @@ import time
 import urllib.error
 import urllib.request
 
-env = dict(line.split('=', 1) for line in Path('/etc/caddy/deepseek-proxy.env').read_text().splitlines())
+env = dict(line.split('=', 1) for line in Path('/etc/caddy/gateway.env').read_text().splitlines())
 token = env['DEEPSEEK_GATEWAY_TOKEN']
 key = env['DEEPSEEK_API_KEY']
 base = 'https://deepseek-proxy.liuhetian.work'
@@ -86,5 +86,5 @@ for line in logs.splitlines():
     record = json.loads(line)
     assert 'request' not in record and 'resp_headers' not in record
 print('Access logs contain no credentials, request metadata, or chat bodies: passed')
-assert (Path('/etc/caddy/deepseek-proxy.env').stat().st_mode & 0o777) == 0o600
+assert (Path('/etc/caddy/gateway.env').stat().st_mode & 0o777) == 0o600
 print('Credential file permissions 0600: passed')

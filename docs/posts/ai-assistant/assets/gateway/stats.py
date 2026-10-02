@@ -8,7 +8,7 @@ import gzip
 import json
 
 rows = defaultdict(lambda: {'attempts': 0, 'successful': 0, 'status_401': 0, 'other_errors': 0})
-for path in Path('/var/log/caddy/deepseek-proxy').glob('access*'):
+for path in Path('/var/log/caddy').glob('*-proxy/access*'):
     if not path.is_file():
         continue
     read = gzip.open if path.suffix == '.gz' else open

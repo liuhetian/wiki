@@ -228,5 +228,5 @@ sed -n '/BEGIN AGE ENCRYPTED FILE/,/END AGE ENCRYPTED FILE/p' docs/vendor/age-in
 
 - 解锁框本身（`<dialog>` 弹窗、输口令那一步）和样式还没在浏览器里验过，jsdom 不支持 `showModal`
 - 只认反引号里的密文，正文里裸写的不认；块解开后是素 `<pre><code>`，没有语法高亮
-- 网关还没搭，[API 中转](../ai-assistant/api-gateway.md#keys)里还没有 key
+- 网关已接 DeepSeek，但 [API 中转](../ai-assistant/api-gateway.md#keys)里还没写 key
 - YubiKey 这类硬件钥匙没试

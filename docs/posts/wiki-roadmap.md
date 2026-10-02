@@ -1,5 +1,5 @@
 ---
-description: "2026-09-29 的一次审核：站点的专业主干只到本科应用统计，要补数理统计与计算、计量经济学、机器学习、深度学习四块，顶层加论文板块；吸纳教材只留地图、压缩、手迹、连线四样，书里有的标页码链回去"
+description: "2026-09-29 的一次审核：站点的专业主干只到本科应用统计，要补数理统计与计算、计量经济学、机器学习、深度学习四块，顶层加论文板块；吸纳教材只留地图、压缩、手迹、连线四样，书里有的标页码链回去；课程排成 16 门的队列，导读页全建、伴读一次一门"
 ---
 
 # 本 wiki 的目标与计划：专业主干补到应用统计研究生的水平
@@ -25,7 +25,7 @@ description: "2026-09-29 的一次审核：站点的专业主干只到本科应�
 | ③ 统计计算 | [重抽样](../notes/statistics/resampling/index.md) 1 篇 | Monte Carlo、EM、MCMC、数值优化 |
 | ④ EDA、多元、回归、时序、非参 | 描述统计、回归 2 篇、时序 1 篇、非参 1 篇 | 多元统计、GLM、时序进阶 |
 | ⑤ 机器学习、深度学习、大模型应用 | [机器学习](../notes/machine-learning/index.md) 1 篇；大模型应用散在 skills 与文章 | ML 与 DL 整块 |
-| 方向课：经济统计、金融统计、大数据 | 无 | 计量经济学 |
+| 方向课：经济统计、金融统计、大数据 | 无 | 计量经济学，以及垫底的初级微观、宏观 |
 
 中美课表的交集是同一条线：数理统计 → 线性模型与 GLM → 统计计算 → 统计学习 → 多元与高维 → 时序 → 贝叶斯，外加因果、实验与抽样。国内方案普遍缺的是贝叶斯、试验设计、因果推断——恰好是业界最看重的那几样，也是本站[统计学笔记](../notes/statistics/index.md)已经先补上的部分。
 
@@ -72,7 +72,7 @@ docs/notes/<subject>/<topic>/         主题笔记：多本书多篇论文汇入
 
 这里有一个分岔要先说清：`course.py add` 把答卷归到 `notes/<分类>/` 同名文件，分类就是书名，所以答完第一课后笔记区会出现按书分的答卷目录，和按主题分的 `notes/statistics/` 并排。这不是错——答卷天然按书，主题笔记天然跨书。规矩是**主题笔记从答卷里回流**：答完一课，回头在对应主题页加一段连线或一个例子，不把答卷再抄一遍。
 
-在版教材只摘句标页码，伴读已经这么做。开放教材（ISLP、d2l、UDL、FPP3、The Effect、Mixtape、BDA3 都有免费在线版）更简单：讲解直接链到线上那一章，人和 AI 都一键能到原文，摘抄的诱惑自然就小。
+在版教材只摘句标页码，伴读已经这么做。开放教材（ISLP、Blitzstein & Hwang、What If、d2l、BDA3、FPP3、UDL、The Effect、Mixtape 都有免费在线版）更简单：讲解直接链到线上那一章，人和 AI 都一键能到原文，摘抄的诱惑自然就小。
 
 ## 布局：六个板块各管什么
 
@@ -102,14 +102,7 @@ flowchart LR
 
 现有 `notes/statistics/` 保持「应用统计」定位，加第五组「多元与高维」；`notes/machine-learning/` 骨架不变（概念 → 可算的小例子 → 什么时候用），扩成七组。
 
-**课程按书，一次只开一本。** 站内数据说明限流是必要的：Git 课 33 课一课未答，2026-09-17 整个下线；统计 9 课至今没有一份答卷归档进笔记。候选书都选开放版本：
-
-| 书 | 用途 | 为什么是它 |
-|---|---|---|
-| ISLP（James 等，2023，Python 版） | 机器学习伴读 | 免费 PDF，每章 lab 就是现成的「任务」；ESL 做参考不开课 |
-| Wooldridge《Introductory Econometrics》8e | 计量伴读 | 章节完整，数据集有 Python 包，8e 新增因果推断一章；The Effect 与 Mixtape 在线版补交错 DID 等新方法 |
-| d2l.ai《动手学深度学习》 | 深度学习伴读 | 中文免费、PyTorch 代码、每节有习题；UDL 与 Bishop 2024 做理论参考 |
-| Casella & Berger | 数理统计 | 不开课，按需写成理论笔记；下游写 GLM 时才写 MLE 渐近那一页 |
+**课程按书，一次只开一本。** 站内数据说明限流是必要的：Git 课 33 课一课未答，2026-09-17 整个下线；统计 9 课至今没有一份答卷归档进笔记。限流只限章节伴读和题：16 门课的导读页一次建齐，缺多少门、排第几一眼看清，章节伴读只给正在开的那一门写。书单和顺序见下面的[课程队列](#课程队列)。
 
 **基建改动只有一次**，一个提交做完：
 
@@ -120,6 +113,33 @@ flowchart LR
 - [写作规范](../skills/wiki-guide/mkdocs-wiki/index.md)「内容放哪个板块」的归属五问变六问
 
 脚本层没有写死顶层目录，`check-links.py` 对新板块自动生效。可选的第二步是给页面加一个按需加载的 Pyodide 运行器，让 numpy 级的小例子像 [JavaScript 笔记](../notes/javascript/index.md)那样在页面上跑——不阻塞内容，先不做。
+
+## 课程队列 { #课程队列 }
+
+2026-10-02 改：原计划只开 ISLP、Wooldridge、d2l 三门，数理统计、GLM、统计计算、贝叶斯、时序都排成「下游用到才写」的笔记。**本科和研究生的分界就在数理统计和线性模型这两门**，只靠下游拉动，学到的是一页一页的碎片，所以理论主干也进队列。同一天把概率、因果、多元、抽样、实验收进来，另加初级微观和宏观，给计量和经济统计方向垫底。
+
+队列按依赖排，一次只开一门；每门的导读页（读法、章节地图、口径差异）都已建好，排队中的课只有这一页：
+
+| 序 | 科目 | 书 | 免费版 | 为什么在这一位 |
+|---:|---|---|---|---|
+| 0 | 统计学 | [向蓉美《统计学》](../courses/statistics-book/index.md) | 无 | 在开；先把第 6 章答完，验证课程到笔记的环路 |
+| 1 | 统计学习 | [ISLP](../courses/islp/index.md) | 有 | 最快见效，每章 lab 是现成任务，和算法岗最近 |
+| 2 | 概率论 | [Blitzstein & Hwang](../courses/blitzstein-hwang/index.md) | 有 | 数理统计的前置；本站的概率只有面试题解 |
+| 3 | 数理统计 | [Casella & Berger](../courses/casella-berger/index.md) | 无 | 研究生的分界线；概率那几章由上一门覆盖 |
+| 4 | 线性模型与 GLM | [Agresti](../courses/agresti-glm/index.md) | 无 | 投影视角的 Gauss-Markov、GLM 与 IRLS，混合效应接得上 |
+| 5 | 初级微观 | [曼昆《经济学原理》微观分册](../courses/mankiw-micro/index.md) | 无 | Wooldridge 的例子都是经济问题，先补供需与激励 |
+| 6 | 计量经济学 | [Wooldridge](../courses/wooldridge/index.md) | 无，数据有 Python 包 | 重心在面板与政策评估；The Effect、Mixtape 补交错 DID |
+| 7 | 因果推断 | [What If](../courses/what-if/index.md) | 有 | 从统计角度讲潜在结果，补计量的经济学视角 |
+| 8 | 深度学习 | [d2l](../courses/d2l/index.md) | 有，中文 | 只走基础与 Transformer，然后转去时序、表格、不确定性 |
+| 9 | 统计计算 | [Givens & Hoeting](../courses/givens-hoeting/index.md) | 无 | 数值优化、EM、Monte Carlo、MCMC，正对清单「统计计算」组 |
+| 10 | 贝叶斯 | [BDA3](../courses/bda3/index.md) | 有 | 要先会 MCMC，所以排在统计计算后面 |
+| 11 | 多元统计 | [Johnson & Wichern](../courses/johnson-wichern/index.md) | 无 | PCA、因子、判别、MANOVA；lasso 那半由 ISLP 接 |
+| 12 | 初级宏观 | [曼昆《经济学原理》宏观分册](../courses/mankiw-macro/index.md) | 无 | 宏观数据接 VAR 与脉冲响应，给时序垫底 |
+| 13 | 时间序列 | [FPP3](../courses/fpp3/index.md) | 有 | 预测实务与 ETS / ARIMA 基线，接深度学习的时序那块 |
+| 14 | 抽样调查 | [Lohr](../courses/lohr/index.md) | 无 | 复杂抽样与权重校准 |
+| 15 | 在线实验 | [Kohavi 等](../courses/kohavi/index.md) | 无 | A/B 工业实践：CUPED、SRM、序贯 |
+
+一个科目只取一本。ESL、UDL、Bishop 2024、The Effect、Mixtape 做参考，不开课。
 
 ## 清单
 
@@ -162,7 +182,7 @@ flowchart LR
 
 | 档 | 领域 | 核心资料 |
 |---|---|---|
-| 必修 | 基础：MLP、反向传播、SGD / Adam、初始化、BN / LN、Dropout、残差 | d2l 第 3–6 章与第 12 章；UDL 第 2–9 章 |
+| 必修 | 基础：MLP、反向传播、SGD / Adam、初始化、BN / LN、Dropout、残差 | d2l 第 3–6 章、8.5–8.6 节与第 12 章（BN / LN 在 8.5，残差在 8.6）；UDL 第 2–9 章 |
 | 必修 | Transformer 与注意力 | d2l 第 11 章；Stanford CS25 |
 | 必修 | 生成模型作为概率建模：VAE 即变分推断、扩散即 score matching、flow matching | CS236；UDL 第 14–18 章；Lipman 2024 指南 |
 | 必修 | 时序深度模型与基础模型：PatchTST、iTransformer、Chronos / TimesFM，对照 ETS / ARIMA 基线 | GIFT-Eval；Tan 等 NeurIPS 2024 |
@@ -197,24 +217,25 @@ flowchart LR
 
 **进入条件只有一条：经手过。** 每篇新笔记必须带 `assets/` 下能跑的脚本和它跑出来的数，课程题答完才归档，论文复现了才标复现。这条比清单本身重要——有 AI 帮忙写，篇数从来不是瓶颈，「我做过」才是。
 
-阶段按依赖排，不排日期：
+阶段按依赖排，不排日期；课的先后以[课程队列](#课程队列)为准，阶段说的是笔记和论文跟着哪几门课长出来：
 
 1. **基建**：一个提交把论文板块、三个新分类、首页与规范改完，先空着骨架上线
-2. **机器学习**：ISLP 伴读开课，七组笔记跟着 lab 长出来，配十篇论文里的三篇。这块最快见效，也是和 CS 出身竞争的最低门槛
-3. **计量**：Wooldridge 伴读，重心放在面板与政策评估那一组；交错 DID 与 DML 这些 2020 年后的标配靠论文板块补
-4. **深度学习**：d2l 伴读只走基础与 Transformer 两段，然后直奔必修档里的时序、表格、不确定性三块
-5. **理论与计算**：数理统计和统计计算不排阶段，被下游拉动才写，写一页链一页
+2. **机器学习**：ISLP 开课，七组笔记跟着 lab 长出来，配十篇论文里的三篇。这块最快见效，也是和 CS 出身竞争的最低门槛
+3. **理论主干**：概率 → 数理统计 → GLM，队列第 2–4 门。清单里「数理统计」「线性模型与 GLM」两组从这几门的答卷回流，不再等下游拉动
+4. **计量与因果**：曼昆微观 → Wooldridge → What If，队列第 5–7 门，重心放在面板与政策评估那一组；交错 DID 与 DML 这些 2020 年后的标配靠论文板块补
+5. **深度学习**：d2l 只走基础与 Transformer 两段，然后直奔必修档里的时序、表格、不确定性三块
+6. **其余主干**：统计计算、贝叶斯、多元、宏观、时序、抽样、实验，队列第 9–15 门，清单对应各组同样从答卷回流
 
 首批十件事，按顺序：
 
 1. 把[第 6 章 抽样分布](../courses/statistics-book/ch06-sampling-distribution.md)答完归档，让课程到笔记的环路第一次真正跑通，顺便验证讲解节变薄后题还答不答得出
 2. 基建提交
 3. 论文板块第一篇：Efron 1979，连回重抽样笔记
-4. ISLP 导读页与第 2 章伴读
+4. ISLP 第 2 章伴读（导读页 2026-10-02 已建）
 5. ML 笔记「偏差-方差」，带模拟脚本
 6. ML 笔记「GBM 是函数空间的梯度下降」，用 Poisson 损失接上 GLM
 7. 论文：Grinsztajn 2022，复现其中一个数据集上 GBDT 对 MLP 的对比
-8. 计量导读页与「异方差与稳健标准误」笔记，用 wooldridge 数据集
+8. 「异方差与稳健标准误」笔记，用 wooldridge 数据集（计量导读页 2026-10-02 已建）
 9. 论文：Callaway-Sant'Anna 2021，用 Python 现成实现复现一个例子
 10. DL 笔记「conformal prediction」，在自己的预测项目数据上跑一遍覆盖率
 
@@ -225,13 +246,14 @@ flowchart LR
 | 第 6 章答卷归档 | 未开始 | `notes/statistics-book/ch06-sampling-distribution.md` |
 | 基建：论文板块 + 三个笔记分类 + 首页 + 规范 | 未开始 | `docs/papers/`、`docs/notes/{statistical-theory,econometrics,deep-learning}/` |
 | 论文：Efron 1979 | 未开始 | `papers/statistics/` |
-| ISLP 导读与第 2 章 | 未开始 | `courses/islp/` |
+| ISLP 第 2 章伴读 | 未开始 | `courses/islp/` |
 | ML：偏差-方差 | 未开始 | `notes/machine-learning/` |
 | ML：GBM 即函数空间梯度下降 | 未开始 | `notes/machine-learning/` |
 | 论文：Grinsztajn 2022 | 未开始 | `papers/machine-learning/` |
-| 计量导读 + 异方差与稳健 SE | 未开始 | `courses/wooldridge/`、`notes/econometrics/` |
+| 异方差与稳健 SE | 未开始 | `notes/econometrics/` |
 | 论文：Callaway-Sant'Anna 2021 | 未开始 | `papers/econometrics/` |
 | DL：conformal prediction | 未开始 | `notes/deep-learning/` |
+| 课程队列：15 门新课的导读页 | 完成（2026-10-02） | `courses/<书>/index.md` |
 
 做了再回来补。
 
@@ -243,7 +265,7 @@ flowchart LR
 - [中央财经大学](https://sam.cufe.edu.cn/info/1039/3814.htm)与[上海财经大学](https://ssds.sufe.edu.cn/1546/list.htm)应用统计专硕课表：国内财经类院校的必修交集
 - [Stanford MS Statistics](https://statistics.stanford.edu/graduate-programs/statistics-ms/statistics-ms-required-courses-2024-2025)、[Berkeley MA Statistics](https://statistics.berkeley.edu/academics/masters/program)、[CMU MADS handbook](https://www.cmu.edu/dietrich/statistics-datascience/resources/docs/mads-grad-handbook.pdf)、[UChicago MS handbook](https://stat.uchicago.edu/academics/current-students/ms-student-handbook/)：美国项目的共同骨架
 - Hernán、Hsu、Healy 2019 [A Second Chance to Get Causal Inference Right](https://arxiv.org/abs/1804.10846)：数据科学任务分 description / prediction / causal inference 三类
-- [Wooldridge 8e 目录](https://www.cengage.com/c/introductory-econometrics-a-modern-approach-8e-wooldridge/9780357900161/)、[ISLP](https://www.statlearning.com/)、[d2l.ai](https://d2l.ai/)、[UDL](https://udlbook.github.io/udlbook/)、[The Effect](https://theeffectbook.net/)、[Mixtape](https://mixtape.scunning.com/)：候选教材的开放版本
+- [Wooldridge 8e 目录](https://www.cengage.com/c/introductory-econometrics-a-modern-approach-8e-wooldridge/9780357900161/)、[ISLP](https://www.statlearning.com/)、[Blitzstein & Hwang](https://probabilitybook.net/)、[What If](https://miguelhernan.org/whatifbook)、[d2l.ai](https://d2l.ai/)、[BDA3](https://sites.stat.columbia.edu/gelman/book/)、[FPP3 Python 版](https://otexts.com/fpppy/)、[UDL](https://udlbook.github.io/udlbook/)、[The Effect](https://theeffectbook.net/)、[Mixtape](https://mixtape.scunning.com/)：课程队列与参考教材的开放版本；在版书的版次和目录来源记在各自的导读页
 - Roth 等 2023 [What's Trending in Difference-in-Differences](https://www.jonathandroth.com/assets/files/DiD_Review_Paper.pdf)：交错 DID 新进展的综述
 - [TabArena 2025](https://arxiv.org/abs/2506.16791)、[Grinsztajn 2022](https://arxiv.org/abs/2207.08815)：表格数据上 GBDT 与深度模型的基准
 - Angelopoulos、Bates 2021 [A Gentle Introduction to Conformal Prediction](https://arxiv.org/abs/2107.07511)：不确定性量化的入口

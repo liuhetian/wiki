@@ -1,0 +1,40 @@
+autodl-proxy.liuhetian.work {
+	@authorized header Authorization "Bearer {$AUTODL_GATEWAY_TOKEN}"
+	log_append vendor autodl
+
+	handle @authorized {
+		log_append caller personal
+		log_append authenticated true
+		reverse_proxy https://www.autodl.art {
+			header_up Authorization "{$AUTODL_API_KEY}"
+			header_up -Proxy-Authorization
+		}
+	}
+
+	handle {
+		log_append caller unauthenticated
+		log_append authenticated false
+		header Content-Type application/json
+		header WWW-Authenticate Bearer
+		respond `{"error":{"message":"A valid gateway token is required.","type":"authentication_error"}}` 401
+	}
+
+	log autodl_proxy {
+		output file /var/log/caddy/autodl-proxy/access.json {
+			roll_size 10MiB
+			roll_keep 30
+			roll_keep_for 2160h
+		}
+		format filter {
+			wrap json
+			fields {
+				request delete
+				resp_headers delete
+				duration delete
+				size delete
+				bytes_read delete
+				user_id delete
+			}
+		}
+	}
+}

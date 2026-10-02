@@ -55,9 +55,31 @@ python3 scripts/course.py add <分类>/<slug>        # 全答完才通过：改�
 
 末尾三题固定是「一句话」「心智模型」「坑」，答完之后它们会成为笔记的三个小节 —— 归档结果的形状正好是笔记的骨架 **场景 → 一句话 → 心智模型 → 操作 → 坑**。
 
-## 分类
+## 分类 { #分类 }
+
+一本书一门课，按[课程队列](../posts/wiki-roadmap.md#课程队列)的依赖顺序一次只开一门。每门都有导读页（读法、章节地图、口径差异）；排队中的课只有导读页，开课时才铺章节伴读。
+
+**在开**
 
 - [统计学（向蓉美《统计学》第三版伴读）](statistics-book/index.md) —— 跟着这本西财教材走：一章一课，公式全部对着原书页图重排，末尾的题要自己算出数来才过
+
+**排队中**（只有导读页）
+
+1. [ISLP（统计学习）](islp/index.md) —— 机器学习的框架、正则化、树和无监督；每章 lab 是现成任务
+2. [Blitzstein & Hwang（概率论）](blitzstein-hwang/index.md) —— 数理统计的前置
+3. [Casella & Berger（数理统计）](casella-berger/index.md) —— 充分性、点估计、检验、区间、渐近
+4. [Agresti（线性模型与 GLM）](agresti-glm/index.md) —— 投影视角的线性模型、GLM 与 IRLS
+5. [曼昆《经济学原理》微观分册（初级微观）](mankiw-micro/index.md) —— 计量的经济学底子
+6. [Wooldridge（计量经济学）](wooldridge/index.md) —— 面板与政策评估
+7. [What If（因果推断）](what-if/index.md) —— 统计视角的潜在结果框架
+8. [d2l（深度学习）](d2l/index.md) —— 基础与 Transformer 两段
+9. [Givens & Hoeting（统计计算）](givens-hoeting/index.md) —— 数值优化、EM、Monte Carlo、MCMC
+10. [BDA3（贝叶斯）](bda3/index.md) —— 贝叶斯建模与多层模型
+11. [Johnson & Wichern（多元统计）](johnson-wichern/index.md) —— PCA、因子、判别、MANOVA
+12. [曼昆《经济学原理》宏观分册（初级宏观）](mankiw-macro/index.md) —— 宏观数据与时序的底子
+13. [FPP3（时间序列）](fpp3/index.md) —— 预测实务与 ETS / ARIMA 基线
+14. [Lohr（抽样调查）](lohr/index.md) —— 复杂抽样与权重校准
+15. [Kohavi 等（在线实验）](kohavi/index.md) —— A/B 测试的工业实践
 
 !!! note "Git 课程去哪了"
     2026-09-17 把原来的 33 课 Git 课程整个删了 —— 33 课里一课都没被答完，题太多、门槛太高，不好用。机制（本页描述的这一整套）原样留着，33 个造事故现场的 `init.sh` 和参考解法都还在不发布的 `courses-src/git/` 里，将来按「讲解在前、题在后」的形状重做。旧页在 `git log -- docs/courses` 里。

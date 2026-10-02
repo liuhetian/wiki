@@ -93,6 +93,7 @@ scripts/
 
 - [课程是怎么设计的](docs/courses/index.md) —— 为什么把题写成 git 冲突标记、checkout → 答题 → add 的环路、给 AI 的上课流程
 - [统计学（教材伴读）](docs/courses/statistics-book/index.md) —— 跟着向蓉美《统计学》第三版走，一章一课；公式全部对着原书页图重排，不信 OCR
+- [课程队列](docs/courses/index.md#分类) —— 16 门课按依赖排队、一次只开一门，排队中的 15 门先只有导读页（读法、章节地图、口径差异）
 
 **Skills**（[docs/skills/](docs/skills/index.md)，每套讲「怎么做、为什么这么做」，不是教程）：
 

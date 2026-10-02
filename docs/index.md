@@ -37,6 +37,7 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 - [课程是怎么设计的](courses/index.md) —— 为什么用冲突标记提问、checkout → 答题 → add 的环路、给 AI 的上课流程
 - [统计学（教材伴读）](courses/statistics-book/index.md) —— 跟着向蓉美《统计学》第三版走，公式全部对着原书页图重排
+- [课程队列](courses/index.md#分类) —— 16 门课按依赖排队、一次只开一门：ISLP、概率、数理统计、GLM、计量、因果、深度学习、贝叶斯……每门先有导读页
 
 ## Skills
 

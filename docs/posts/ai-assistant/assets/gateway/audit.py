@@ -2,7 +2,7 @@
 from pathlib import Path
 import subprocess
 
-env = dict(line.split('=', 1) for line in Path('/etc/caddy/deepseek-proxy.env').read_text().splitlines())
+env = dict(line.split('=', 1) for line in Path('/etc/caddy/gateway.env').read_text().splitlines())
 journal = subprocess.run(['journalctl', '-u', 'caddy', '--since', '30 minutes ago', '--no-pager'], capture_output=True, check=True, text=True).stdout
 assert all(secret not in journal for secret in env.values())
 print('Caddy journal contains neither upstream key nor gateway token: passed')
