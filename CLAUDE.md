@@ -61,6 +61,8 @@ ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lh
 
 五个顶层分区分工：`posts/` 讲完整来龙去脉，`notes/` 记专业科目的学习推导（每个分类有统一骨架），`courses/` 是**讲解在前、题在后**的伴读（题写成 git 冲突标记，答完才用 `scripts/course.py add` 归档进 `notes/` 同名文件，详见 `docs/courses/index.md`），`skills/` 是能直接交给 AI 执行的成套资产，`gallery/` 是原样收录的成品参考库，按媒介分 `images/`（图配 prompt，只调排版和图片路径，来源写进各自的 `MIRROR.md`）、`layouts/`（排版）、`colors/`（色彩）、`video/`、`audio/`（暂空）、`web/`（前端风格收集，一种风格一个活 demo，2026-09-29 从 `skills/` 挪来）六区；排版和色彩页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改。原来那 33 课 Git 课程 2026-09-17 下线（一课都没答完，门槛太高），素材留在不发布的 `courses-src/git/`。引外部资料三步：真身存档进 `assets/` + 正文摘句 + 自己的分析。图表优先用 ```` ```mermaid ```` / ```` ```echarts ```` 代码块声明式写。
 
+**加功能就记一笔时间线，内容不记。** 改了 `mkdocs.yml` 里 nav 和 redirects 以外的部分、`overrides/`、`docs/stylesheets/`、`docs/vendor/` 下的 init 脚本、`deploy.sh`，或 `scripts/` 里作用于全站的脚本，在 `docs/posts/wiki-tech/index.md` 的「能力时间线」一节末尾追加一条。新增文章、分区、收录资料不记，只为某一批内容服务的脚本（如 `check-leetcode.py`、`build-handdraw-gallery.py`）也不记。功能撤回也记，写进当初加它的那一条，标题注明撤回；实测后决定不用的官方功能也记一条，写清不用的理由，只是讨论过的不记。每条写：日期 + 分类（配置 / 前端 / 流水线）、用户提需求的原话（删节可以，key、口令、服务器地址不进）、一段改了哪里。原话取自本次对话；有专文的条目末尾加一行「详见」链过去；写法见写作规范「时间线」一节。
+
 ## 已知的构建怪癖
 
 zensical 自带的 `invalid_links` 校验在 0.0.53 及更早版本有并行竞态，偶发大量误报，一度只能关掉；0.0.62 上复现不出来了（20 次构建零误报，另用故意的死链探针确认校验仍在工作），现已改回 `warn`。它报错带 `文件:行:列` 定位，`serve` 时当场可见；阻断部署的职责仍归 check-links.py —— 两者不重叠的那四项（父级索引挂载、nav 注册、笔记未答题、资源死链）只有脚本管。竞态若复发，改回 `false` 即可。check-links.py 对吸收型 skill 上游原文里的死链只警告不阻断，判据是同级或祖先目录存在 `MIRROR.md`。

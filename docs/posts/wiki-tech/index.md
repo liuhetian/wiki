@@ -1,13 +1,236 @@
 ---
-description: "这个 wiki 自己用到的技术，一项一页：对象存储部署与双产物、自建 git-lfs 后端、打码；做了一项写一页，没做的不占坑"
+description: "这个 wiki 自己用到的技术：值得细讲的一项一页（对象存储部署与双产物、自建 git-lfs 后端、打码），文末一条能力时间线按日期列出在 Zensical 之上加过的每项功能，附当时的需求原话和改了哪里"
 ---
 
 # 本 wiki 用到的技术
 
-这个 wiki 自己用到的技术，一项一页。每页讲清楚这项技术是什么、为什么这么选、换到别的站要改哪里。写作时怎么用这些机制是写作规矩，在[写作规范](../../skills/wiki-guide/mkdocs-wiki/index.md)里。
+这个 wiki 自己用到的技术，一项一页。每页讲清楚这项技术是什么、为什么这么选、换到别的站要改哪里。写作时怎么用这些机制是写作规矩，在[写作规范](../../skills/wiki-guide/mkdocs-wiki/index.md)里。按时间看所有功能是怎么一项项加上来的，见文末的[能力时间线](#timeline)。
 
 - [用对象存储部署 AI 友好的个人知识库](cos-deploy/index.md) —— 总纲：什么算对 AI 友好、同一份 markdown 双发布、为什么是对象存储而不是服务器；附[部署实操手册](cos-deploy/reference/deploy.md)
 - [用自己的对象存储做 git-lfs 后端](git-lfs.md) —— standalone custom transfer agent：140 行脚本替掉整个 LFS 服务，协议、坑和换存储的改法
 - [打码：key 和小字都以密文写进 wiki](age-mosaic.md) —— API key、服务器地址用 age 公钥加密后写进 markdown，浏览器里显示成马赛克，解锁后还原；六种存法的比较、对称与非对称加密、scrypt 为什么撑得住短口令，以及 encryptcontent 这类插件为什么在本站会漏
+- [Zensical 0.0.62 → 0.0.70：升不升级](zensical-upgrade/index.md) —— 八个版本逐条过：跟本站有关的只有预览重建、草稿、sitemap 几条；0.0.70 构建正式站零告警、class 未变；llmstxt 插件替不掉 `.md` 镜像
 
 还没单独成篇的：`check-links.py` 这道闸门（现在写在总纲的[闸门一节](cos-deploy/index.md#link-check)）、vendor 本地化与按需加载、中文字体子集化。哪项值得单独讲了再拆出来。
+
+## 能力时间线 { #timeline }
+
+上面是单独成篇的技术；这里按落地日期从上往下，列出在 Zensical 之上加过的每一项功能，有专文的条目末尾带「详见」。每条三样：标题是日期和功能名，引用块是我当时提需求的原话（取自和 AI 的对话记录，只做删节），正文一段说改了哪里。
+
+标题旁的分类：**配置**是只动 `mkdocs.yml` 的官方能力，**前端**是自己写的 CSS、JS、模板，**流水线**是 `deploy.sh` 和 `scripts/` 里的脚本。只记功能，不记内容：新增文章、分区、收录的资料不算，只为某一批内容服务的脚本（比如 LeetCode 笔记的校验、手绘风格库的页面生成器）也不算。只收做成了的，以及实测后决定不用的官方功能（写清不用的理由）；只是讨论过、没动手的（比如上 CDN）不收；做了又撤掉的照记，撤回写进当初加它的那一条，标题注明。以后每加一项功能，在末尾追加一条，写法见[写作规范 · 时间线](../../skills/wiki-guide/mkdocs-wiki/index.md#timeline)。
+
+<div class="zx-timeline" markdown>
+
+### 2026-06 · 上线：Zensical 构建，对象存储直出 {: data-kind="配置 + 流水线" }
+
+> 有个自己的地方放笔记，能公开访问就行。
+
+这一条早于对话记录，引用是当时建站手记里的话。`zensical build` 出静态文件，`deploy.sh` 用 coscmd 同步进 COS 桶，自定义域名直接解析到 COS，服务器不在请求链路上。`deploy-cert/` 用 acme.sh 走 DNSPod 验证、把证书推到 COS，HTTPS 自动续期。官方配置起步：`navigation.tabs`、`navigation.indexes`、`content.code.copy`、`content.code.annotate`，以及 admonition、details、tabbed、superfences 这些官方扩展。
+
+详见[部署实操手册](cos-deploy/reference/deploy.md)：建桶、绑域名、HTTPS 自动续期。
+
+### 2026-06-30 · 线上同时发布 .md 源 {: data-kind="流水线" }
+
+> 如果直接手动把docs里面的md复制到site里，会不会直接就借用这个功能？从而实现保留源md文件的效果？试试呢？
+
+`deploy.sh` 加一行 rsync，把 `docs/` 的 `.md` 树原样镜像进 `site/`。`use_directory_urls` 让页面占 `/x/index.html`，`/x.md` 正好空着，人和 AI 同域各取一份。`.md` 上传时钉 `text/markdown`，不然 COS 给 octet-stream，浏览器直接下载。同一天把 `pymdownx.snippets` 的 `base_path` 改成 `docs` 和项目根两级，引用路径不再带 `docs/` 前缀 ——「我担心把index.md 给到大模型，大模型看到两种前缀，导致不知道怎么拼接」。
+
+详见[对象存储部署 · 设计](cos-deploy/index.md#设计)：一颗语法糖、两个约定。
+
+### 2026-07-01 · 一文一目录，代码真身软链进 assets {: data-kind="配置 + 流水线" }
+
+> 我还是希望软连接，让deploy轻量一点（本质只做copy md和build两件事）
+
+文章从单个 `.md` 变成 `index.md` + `assets/`。`assets/` 里放软链，指向仓库里真正在跑的文件（`deploy.sh`、`mkdocs.yml` 等），正文用 `--8<--` snippet 引用同一份，构建后软链变成实体文件随站发布，AI 顺 URL 能取到真身。07-02 定成标准 skill 布局：「继续使用symlink方案，并且使用 cos-wiki-deploy 这个目录（也就是标准的skill布局）」。
+
+详见[对象存储部署 · 设计](cos-deploy/index.md#设计)：代码即引用，真身可远程取。
+
+### 2026-07-07 · iframe 嵌交互 demo，运行时进 vendor {: data-kind="前端" }
+
+> 我想的未来有很多都是需要借助前端进行展示的，大概是单页界面。能不能 zensical 部署，然后自己通过iframe引用这个单页界面的url进来？
+
+demo 写成自包含的静态单页，放进各自的 `assets/`，正文用 iframe 同域嵌入。React 18 UMD + `htm` 放进 `docs/vendor/`，不用 JSX 编译、不走 CDN。demo 逻辑不压缩，AI 读同一 URL 下的源码。
+
+详见[写作规范 · 嵌入交互单页](../../skills/wiki-guide/mkdocs-wiki/index.md#iframe-demo)。
+
+### 2026-07-09 · llms.txt {: data-kind="流水线" }
+
+> 我决定了，就 build 的时候直接cp成 llms.txt，然后我写作的时候会照顾两边。
+
+`deploy.sh` 把构建后的 `site/index.md` 复制成 `site/llms.txt`，首页按 llms.txt 规范写（H1 + 引用块 + H2）。08-12 首页有了开屏 frontmatter 之后，改成剥掉 frontmatter 和开头注释再落盘。
+
+详见[对象存储部署 · 和 llms.txt 的对比](cos-deploy/index.md#llmstxt)。
+
+### 2026-07-11 · 数学公式 {: data-kind="配置 + 前端" }
+
+> 我想增加内容，放一些算法问题，机器学习的模型理解，深度模型的模型理解啥的，相当于个人笔记……比如第一个问题：12枚硬币……
+
+没有单独提公式的需求，是随第一篇概率笔记一起加的，日期按笔记推断。官方 `pymdownx.arithmatex`（generic 模式）配本地 MathJax 3 真身，配置写在 `vendor/mathjax-init.js`。09-04 改成按需加载：页面里有 `.arithmatex` 才去拉 2MB 的真身。
+
+### 2026-07-11 · echarts 代码块：图表写在 markdown 里 {: data-kind="配置 + 前端" }
+
+> 帮我加一个桑基图……zensical 是否支持嵌入echarts或者其他的html图表？……感觉把图表单独放在一个html里感觉怪怪的
+
+`superfences` 加一个 `echarts` 自定义 fence，块里直接写 ECharts 的 option JSON。`vendor/echarts-init.js` 查到这类块才动态加载 ECharts 真身渲染，没图的页面零开销。
+
+### 2026-07-19 · 二进制赶出 git，第一次重置历史 {: data-kind="流水线" }
+
+> 我的当前wiki中，图片资源是不是没有放入git的……我在想把这部分资源额外找个cos存储，这样可以用一个脚本复原。
+
+`scripts/backup-media.sh` 把媒体备份到独立的备份桶，只增不删；MathJax、ECharts 这类第三方真身由 `scripts/fetch-vendor.sh` 钉版本从 CDN 拉回。git 历史重置成一个 commit。九天后被下面的 mini LFS 取代。
+
+### 2026-07-26 · 部署前先 git pull --ff-only {: data-kind="流水线" }
+
+> 也就是说本机的deploy.sh 进行一个pull对吧。加上吧。
+
+为了在副机写作、主机部署：`deploy.sh` 第一步 `git pull --ff-only` 收编副机 push 的内容，本地有未推提交或冲突就停住，不静默合并。
+
+详见[部署实操手册 · 日常写作流](cos-deploy/reference/deploy.md#写作流)。
+
+### 2026-07-28 · 自制 mini LFS，第二次重置历史 {: data-kind="流水线" }
+
+> 现在用cos来备份图像资源和重建，所以我的问题是能不能自己实现一个mini的lfs 服务？
+
+`scripts/lfs-cos-agent.py`（git-lfs 的 standalone custom transfer agent，约 140 行）把 blob 按 sha256 存进备份桶的 `lfs/` 前缀；`.gitattributes` 把图、视频、字体和 vendor 真身交给 LFS；`scripts/setup-lfs.sh` 给新 clone 接入。vendor 也进 LFS：「这种产物因为不是我们自己维护的代码，也应该一起丢lfs」，`fetch-vendor.sh` 降级成升级工具。git 历史再次重置，就是现在的第一个 commit。[edb03a6](https://github.com/liuhetian/wiki/commit/edb03a6)
+
+详见[用自己的对象存储做 git-lfs 后端](git-lfs.md)。
+
+### 2026-07-30 · AI 链路闸门 check-links.py {: data-kind="流水线" }
+
+> （这条没留下对话记录，提交说明是 "Enforce AI link-path integrity at deploy time"）
+
+`scripts/check-links.py` 查三项：每篇都被某个祖先索引页直接链到、没有死链、注册进了 nav。`deploy.sh` 在读凭证和构建之前先跑它，非零退出就中止部署。09-04 又加两项：笔记里不许有未答的课程题、图片和 demo 等非 `.md` 资源不许死链。[b0a5d3e](https://github.com/liuhetian/wiki/commit/b0a5d3e)
+
+详见[对象存储部署 · 闸门](cos-deploy/index.md#link-check)。
+
+### 2026-08-08 · 代码源文件钉文本类型 {: data-kind="流水线" }
+
+> 你 deploy 之后，派一个一个subagent 去读取，看看能不能读取到原始代码？（08-05）
+
+COS 按扩展名猜类型，`.ts` 猜成 video/mp2t，`.tsx/.jsx/.mjs/.py` 猜成 octet-stream，AI 抓取工具直接拒收。`deploy.sh` 加一条带 `Content-Type: text/plain` 的上传。08-12 桶里错类型的旧对象修正完，这条改带 `-s`，没变的不再重传。清单后来陆续扩充：`.csv`（09-18，课程数据表）、`LICENSE`（09-29）、`.caddy` 和 `.conf`（10-01）、`.cjs`（10 月，HyperFrames 脚本）。[807e762](https://github.com/liuhetian/wiki/commit/807e762)
+
+### 2026-08-12 · 开屏首页 {: data-kind="前端" }
+
+> 可以帮我做一个saas风格的开屏吗，内容多一点，介绍一下本wiki和能给读者带来什么……而且首页要铺满屏幕！（08-08）
+
+`custom_dir: overrides` 加 `overrides/home.html` 和 `stylesheets/home.css`，`docs/index.md` 用 frontmatter `template: home.html` 换成开屏。正文不上屏，照样发布成 `/index.md` 和 `/llms.txt` 给 AI 读。[521b0b1](https://github.com/liuhetian/wiki/commit/521b0b1)
+
+### 2026-08-14 · 字体本地化 {: data-kind="配置 + 前端" }
+
+> 开屏的时候我发现加载很慢……这个是google字体导致的我这个打开慢吗？改为本地化吧，我看字体也就 1.8mb（08-13）
+
+`theme.font: false` 关掉官方的 Google Fonts 引用；Inter 和 JetBrains Mono 的 woff2 放进 `vendor/fonts/`，`fonts.css` 挂进 `extra_css`。[c39a3cf](https://github.com/liuhetian/wiki/commit/c39a3cf)
+
+### 2026-08-17 · 3D demo 运行时 {: data-kind="前端" }
+
+> （这条没留下对话记录，是随 Vercel Lanyard 可拖拽 3D 工牌的拆解一起加的）
+
+`vendor/` 增加 React 的 ES module 版、react-three-fiber、drei、rapier、meshline 和 `htm.module.js`，给 ES module 写法的 3D demo 用，同样走 LFS。[3eb7118](https://github.com/liuhetian/wiki/commit/3eb7118)
+
+### 2026-08-25 · 全站皮肤对齐首页 {: data-kind="前端" }
+
+> 参考本wiki的首页风格，对整个仓库都改成相符合的风格如何？修改方法见文档：https://zensical.org/docs/customization/
+
+两层 CSS 挂进 `extra_css`：`zx-tokens.css` 是令牌层，放 Atelier Zero 的颜色和字体变量并映射到 `--md-*`；`zx-theme.css` 是皮肤层，只写选择器，管直角、导航、标题、链接、列表、代码块。[d8f6124](https://github.com/liuhetian/wiki/commit/d8f6124)
+
+### 2026-08-25 · mermaid 真身本地化 {: data-kind="前端" }
+
+> 要不也帮我自包含进去？这个mermaid的三方库
+
+Zensical 内置的加载器在 `mermaid` 未定义时会去 unpkg 拉。`overrides/main.html` 只给含 mermaid 块的页面同步引入 `vendor/mermaid/`，内置加载器就不再出网；`fetch-vendor.sh` 记上它的版本。[d8f6124](https://github.com/liuhetian/wiki/commit/d8f6124)
+
+### 2026-08-25 · 提示框、折叠块、选项卡一套语言 {: data-kind="前端" }
+
+> 对于折叠卡，现在太丑了……颜色的话放在左边的竖线和 > 里。选项卡也实现左边竖线功能吧，这样左右切换选项卡可以知道哪些部分的内容是属于这个选项里才有的内容
+
+`zx-theme.css` 重写 admonition、details、tabbed：去底去框，type 色只落在左侧短竖线、图标和箭头上；hover 时竖线拉长到全文底部；选项卡左侧加竖线和 1px 引导线。[ac9daa4](https://github.com/liuhetian/wiki/commit/ac9daa4) [63bd3a6](https://github.com/liuhetian/wiki/commit/63bd3a6)
+
+### 2026-09-01 · 三线表与 mermaid 手绘卡片 {: data-kind="前端" }
+
+> 帮我看一下zensical中，能不能修改mermaid图的css样式……现在本wiki的表格不好看，能也参考其他css优化一下吗（08-31）
+
+`zx-theme.css`：表格改 booktabs 三线表，窄表整体居中。mermaid 的 SVG 在 closed shadow root 里，外部 CSS 进不去，只能把宿主容器裹成手绘卡片。[8394579](https://github.com/liuhetian/wiki/commit/8394579)
+
+### 2026-09-01 · 全站换 Maple Mono，中文自建子集 {: data-kind="前端 + 流水线" }
+
+> 我发现vscode里的字体更圆润，读起来更舒服，我这里是否也能惰性加载一个字体呢？（08-25）帮我把本wiki的字体改成 maple-font
+
+正文和代码用同一个等宽字族。拉丁字形用官方 woff2，中文由 `scripts/build-fonts.py` 按 GB2312 加本站用字子集化。同日补了三处漏网（中文字重描述符、`--zx-serif` 求值失败、ECharts 内联字体），汉字字身框从 1200 压回 1000。[4d58ba3](https://github.com/liuhetian/wiki/commit/4d58ba3) [58a8b8c](https://github.com/liuhetian/wiki/commit/58a8b8c) [8556c17](https://github.com/liuhetian/wiki/commit/8556c17)
+
+### 2026-09-04 · 网页上直接运行 JS 代码块 {: data-kind="前端" }
+
+> 能不能实现代码写入在前端展示之后，可以直接在网页上运行？……没必要提供代码编辑功能，能直接运行即可……运行按钮只有hover上去才显示（09-03）
+
+代码块写成 ```` ```{.js .run} ````，`vendor/js-runner.js` 找到这类块，在 Worker 沙箱里执行并接一个输出面板；运行按钮放进代码框右上角，hover 才出现。[b93e43c](https://github.com/liuhetian/wiki/commit/b93e43c)
+
+详见[写作规范 · 可运行 JS 代码块](../../skills/wiki-guide/mkdocs-wiki/index.md#js-run)。
+
+### 2026-09-04 · 冲突标记出题与归档闸门 {: data-kind="配置 + 前端 + 流水线" }
+
+> 新建一个和 skills notes 并排的顶级层级，叫做「课程」……要用和git一样的冲突标记提问，只有我手动回答了一个又一个的问题，证明我是真的去运行了代码，然后才能add到 notes 的同名目录
+
+`superfences` 加 `conflict` fence，`vendor/conflict-init.js` 把它染成上问下答两半；`scripts/course.py` 管领题、看进度、归档，题没答完不让归档；`check-links.py` 加一项：`notes/` 里不许出现冲突标记。[b93e43c](https://github.com/liuhetian/wiki/commit/b93e43c) [70abb8b](https://github.com/liuhetian/wiki/commit/70abb8b)
+
+详见[课程是怎么设计的](../../courses/index.md)。
+
+### 2026-09-04 · 一轮体检：线上零 CDN、堵 .venv 漏口、资源死链 {: data-kind="前端 + 流水线" }
+
+> 帮我检查我当前的wiki仓库，寻找有没有问题或者优化空间（可能是zensical配置本身的问题，也可能是写作的问题，也可能是架构层等等等）
+
+vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载。`deploy.sh` 的 md 镜像加 `--exclude='.*/'`，堵住 assets 里残留的 `.venv` 跟着上桶。`check-links.py` 加资源死链检查。新增 `robots.txt`，全站开放抓取并指向 sitemap。[1019e19](https://github.com/liuhetian/wiki/commit/1019e19) [1cca22e](https://github.com/liuhetian/wiki/commit/1cca22e)
+
+### 2026-09-18 · 升到 zensical 0.0.62：meta 与 redirects {: data-kind="配置" }
+
+> 看本仓库用的 zensical 版本，然后比较一下 zensical的最近更新……看有没有什么新功能可以用？（09-14）
+
+`plugins` 接上 `meta`：目录里放 `.meta.yml`，给上游原文、snippet 真身这类不能加 frontmatter 的文件补 description。接上 `redirects`：挪文件不留存根页，写一行旧路径到新路径。08-12 因为并行竞态误报而关掉的 `invalid_links` 校验改回 `warn`。[d73ce14](https://github.com/liuhetian/wiki/commit/d73ce14)
+
+详见[写作规范 · 不能动的文件：目录级 .meta.yml](../../skills/wiki-guide/mkdocs-wiki/index.md#meta-yml)。
+
+### 2026-09-29 · 图文并排与长文本换行 {: data-kind="配置 + 前端" }
+
+> 这种引用"生成一张……"为什么是一行，我需要手动拖左右滚轮。能够不被折叠吗？（09-28）
+
+图文左右并排用官方 `md_in_html` 写 `<div class="gallery-pair" markdown>`，样式在 `zx-theme.css`。长 prompt 换行：`overrides/main.html` 按 URL 前缀只给 `gallery/images/` 的 text 块开自动换行，别处 text 块里的目录树、ASCII 图不受影响；其他页面需要时手写 `{.text .wrap}`。[478436c](https://github.com/liuhetian/wiki/commit/478436c)
+
+### 2026-10-01 · age 打码 {: data-kind="配置 + 前端 + 流水线" }
+
+> 本wiki中有很多小文字需要加密，比如我的服务器id，能在前端中做简单的马赛克吗？……自动被转换成一段马赛克，解锁后才恢复。zensical有类似的插件吗？或者 mkdocs有吗
+
+`scripts/age-seal.sh` 用 wiki 公钥加密，源文件里写 `` `age:…` `` 小字或 ```` ```age ```` 块（superfences 新增 `age` fence）。`vendor/age-init.js` 在浏览器里打码、解锁后还原，按需加载 `vendor/age-core.js`（口令和 X25519 私钥两种模式）。encryptcontent 这类插件只加密 HTML，`.md` 镜像照样是明文，所以不用。[0885e62](https://github.com/liuhetian/wiki/commit/0885e62)
+
+详见[打码：key 和小字都以密文写进 wiki](age-mosaic.md)。
+
+### 2026-10-10 · navigation.prune：改 nav 不再全站重传 {: data-kind="配置" }
+
+> 我发现本wiki 每次 deploy 如果有修改目录，就需要依次上传所有文件，相当于重新上传，非常非常慢。这是正常的吗？
+
+官方 `theme.features` 加 `navigation.prune`，每页只渲染看得见的导航项。原来整棵导航（800 多篇）嵌进每一页，占页面体积的 94%，改一个 nav 标题就有 1024 个 HTML 变化、重传约 400MB；开了之后只变 18 个，HTML 总量从 447MB 降到 65MB。代价是侧栏里别的分区不能就地展开。
+
+### 2026-10-14 · 时间线组件 {: data-kind="前端" }
+
+> 我希望这个时间线是真的从上往下一条线，相当于有特殊的css效果，基本完全不受渲染的影响，是否可以通过特殊的插件实现？（比如写作的时候用特殊的html标记啥的）
+
+不用插件。官方 `md_in_html` 写 `<div class="zx-timeline" markdown>` 包住条目，`zx-theme.css` 第 10 节画线：竖线挂在容器的 `::before` 上、贯穿整个容器，条目只是 h3 前的一个方块，条目里放什么都不会把线打断，也不靠 JS。分类用 `attr_list` 写在标题上 `{: data-kind="…" }`，渲染成角标；纯官方配置的方块空心，涉及自写代码的填荧光绿。AI 读 `.md` 源看到的仍是普通 markdown，只多一对 div。
+
+详见[写作规范 · 时间线](../../skills/wiki-guide/mkdocs-wiki/index.md#timeline)。
+
+### 2026-10-15 · 时间线正序 / 倒序切换（当天撤回） {: data-kind="前端" }
+
+> 对了对整个时间线块，增加一个功能，允许切换倒序/正序
+
+加：`vendor/timeline-init.js` 挂进全站的 `extra_javascript`，在时间线上方插一个「从旧到新 / 从新到旧」两段式按钮。源文件里条目是平铺的兄弟节点，脚本把「一个 h3 到下一个 h3 之前」认作一条，整条整条地反向重排 DOM，同时反转右侧目录里的条目，选择记在 localStorage。上线时每页 HTML 都多了一行 `<script>`，全站 1027 个文件重传。
+
+> 每个页面的 HTML 都多了一行 `<script>`。你评估一下这个开发成本呢？我发现还会动到目录，比我想象中一个独立的模块大很多，但是可能只有这一个地方会用。……确实需要回撤这个更改，成本太高了，太揉杂了
+
+撤：删掉 `timeline-init.js`、`extra_javascript` 那一行、按钮样式和写作规范里的说明，顺序固定为从旧到新。撤的理由：一页用的功能挂在全站；反转目录要依赖 Zensical 目录的内部 DOM，升级会悄悄坏；倒序还会让正文里「下面」「后来」这些话说反。另外两种做法也评估过、没做：md 照写、部署时预处理成独立的 HTML 块，会让本地 `zensical serve` 预览和线上不一致，目录和措辞的问题也还在；用选项卡把两种顺序各写一份，是零代码，但每条要写两处，AI 读到两遍，目录里的条目也会重复。
+
+### 2026-10-15 · 评估官方 llmstxt 插件：不启用 {: data-kind="配置" }
+
+> 对了 zensical 中，0.0.67版本支持复制 md 到最终构建结果了吗？现在我们的手动复制是不是就不需要了，帮我调研……那现在那个复制按钮，是和 llms.txt 绑定在一起的吗？我感觉还是不能直接用官方的插件
+
+Zensical 0.0.67 起有原生的 `llmstxt` 插件和「Copy as Markdown」按钮，跟本站 06-30 起做的 `.md` 镜像几乎是同一个想法。实测下来不启用：它导出的是 md → HTML → md 的转换版，选项卡标签、代码块标题、自定义块类型、时间线的分类角标、iframe demo 都丢，snippet 一律展开；副本路径是 `/x/index.md`，链接按 `site_url` 写死域名，只给 `sections` 列出的页出副本；复制按钮只在开插件时出现，复制的就是这份转换版；和 `deploy.sh` 的源文件镜像叠在一起时，目录首页被覆盖回源文件，按钮一页一个样。继续用 rsync 发布源文件；想要一键复制就自己做一个复制 `/x.md` 的按钮，或者等官方支持发布源文件、保留相对链接。只升级 Zensical 版本、不写进 `plugins`，碰不到这个插件。
+
+详见[Zensical 升级评估 · 三条路](zensical-upgrade/index.md#llmstxt-paths)。
+
+</div>

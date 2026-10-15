@@ -48,7 +48,7 @@ description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘�
 - [屏幕翻拍](gpt-image2/gallery-screen-photography.md) · 2 条
 - [电影感与动画](gpt-image2/gallery-cinematic-and-animation.md) · 5 条
 - [经典电影参考](gpt-image2/gallery-cinematic-film-references.md) · 6 条
-- [人像写真模板](collected/gallery-portrait-templates.md) · 1 条（先补全参数再出图的写真助手指令，暂时还没生成配图）
+- [人像写真模板](collected/gallery-portrait-templates.md) · 2 条（先补全参数再出图的写真助手指令；短视频主页自拍网格截图）
 
 ## 产品与空间
 

@@ -1,0 +1,14 @@
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/routes/general-video.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+
+# 路由：general-video
+
+- **输入：** 任何没有被专门路由覆盖的定制创作或编辑：静态标题卡、较长的品牌片或 sizzle reel、多场景蒙太奇、静态循环 / 海报、类似 NLE 的素材画面混剪，或自由形式的 composition。它也执行所有 `flow: companion` 的 brief。
+- **输出：** 一个任意时长或格式的 HyperFrames composition，经过 设计 → 计划 → 静态布局 → 动画 → 检查 → 批准 → 渲染 的流程产出。
+- **触发：** "做一张静态标题卡"、"较长的品牌片"、"多场景 composition"、"静态循环"、"定制视频"，或任何没有匹配上的视频请求。
+
+## 访谈
+
+- **仅限开放式请求：** 先推导出一句话的 `message`。只有当 `audience` 不明确且会改变故事或用语时才问它。只有当 `destination` 会改变画幅或构图时才问它。只有当 brief 里存在真正的取舍时才问优先级。默认只做一个最佳版本；只有当用户要求多个选项或对比时，才问变体的事。
+- **具体请求：** 像"一张带我们 logo、用作网站 hero 的静态标题卡"这样完整的需求，不需要任何探索性问题。
+- **提案轮：** `message` —— 未成形的开放式请求正是这一轮的主场。
+- **运行形态：** 两个问题都适用。`/general-video` 也是 companion 的宿主，所以 `flow: companion` 留在这条路由上，使用完整的工具箱。

@@ -71,7 +71,7 @@ scripts/
 **文章**（[docs/posts/](docs/posts/index.md)）：
 
 - [工作方法](docs/posts/methods/index.md) —— 精力管理、推进执行和做出决策
-- [本 wiki 用到的技术](docs/posts/wiki-tech/index.md) —— 一项技术一页：[对象存储部署](docs/posts/wiki-tech/cos-deploy/index.md)（本仓库的定位设计与选型，配[腾讯云 COS + acme.sh 实操手册](docs/posts/wiki-tech/cos-deploy/reference/deploy.md)）、[自建 git-lfs 后端](docs/posts/wiki-tech/git-lfs.md)（140 行 standalone transfer agent 替掉整个 LFS 服务）、[打码](docs/posts/wiki-tech/age-mosaic.md)（源文件里就是 age 密文，浏览器里解锁还原）
+- [本 wiki 用到的技术](docs/posts/wiki-tech/index.md) —— 一项技术一页：[对象存储部署](docs/posts/wiki-tech/cos-deploy/index.md)（本仓库的定位设计与选型，配[腾讯云 COS + acme.sh 实操手册](docs/posts/wiki-tech/cos-deploy/reference/deploy.md)）、[自建 git-lfs 后端](docs/posts/wiki-tech/git-lfs.md)（140 行 standalone transfer agent 替掉整个 LFS 服务）、[打码](docs/posts/wiki-tech/age-mosaic.md)（源文件里就是 age 密文，浏览器里解锁还原）；文末的[能力时间线](docs/posts/wiki-tech/index.md#timeline)按日期列出在 Zensical 之上加过的每项功能
 - [本 wiki 的目标与计划](docs/posts/wiki-roadmap.md) —— 2026-09-29 的审核：专业主干只到本科应用统计，要补数理统计与计算、计量、机器学习、深度学习并加论文板块；文末进度表做一项划一项
 - [预测项目闭环](docs/posts/prediction-loop.md) —— 把「写完就扔」的脚本养成能被 AI 运维的系统
 - [AI 时代的产品经理](docs/posts/ai-pm.md) —— 算法岗顶上 PM 缺位一个月的复盘

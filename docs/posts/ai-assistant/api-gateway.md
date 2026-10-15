@@ -1,17 +1,18 @@
 ---
-description: "只给自己用的 AI 接口中转：Caddy 验网关 token、换成真实 key、其余原样转发，配置全在 /etc/caddy；DeepSeek、AutoDL 已在国内机上线，CodeProxy、OpenRouter 在海外机；记录我们的决策和踩过的坑"
+description: "只给自己用的 AI 接口中转：Caddy 验网关 token、换成真实 key、其余原样转发，配置全在 /etc/caddy；DeepSeek、AutoDL、下载狗已在国内机上线，CodeProxy、OpenRouter 在海外机；记录我们的决策和踩过的坑"
 ---
 
 # 调 AI 接口不需要 new-api：Caddy 换个 header 就够了
 
-**Agent 只拿一个网关 token，真实 key 只存在中转机上。** 2026-10-01 在国内机上接好了 DeepSeek 和 AutoDL，2026-10-02 在海外机上接好了 CodeProxy（图片生成）和 OpenRouter（网络搜索、音频转录、音乐生成、Jev 结构化判断），其余厂商还没接。Agent 端用法见[调用 DeepSeek](../../skills/agent-io/reference/deepseek.md)、[网络搜索](../../skills/agent-io/reference/web-search.md)、[生成特定音色语音](../../skills/agent-io/reference/tts.md)、[生成视频](../../skills/agent-io/reference/video/index.md)、[生成、编辑图片](../../skills/agent-io/reference/image.md)、[转录音频](../../skills/agent-io/reference/transcribe.md)、[生成音乐](../../skills/agent-io/reference/music.md)和[结构化判断](../../skills/agent-io/reference/jev.md)。
+**Agent 只拿一个网关 token，真实 key 只存在中转机上。** 2026-10-01 在国内机上接好了 DeepSeek 和 AutoDL，2026-10-02 在海外机上接好了 CodeProxy（图片生成）和 OpenRouter（网络搜索、音频转录、音乐生成、Jev 结构化判断，2026-10-08 又用它接了微软 MAI-Voice 语音合成，2026-10-10 接了微软、OpenAI、Mercury 三家结构化判断，中转都没改），2026-10-10 国内机又接了下载狗，其余厂商还没接。Agent 端用法见[调用 DeepSeek](../../skills/agent-io/reference/deepseek.md)、[解析分享链接](../../skills/agent-io/reference/share-link.md)、[网络搜索](../../skills/agent-io/reference/web-search.md)、[生成语音](../../skills/agent-io/reference/tts.md)、[生成视频](../../skills/agent-io/reference/video/index.md)、[生成、编辑图片](../../skills/agent-io/reference/image.md)、[转录音频](../../skills/agent-io/reference/transcribe.md)、[生成音乐](../../skills/agent-io/reference/music.md)和[结构化判断](../../skills/agent-io/reference/jev.md)。
 
 ## 决策 { #decisions }
 
 - 只做透明转发：验 token，换 `Authorization`，其余原样转发。Agent 照官方 SDK 用，只换 base URL 和 key。
+- 例外是下载狗：它的 token 在 JSON 正文里，中转用 `request_body` 把调用方的 `GET /?url=<链接>` 改写成带 token 的 POST。仍然只用 Caddy，不加别的服务。
 - 用 Caddy，版本必须 ≥ 2.11，`caddy version` 确认：SSE、WebSocket、长连接默认就能用，证书自动签。不用 nginx，因为这些都要手配；不用 new-api，可以但没必要。
-- 国内机接国内厂商，海外机接 OpenAI、Anthropic、Gemini。一家厂商一个子域名、一个 `.caddy` 文件。DeepSeek 是 `https://deepseek-proxy.liuhetian.work`，AutoDL 是 `https://autodl-proxy.liuhetian.work`；海外机上的 CodeProxy 是 `https://codeproxy.reverse-pro.xyz`，OpenRouter 是 `https://openrouter.reverse-pro.xyz`。
-- token 由用户自己定，四家用同一个。Agent 端写在 `.env` 的 `MY_API_KEY` 里。
+- 国内机接国内厂商，海外机接 OpenAI、Anthropic、Gemini。一家厂商一个子域名、一个 `.caddy` 文件。DeepSeek 是 `https://deepseek-proxy.liuhetian.work`，AutoDL 是 `https://autodl-proxy.liuhetian.work`，下载狗是 `https://xiazaitool-proxy.liuhetian.work`；海外机上的 CodeProxy 是 `https://codeproxy.reverse-pro.xyz`，OpenRouter 是 `https://openrouter.reverse-pro.xyz`。
+- token 由用户自己定，各家用同一个。Agent 端写在 `.env` 的 `MY_API_KEY` 里。
 - 日志只留时间和状态码，请求头、URL、IP、聊天内容都不记。
 - 要签名或者令牌会过期的厂商（即梦、Bedrock、腾讯云 TC3、可灵、Vertex），Caddy 做不了，改用这家有 Bearer key 的 OpenAI 兼容接口。
 - **配置全放 `/etc/caddy`**，唯一的例外是 systemd drop-in：
@@ -19,7 +20,7 @@ description: "只给自己用的 AI 接口中转：Caddy 验网关 token、换�
 | 文件 | 内容 |
 |---|---|
 | `/etc/caddy/Caddyfile` | 原有的静态站，末尾 `import /etc/caddy/sites-enabled/*.caddy` |
-| `/etc/caddy/sites-enabled/deepseek.caddy`、`autodl.caddy` | 一家一个：验 token、换 key、转发、过滤日志 |
+| `/etc/caddy/sites-enabled/deepseek.caddy`、`autodl.caddy`、`xiazaitool.caddy` | 一家一个：验 token、换 key、转发、过滤日志 |
 | `/etc/caddy/gateway.env` | 每家两行 `<厂商>_API_KEY`、`<厂商>_GATEWAY_TOKEN`，root 所有，0600 |
 | `/etc/systemd/system/caddy.service.d/gateway.conf` | 读 env 文件，去掉 `--environ` |
 
@@ -33,6 +34,12 @@ description: "只给自己用的 AI 接口中转：Caddy 验网关 token、换�
 
     ```text
     --8<-- "posts/ai-assistant/assets/gateway/autodl.caddy"
+    ```
+
+??? abstract "`assets/gateway/xiazaitool.caddy`"
+
+    ```text
+    --8<-- "posts/ai-assistant/assets/gateway/xiazaitool.caddy"
     ```
 
 ??? abstract "`assets/gateway/gateway.conf`"
@@ -57,6 +64,8 @@ description: "只给自己用的 AI 接口中转：Caddy 验网关 token、换�
 - **`autosave.json` 里是明文 key**：`/var/lib/caddy/.config/caddy/autosave.json` 存的是展开后的配置。保持 0600，管理 API 只监听本机，配置导出来别往外贴。
 - **中转只认 `Authorization: Bearer`**：Anthropic 兼容端点 `/anthropic` 也会原样转发，但 Anthropic SDK 默认把 key 放进 `x-api-key`，这样会 401，要改用 `auth_token=`。
 - **AutoDL 的真实令牌前面不带 `Bearer`**：所以 `autodl.caddy` 写的是 `header_up Authorization "{$AUTODL_API_KEY}"`。Agent 那边照样发 `Bearer <网关 token>`。
+- **`sites-enabled/` 里的文件，`request_body` 正文开头要写 `\\{`**：被 `import` 的文件会多吃一层转义，只写 `\{` 时 `{"url":"{…}` 整段被当成不认识的占位符替换成空。下载狗收不到 url，只回一句「500 网络不稳定」，看着像上游故障，绕了一个多小时。同一行直接写在主 Caddyfile 里又是好的，所以临时复现的配置也要经过 `import`。
+- **Caddy 和直连结果不一样时，先抓 Caddy 实际发出的请求再猜**：用管理 API 把这条路由的上游临时指到本机 `nc -l`，发一次请求看完整报文，再 `reload` 恢复。
 - **改了 token 要同步改每个 Agent 的 `.env`**：旧 token 马上就是 401。
 - **验收要发真实请求**：`systemctl is-active` 只能说明进程活着，要跑 `verify.py`。浏览器直接打开地址看到 401 是正常的，因为浏览器没带 token。
 - **换了域名，服务器正常、电脑打不开**：本机还缓存着旧 IP。比较三处：本机解析、权威 DNS、curl 实际连上的 IP。

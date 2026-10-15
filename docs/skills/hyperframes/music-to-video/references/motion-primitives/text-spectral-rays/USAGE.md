@@ -1,0 +1,25 @@
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/references/motion-primitives/text-spectral-rays/USAGE.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+
+# 使用 `text-spectral-rays` —— 它**独占**自己的文字标志
+
+`text-spectral-rays` 是一个**自包含的 WebGL hero 文字渲染器**。它从**一张**栅格化的字形遮罩出发，**同时**画出实心的文字标志**以及**从中发散出来的光谱光线。字母和光线共用同一张遮罩，所以两者永远完美对齐。
+
+## 唯一的陷阱：绝不要给这个词第二个来源
+
+重影 / 双重文字标志的瑕疵，来自把这个词拆到两个来源上：
+
+- ❌ **错误** —— 把 shader 当成"只有光线的背景"，再用一个**单独的 DOM 元素**画出可见的字母（或者在同一个词上再叠一个文字动作，比如 `content_swap` / `chromatic_pressure`）。DOM 字体（例如 Inter）和 shader 的栅格字体（Arial Black / Impact 兜底）在宽度、形状和位置上都不同，所以光线的边缘永远对不上 DOM 字母 → 出现一个没对齐的重影。**删掉 shader 里画字母的那部分并不能解决问题** —— 光线遮罩本身仍然是这个词的第二份、没对齐的副本。
+
+- ✅ **正确** —— 让 shader 来渲染文字标志。来源恰好只有**一个**，所以从结构上就不可能出现重影。
+
+## 一次性集成
+
+1. **它就是文字标志。** 隐藏这个词的任何 DOM logo（只有当下方的标语 / CTA 依赖它的盒子时，才把它保留为一个不可见的布局占位）。绝不在同一个词上叠加一个独立的文字动作。
+2. **一条 timeline。** 把它的 `progress` / `effectMix` 状态 tween 合并到这个 group 的主 timeline 上，并通过 `tl.eventCallback("onUpdate", render)` 重绘 —— 不要第二条 timeline，不要 `requestAnimationFrame`。
+3. **让光标与这个词对齐。** `mouse.y` 必须等于遮罩的垂直中心。如果你把栅格化的词移离画面中心（例如上移，给标语腾出空间），就要把光标的 `y` 移动同样的距离 —— 否则光线会以错误的角度投射。
+4. **只用本地栅格化。** 用内置 / 系统字体来栅格化这个词（不要 CDN 字体）；把遮罩画布 + 颜色画布作为纹理上传。
+5. **入场。** 在打点上让整个画布重砸进场（autoAlpha + 一次缩放冲击，`transform-origin` 设在这个词的视觉中心），紧接着让 `effectMix` 把光线绽放出来。画布显现的那一刻，实心字母就已经在了。
+
+## 可搭配
+
+一层背景铺底（`bg-flow-field`）或者**独立的**辅助元素（标语、CTA、分隔线）—— 绝不是对它自己那个词的第二种处理。

@@ -1,0 +1,49 @@
+xiazaitool-proxy.liuhetian.work {
+	@authorized header Authorization "Bearer {$XIAZAITOOL_GATEWAY_TOKEN}"
+	log_append vendor xiazaitool
+
+	handle @authorized {
+		log_append caller personal
+		log_append authenticated true
+		# 下载狗的 token 在 JSON 正文里，不在请求头：调用方 GET /?url=<链接>，这里改写成上游要的 POST JSON
+		# 开头写 \\{ 不是笔误：import 进来的文件会多吃一层转义，只写 \{ 时 `{"url":"{…}` 整段被当成未知占位符替换为空，
+		# 上游收不到 url，只回一句「网络不稳定」
+		request_body {
+			set `\\{"url":"{http.request.uri.query.url}","token":"{$XIAZAITOOL_API_KEY}"}`
+		}
+		reverse_proxy https://api.xiazaitool.com {
+			method POST
+			rewrite /api/parseVideoUrl
+			header_up Content-Type application/json
+			header_up -Authorization
+			header_up -Proxy-Authorization
+		}
+	}
+
+	handle {
+		log_append caller unauthenticated
+		log_append authenticated false
+		header Content-Type application/json
+		header WWW-Authenticate Bearer
+		respond `{"error":{"message":"A valid gateway token is required.","type":"authentication_error"}}` 401
+	}
+
+	log xiazaitool_proxy {
+		output file /var/log/caddy/xiazaitool-proxy/access.json {
+			roll_size 10MiB
+			roll_keep 30
+			roll_keep_for 2160h
+		}
+		format filter {
+			wrap json
+			fields {
+				request delete
+				resp_headers delete
+				duration delete
+				size delete
+				bytes_read delete
+				user_id delete
+			}
+		}
+	}
+}

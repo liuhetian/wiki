@@ -1,0 +1,65 @@
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/typography-presets.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+
+# 字体排印 preset
+
+五种有名字的样式，对应 `cap-*` CSS 类。在 `plan.json` 里根据这一行的语义角色，为每个字幕分组挑一个。
+
+| style    | CSS                         | 何时使用                                                                                                                  |
+| -------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `intro`  | 66px 斜体 500             | 第一行、填充语（"You know…"、"So…"）、沉思式开场。视觉分量低。                                       |
+| `phrase` | 78px 正体 600            | 主要的陈述分句。大多数行的默认值。                                                                           |
+| `emph`   | 92px 正体 800            | 带有情绪峰值或关键成就的行（"I've achieved incredible things"）。                                         |
+| `dream`  | 82px 斜体 700             | 抱负类 /"was dreaming of…" 风格的行。斜体代表回忆 / 想象。                                         |
+| `crown`  | 140px 正体 900 全大写 | **只用于高潮行。** 用在中央舞台的 `crown-plane` 里。每个 composition 最多一个 —— 最好是最后一条字幕。 |
+
+## Tone 字段
+
+与 style 无关，每个分组都有一个 `tone`：`soft` 或 `present`。
+
+- **soft** —— 轻柔淡入 + 8px 的 y 方向漂移入场，`power2.out` ease。感觉轻盈、怀旧。用于回忆、intro、dream。
+- **present** —— 利落的 6px y 位移 + 1.04 缩放弹出，`power3.out`，transformOrigin 居中。感觉果断、身临其境。用于强调和 crown。
+
+## 自动挑选
+
+扫描每个分组的词：
+
+1. 是否包含最高级（incredible、best、only、never、always）或品牌 / 专有名词？→ `emph` + `present`
+2. 是否以话语标记（you know、so、well、look）开头，或者很短（≤3 个词）？→ `intro` + `soft`
+3. 是否提到梦想、希望、回忆，或像 "was dreaming" 这样的过去时动词？→ `dream` + `soft`
+4. 是否是收束整个句子的最后一行，感觉像标题 / 头条？→ `crown` + `present`（每个视频只有一个）
+5. 否则 → `phrase` +（与相邻分组的语气保持一致；默认 `soft`）
+
+## 字号随栏宽缩放（Font-size scales with column width）
+
+每个模板里的 `.cap-*` 默认值是针对**约 560px 的栏**（最初的 champion composition）调的。当字幕 plane 比这更宽时，字号会显得分量不足 —— 文字周围的负空间太多。相应地放大。
+
+| Plane 宽度         | intro | phrase | emph | dream | crown（居中，全画面） | crown（仅干净区域） |
+| ------------------- | ----- | ------ | ---- | ----- | ---------------------------- | ----------------------- |
+| 460–580 px（紧）  | 66    | 78     | 92   | 82    | 140                          | 不适用                     |
+| 600–760 px（中） | 78    | 108    | 128  | 100   | 220                          | 118                     |
+| 780+ px（宽）      | 90    | 128    | 150  | 116   | 260                          | 140                     |
+
+说明：
+
+- crown 字号假设是横屏（1920×1080）。竖屏 1080×1920 时，所有 crown 字号除以 1.5。
+- "全画面 crown" = 居中，设计成横跨 `0.8+ × frame_width` 并横穿主体的身体。只有在满足 [layout-heuristics.md § Crown placement](layout-heuristics.md) 的条件时才用。
+- "仅干净区域 crown" = 放在某一块干净区域内部的 crown，字号更小，尾部字母轻轻碰到主体。居中 crown 会被吃掉太多时的兜底。
+
+另外：如果 plane 的 `rotateY` 不可忽略（比如 > 8°），实际可见宽度会缩小。把字号放大约 10% 来补偿。
+
+## 不要做的事
+
+- 每次渲染不要用超过**一个 crown**。它的全部意义就在于它是唯一的落点。
+- 不要在超过约 30% 的分组上用 `emph`。什么都强调，强调就失去了意义。
+- 不要只因为词很短就给主要内容挑 `intro`。"I won"（2 个词）是 `emph` 或 `crown`，不是 `intro`。
+- 不要无缘无故地交替混用 `soft` 和 `present`。语气应该跟随故事弧线：soft 开场 → present 铺陈 → emph 峰值 →（可选的 crown 高潮）。
+
+## 场景亮度影响颜色选择时
+
+默认颜色是温暖的骨白色（`#fff5df`）。在模板 CSS 里调整：
+
+- 墙面大多是暖色木纹 / 棕褐色 → 保持默认，或者往冷色调移到 `#e8f0ff`
+- 墙面是冷蓝色 / 科技实验室风格 → 往暖色推到 `#fff0c0`
+- 墙面有强烈的原色 → 降低默认颜色的饱和度，亮度优先
+
+这些调整发生在 HTML 模板里，而不是 plan.json 里。如果你反复需要不同的色板，就做新的模板变体。

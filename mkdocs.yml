@@ -12,6 +12,9 @@ theme:
   features:
     - navigation.tabs
     - navigation.indexes
+    - navigation.prune   # 每页只渲染看得见的导航项。不开时整棵导航（800+ 篇）嵌进每页，占页面 94%：
+                         #   改一个 nav 标题就有 1024 个 HTML 变化、部署重传约 400 MB；开了只变 18 个，
+                         #   HTML 总量 447 MB → 65 MB（2026-10-10 实测）。代价是侧栏别的分区不能就地展开，点了跳分区首页
     - content.code.copy
     - content.code.annotate
 
@@ -90,7 +93,9 @@ plugins:
         # 2026-10-01 本 wiki 的技术归成一个系列 posts/wiki-tech/，建站手记删掉
         posts/cos-wiki-deploy/index.md: posts/wiki-tech/cos-deploy/index.md
         posts/cos-wiki-deploy/reference/deploy.md: posts/wiki-tech/cos-deploy/reference/deploy.md
-        posts/cos-wiki-deploy/reference/wiki-build-log.md: posts/wiki-tech/index.md
+        posts/cos-wiki-deploy/reference/wiki-build-log.md: posts/wiki-tech/index.md#timeline   # 2026-10-14 改指能力时间线
+        # 2026-10-14 能力时间线并进 wiki-tech 索引页，单独那页只活了一天
+        posts/wiki-tech/timeline.md: posts/wiki-tech/index.md#timeline
         posts/git-lfs-cos.md: posts/wiki-tech/git-lfs.md
         # 2026-10-01 新机器配开发环境挪进「搭建 AI 助手」当第一篇
         posts/dev-env.md: posts/ai-assistant/dev-env.md
@@ -204,6 +209,7 @@ nav:
           - 部署实操手册: posts/wiki-tech/cos-deploy/reference/deploy.md
           - 自建 git-lfs 后端: posts/wiki-tech/git-lfs.md
           - 打码：key 和小字: posts/wiki-tech/age-mosaic.md
+          - Zensical 升级评估: posts/wiki-tech/zensical-upgrade/index.md
       - 本 wiki 的目标与计划: posts/wiki-roadmap.md
       - 预测项目闭环: posts/prediction-loop.md
       - AI 时代的产品经理: posts/ai-pm.md
@@ -233,6 +239,7 @@ nav:
               - 视频生成: posts/ai-assistant/maintenance/video.md
               - 音乐生成: posts/ai-assistant/maintenance/music.md
               - 音频转录: posts/ai-assistant/maintenance/transcribe.md
+              - 解析分享链接: posts/ai-assistant/maintenance/share-link.md
               - 结构化判断: posts/ai-assistant/maintenance/jev.md
       - 工作方法:
           - posts/methods/index.md
@@ -490,7 +497,8 @@ nav:
           - 阅读 PDF: skills/agent-io/reference/pdf.md
           - 转录音频: skills/agent-io/reference/transcribe.md
           - 网络搜索: skills/agent-io/reference/web-search.md
-          - 特定音色语音: skills/agent-io/reference/tts.md
+          - 解析分享链接: skills/agent-io/reference/share-link.md
+          - 生成语音: skills/agent-io/reference/tts.md
           - 生成音乐: skills/agent-io/reference/music.md
           - 生成、编辑图片: skills/agent-io/reference/image.md
           - 生成视频:
@@ -500,10 +508,377 @@ nav:
               - 对口型: skills/agent-io/reference/video/lip-sync.md
               - 动作迁移: skills/agent-io/reference/video/motion-transfer.md
           - 调用 DeepSeek: skills/agent-io/reference/deepseek.md
-          - 结构化判断（Jev）: skills/agent-io/reference/jev.md
+          - 结构化判断: skills/agent-io/reference/jev.md
       - B站视频笔记:
           - skills/bili-note/index.md
           - 接口笔记: skills/bili-note/references/bilibili-api-notes.md
+      - HyperFrames 视频:
+          - skills/hyperframes/index.md
+          - "hyperframes（入口路由）":
+              - skills/hyperframes/hyperframes/index.md
+              - "参考":
+                  - "Brief 契约": skills/hyperframes/hyperframes/references/brief-contract.md
+                  - "Brief 格式 —— BRIEF.md": skills/hyperframes/hyperframes/references/brief-format.md
+                  - "能力菜单 —— HyperFrames 能给视频带来什么": skills/hyperframes/hyperframes/references/capability-menu.md
+                  - "Frame worker —— 核心契约（各叙事类视频工作流共用）": skills/hyperframes/hyperframes/references/frame-worker-core.md
+                  - "意图层 —— 在任何工作流运行之前的一次对话": skills/hyperframes/hyperframes/references/intent-interview.md
+                  - "提案轮 —— 意图层中发散的一步": skills/hyperframes/hyperframes/references/pitch-round.md
+                  - "从已安装的插件中运行": skills/hyperframes/hyperframes/references/plugin-installation.md
+                  - "制作循环 —— 从批准的计划到交付的视频": skills/hyperframes/hyperframes/references/production-loop.md
+                  - "评审循环 —— 计划、草图、构建": skills/hyperframes/hyperframes/references/review-loop.md
+                  - "路由 brief（已迁移）": skills/hyperframes/hyperframes/references/route-briefs.md
+                  - "路由：embedded-captions": skills/hyperframes/hyperframes/references/routes/embedded-captions.md
+                  - "路由：faceless-explainer": skills/hyperframes/hyperframes/references/routes/faceless-explainer.md
+                  - "路由：general-video": skills/hyperframes/hyperframes/references/routes/general-video.md
+                  - "路由：motion-graphics": skills/hyperframes/hyperframes/references/routes/motion-graphics.md
+                  - "路由：music-to-video": skills/hyperframes/hyperframes/references/routes/music-to-video.md
+                  - "路由：pr-to-video": skills/hyperframes/hyperframes/references/routes/pr-to-video.md
+                  - "路由：product-launch-video": skills/hyperframes/hyperframes/references/routes/product-launch-video.md
+                  - "路由：remotion-to-hyperframes": skills/hyperframes/hyperframes/references/routes/remotion-to-hyperframes.md
+                  - "路由：slideshow": skills/hyperframes/hyperframes/references/routes/slideshow.md
+                  - "路由：talking-head-recut": skills/hyperframes/hyperframes/references/routes/talking-head-recut.md
+                  - "SCRIPT.md —— 锁定的旁白（可选）": skills/hyperframes/hyperframes/references/script-format.md
+                  - "Skill 的安装与保鲜": skills/hyperframes/hyperframes/references/skill-lifecycle.md
+                  - "分镜格式 —— STORYBOARD.md + 解析后的 manifest": skills/hyperframes/hyperframes/references/storyboard-format.md
+                  - "子 agent 派发 —— harness 适配层": skills/hyperframes/hyperframes/references/subagent-dispatch.md
+                  - "工作流目录（已迁移）": skills/hyperframes/hyperframes/references/workflow-catalog.md
+          - "product-launch-video":
+              - skills/hyperframes/product-launch-video/index.md
+              - "切法目录 —— 帧内接缝（由 worker 构建）": skills/hyperframes/product-launch-video/references/cut-catalog.md
+              - "运动语言 —— 动作词表 + 运动准则 + seek 安全核心": skills/hyperframes/product-launch-video/references/motion-language.md
+              - "故事设计 —— 产品发布视频": skills/hyperframes/product-launch-video/references/story-design.md
+              - "视觉设计 —— 产品发布的逐帧镜头方法": skills/hyperframes/product-launch-video/references/visual-design.md
+              - "Frame worker —— 产品发布增量": skills/hyperframes/product-launch-video/sub-agents/frame-worker.md
+          - "faceless-explainer":
+              - skills/hyperframes/faceless-explainer/index.md
+              - "切法目录 —— 帧内接缝（由 worker 构建）": skills/hyperframes/faceless-explainer/references/cut-catalog.md
+              - "运动语言 —— 运动词汇 + 运动准则 + seek 安全核心": skills/hyperframes/faceless-explainer/references/motion-language.md
+              - "故事设计 —— 无人出镜讲解视频": skills/hyperframes/faceless-explainer/references/story-design.md
+              - "视觉设计 —— faceless-explainer 的逐帧镜头方法": skills/hyperframes/faceless-explainer/references/visual-design.md
+              - "Frame worker —— faceless-explainer 增量部分": skills/hyperframes/faceless-explainer/sub-agents/frame-worker.md
+          - "pr-to-video":
+              - skills/hyperframes/pr-to-video/index.md
+              - "代码词汇 —— code-* 动画 block": skills/hyperframes/pr-to-video/references/code-vocabulary.md
+              - "切法目录 —— 帧内接缝（由 worker 构建）": skills/hyperframes/pr-to-video/references/cut-catalog.md
+              - "动效语言 —— 运动词汇 + 动效准则 + seek 安全的核心": skills/hyperframes/pr-to-video/references/motion-language.md
+              - "故事设计 —— PR → 叙事": skills/hyperframes/pr-to-video/references/story-design.md
+              - "视觉设计 —— PR-to-video 的逐帧镜头方法": skills/hyperframes/pr-to-video/references/visual-design.md
+              - "Frame worker —— PR-to-video 增量": skills/hyperframes/pr-to-video/sub-agents/frame-worker.md
+          - "embedded-captions":
+              - skills/hyperframes/embedded-captions/index.md
+              - "目录（THE CATALOG）—— 一个前端，背后三个引擎": skills/hyperframes/embedded-captions/CATALOG.md
+              - "DNA":
+                  - "DNA registry —— 挑一种视觉语言，而不是挑一个 preset": skills/hyperframes/embedded-captions/dna/README.md
+              - "模式":
+                  - "Cinematic 模式（纯嵌入）—— 一个引擎，六套 DNA": skills/hyperframes/embedded-captions/modes/cinematic/README.md
+                  - "模板：champion": skills/hyperframes/embedded-captions/modes/cinematic/_archive/champion/spec.md
+                  - "模板：memory-wall": skills/hyperframes/embedded-captions/modes/cinematic/_archive/memory-wall/spec.md
+                  - "模板：portrait-header": skills/hyperframes/embedded-captions/modes/cinematic/_archive/portrait-header/spec.md
+                  - "cinematic-cream —— 规范": skills/hyperframes/embedded-captions/modes/cinematic/cinematic-cream/spec.md
+                  - "字幕模板 —— 解剖（共享引擎）": skills/hyperframes/embedded-captions/modes/standard/_anatomy.md
+                  - "字幕模板 —— 动效语言": skills/hyperframes/embedded-captions/modes/standard/_motion.md
+              - "参考":
+                  - "电影感字幕的美学原则": skills/hyperframes/embedded-captions/references/aesthetic-principles.md
+                  - "反模式": skills/hyperframes/embedded-captions/references/anti-patterns.md
+                  - "定制设计 vs. preset —— 何时覆盖，何时克隆": skills/hyperframes/embedded-captions/references/bespoke-vs-presets.md
+                  - "字幕分组": skills/hyperframes/embedded-captions/references/caption-grouping.md
+                  - "构图工艺 —— 仅适用于嵌入轨": skills/hyperframes/embedded-captions/references/composition-craft.md
+                  - "方向目录": skills/hyperframes/embedded-captions/references/direction-catalog.md
+                  - "失败模式 —— 吃过苦头才学到的": skills/hyperframes/embedded-captions/references/failure-modes.md
+                  - "布局启发式": skills/hyperframes/embedded-captions/references/layout-heuristics.md
+                  - "动效词汇 —— 有名字的词入场手法": skills/hyperframes/embedded-captions/references/motion-vocabulary.md
+                  - "Rail 轨 —— 标准的 lower-third 字幕": skills/hyperframes/embedded-captions/references/rail.md
+                  - "参照标杆 —— 世界级是什么样子": skills/hyperframes/embedded-captions/references/reference-bar.md
+                  - "场景类型 —— 选对模板": skills/hyperframes/embedded-captions/references/scene-types.md
+                  - "字体排印手法 —— 是色板，不是牢笼": skills/hyperframes/embedded-captions/references/typographic-moves.md
+                  - "字体排印 preset": skills/hyperframes/embedded-captions/references/typography-presets.md
+              - "主题":
+                  - "THEME 模式 —— 组合而成的视觉宪章": skills/hyperframes/embedded-captions/themes/README.md
+          - "talking-head-recut":
+              - skills/hyperframes/talking-head-recut/index.md
+              - "署名声明": skills/hyperframes/talking-head-recut/NOTICE.md
+              - "V—Take 视觉设计库": skills/hyperframes/talking-head-recut/references/DESIGN_INDEX.md
+          - "motion-graphics":
+              - skills/hyperframes/motion-graphics/index.md
+              - "Director → catalog block 对照表（复用优先）": skills/hyperframes/motion-graphics/catalog-map.md
+              - "子 agent":
+                  - "Motion-Graphics Builder": skills/hyperframes/motion-graphics/agents/builder.md
+                  - "Motion-Graphics Director": skills/hyperframes/motion-graphics/agents/director.md
+                  - "定稿 / 修复子 agent": skills/hyperframes/motion-graphics/agents/finalize.md
+              - "类别":
+                  - "asset-fusion —— category 模块（搜索驱动 · 全新的 IP）": skills/hyperframes/motion-graphics/categories/asset-fusion/module.md
+                  - "charts —— category 模块": skills/hyperframes/motion-graphics/categories/charts/module.md
+                  - "kinetic-type —— category 模块": skills/hyperframes/motion-graphics/categories/kinetic-type/module.md
+                  - "logo-reveal —— category 模块": skills/hyperframes/motion-graphics/categories/logo-reveal/module.md
+                  - "lower-thirds —— category 模块": skills/hyperframes/motion-graphics/categories/lower-thirds/module.md
+                  - "maps —— category 模块": skills/hyperframes/motion-graphics/categories/maps/module.md
+                  - "news —— category 模块（搜索驱动）": skills/hyperframes/motion-graphics/categories/news/module.md
+                  - "stat —— category 模块": skills/hyperframes/motion-graphics/categories/stat/module.md
+                  - "tweet —— category 模块（搜索驱动）": skills/hyperframes/motion-graphics/categories/tweet/module.md
+                  - "webpage —— category 模块（搜索驱动）": skills/hyperframes/motion-graphics/categories/webpage/module.md
+              - "定位":
+                  - "locate —— 在图片里找到 \"X\"（不假设有检测器 API）": skills/hyperframes/motion-graphics/grounding/PROTOCOL.md
+              - "阶段":
+                  - "source 阶段 —— 获取素材（素材优先）": skills/hyperframes/motion-graphics/phases/source/guide.md
+              - "参考":
+                  - "Builder 契约 —— composition 规则（agents/builder.md 背后的细节）": skills/hyperframes/motion-graphics/references/builder-contract.md
+                  - "文字模块 · 运动词汇（基本元素 → GSAP）": skills/hyperframes/motion-graphics/references/motion-vocabulary.md
+                  - "shot-plan IR": skills/hyperframes/motion-graphics/references/shot-plan-ir.md
+          - "music-to-video":
+              - skills/hyperframes/music-to-video/index.md
+              - "Frame 骨架（Step 2）—— 读懂音乐，排出各个 frame": skills/hyperframes/music-to-video/references/frame-skeleton.md
+              - "素材处理方式 —— 把用户媒体编织到节拍主干上": skills/hyperframes/music-to-video/references/montage.md
+              - "运动基本元素 catalog —— 自由组合菜单": skills/hyperframes/music-to-video/references/motion-primitive-catalog.md
+              - "使用 text-spectral-rays —— 它独占自己的文字标志": skills/hyperframes/music-to-video/references/motion-primitives/text-spectral-rays/USAGE.md
+              - "规划（Step 3）—— 挑选品牌，填满每一个 frame": skills/hyperframes/music-to-video/references/planning.md
+              - "STORYBOARD.md 格式 —— frame → group": skills/hyperframes/music-to-video/references/storyboard-format.md
+              - "模板 catalog —— 选择菜单（Step 3）": skills/hyperframes/music-to-video/references/template-catalog.md
+              - "Frame worker —— 逐 frame 的 composition 作者（music-to-video）": skills/hyperframes/music-to-video/sub-agents/frame-worker.md
+          - "slideshow":
+              - skills/hyperframes/slideshow/index.md
+              - "独立运行的 HyperFrames Slideshow Harness": skills/hyperframes/slideshow/references/standalone-harness.md
+          - "general-video":
+              - skills/hyperframes/general-video/index.md
+              - "Frame worker —— general-video 增量部分": skills/hyperframes/general-video/sub-agents/frame-worker.md
+          - "remotion-to-hyperframes":
+              - skills/hyperframes/remotion-to-hyperframes/index.md
+              - "Remotion → HyperFrames API 映射": skills/hyperframes/remotion-to-hyperframes/references/api-map.md
+              - "何时退出：runtime 互操作模式": skills/hyperframes/remotion-to-hyperframes/references/escape-hatch.md
+              - "Eval：如何端到端地校验一次翻译": skills/hyperframes/remotion-to-hyperframes/references/eval.md
+              - "字体翻译": skills/hyperframes/remotion-to-hyperframes/references/fonts.md
+              - "翻译的局限": skills/hyperframes/remotion-to-hyperframes/references/limitations.md
+              - "Lottie 翻译：@remotion/lottie → HF lottie adapter": skills/hyperframes/remotion-to-hyperframes/references/lottie.md
+              - "媒体翻译：Audio、Video、Img、IFrame、staticFile": skills/hyperframes/remotion-to-hyperframes/references/media.md
+              - "参数翻译：Zod schema、defaultProps、calculateMetadata": skills/hyperframes/remotion-to-hyperframes/references/parameters.md
+              - "Sequencing 翻译：Sequence、Series、Composition 根": skills/hyperframes/remotion-to-hyperframes/references/sequencing.md
+              - "Timing 翻译：interpolate、spring、easing": skills/hyperframes/remotion-to-hyperframes/references/timing.md
+              - "转场翻译：@remotion/transitions → HF 交叉淡化 / shader-transitions": skills/hyperframes/remotion-to-hyperframes/references/transitions.md
+          - "hyperframes-core":
+              - skills/hyperframes/hyperframes-core/index.md
+              - "Composition 模式": skills/hyperframes/hyperframes-core/references/composition-patterns.md
+              - "创作者剪辑配方": skills/hyperframes/hyperframes-core/references/creator-editing-recipes.md
+              - "Data 属性参考": skills/hyperframes/hyperframes-core/references/data-attributes.md
+              - "确定性、动画 Runtime 与布局": skills/hyperframes/hyperframes-core/references/determinism-rules.md
+              - "全屏运动模式": skills/hyperframes/hyperframes-core/references/full-screen-motion.md
+              - "最小 Composition": skills/hyperframes/hyperframes-core/references/minimal-composition.md
+              - "Sub-Composition": skills/hyperframes/hyperframes-core/references/sub-compositions.md
+              - "HyperFrames Tailwind": skills/hyperframes/hyperframes-core/references/tailwind.md
+              - "Track 与 Clip": skills/hyperframes/hyperframes-core/references/tracks-and-clips.md
+              - "变量与媒体": skills/hyperframes/hyperframes-core/references/variables-and-media.md
+          - "hyperframes-animation":
+              - skills/hyperframes/hyperframes-animation/index.md
+              - "Blueprint（经过验证的形状）": skills/hyperframes/hyperframes-animation/blueprints-index.md
+              - "规则索引": skills/hyperframes/hyperframes-animation/rules-index.md
+              - "视觉技法参考": skills/hyperframes/hyperframes-animation/techniques.md
+              - "运行时适配":
+                  - "文字效果 —— 参考": skills/hyperframes/hyperframes-animation/adapters/animate-text.md
+                  - "用于 HyperFrames 的 Anime.js": skills/hyperframes/hyperframes-animation/adapters/animejs.md
+                  - "用于 HyperFrames 的 CSS 动画": skills/hyperframes/hyperframes-animation/adapters/css-animations.md
+                  - "Easing、Stagger 与基于函数的值": skills/hyperframes/hyperframes-animation/adapters/gsap-easing-and-stagger.md
+                  - "Timeline 与 Label": skills/hyperframes/hyperframes-animation/adapters/gsap-timeline-and-labels.md
+                  - "Transform 与性能": skills/hyperframes/hyperframes-animation/adapters/gsap-transforms-and-perf.md
+                  - "HyperFrames GSAP": skills/hyperframes/hyperframes-animation/adapters/gsap.md
+                  - "HTML-in-Canvas 模式": skills/hyperframes/hyperframes-animation/adapters/html-in-canvas-patterns.md
+                  - "HyperFrames 中的 Lottie": skills/hyperframes/hyperframes-animation/adapters/lottie.md
+                  - "HyperFrames 中的 Three.js": skills/hyperframes/hyperframes-animation/adapters/three.md
+                  - "HyperFrames 中的 TypeGPU / WebGPU": skills/hyperframes/hyperframes-animation/adapters/typegpu.md
+                  - "HyperFrames 中的 Web Animations API": skills/hyperframes/hyperframes-animation/adapters/waapi.md
+              - "场景蓝图":
+                  - "agent-progress-theater —— Agent 进度剧场": skills/hyperframes/hyperframes-animation/blueprints/agent-progress-theater.md
+                  - "camera-journey —— 摄像机旅程": skills/hyperframes/hyperframes-animation/blueprints/camera-journey.md
+                  - "comparison-split —— 对比分屏卡片": skills/hyperframes/hyperframes-animation/blueprints/comparison-split.md
+                  - "constellation-hub —— 星座 / 中枢 + 卫星": skills/hyperframes/hyperframes-animation/blueprints/constellation-hub.md
+                  - "cta-morph-press —— CTA 变形与按压": skills/hyperframes/hyperframes-animation/blueprints/cta-morph-press.md
+                  - "cursor-ui-demo — 光标驱动的 UI 演示": skills/hyperframes/hyperframes-animation/blueprints/cursor-ui-demo.md
+                  - "dataviz-countup — 数据可视化 / 数字滚动计数": skills/hyperframes/hyperframes-animation/blueprints/dataviz-countup.md
+                  - "device-surface-showcase — 设备 / 界面展示": skills/hyperframes/hyperframes-animation/blueprints/device-surface-showcase.md
+                  - "fixed-anchor-cycle — 固定锚点，轮换世界": skills/hyperframes/hyperframes-animation/blueprints/fixed-anchor-cycle.md
+                  - "grid-card-assemble — 网格 / 卡片组装": skills/hyperframes/hyperframes-animation/blueprints/grid-card-assemble.md
+                  - "kinetic-type-beats — 动态文字段落节拍": skills/hyperframes/hyperframes-animation/blueprints/kinetic-type-beats.md
+                  - "logo-assemble-lockup — Logo 组装 → Lockup": skills/hyperframes/hyperframes-animation/blueprints/logo-assemble-lockup.md
+                  - "overwhelm-surround — 压迫 / 围拢": skills/hyperframes/hyperframes-animation/blueprints/overwhelm-surround.md
+                  - "panel-edit-live-sync —— 面板编辑，实时同步": skills/hyperframes/hyperframes-animation/blueprints/panel-edit-live-sync.md
+                  - "prompt-type-submit-generate —— 输入提示词、提交、生成": skills/hyperframes/hyperframes-animation/blueprints/prompt-type-submit-generate.md
+                  - "spatial-pan-stations —— 空间平移 / 站点": skills/hyperframes/hyperframes-animation/blueprints/spatial-pan-stations.md
+                  - "ticker-takeover —— 滚字被挤开 / 接管": skills/hyperframes/hyperframes-animation/blueprints/ticker-takeover.md
+                  - "titlecard-reveal —— 标题卡 / 单卡揭示": skills/hyperframes/hyperframes-animation/blueprints/titlecard-reveal.md
+                  - "transcript-scroll-artifact-reveal —— 对话记录滚动 + 产物揭示": skills/hyperframes/hyperframes-animation/blueprints/transcript-scroll-artifact-reveal.md
+                  - "typewriter-reveal —— 打字机揭示": skills/hyperframes/hyperframes-animation/blueprints/typewriter-reveal.md
+                  - "video-text-pivot —— 视频 → 文字转向": skills/hyperframes/hyperframes-animation/blueprints/video-text-pivot.md
+                  - "zoom-out-workspace-reveal —— 拉远揭示工作区": skills/hyperframes/hyperframes-animation/blueprints/zoom-out-workspace-reveal.md
+              - "参考":
+                  - "运动模糊 —— 任何动画元素上的快门拖影": skills/hyperframes/hyperframes-animation/references/motion-blur.md
+              - "动效规则":
+                  - "3D Camera Flight（3D 镜头飞行）": skills/hyperframes/hyperframes-animation/rules/3d-camera-flight.md
+                  - "3D Page Scroll（3D 页面滚动）": skills/hyperframes/hyperframes-animation/rules/3d-page-scroll.md
+                  - "3D Text Depth Layers（3D 文字纵深图层）": skills/hyperframes/hyperframes-animation/rules/3d-text-depth-layers.md
+                  - "AI Tracking Box（AI 跟踪框）": skills/hyperframes/hyperframes-animation/rules/ai-tracking-box.md
+                  - "Ambient Glow Bloom（环境辉光绽放）": skills/hyperframes/hyperframes-animation/rules/ambient-glow-bloom.md
+                  - "锚定布局展开": skills/hyperframes/hyperframes-animation/rules/anchored-layout-expand.md
+                  - "ASR 关键词发光": skills/hyperframes/hyperframes-animation/rules/asr-keyword-glow.md
+                  - "头像云网络": skills/hyperframes/hyperframes-animation/rules/avatar-cloud-network.md
+                  - "两阶段摄像机光标跟踪": skills/hyperframes/hyperframes-animation/rules/camera-cursor-tracking.md
+                  - "卡片形变锚点": skills/hyperframes/hyperframes-animation/rules/card-morph-anchor.md
+                  - "中心向外扩散": skills/hyperframes/hyperframes-animation/rules/center-outward-expansion.md
+                  - "图表拖动读数": skills/hyperframes/hyperframes-animation/rules/chart-scrub-readout.md
+                  - "色差故障": skills/hyperframes/hyperframes-animation/rules/chromatic-glitch.md
+                  - "上下文感知光标": skills/hyperframes/hyperframes-animation/rules/context-sensitive-cursor.md
+                  - "控件-目标同步": skills/hyperframes/hyperframes-animation/rules/control-target-sync.md
+                  - "坐标目标缩放": skills/hyperframes/hyperframes-animation/rules/coordinate-target-zoom.md
+                  - "动态缩放计数": skills/hyperframes/hyperframes-animation/rules/counting-dynamic-scale.md
+                  - "记号笔高亮的 CSS 模式": skills/hyperframes/hyperframes-animation/rules/css-marker-patterns.md
+                  - "光标点击涟漪": skills/hyperframes/hyperframes-animation/rules/cursor-click-ripple.md
+                  - "光标拖动": skills/hyperframes/hyperframes-animation/rules/cursor-drag.md
+                  - "景深模糊（选择性对焦 / 移焦）": skills/hyperframes/hyperframes-animation/rules/depth-of-field-blur.md
+                  - "纵深散开 ↔ 组装": skills/hyperframes/hyperframes-animation/rules/depth-scatter-assemble.md
+                  - "离散文字序列": skills/hyperframes/hyperframes-animation/rules/discrete-text-sequence.md
+                  - "动态内容排程": skills/hyperframes/hyperframes-animation/rules/dynamic-content-sequencing.md
+                  - "渐变文字扫光": skills/hyperframes/hyperframes-animation/rules/gradient-text-sweep.md
+                  - "HyperFrames 的 GSAP 效果": skills/hyperframes/hyperframes-animation/rules/gsap-effects.md
+                  - "Hacker Flip 3D 揭示": skills/hyperframes/hyperframes-animation/rules/hacker-flip-3d.md
+                  - "Kinetic Beat Slam": skills/hyperframes/hyperframes-animation/rules/kinetic-beat-slam.md
+                  - "Motion-Blur Streak": skills/hyperframes/hyperframes-animation/rules/motion-blur-streak.md
+                  - "Multi-Cursor Choreography": skills/hyperframes/hyperframes-animation/rules/multi-cursor-choreography.md
+                  - "Multi-Phase Camera": skills/hyperframes/hyperframes-animation/rules/multi-phase-camera.md
+                  - "Nudge Curve": skills/hyperframes/hyperframes-animation/rules/nudge-curve.md
+                  - "带 3D 入场的轨道运动（Orbit with 3D Entry）": skills/hyperframes/hyperframes-animation/rules/orbit-3d-entry.md
+                  - "Particle Burst": skills/hyperframes/hyperframes-animation/rules/particle-burst.md
+                  - "Physics Press Reaction（光标 + 元素同步）": skills/hyperframes/hyperframes-animation/rules/physics-press-reaction.md
+                  - "Press-Release Spring Chain": skills/hyperframes/hyperframes-animation/rules/press-release-spring.md
+                  - "Reactive Displacement": skills/hyperframes/hyperframes-animation/rules/reactive-displacement.md
+                  - "Scale-Swap Transition": skills/hyperframes/hyperframes-animation/rules/scale-swap-transition.md
+                  - "Sine Wave Loop（含蓄抖动 / 有界环境运动）": skills/hyperframes/hyperframes-animation/rules/sine-wave-loop.md
+                  - "Split Tilt Cards": skills/hyperframes/hyperframes-animation/rules/split-tilt-cards.md
+                  - "Spring-Pop Entrance": skills/hyperframes/hyperframes-animation/rules/spring-pop-entrance.md
+                  - "Stat Bars & Fills": skills/hyperframes/hyperframes-animation/rules/stat-bars-and-fills.md
+                  - "SVG Icon Enrichment": skills/hyperframes/hyperframes-animation/rules/svg-icon-enrichment.md
+                  - "SVG Path Draw": skills/hyperframes/hyperframes-animation/rules/svg-path-draw.md
+                  - "Theme Crossfade Morph": skills/hyperframes/hyperframes-animation/rules/theme-crossfade-morph.md
+                  - "Vertical Spring Ticker（老虎机）": skills/hyperframes/hyperframes-animation/rules/vertical-spring-ticker.md
+                  - "Viewport Change（虚拟镜头）": skills/hyperframes/hyperframes-animation/rules/viewport-change.md
+                  - "瀑布入场（Waterfall Entry）": skills/hyperframes/hyperframes-animation/rules/waterfall-entry.md
+              - "转场":
+                  - "转场 registry——机器用的唯一事实来源": skills/hyperframes/hyperframes-animation/transitions/TRANSITION-REGISTRY.md
+                  - "转场目录": skills/hyperframes/hyperframes-animation/transitions/catalog.md
+                  - "css-3d": skills/hyperframes/hyperframes-animation/transitions/css-3d.md
+                  - "css-blur": skills/hyperframes/hyperframes-animation/transitions/css-blur.md
+                  - "css-cover": skills/hyperframes/hyperframes-animation/transitions/css-cover.md
+                  - "css-destruction": skills/hyperframes/hyperframes-animation/transitions/css-destruction.md
+                  - "css-dissolve": skills/hyperframes/hyperframes-animation/transitions/css-dissolve.md
+                  - "css-distortion": skills/hyperframes/hyperframes-animation/transitions/css-distortion.md
+                  - "css-grid": skills/hyperframes/hyperframes-animation/transitions/css-grid.md
+                  - "css-light": skills/hyperframes/hyperframes-animation/transitions/css-light.md
+                  - "css-mechanical": skills/hyperframes/hyperframes-animation/transitions/css-mechanical.md
+                  - "css-other": skills/hyperframes/hyperframes-animation/transitions/css-other.md
+                  - "css-push": skills/hyperframes/hyperframes-animation/transitions/css-push.md
+                  - "css-radial": skills/hyperframes/hyperframes-animation/transitions/css-radial.md
+                  - "css-scale": skills/hyperframes/hyperframes-animation/transitions/css-scale.md
+                  - "场景转场": skills/hyperframes/hyperframes-animation/transitions/overview.md
+          - "hyperframes-keyframes":
+              - skills/hyperframes/hyperframes-keyframes/index.md
+              - "关键帧机制参考": skills/hyperframes/hyperframes-keyframes/references/keyframe-patterns.md
+          - "hyperframes-creative":
+              - skills/hyperframes/hyperframes-creative/index.md
+              - "frame preset":
+                  - "Biennale Yellow — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/biennale-yellow/FRAME.md
+                  - "BlockFrame — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/blockframe/FRAME.md
+                  - "Blue Professional — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/blue-professional/FRAME.md
+                  - "Bold Poster — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/bold-poster/FRAME.md
+                  - "Broadside — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/broadside/FRAME.md
+                  - "Capsule — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/capsule/FRAME.md
+                  - "Cartesian — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/cartesian/FRAME.md
+                  - "Cobalt Grid — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/cobalt-grid/FRAME.md
+                  - "Code editorial — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/code-editorial/FRAME.md
+                  - "Coral — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/coral/FRAME.md
+                  - "Creative Mode — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/creative-mode/FRAME.md
+                  - "Daisy Days — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/daisy-days/FRAME.md
+                  - "Editorial Forest — Frame (video / frame layer)": skills/hyperframes/hyperframes-creative/frame-presets/editorial-forest/FRAME.md
+              - "色板":
+                  - "大胆 / 活力（Bold / Energetic）": skills/hyperframes/hyperframes-creative/palettes/bold-energetic.md
+                  - "简洁 / 企业（Clean / Corporate）": skills/hyperframes/hyperframes-creative/palettes/clean-corporate.md
+                  - "暗色 / 高级（Dark / Premium）": skills/hyperframes/hyperframes-creative/palettes/dark-premium.md
+                  - "宝石 / 浓郁（Jewel / Rich）": skills/hyperframes/hyperframes-creative/palettes/jewel-rich.md
+                  - "单色（Monochrome）": skills/hyperframes/hyperframes-creative/palettes/monochrome.md
+                  - "自然 / 大地（Nature / Earth）": skills/hyperframes/hyperframes-creative/palettes/nature-earth.md
+                  - "霓虹 / 电光（Neon / Electric）": skills/hyperframes/hyperframes-creative/palettes/neon-electric.md
+                  - "粉彩 / 柔和（Pastel / Soft）": skills/hyperframes/hyperframes-creative/palettes/pastel-soft.md
+                  - "暖调 / 编辑感（Warm / Editorial）": skills/hyperframes/hyperframes-creative/palettes/warm-editorial.md
+              - "参考":
+                  - "音频响应动画": skills/hyperframes/hyperframes-creative/references/audio-reactive.md
+                  - "段落节拍导演": skills/hyperframes/hyperframes-creative/references/beat-direction.md
+                  - "Composition 图式": skills/hyperframes/hyperframes-creative/references/composition-patterns.md
+                  - "运动中的数据": skills/hyperframes/hyperframes-creative/references/data-in-motion.md
+                  - "设计遵循度": skills/hyperframes/hyperframes-creative/references/design-adherence.md
+                  - "设计选择器": skills/hyperframes/hyperframes-creative/references/design-picker.md
+                  - "设计规范 —— frame.md / design.md": skills/hyperframes/hyperframes-creative/references/design-spec.md
+                  - "内部风格（House Style）": skills/hyperframes/hyperframes-creative/references/house-style.md
+                  - "运动原则": skills/hyperframes/hyperframes-creative/references/motion-principles.md
+                  - "旁白与脚本": skills/hyperframes/hyperframes-creative/references/narration.md
+                  - "Prompt 扩写": skills/hyperframes/hyperframes-creative/references/prompt-expansion.md
+                  - "故事主干 —— 价值优先的叙事准则": skills/hyperframes/hyperframes-creative/references/story-spine.md
+                  - "分镜配方 —— 像发布影片那样规划一支视频": skills/hyperframes/hyperframes-creative/references/storyboard-recipe.md
+                  - "字体排印": skills/hyperframes/hyperframes-creative/references/typography.md
+                  - "视频构图": skills/hyperframes/hyperframes-creative/references/video-composition.md
+                  - "视觉风格库": skills/hyperframes/hyperframes-creative/references/visual-styles.md
+          - "media-use":
+              - skills/hyperframes/media-use/index.md
+              - "音频":
+                  - "背景音乐（BGM）": skills/hyperframes/media-use/audio/references/bgm.md
+                  - "字幕": skills/hyperframes/media-use/audio/references/captions/authoring.md
+                  - "动态字幕技法": skills/hyperframes/media-use/audio/references/captions/motion.md
+                  - "转写稿指南": skills/hyperframes/media-use/audio/references/captions/transcript-handling.md
+                  - "背景移除": skills/hyperframes/media-use/audio/references/remove-background.md
+                  - "依赖与缓存": skills/hyperframes/media-use/audio/references/requirements.md
+                  - "音效（SFX）": skills/hyperframes/media-use/audio/references/sfx.md
+                  - "转写": skills/hyperframes/media-use/audio/references/transcribe.md
+                  - "TTS → 字幕": skills/hyperframes/media-use/audio/references/tts-to-captions.md
+                  - "文字转语音": skills/hyperframes/media-use/audio/references/tts.md
+              - "LUT":
+                  - "LUT 库（编写说明）": skills/hyperframes/media-use/luts/README.md
+              - "参考":
+                  - "音频引擎 —— 旁白、音乐、音效、字幕、转写": skills/hyperframes/media-use/references/audio.md
+                  - "调色 —— grade 块与 LUT": skills/hyperframes/media-use/references/grading.md
+                  - "媒体处理方案配方": skills/hyperframes/media-use/references/media-treatment-recipes.md
+                  - "媒体处理方案": skills/hyperframes/media-use/references/media-treatments.md
+                  - "用户记忆 —— 偏好与配方": skills/hyperframes/media-use/references/memory.md
+                  - "职责矩阵、使用统计、遥测、隐私": skills/hyperframes/media-use/references/meta.md
+                  - "媒体操作：agent 指南": skills/hyperframes/media-use/references/operations.md
+                  - "Resolve —— 命令、参数、复用、收编（adopt）、清单": skills/hyperframes/media-use/references/resolve.md
+                  - "安装与提供方 —— 安装、认证、RAM 阶梯、强制指定提供方": skills/hyperframes/media-use/references/setup-providers.md
+                  - "media-use 使用情况仪表盘": skills/hyperframes/media-use/references/telemetry-dashboard.md
+          - "hyperframes-audio":
+              - skills/hyperframes/hyperframes-audio/index.md
+              - "三个音频属性": skills/hyperframes/hyperframes-audio/references/attributes.md
+              - "诊断你听不到的音频": skills/hyperframes/hyperframes-audio/references/diagnosis.md
+              - "效果 registry": skills/hyperframes/hyperframes-audio/references/fx-registry.md
+              - "Preset、具名任务（job）和单旋钮 profile": skills/hyperframes/hyperframes-audio/references/presets.md
+          - "hyperframes-cli":
+              - skills/hyperframes/hyperframes-cli/index.md
+              - "生成项目的节拍网格": skills/hyperframes/hyperframes-cli/references/beats.md
+              - "cloud —— HeyGen 托管渲染（零基础设施）": skills/hyperframes/hyperframes-cli/references/cloud.md
+              - "在 Google Cloud 上用 Cloud Run 渲染": skills/hyperframes/hyperframes-cli/references/cloudrun.md
+              - "对比与批量渲染": skills/hyperframes/hyperframes-cli/references/compare-and-batch.md
+              - "doctor、browser": skills/hyperframes/hyperframes-cli/references/doctor-browser.md
+              - "init、capture、skills": skills/hyperframes/hyperframes-cli/references/init-and-scaffold.md
+              - "在 AWS 上用 Lambda 渲染": skills/hyperframes/hyperframes-cli/references/lambda.md
+              - "lint、check、snapshot": skills/hyperframes/hyperframes-cli/references/lint-validate-inspect.md
+              - "preview、play、render、publish": skills/hyperframes/hyperframes-cli/references/preview-render.md
+              - "info、upgrade、compositions、timeline、docs、benchmark、telemetry、素材预处理": skills/hyperframes/hyperframes-cli/references/upgrade-info-misc.md
+          - "hyperframes-registry":
+              - skills/hyperframes/hyperframes-registry/index.md
+              - "完整示例：添加一个 block": skills/hyperframes/hyperframes-registry/examples/add-block.md
+              - "完整示例：添加一个 component": skills/hyperframes/hyperframes-registry/examples/add-component.md
+              - "Component 质量门槛": skills/hyperframes/hyperframes-registry/references/component-quality-bar.md
+              - "向 registry 贡献 block 或 component": skills/hyperframes/hyperframes-registry/references/contributing.md
+              - "demo.html 约定": skills/hyperframes/hyperframes-registry/references/demo-html-pattern.md
+              - "Registry 发现": skills/hyperframes/hyperframes-registry/references/discovery.md
+              - "安装位置": skills/hyperframes/hyperframes-registry/references/install-locations.md
+              - "占位材质": skills/hyperframes/hyperframes-registry/references/placeholder-material.md
+              - "贡献用模板": skills/hyperframes/hyperframes-registry/references/templates.md
+              - "接入 block": skills/hyperframes/hyperframes-registry/references/wiring-blocks.md
+              - "接入 component": skills/hyperframes/hyperframes-registry/references/wiring-components.md
+          - "figma": skills/hyperframes/figma/index.md
+          - "hyperframes-studio": skills/hyperframes/hyperframes-studio/index.md
       - FastAPI 后端:
           - skills/fastapi/index.md
           - 项目布局: skills/fastapi/reference/项目布局.md

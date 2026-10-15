@@ -803,3 +803,79 @@
 @media (max-width: 40em) {
   .md-typeset .gallery-pair { grid-template-columns: 1fr; }
 }
+
+/* ================================================================
+   10. 时间线 .zx-timeline（活例：posts/wiki-tech/index.md 的能力时间线，写法见写作规范第 12 节）
+   <div class="zx-timeline" markdown> 包住若干 ### 条目（md_in_html），容器第一个子元素必须是 h3；
+   条目标题上用 {: data-kind="配置 + 前端" } 写分类（attr_list）。
+   竖线是容器的 ::before，贯穿容器全高；条目只在 h3 前挂一个方块。所以条目里放代码块、表格、
+   提示框、图都不会把线打断，也不靠 JS。方块：data-kind 只有「配置」的空心（官方能力），
+   带「前端」或「流水线」的填荧光绿（自己写的代码）。
+   ================================================================ */
+.md-typeset .zx-timeline {
+  --tl-gutter: 1.9rem;   /* 正文离容器左缘 */
+  --tl-axis: .55rem;     /* 竖线中心离容器左缘 */
+  position: relative;
+  padding-left: var(--tl-gutter);
+  margin: 1.8em 0 2.4em;
+}
+/* 竖线从第一个方块的中心起：h3 字号 1.1em × 行高 1.5 的一半 = .825em */
+.md-typeset .zx-timeline::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--tl-axis) - 1px);
+  top: .825em;
+  bottom: 0;
+  width: 2px;
+  background: var(--ink);
+}
+/* 线尾一截横线收口 */
+.md-typeset .zx-timeline::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--tl-axis) - 7px);
+  bottom: 0;
+  width: 14px;
+  height: 2px;
+  background: var(--ink);
+}
+.md-typeset .zx-timeline > h3 {
+  position: relative;
+  font-size: 1.1em;
+  line-height: 1.5;
+  margin: 2.2em 0 .5em;
+}
+.md-typeset .zx-timeline > h3:first-child { margin-top: 0; }
+.md-typeset .zx-timeline > h3::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--tl-axis) - var(--tl-gutter) - 7px);
+  top: calc(.75em - 7px);
+  width: 14px;
+  height: 14px;
+  box-sizing: border-box;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+}
+.md-typeset .zx-timeline > h3[data-kind*="前端"]::before,
+.md-typeset .zx-timeline > h3[data-kind*="流水线"]::before { background: var(--coral); }
+/* 分类角标 */
+.md-typeset .zx-timeline > h3[data-kind]::after {
+  content: attr(data-kind);
+  display: inline-block;
+  margin-left: .6em;
+  padding: 0 .5em;
+  border: 1px solid var(--line);
+  font-size: .62em;
+  font-weight: 500;
+  line-height: 1.7;
+  letter-spacing: .04em;
+  color: var(--ink-mute);
+  vertical-align: .2em;
+  white-space: nowrap;
+}
+/* 需求原话：引用块竖线换成荧光绿，和时间轴的墨线分开 */
+[dir=ltr] .md-typeset .zx-timeline blockquote { border-left-color: var(--coral); }
+@media (max-width: 40em) {
+  .md-typeset .zx-timeline { --tl-gutter: 1.4rem; --tl-axis: .4rem; }
+}

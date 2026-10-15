@@ -146,7 +146,7 @@ sequenceDiagram
 
     <span id="mermaid-screenshot"></span>mermaid 是 closed shadow root，脚本测不到有没有渲染成功，只能截图看 —— 所以**含 mermaid 的新页面必须截一次图**再发。
 
-## 7. 脚注 `[^1]`（footnotes）
+## 7. 脚注 `[^1]`（footnotes） { #footnotes }
 
 文件最大只能 20MB[^1]，单条消息长度有限制[^dingtalk]。
 
@@ -233,6 +233,48 @@ Pygments 高亮和右上角复制按钮全都原样保留，[`vendor/js-runner.j
 
 活例：[开发环境第 0 步](../../../posts/ai-assistant/dev-env.md#proxy)，代码块里的服务器地址和下面一行的登录密码；网关的厂商 key 打码写在 [API 中转](../../../posts/ai-assistant/api-gateway.md#keys)（DeepSeek 已上线，key 还没写进来）。
 
+## 12. 时间线 `<div class="zx-timeline" markdown>` { #timeline }
+
+一串按时间排的事件，要画成一条从上往下的线时，用 `md_in_html` 包一个 div，里面每条是一个 `###`：
+
+<div class="zx-timeline" markdown>
+
+### 2026-08-14 · 字体本地化 {: data-kind="配置 + 前端" }
+
+> 开屏的时候加载很慢……改为本地化吧
+
+`theme.font: false`，字体真身放进 `vendor/fonts/`。
+
+### 2026-10-10 · navigation.prune {: data-kind="配置" }
+
+条目里放代码块、表格、提示框都行，线不会断：
+
+```bash
+echo 线在左边接着走
+```
+
+</div>
+
+```markdown
+<div class="zx-timeline" markdown>
+
+### 2026-08-14 · 字体本地化 {: data-kind="配置 + 前端" }
+
+> 开屏的时候加载很慢……改为本地化吧
+
+`theme.font: false`，字体真身放进 `vendor/fonts/`。
+
+</div>
+```
+
+样式在 `zx-theme.css` 第 10 节，纯 CSS：竖线挂在容器上、贯穿整个 div，条目只在标题前挂一个方块。AI 读 `.md` 源看到的仍是普通 markdown。硬性规矩：
+
+- **div 里第一个元素必须是 `###`**，开头的 `<div …>` 和结尾的 `</div>` 前后各空一行，div 里的内容不缩进
+- **`data-kind` 写分类**，渲染成标题旁的角标。值里只有「配置」的方块空心，含「前端」或「流水线」的填荧光绿；不写就是空心、没有角标
+- **日期写在标题最前面**，从旧到新往下排，新的追加在末尾
+
+活例：[本 wiki 用到的技术 · 能力时间线](../../../posts/wiki-tech/index.md#timeline)。
+
 ## 写作规范 { #写作规范 }
 
 - 同一功能有 Python / R 两种写法 → 用选项卡 `===`
@@ -244,6 +286,7 @@ Pygments 高亮和右上角复制按钮全都原样保留，[`vendor/js-runner.j
 - AI 生成概念配图 → 用[白底黑色马克笔草图](#marker-doodle-images)，一张图只讲一个概念
 - 不想公开的小字（服务器地址、域名）→ 用 `scripts/age-seal.sh` 生成 `age:…` 写进反引号，浏览器里打码、解锁后还原（规矩见[第 11 节](#age-mosaic)）
 - **引用外部一手资料：有存档、有引用、有分析**。三步缺一不可：① 真身 clone / 下载进文章 `assets/` 存档（注明出处与获取日期），文中 `??? abstract` 折叠 + `--8<--` 展示原文；② 正文摘关键原句（`>` 引用块）；③ 每处引用**必须跟自己的分析** —— 只贴引用不给分析，等于没消化。**例外**：引用的是活跃开源仓库、且原文的关键契约（Invariants / 不变量 / API）已经在正文里消化成自己的语言，可以省掉真身存档，改用**钉具体 commit hash 的 GitHub 永链**代替。前提是永链钉的是 commit 而不是 branch（内容冻结不随上游变），且读者不依赖点开链接就能理解正文——链接只做溯源。活例：[Dashboard skill](../../dashboard/index.md) 的 open-dashboard 蓝本吸收
+- **正文链接只指站内，外部来源进脚注**。markdown 链接 `[文字](路径)` 只用来引本仓库里的资源（其他页面、`assets/` 存档）；外部 URL 在正文只留一个脚注小标记 `[^名]`，链接和读取日期写进文末脚注（语法见[第 7 节](#footnotes)）—— 正文里能点的都还在本站，外部只做溯源。活例：[对象存储部署](../../../posts/wiki-tech/cos-deploy/index.md)的 `[^zensical]`、`[^llmstxt]`
 - **收录外部 git 仓库：只取核心文件，不整仓 clone 进来**。挑对理解主题真正关键的那几个文件复制进 `assets/` 存档，其余一律不进 docs —— 本 wiki 不追求完整镜像，追求核心，因为**人也要读**；要完整原貌，顺钉 commit 的永链自己去 GitHub。活例：Dashboard 蓝本吸收曾把 84 篇原文全量镜像进 `assets/`，后来删到只剩 `PATTERNS.md` + `backends/CONTRACT.md` 两份切不进单篇文章的系统级契约。唯一例外是吸收型 skill：行为定义文件（主文件 + 它引用的 references）必须收齐才能跑，见附录的吸收规矩
 - **markdown 层级缩进** 统一用 **4 个空格**（折叠块 / 选项卡 / 提示框的子内容必须缩进 4 空格才被识别）。注意：这只指 markdown 写作时的缩进，**代码块内部的 Python / 其他语言缩进原样保留，不受影响**
 - 代码块语言标识统一用 `python`（不用 `py`）

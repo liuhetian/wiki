@@ -1,0 +1,21 @@
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/design-adherence.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+
+# 设计遵循度
+
+编写完成后的验证：确认 composition 遵循了设计规范。在搭建完之后、提供预览之前运行。
+
+如果存在设计规范（`frame.md` / `design.md`），读 HTML 并检查：
+
+1. **颜色** —— composition 里的每个 hex 值都出现在规范的色板部分（不管用户给它起的标题是 Colors、Palette、Theme 还是别的）。标出任何编造的颜色。
+2. **字体排印** —— 字体族和字重与规范的字体规格一致。不得替换。
+3. **圆角** —— 如果规范声明了圆角风格，border-radius 的值要与之一致。
+4. **间距** —— 如果规范声明了密度范围，padding 和 gap 的值要落在该范围内。
+5. **纵深** —— 如果规范声明了纵深级别，阴影的用法要与之一致（flat = 无，subtle = 轻，layered = 辉光）。
+6. **回避规则** —— 如果规范里有一节列出要避免的东西（常见标题有 "What NOT to Do"、"Don'ts"、"Anti-patterns" 或 "Do's and Don'ts"），核实其中没有一项出现。
+
+把违规项列成检查清单报告。每一项都修好之后再提供预览。
+
+如果不存在设计规范（只走 house-style 的路径），核实：
+
+1. **色板一致性** —— 所有场景用的是同一套 bg、fg 和强调色。不要每个场景各自发明颜色。
+2. **没有偷懒的默认值** —— 拿 composition 对照 `house-style.md` 里的「Lazy Defaults to Question」清单。如果出现了其中任何一项，它必须是针对内容的刻意选择，而不是默认值。

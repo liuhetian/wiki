@@ -1,0 +1,11 @@
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/transitions/css-grid.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+
+## 网格（Grid）
+
+### 网格溶解（Grid Dissolve）
+
+由彩色格子组成的网格从中心以波纹方式盖满画面。覆盖到 50% 时交换场景。格子再以波纹方式淡出。
+
+**12 格**（4x3，每格 480x270）：标准；**120 格**（12x10，每格 160x108）：密集变体——不透明度更低（0.75），波纹更紧凑
+
+格子在 JS 里动态创建，按到中心的距离排序，以形成波纹式的错落。

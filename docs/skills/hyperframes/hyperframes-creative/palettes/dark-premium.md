@@ -1,0 +1,16 @@
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/palettes/dark-premium.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+
+# 暗色 / 高级（Dark / Premium）
+
+科技、金融、奢侈品、电影感内容。
+
+```
+#000000 #14213D #FCA311 #E5E5E5 #FFFFFF
+#000814 #001D3D #003566 #FFC300 #FFD60A
+#0D1B2A #1B263B #415A77 #778DA9 #E0E1DD
+#0D1321 #1D2D44 #3E5C76 #748CAB #F0EBD8
+#011627 #FDFFFC #2EC4B6 #E71D36 #FF9F1C
+#0B090A #161A1D #660708 #A4161A #E5383B
+#001427 #708D81 #F4D58D #BF0603 #8D0801
+#001524 #15616D #FFECD1 #FF7D00 #78290F
+```
