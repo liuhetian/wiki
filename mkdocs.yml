@@ -1,5 +1,12 @@
 site_name: 牛合天's wiki
 site_url: https://wiki.liuhetian.work/
+# 不是给人看的仓库地址：只为让 page.edit_url 拼出每页 .md 源文件的地址（edit_uri 是绝对地址时，
+# edit_url = edit_uri + 源文件路径），overrides/main.html 拿它写页头的发现链接，vendor/md-copy.js 的复制按钮读它。
+# 设了 repo_url 主题会在顶栏放一个仓库入口，由空的 overrides/partials/source.html 关掉；
+# 编辑按钮要开 content.action.edit 才出现，本站不开。
+repo_url: https://wiki.liuhetian.work/
+edit_uri: https://wiki.liuhetian.work/
+
 copyright: >
   Copyright &copy; 2026 Liu Hetian ·
   <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">蜀ICP备2021023978号-2</a>
@@ -29,6 +36,7 @@ extra_javascript:
   - vendor/echarts-init.js   # ```echarts 代码块渲染器；真身按需动态加载，无图页面零开销
   - vendor/js-runner.js      # ```{.js .run} 代码块的运行器：Worker 沙箱执行 + 输出面板；零依赖，无可运行块的页面直接返回
   - vendor/conflict-init.js  # ```conflict 代码块（课程页的提问）染成上问下答两半；无此类块的页面直接返回
+  - vendor/md-copy.js        # 「复制本页 Markdown 源」按钮：复制 .md 源文件，相对链接和 --8<-- 改成绝对地址；页头没有发现链接就不出按钮
   - vendor/age-init.js       # 打码：`age:…` 小字和 ```age 块显示成马赛克，解锁后还原；有密文才按需加载 vendor/age-core.js
 
 markdown_extensions:
@@ -209,6 +217,7 @@ nav:
           - 部署实操手册: posts/wiki-tech/cos-deploy/reference/deploy.md
           - 自建 git-lfs 后端: posts/wiki-tech/git-lfs.md
           - 打码：key 和小字: posts/wiki-tech/age-mosaic.md
+          - 复制本页 Markdown 源: posts/wiki-tech/md-copy.md
           - Zensical 升级评估: posts/wiki-tech/zensical-upgrade/index.md
       - 本 wiki 的目标与计划: posts/wiki-roadmap.md
       - 预测项目闭环: posts/prediction-loop.md

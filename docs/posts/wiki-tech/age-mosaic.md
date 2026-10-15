@@ -169,6 +169,7 @@ flowchart LR
 | [`vendor/age-core.js`](../../vendor/age-core.js) | age v1 解密核心：scrypt、ChaCha20-Poly1305、X25519、bech32，手写不压缩；口令和公钥两种模式都能解，开头的解密页也用它 |
 | [`vendor/age-init.js`](../../vendor/age-init.js) | 扫描 `` `age:…` `` 和 ```` ```age ```` 块，换成马赛克；解锁框、sessionStorage、锁上按钮；内嵌口令锁住的私钥 `WIKI_KEY_AGE`。页面上没有密文就不加载 core |
 | `scripts/age-seal.sh` | 写作时生成密文：内置 wiki 公钥，`read -s` 读明文，不进 shell 历史 |
+| [`scripts/age-open.py`](assets/age-open.py) | 读的一端的命令行版：从标准输入读整页 Markdown，把密文全解开再输出，见[命令行里一口气解开](#cli) |
 | `mkdocs.yml` | 注册 `age` fence 和 `age-init.js` |
 
 - **代码块里的密文要跨节点替换**：Pygments 把代码拆成很多个 span，一段密文可能横跨好几个文字节点。先把文字节点拼起来找位置，再用 Range 跨节点删掉、塞进马赛克
@@ -201,6 +202,29 @@ sed -n '/BEGIN AGE ENCRYPTED FILE/,/END AGE ENCRYPTED FILE/p' docs/vendor/age-in
 ```
 
 比对私钥用 `cmp -s`，别用 `diff`、`cat`：2026-10-01 就是 `diff` 把私钥原文打进了终端记录，只好整对换掉。
+
+## 命令行里一口气解开 { #cli }
+
+AI 或脚本读 `.md` 源时没有浏览器，打码的内容全是密文。[`age-open.py`](assets/age-open.py) 接在管道后面，整页一次解开：
+
+```bash
+set -a; source .env; set +a   # .env 里写 WIKI_AGE_PASS=口令
+curl -fsSL https://wiki.liuhetian.work/posts/ai-assistant/dev-env.md \
+  | uv run https://wiki.liuhetian.work/posts/wiki-tech/assets/age-open.py
+```
+
+- **口令不收命令行参数**：参数会留在 shell 历史、`ps` 和 AI 的对话记录里，10-01 那次口令就是这样进了对话记录。凭据按顺序找：`WIKI_AGE_KEY_FILE` 指向的私钥文件（不跑 scrypt）→ 环境变量 `WIKI_AGE_PASS` → 终端提示输入
+- **钥匙只有一处真身**：口令模式运行时去站上取 `vendor/age-init.js` 里的 `WIKI_KEY_AGE`，换钥匙对不用改脚本
+- **两种 Markdown 都认**：源文件里的 ```` ```age ```` 块解开后变普通代码块；官方 llmstxt 插件导出的版本里 armor 本来就在普通代码块里，照样认。提示框里缩进的块，缩进跟着走
+- **解不开的原样保留**：标准错误里报数；一段都没解开时退出码 1。没有密文的页原样输出，不要凭据
+- **解开的明文进了 AI 的上下文**：等于在那台机器上解锁了一次，只在自己的机器上这么用
+- 2026-10-15 测过：私钥模式解源文件和插件导出版；口令模式用一把测试私钥和测试口令搭的假站，走 `uv run <网址>`；口令错报错退出；站上真实的 `age-init.js` 能提取出 `WIKI_KEY_AGE`
+
+??? abstract "`assets/age-open.py` —— 命令行解密脚本（PEP 723 单文件，依赖 pyrage）"
+
+    ```python
+    --8<-- "scripts/age-open.py"
+    ```
 
 ## 开头那个网页：age 解密 { #demo }
 

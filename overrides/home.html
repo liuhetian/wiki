@@ -19,6 +19,9 @@
    会被 zx-theme.css 压过；extrahead 在 extra_css 之后，首页专属样式才能最后说话 #}
 {% block extrahead %}
   <link rel="stylesheet" href="{{ 'stylesheets/home.css' | url }}">
+  {# 发现链接，同 main.html 的第三件事 #}
+  {% if page and page.edit_url %}<link rel="alternate" type="text/markdown" href="{{ page.edit_url }}">{% endif %}
+  <link rel="describedby" href="{{ 'llms.txt' | url }}">
 {% endblock %}
 
 {# landing 放在 tabs 之后：顶部导航条保持原位 #}

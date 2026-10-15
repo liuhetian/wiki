@@ -9,6 +9,7 @@ description: "这个 wiki 自己用到的技术：值得细讲的一项一页（
 - [用对象存储部署 AI 友好的个人知识库](cos-deploy/index.md) —— 总纲：什么算对 AI 友好、同一份 markdown 双发布、为什么是对象存储而不是服务器；附[部署实操手册](cos-deploy/reference/deploy.md)
 - [用自己的对象存储做 git-lfs 后端](git-lfs.md) —— standalone custom transfer agent：140 行脚本替掉整个 LFS 服务，协议、坑和换存储的改法
 - [打码：key 和小字都以密文写进 wiki](age-mosaic.md) —— API key、服务器地址用 age 公钥加密后写进 markdown，浏览器里显示成马赛克，解锁后还原；六种存法的比较、对称与非对称加密、scrypt 为什么撑得住短口令，以及 encryptcontent 这类插件为什么在本站会漏
+- [复制本页 Markdown 源：不用官方插件，自己做](md-copy.md) —— 右上角复制按钮和页头发现链接：为什么不用官方 llmstxt 插件、借 `page.edit_url` 拿源文件地址、复制时相对链接怎么改成线上绝对地址
 - [Zensical 0.0.62 → 0.0.70：升不升级](zensical-upgrade/index.md) —— 八个版本逐条过：跟本站有关的只有预览重建、草稿、sitemap 几条；0.0.70 构建正式站零告警、class 未变；llmstxt 插件替不掉 `.md` 镜像
 
 还没单独成篇的：`check-links.py` 这道闸门（现在写在总纲的[闸门一节](cos-deploy/index.md#link-check)）、vendor 本地化与按需加载、中文字体子集化。哪项值得单独讲了再拆出来。
@@ -225,12 +226,20 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 撤：删掉 `timeline-init.js`、`extra_javascript` 那一行、按钮样式和写作规范里的说明，顺序固定为从旧到新。撤的理由：一页用的功能挂在全站；反转目录要依赖 Zensical 目录的内部 DOM，升级会悄悄坏；倒序还会让正文里「下面」「后来」这些话说反。另外两种做法也评估过、没做：md 照写、部署时预处理成独立的 HTML 块，会让本地 `zensical serve` 预览和线上不一致，目录和措辞的问题也还在；用选项卡把两种顺序各写一份，是零代码，但每条要写两处，AI 读到两遍，目录里的条目也会重复。
 
-### 2026-10-15 · 评估官方 llmstxt 插件：不启用 {: data-kind="配置" }
+### 2026-10-15 · 评估官方 llmstxt 插件与自研复制按钮 {: data-kind="配置 + 前端" }
 
-> 对了 zensical 中，0.0.67版本支持复制 md 到最终构建结果了吗？现在我们的手动复制是不是就不需要了，帮我调研……那现在那个复制按钮，是和 llms.txt 绑定在一起的吗？我感觉还是不能直接用官方的插件
+> 等等，现在支持我继续使用这个官方插件的理由是什么？就是这个复制按钮吗？我们能自己实现这个复制按钮吗？我还是不想要 md 渲染 md 这一步（md到html到md），因为现在我连原始的md都是ai来写，这个是必然趋势，所以完全不存在AI不能读这个问题
 
-Zensical 0.0.67 起有原生的 `llmstxt` 插件和「Copy as Markdown」按钮，跟本站 06-30 起做的 `.md` 镜像几乎是同一个想法。实测下来不启用：它导出的是 md → HTML → md 的转换版，选项卡标签、代码块标题、自定义块类型、时间线的分类角标、iframe demo 都丢，snippet 一律展开；副本路径是 `/x/index.md`，链接按 `site_url` 写死域名，只给 `sections` 列出的页出副本；复制按钮只在开插件时出现，复制的就是这份转换版；和 `deploy.sh` 的源文件镜像叠在一起时，目录首页被覆盖回源文件，按钮一页一个样。继续用 rsync 发布源文件；想要一键复制就自己做一个复制 `/x.md` 的按钮，或者等官方支持发布源文件、保留相对链接。只升级 Zensical 版本、不写进 `plugins`，碰不到这个插件。
+**不走 md → HTML → md 路线：AI 能写 md，就能读 md，忠实发布源文件就够了；官方 `llmstxt` 插件对本站的价值只剩复制按钮，于是自己做。** Zensical 0.0.67 起的这个插件把页面渲染成 HTML 再转回 Markdown，实测丢图片、iframe、选项卡标签、frontmatter，snippet 一律展开，复制按钮还和它绑死。自研的两样：`repo_url`、`edit_uri` 设成站点根，`page.edit_url` 就是源文件地址，写进页头的 `alternate` 发现链接；`vendor/md-copy.js` 在右上角放按钮，复制源文件本身，相对链接和 `--8<--` 改成线上绝对地址。只升级 Zensical 版本、不写进 `plugins`，碰不到这个插件。
 
-详见[Zensical 升级评估 · 三条路](zensical-upgrade/index.md#llmstxt-paths)。
+详见[复制本页 Markdown 源](md-copy.md)，实测细节见[Zensical 升级评估 · llmstxt](zensical-upgrade/index.md#llmstxt)。
+
+### 2026-10-15 · 命令行一口气解开打码 {: data-kind="流水线" }
+
+> 我还希望写一个解密markdown的脚本，这样客户端调用的时候 curl xxx.md | 解密脚本 密码123 可以一口气解密出来
+
+`scripts/age-open.py`（PEP 723 单文件，依赖 pyrage）软链进 `posts/wiki-tech/assets/`，客户端 `curl …md | uv run <脚本网址>` 整页解开：小字解开后留在反引号里，`age` 块变普通代码块，官方插件导出的版本也认。口令没按原想法做成命令行参数——参数会进 shell 历史、`ps` 和 AI 的对话记录——改成按顺序找私钥文件 `WIKI_AGE_KEY_FILE`、环境变量 `WIKI_AGE_PASS`、终端提示输入。口令模式运行时去站上取 `age-init.js` 里的 `WIKI_KEY_AGE`，钥匙仍只有一处真身。
+
+详见[打码 · 命令行里一口气解开](age-mosaic.md#cli)。
 
 </div>

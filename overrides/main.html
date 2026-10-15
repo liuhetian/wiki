@@ -10,11 +10,19 @@
   第二件事：图库 gallery/images/ 里，长 prompt 都写在 ```text 块里，
   而上游原文不能加 {.text .wrap}，于是按 URL 前缀给这一目录的 text 块开自动换行，规则跟 zx-theme.css
   里的 .wrap 一致。不做成全站规则，是因为站内的 ```text 大多是目录树、ASCII 图，一换行就乱了。
+
+  第三件事：页头写两行发现链接，按 llms.txt 提案——alternate 指向这一页的 .md 源文件，describedby 指向 llms.txt。
+  源文件地址取自 page.edit_url：mkdocs.yml 把 edit_uri 设成站点根，它就等于「站点根 + 源文件路径」，
+  普通文章是 /x.md、目录首页是 /x/index.md，模板里分不出来的事交给它。vendor/md-copy.js 的复制按钮也读这一行。
 #}
 {% extends "base.html" %}
 
 {% block extrahead %}
   {{ super() }}
+  {% if page and page.edit_url %}
+    <link rel="alternate" type="text/markdown" href="{{ page.edit_url }}">
+  {% endif %}
+  <link rel="describedby" href="{{ 'llms.txt' | url }}">
   {% if page and page.url and page.url[:15] == "gallery/images/" %}
     <style>
       .md-typeset .language-text > pre > code { white-space: pre-wrap; word-break: break-word; padding-right: 2.6em; }

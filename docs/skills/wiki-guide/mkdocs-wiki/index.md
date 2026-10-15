@@ -221,7 +221,7 @@ Pygments 高亮和右上角复制按钮全都原样保留，[`vendor/js-runner.j
     ```
     ````
 
-解锁：点马赛克，输口令，或者粘贴私钥 `AGE-SECRET-KEY-1…`。口令先解开 [`vendor/age-init.js`](../../../vendor/age-init.js) 里内嵌的 `WIKI_KEY_AGE`（用口令锁住的 wiki 私钥，scrypt 只跑一次），之后每段几毫秒。解开的私钥记在 sessionStorage：同一个标签页翻到别的页面自动还原，关掉标签页就忘，右下角「锁上打码」随时清掉。页面上没有密文就不加载 [`vendor/age-core.js`](../../../vendor/age-core.js)，零开销。
+解锁：点马赛克，输口令，或者粘贴私钥 `AGE-SECRET-KEY-1…`。口令先解开 [`vendor/age-init.js`](../../../vendor/age-init.js) 里内嵌的 `WIKI_KEY_AGE`（用口令锁住的 wiki 私钥，scrypt 只跑一次），之后每段几毫秒。解开的私钥记在 sessionStorage：同一个标签页翻到别的页面自动还原，关掉标签页就忘，右下角「锁上打码」随时清掉。页面上没有密文就不加载 [`vendor/age-core.js`](../../../vendor/age-core.js)，零开销。命令行里读 `.md` 源时，接一个 `age-open.py` 整页解开，用法见[命令行里一口气解开](../../../posts/wiki-tech/age-mosaic.md#cli)。
 
 硬性规矩：
 

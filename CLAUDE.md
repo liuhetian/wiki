@@ -33,7 +33,7 @@ ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lh
 
 **AI 链路靠相对链接，不靠 nav。** `mkdocs.yml` 的 `nav` 只是给人的策展层。一篇文章只有被某个祖先目录的索引页（`index.md` / `MIRROR.md` / `SKILL.md`）用 markdown 链接直接指到，AI 才能读到它；`nav` 里有、索引里没有，对 AI 等于不存在。`scripts/check-links.py` 是这条规则的闸门，`deploy.sh` 在读凭证和构建之前就跑它，非零退出即中止部署。页面 URL 只由 `docs/` 里的文件位置决定，所以重排 nav 随意，挪文件才是动链接图的操作。挪走之后不留旧地址存根页，改在 `mkdocs.yml` 的 `redirects` 插件里写一行 `旧路径.md: 新路径.md`（支持 `#锚点` 级，改标题不炸别人的书签）—— 但它只产出 HTML 跳转页，`.md` 那一半是 `deploy.sh` 从 `docs/` 实镜像出来的，旧的 `/旧路径.md` 仍然 404，所以站内引用还是得一并改掉，redirects 兜的是站外链接和书签。
 
-**双产物是怎么出来的。** `zensical build` 只出 HTML；`deploy.sh` 用一行 rsync 把 `docs/` 下的 `.md` 树原样镜像进 `site/`。`use_directory_urls` 让页面占 `/x/index.html`，`/x.md` 这个 key 恰好空着，两者同域不撞。`site/llms.txt` 是 `docs/index.md` 剥掉 frontmatter 后的构建期副本，只维护 `index.md` 一份。上传时 `.md` 与 demo 源码（`.ts/.tsx/.jsx/.mjs/.py`）要钉文本类 Content-Type，否则 COS 按扩展名乱猜，AI 抓取工具拒收。
+**双产物是怎么出来的。** `zensical build` 只出 HTML；`deploy.sh` 用一行 rsync 把 `docs/` 下的 `.md` 树原样镜像进 `site/`。`use_directory_urls` 让页面占 `/x/index.html`，`/x.md` 这个 key 恰好空着，两者同域不撞。`site/llms.txt` 是 `docs/index.md` 剥掉 frontmatter 后的构建期副本，只维护 `index.md` 一份。每页页头的 `<link rel="alternate" type="text/markdown">` 和右上角的复制按钮（`vendor/md-copy.js`）都靠 `page.edit_url` 指向 `.md` 源：`mkdocs.yml` 的 `repo_url`、`edit_uri` 设成站点根不是为了显示仓库，别删；顶栏仓库入口由空的 `overrides/partials/source.html` 关掉。来龙去脉见 `posts/wiki-tech/md-copy.md`。上传时 `.md` 与 demo 源码（`.ts/.tsx/.jsx/.mjs/.py`）要钉文本类 Content-Type，否则 COS 按扩展名乱猜，AI 抓取工具拒收。
 
 **首页有两个身子。** 浏览器里 `docs/index.md` 由 `overrides/home.html` 的开屏模板渲染，正文不上屏；但正文照样发布为 `/index.md` 与 `/llms.txt` 给 AI 读。改首页内容两边要同步。
 
@@ -45,7 +45,7 @@ ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lh
 
 **交互 demo。** 自包含静态单页放进各 skill 的 `assets/`，iframe 同域嵌入，`src` 用站点根绝对路径且写到具体 `.html` 文件；逻辑不压缩，AI 读同一 URL 下的源码。运行时库全部在 `docs/vendor/`（React UMD + htm、React ESM、three/r3f、MathJax、ECharts、Chart.js、Mermaid、Maple Mono 字体），线上不走任何 CDN —— demo 里写 `cdn.jsdelivr.net` 之类的 `<script src>` 一律要改成 `../../../../vendor/...` 的相对路径。真身大的按需加载，不给无关页面付代价：MathJax（2MB）由 `vendor/mathjax-init.js` 查到 `.arithmatex` 才拉，ECharts 由 `vendor/echarts-init.js` 查到 ```echarts 块才拉，`overrides/main.html` 只给含 mermaid 块的页面同步引入 mermaid 真身。升级 vendor 版本用 `scripts/fetch-vendor.sh`，换字体版本用 `scripts/build-fonts.py`（中文按 GB2312 + 本站用字子集化），两者只在升级时跑一次。
 
-**打码靠密文直接进源文件。** 不想公开的东西（API key、服务器地址等）写成 `` `age:…` `` 或 ```` ```age ```` 块，由 `scripts/age-seal.sh` 用 wiki 公钥加密生成；`vendor/age-init.js` 在浏览器里打码、解锁后还原，按需加载 `vendor/age-core.js`（age 解密核心，口令 / X25519 两种模式，解密演示页也用它）。私钥在部署机 `~/.config/age/wiki.key`，不进仓库；用口令锁住的副本内嵌在 `age-init.js`。encryptcontent 这类插件只加密 HTML，`.md` 镜像照样明文，所以不能用。规矩见写作规范「打码」一节，来龙去脉见 `posts/wiki-tech/age-mosaic.md`。
+**打码靠密文直接进源文件。** 不想公开的东西（API key、服务器地址等）写成 `` `age:…` `` 或 ```` ```age ```` 块，由 `scripts/age-seal.sh` 用 wiki 公钥加密生成；`vendor/age-init.js` 在浏览器里打码、解锁后还原，按需加载 `vendor/age-core.js`（age 解密核心，口令 / X25519 两种模式，解密演示页也用它）；命令行读 `.md` 源时用 `scripts/age-open.py` 整页解开，口令走环境变量 `WIKI_AGE_PASS`，不收命令行参数。私钥在部署机 `~/.config/age/wiki.key`，不进仓库；用口令锁住的副本内嵌在 `age-init.js`。encryptcontent 这类插件只加密 HTML，`.md` 镜像照样明文，所以不能用。规矩见写作规范「打码」一节，来龙去脉见 `posts/wiki-tech/age-mosaic.md`。
 
 **媒体走自制 git-lfs。** `.gitattributes` 把图/视频/字体/vendor 真身交给 LFS，blob 由 `scripts/lfs-cos-agent.py`（standalone custom transfer agent）存到备份桶 `lfs/` 前缀，与部署桶隔离。`git push` 自动上传，部署机 pull 自动取回。
 
