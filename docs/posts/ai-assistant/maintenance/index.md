@@ -1,10 +1,14 @@
 ---
-description: "搭建 AI 助手的维护目录：Agent 基础能力背后的选型实测、上游来源和没做的事，一个能力一篇；AI 正常使用不用看，能力出问题或要改做法时再看"
+description: "搭建 AI 助手的维护目录，分两部分：Agent 基础能力背后的选型实测、上游来源和没做的事，一个能力一篇；外部 skill 的吸纳记录，一个 skill 一篇。AI 正常使用不用看，出问题或要改做法时再看"
 ---
 
 # 维护目录
 
-[Agent 基础能力](../../../skills/agent-io/index.md)的每个能力页只写怎么用。为什么这样选、做法从哪来、实测过什么、还有什么没做，都放在这里，一个能力一篇。AI 正常使用时不用看，能力出问题或者要改做法时再看。
+能力页和 skill 页只写怎么用。为什么这样选、从哪来、改过什么、实测过什么、还有什么没做，都放在这里。AI 正常使用时不用看，出问题或者要改做法时再看。
+
+## Agent 能力 { #agent-io }
+
+[Agent 基础能力](../../../skills/agent-io/index.md)的维护记录，一个能力一篇。
 
 - [读 PDF 脚本](pdf-reading.md) —— pdfium 和 pdf-inspector 的实测对比，吸收的两个 DSH 社区插件
 - [网络搜索](web-search.md) —— 默认的 Sonar Pro Search 经海外中转实测耗时、价格和引用格式；备选 DeepSeek 原生搜索的做法取自 DSH 的搜索插件
@@ -15,3 +19,9 @@ description: "搭建 AI 助手的维护目录：Agent 基础能力背后的选�
 - [音乐生成](music.md) —— 为什么选 OpenRouter 上的 Lyria 3、不选 Suno，请求格式从哪两份文档推出来，没实测
 - [解析分享链接](share-link.md) —— 下载狗经国内中转实测 B 站视频、小红书视频和图文，走不走中转解析和下载一样快
 - [结构化判断](jev.md) —— OpenRouter 的 Jev 1.13 的请求格式从哪查来，经海外中转实测两个端点、三种题，含糊材料概率落在中间；2026-10-10 照调研接入微软、OpenAI、Mercury 三家，调研原文存档，四家同题实测：单价一样计费 token 差 3.5 倍，图片只有 OpenAI 和 Mercury 看得了
+
+## Skill 吸纳 { #skills }
+
+从别人那里吸纳来的 skill，一个 skill 一篇：上游、commit、跳过了什么、翻译之外的改动。写法见 [skill 怎么收纳](../../../skills/wiki-guide/remote-skill.md#maintenance-record)。
+
+- [盘问我（grilling）](skills/grilling.md) —— 吸纳自 mattpocock/skills，正文逐段中译；上游之后改过三次，没同步

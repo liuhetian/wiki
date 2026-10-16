@@ -33,13 +33,13 @@ ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lh
 
 **AI 链路靠相对链接，不靠 nav。** `mkdocs.yml` 的 `nav` 只是给人的策展层。一篇文章只有被某个祖先目录的索引页（`index.md` / `MIRROR.md` / `SKILL.md`）用 markdown 链接直接指到，AI 才能读到它；`nav` 里有、索引里没有，对 AI 等于不存在。`scripts/check-links.py` 是这条规则的闸门，`deploy.sh` 在读凭证和构建之前就跑它，非零退出即中止部署。页面 URL 只由 `docs/` 里的文件位置决定，所以重排 nav 随意，挪文件才是动链接图的操作。挪走之后不留旧地址存根页，改在 `mkdocs.yml` 的 `redirects` 插件里写一行 `旧路径.md: 新路径.md`（支持 `#锚点` 级，改标题不炸别人的书签）—— 但它只产出 HTML 跳转页，`.md` 那一半是 `deploy.sh` 从 `docs/` 实镜像出来的，旧的 `/旧路径.md` 仍然 404，所以站内引用还是得一并改掉，redirects 兜的是站外链接和书签。
 
-**双产物是怎么出来的。** `zensical build` 只出 HTML；`deploy.sh` 用一行 rsync 把 `docs/` 下的 `.md` 树原样镜像进 `site/`。`use_directory_urls` 让页面占 `/x/index.html`，`/x.md` 这个 key 恰好空着，两者同域不撞。`site/llms.txt` 是 `docs/index.md` 剥掉 frontmatter 后的构建期副本，只维护 `index.md` 一份。每页页头的 `<link rel="alternate" type="text/markdown">` 和右上角的复制按钮（`vendor/md-copy.js`）都靠 `page.edit_url` 指向 `.md` 源：`mkdocs.yml` 的 `repo_url`、`edit_uri` 设成站点根不是为了显示仓库，别删；顶栏仓库入口由空的 `overrides/partials/source.html` 关掉。来龙去脉见 `posts/wiki-tech/md-copy.md`。上传时 `.md` 与 demo 源码（`.ts/.tsx/.jsx/.mjs/.py`）要钉文本类 Content-Type，否则 COS 按扩展名乱猜，AI 抓取工具拒收。
+**双产物是怎么出来的。** `zensical build` 只出 HTML；`deploy.sh` 用一行 rsync 把 `docs/` 下的 `.md` 树原样镜像进 `site/`。`use_directory_urls` 让页面占 `/x/index.html`，`/x.md` 这个 key 恰好空着，两者同域不撞。`site/llms.txt` 是 `docs/index.md` 剥掉 frontmatter 后的构建期副本，只维护 `index.md` 一份。每页页头的 `<link rel="alternate" type="text/markdown">` 和右上角的复制按钮（`vendor/md-copy.js`）都靠 `page.edit_url` 指向 `.md` 源：`mkdocs.yml` 的 `repo_url`、`edit_uri` 设成站点根不是为了显示仓库，别删；顶栏仓库入口由空的 `overrides/partials/source.html` 关掉。复制时去掉 frontmatter、代码以外的 HTML 注释和 `<div class="zx-no-copy" markdown>` 块（读者要看、粘进对话框会被误读的内容，如 skill 页末的维护记录）。来龙去脉见 `posts/wiki-tech/md-copy.md`。上传时 `.md` 与 demo 源码（`.ts/.tsx/.jsx/.mjs/.py`）要钉文本类 Content-Type，否则 COS 按扩展名乱猜，AI 抓取工具拒收。
 
 **首页有两个身子。** 浏览器里 `docs/index.md` 由 `overrides/home.html` 的开屏模板渲染，正文不上屏；但正文照样发布为 `/index.md` 与 `/llms.txt` 给 AI 读。改首页内容两边要同步。
 
-**Skills 目录形态即 skill。** `docs/skills/<name>/` 按 Anthropic skill 标准布局：`index.md` + `reference/` + `assets/`。吸收自开源项目的 skill（如 writing/qu-ai-wei、writing/xi-wen）`index.md` 是上游原文照录，**不许改**；本地归档的链接责任落在同目录 `MIRROR.md` 上，来源钉 commit 永链。
+**Skills 目录形态即 skill。** `docs/skills/<name>/` 按 Anthropic skill 标准布局：`index.md` + `reference/` + `assets/`。吸纳来的 skill 2026-10-15 起中译、收进来就能改：入口页 frontmatter 忠实保留，只把 `name`、`description` 译成中文（复制按钮会去掉它），从哪来、改了什么记在 `posts/ai-assistant/maintenance/skills/` 一个 skill 一篇，步骤见 `skills/wiki-guide/remote-skill.md`，活例 collab/grilling。之前收的（如 writing/qu-ai-wei、writing/xi-wen）还是旧形态：`index.md` 是上游原文照录、不改，本地归档的链接责任落在同目录 `MIRROR.md` 上，来源钉 commit 永链；不批量迁，用到时逐个迁。
 
-**每页一行 description，动不了的文件用 `.meta.yml`。** 上游原文照录的存档（改了就不是原文）和被 `--8<--` 引用的 snippet 真身（frontmatter 会漏进引用它的正文）不能塞 frontmatter，改在目录里放 `.meta.yml`，键值给该目录及子目录下的页面当默认、页面自己写的优先。
+**每页一行 description，动不了的文件用 `.meta.yml`。** 上游原文照录的存档（改了就不是原文）、被 `--8<--` 引用的 snippet 真身（frontmatter 会漏进引用它的正文）不塞 frontmatter，改在目录里放 `.meta.yml`，键值给该目录及子目录下的页面当默认、页面自己写的优先。
 
 **代码即引用。** 文章里的代码用 `--8<--` snippet 引用仓库真实文件，snippet `base_path` 是 `docs` 再回退到项目根，所以 docs 内引用写 `skills/.../x.md`（不带 `docs/` 前缀），根文件写 `mkdocs.yml`、`deploy.sh` 这样的相对根路径。
 

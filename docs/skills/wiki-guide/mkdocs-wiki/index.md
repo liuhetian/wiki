@@ -275,6 +275,22 @@ echo 线在左边接着走
 
 活例：[本 wiki 用到的技术 · 能力时间线](../../../posts/wiki-tech/index.md#timeline)。
 
+## 13. 复制时不带 `<div class="zx-no-copy" markdown>` { #no-copy }
+
+右上角的复制按钮把页面源文件复制进对话框，有些内容读者要看得到，粘进对话框却会被 AI 误读。把它包起来：
+
+```markdown
+<div class="zx-no-copy" markdown>
+
+读者要看、复制时不要的内容
+
+</div>
+```
+
+网页上照常显示，读 `.md` 源的 AI 也看得到，只有复制按钮整块跳过；块可以放在页面任何位置，前后的正文和脚注照常复制。写法同时间线：开头的 `<div …>` 和结尾的 `</div>` 前后各空一行，里面不缩进。复制按钮另外还会去掉 frontmatter 和代码以外的 HTML 注释，见[复制本页 Markdown 源](../../../posts/wiki-tech/md-copy.md)。
+
+活例：[盘问我](../../collab/grilling/index.md)页尾的维护记录，这个写法定在 [skill 怎么收纳 · 维护记录](../remote-skill.md#maintenance-record)。
+
 ## 写作规范 { #写作规范 }
 
 - 同一功能有 Python / R 两种写法 → 用选项卡 `===`
@@ -287,7 +303,7 @@ echo 线在左边接着走
 - 不想公开的小字（服务器地址、域名）→ 用 `scripts/age-seal.sh` 生成 `age:…` 写进反引号，浏览器里打码、解锁后还原（规矩见[第 11 节](#age-mosaic)）
 - **引用外部一手资料：有存档、有引用、有分析**。三步缺一不可：① 真身 clone / 下载进文章 `assets/` 存档（注明出处与获取日期），文中 `??? abstract` 折叠 + `--8<--` 展示原文；② 正文摘关键原句（`>` 引用块）；③ 每处引用**必须跟自己的分析** —— 只贴引用不给分析，等于没消化。**例外**：引用的是活跃开源仓库、且原文的关键契约（Invariants / 不变量 / API）已经在正文里消化成自己的语言，可以省掉真身存档，改用**钉具体 commit hash 的 GitHub 永链**代替。前提是永链钉的是 commit 而不是 branch（内容冻结不随上游变），且读者不依赖点开链接就能理解正文——链接只做溯源。活例：[Dashboard skill](../../dashboard/index.md) 的 open-dashboard 蓝本吸收
 - **正文链接只指站内，外部来源进脚注**。markdown 链接 `[文字](路径)` 只用来引本仓库里的资源（其他页面、`assets/` 存档）；外部 URL 在正文只留一个脚注小标记 `[^名]`，链接和读取日期写进文末脚注（语法见[第 7 节](#footnotes)）—— 正文里能点的都还在本站，外部只做溯源。活例：[对象存储部署](../../../posts/wiki-tech/cos-deploy/index.md)的 `[^zensical]`、`[^llmstxt]`
-- **收录外部 git 仓库：只取核心文件，不整仓 clone 进来**。挑对理解主题真正关键的那几个文件复制进 `assets/` 存档，其余一律不进 docs —— 本 wiki 不追求完整镜像，追求核心，因为**人也要读**；要完整原貌，顺钉 commit 的永链自己去 GitHub。活例：Dashboard 蓝本吸收曾把 84 篇原文全量镜像进 `assets/`，后来删到只剩 `PATTERNS.md` + `backends/CONTRACT.md` 两份切不进单篇文章的系统级契约。唯一例外是吸收型 skill：行为定义文件（主文件 + 它引用的 references）必须收齐才能跑，见附录的吸收规矩
+- **收录外部 git 仓库：只取核心文件，不整仓 clone 进来**。挑对理解主题真正关键的那几个文件复制进 `assets/` 存档，其余一律不进 docs —— 本 wiki 不追求完整镜像，追求核心，因为**人也要读**；要完整原貌，顺钉 commit 的永链自己去 GitHub。活例：Dashboard 蓝本吸收曾把 84 篇原文全量镜像进 `assets/`，后来删到只剩 `PATTERNS.md` + `backends/CONTRACT.md` 两份切不进单篇文章的系统级契约。唯一例外是吸纳来的 skill：行为定义文件（主文件 + 它引用的 references）必须收齐才能跑，见附录的[吸纳来的 skill](#absorbed-skill)
 - **markdown 层级缩进** 统一用 **4 个空格**（折叠块 / 选项卡 / 提示框的子内容必须缩进 4 空格才被识别）。注意：这只指 markdown 写作时的缩进，**代码块内部的 Python / 其他语言缩进原样保留，不受影响**
 - 代码块语言标识统一用 `python`（不用 `py`）
 - 新增页面必须在 `mkdocs.yml` 的 `nav:` 中注册
@@ -407,9 +423,9 @@ description: "一句话说清这页在回答什么问题，120 字以内，不�
 
 #### 不能动的文件：目录级 `.meta.yml` { #meta-yml }
 
-有两类文件不能往里塞 frontmatter：
+有两类文件不往里塞 frontmatter：
 
-- **上游原文照录的存档** —— 改了就不是原文，`MIRROR.md` 里那句「未做任何改动」也就成了假话；
+- **上游原文照录的存档**（Gallery 和旧形态的吸纳 skill）—— 改了就不是原文，`MIRROR.md` 里那句「未做任何改动」也就成了假话；
 - **被 `--8<--` 当 snippet 引用的真身** —— 加了 frontmatter，`---` 和 `description:` 会原样漏进引用它的那篇正文里。
 
 这两类交给 `meta` 插件：在目录里放一个 `.meta.yml`，键值给该目录**及其所有子目录**下的页面当默认，页面自己写了的优先。
@@ -436,8 +452,8 @@ description: "qu-ai-wei 上游 references/ 九份规则表之一，原文照录�
 
 写作时只需记两条例外，别为了过校验去改错地方：
 
-- **吸收型 skill 的 `index.md` 不许改** —— 它是上游原文照录。归档文件的链接挂在 `MIRROR.md`（目录里唯一自己写的文件）或分类索引上，校验认「祖先」而非「最近父级」正是为此。活例：xi-wen 的 9 份归档全靠 [`MIRROR.md`](../../writing/xi-wen/MIRROR.md) 的「本地归档」一栏挂住
-- **上游原文里的死链是警告不是错误** —— 原文里的路径常是举例，本地不可能存在；往原文加豁免注释就是改原文。判据是同级或祖先目录有 `MIRROR.md`
+- **旧形态吸纳 skill 的 `index.md` 不改** —— 它是上游原文照录（新形态见[吸纳来的 skill](#absorbed-skill)）。归档文件的链接挂在 `MIRROR.md`（目录里唯一自己写的文件）或分类索引上，校验认「祖先」而非「最近父级」正是为此。活例：xi-wen 的 9 份归档全靠 [`MIRROR.md`](../../writing/xi-wen/MIRROR.md) 的「本地归档」一栏挂住
+- **上游原文里的死链是警告不是错误** —— 原文里的路径常是举例，本地不可能存在；往原文加豁免注释就是改原文。判据是同级或祖先目录有 `MIRROR.md`，所以只对旧形态和 Gallery 生效，新形态译文里的死链该修就修
 
 豁免写在文件顶部（前 5 行内），理由跟着文件走、不躺在脚本白名单里：
 
@@ -509,7 +525,7 @@ Gallery 跟 Skills 的分界：Gallery 只管展示成品（「图 + prompt」�
 
 | 路径 | 角色 | 等价于 skill 原型的 |
 |---|---|---|
-| `index.md` | 主入口（自写 skill 的主控；吸收型 skill 直接就是上游 `SKILL.md` 原文） | `SKILL.md` |
+| `index.md` | 主入口（吸纳来的 skill 是上游 `SKILL.md` 的中译） | `SKILL.md` |
 | `assets/` | 资产真身（CSS / JS / SVG 等） | `assets/` |
 | `reference/` | 详细参考，按主题拆多个 `.md`（**只有大 skill 需要**，见下） | `references/` |
 | `scripts/` | 可执行脚本（按需，wiki 这边一般不用） | `scripts/` |
@@ -524,20 +540,23 @@ FastAPI 的 14 个章节、Dashboard 的 36 个形状都服务同一个主题，
 ```text
 docs/skills/writing/               # 分类目录
 ├── index.md                       # 分类索引，几行链接
-├── newspaper/                     # skill：报纸版 HTML
-│   ├── index.md
-│   └── assets/                    # newspaper.css / .js / favicon.svg / demo
-└── qu-ai-wei/                     # skill：吸收自上游的去 AI 味
-    ├── index.md                   # = 上游 SKILL.md 原文照录（真身就是入口）
-    ├── references/                # 上游依赖文件，按原相对路径平级归档
-    └── MIRROR.md                  # 来源与吸收说明（目录里唯一自己写的文件）
+└── newspaper/                     # skill：报纸版 HTML
+    ├── index.md
+    └── assets/                    # newspaper.css / .js / favicon.svg / demo
 ```
 
-**吸收外部 skill 的归档规矩**：skill 目录**镜像上游布局**——主文件 `SKILL.md` 原文照录、仅改名为 `index.md`（真身就是入口，不另写落地文）；它引用的**全部依赖文件**（`references/`、依赖的其他 skill）按上游相对路径与 `index.md` 平级归档，主文件内部的相对链接因此原样有效；一律钉 commit 原文照录。安装脚本 / 多语言翻译 / CI 这类非行为定义可跳过，但取舍要写进 `MIRROR.md`（记上游仓库、commit 永链、吸收日期、漂移处置，是目录里唯一自己写的文件）。skill 目录名对齐上游 slug（如 `qu-ai-wei`、`grill-with-docs`）。上游带脚本或数据表的，按 [skill 怎么收纳](../remote-skill.md) 把脚本分成预算 / 查表 / 本地执行三类处理，由此产出的预算页和数据导读是 `MIRROR.md` 之外仅有的自写文件。
+#### 吸纳来的 skill { #absorbed-skill }
 
-**人读的介绍压到分类索引一句话**：吸收型 skill 的页面本身是给 AI 看的真身，人真正需要读的介绍——这个 skill 干什么、亮点在哪、吸收自谁——写在分类 `index.md` 的链接后面一句话即可，不单独维护落地文或中译页（2026-07-09 废除此前"落地文在前、`SKILL.md 真身`挂 nav 附件在后"的两层做法：人读内容太少，不值得两个页面）。nav 里吸收型 skill 的依赖文件（`references/`、依赖的其他 skill）**跟大 skill 的 `reference/` 同等待遇——展平进该 skill 的小节**：`index.md`（真身）在前、依赖平铺在后；无依赖的 skill（如 grilling）就是平条目。`MIRROR.md` 不进 nav，从分类索引可达。
+吸纳来的 skill 和自己写的长一个样，收进来就是自己的，可以改。怎么吸纳见 [skill 怎么收纳](../remote-skill.md)，收完是这样：
 
-**上游 README 不归档 —— wiki 里不需要两个诉说者**。README 是上游作者写给"在 GitHub 上决定要不要装的人"的介绍与安装说明，这两个任务在本 wiki 都不存在：向读者介绍这个 skill 的是分类索引里的一句话（自己的声音），定义行为的是归档的主文件。把 README 也归档，等于让上游作者在自己的 wiki 里再讲一遍，还要替它维护死链归一化。要溯源上游原貌，在 `MIRROR.md` 里留一条钉 commit 的 README 永链即可。
+- **目录镜像上游布局**：`SKILL.md` 中译后改名 `index.md`，它引用的 references、依赖的其他 skill 按上游相对路径平级放，内部相对链接原样有效；目录名对齐上游 slug
+- **frontmatter 忠实保留**：`allowed-tools`、`model` 等字段原样不动，只把 `name`、`description` 译成中文，`description` 顺带当本站的页面摘要；入口页会被复制进对话框当 prompt，复制按钮会去掉 frontmatter
+- **从哪来、改了什么写在维护目录**，一个 skill 一篇，skill 目录里不放来源说明；入口页末尾用分割线加一行链接链过去，写法见 [skill 怎么收纳 · 维护记录](../remote-skill.md#maintenance-record)
+- **人读的介绍是分类索引那一行**：干什么、吸纳自谁、维护记录链接，不另写落地页
+- **nav**：依赖文件跟大 skill 的 `reference/` 同等待遇，展平进该 skill 的小节，`index.md` 在前；无依赖的就是平条目
+- **带脚本的**要整包下载到本地再跑。部署时由 `deploy.sh` 打包，还没做；现在 HyperFrames 用 `MANIFEST.txt` 清单让调用方整包拉，bili-note 靠调用方顺相对链接逐个拉
+
+活例：[盘问我](../../collab/grilling/index.md)。2026-10-15 之前收的还是旧形态（原文照录、目录里一份 `MIRROR.md`），不批量迁，用到时逐个迁。
 
 **几条硬性约束**
 
@@ -576,11 +595,11 @@ mkdocs 的 `nav:` 项必须指向 `.md`，所以一个目录想在 nav 里成为
 - 写作口味:                                               # 分类
     - skills/writing/index.md                            # 分类索引
     - 报纸版 HTML: skills/writing/newspaper/index.md     # ← 每个 skill 的 index 直接列在分类级
-    - 去 AI 味:                                           # ← 吸收型 skill：index.md 即真身
-        - skills/writing/qu-ai-wei/index.md              #    真身在前
+    - 去 AI 味:                                           # ← 吸纳来的 skill：入口在前
+        - skills/writing/qu-ai-wei/index.md              #    入口在前
         - 51 条 AI 腔模式: skills/writing/qu-ai-wei/references/patterns.md  # ← references 照样展平，
         - 白名单: skills/writing/qu-ai-wei/references/whitelists.md         #    9 份全列（此处略）
-    # MIRROR.md / assets 不进 nav —— 从分类索引 / 页面内链接可达
+    # MIRROR.md（旧形态）/ assets 不进 nav —— 从分类索引 / 页面内链接可达
 
 - FastAPI 后端:                                          # 大 skill：reference 展平
     - skills/fastapi/index.md
@@ -601,8 +620,8 @@ Skills
 └── 写作口味
     ├── (分类索引)
     ├── 报纸版 HTML
-    └── 去 AI 味               # 吸收型 skill：入口即 SKILL.md 真身
-        ├── (真身入口)
+    └── 去 AI 味               # 吸纳来的 skill
+        ├── (入口 = 上游 SKILL.md)
         ├── 51 条 AI 腔模式    # references 展平，跟 reference/ 同等待遇
         └── ...
 ```
@@ -620,7 +639,7 @@ Skills
 
 **`assets/` 不进 nav，无例外** —— 它只是资产真身（css/js/svg 等）的存放目录。
 资产的原文展示放在讲它的 reference 文章里（`??? abstract` 折叠 `--8<--`），真身本身可按文件 URL 直接下载。
-（吸收型 skill 的真身不存在"藏在 assets 里要不要进 nav"的纠结——它就是 `index.md` 本身，见上文吸收规矩。）
+（吸纳来的 skill 不存在"藏在 assets 里要不要进 nav"的纠结——上游 `SKILL.md` 就是 `index.md` 本身，见上文[吸纳来的 skill](#absorbed-skill)。）
 
 **关键认知**：**nav 是视觉组织，文件系统是真实结构，两者解耦**。
 怎么调 nav 都不改变文件 URL，也不影响 AI 读仓库时看到的 skill 标准布局。

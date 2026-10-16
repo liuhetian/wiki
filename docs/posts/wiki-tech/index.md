@@ -242,4 +242,20 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 详见[打码 · 命令行里一口气解开](age-mosaic.md#cli)。
 
+### 2026-10-15 · 复制按钮只给正文：去掉 frontmatter、注释和维护记录 {: data-kind="前端" }
+
+> frontmatter是SKILL.md的压缩，因为人复制的是完整 SKILL.md 所以frontmatter其实就不重要了
+
+> `<!-- 来源：…/skills/collab/grilling/index.md -->` 这个暂时也不想要
+
+> 是不是可以由复制按钮来屏蔽掉最末尾的开发注释了，这个开发注释还是有用的，特别是开发环境
+>
+> 不对，读者也要可以看得到维护记录，不需要屏蔽，只是复制的时候隐藏
+>
+> 不能够只有一个分割线，因为后面可能还有引用啥的。感觉得做成一个html块包裹起来？
+
+`vendor/md-copy.js` 复制时去掉 frontmatter，也不再插 `<!-- 来源：… -->` 注释；此前 frontmatter 原样保留、来源注释插在它后面。另外两条：`<div class="zx-no-copy" markdown>` 包起来的块整块不复制，维护记录写在里面，网页上照常显示、读 `.md` 源的 AI 也看得到，只是不进对话框（先做过一行截止标记，因为切不掉中间段、会把后面的脚注一起切掉，改成了块）；代码以外的 HTML 注释去掉。全站生效，`.md` 源文件和镜像不变。起因是 skill 页要能直接粘进对话框当 prompt，`name`、`description` 是给自动触发和站点用的，页尾那行维护记录粘进去会被 AI 当成在说正在讨论的方案。
+
+详见[复制本页 Markdown 源](md-copy.md)。
+
 </div>

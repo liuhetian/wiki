@@ -70,7 +70,9 @@ const abs = (target, base) => (!target || KEEP.test(target) ? target : new URL(t
 - **改写哪些**：逐行匹配 Markdown 链接和图片的 `](目标)`、链接定义 `[名字]: 目标`（脚注 `[^1]:` 除外）、HTML 的 `src="…"` 和 `href="…"`
 - **不动哪些**：已带协议的（`https:`、`mailto:`）、页内锚点 `#cli`、`//` 开头、`<…>` 包着的；代码块里（按 ```` ``` ```` / `~~~` 围栏判断进出）和行内代码里的——写作规范里举例写的链接不能被改
 - **snippet 另算**：`--8<-- "路径"` 的路径不相对当前页，相对 snippet 的 `base_path`（先 `docs/`，再仓库根）。先拼「站点根 + 路径」，发一个 HEAD 请求：站上有就用站上的地址（如 `vendor/age-core.js`）；没有说明它只在仓库根（如 `scripts/age-open.py`），指向 GitHub 仓库
-- **开头加来源**：frontmatter 原样保留，后面插一行 `<!-- 来源：…/age-mosaic.md -->`，读的人知道去哪接着读
+- **去掉 frontmatter，不加来源**：`description` 这类元数据是给站点用的，粘进对话框是噪音，连同后面的空行一起去掉；贴出去的只有正文（2026-10-15 起。此前 frontmatter 原样保留，后面插一行 `<!-- 来源：… -->` 注释，粘贴后也是噪音，一并去掉）
+- **`zx-no-copy` 块整块不复制**：用 `<div class="zx-no-copy" markdown>` 和 `</div>` 包起来的内容（写法同[时间线](../../skills/wiki-guide/mkdocs-wiki/index.md#timeline)：开头结尾前后各空一行，里面不缩进），网页上照常显示、读 `.md` 源的 AI 也看得到，只是不进对话框。给维护记录这类「读者要看得到、但粘进对话框会被当成在说正在讨论的事」的内容用；块可以放在页面任何位置，前后的正文、脚注照常复制。块里嵌套的 div 按层数配对，代码块里写的不算。活例：[盘问我](../../skills/collab/grilling/index.md)页尾的维护记录
+- **去掉 HTML 注释**：网页上本来不显示，对话框里也不要，整行、行尾、跨行的都去；代码块和行内代码里举例写的注释不动。删完留下的连续空行并成一行
 - **打码原样复制**：取的是源文件，页面上解锁过也还是密文；要明文接 [`age-open.py`](age-mosaic.md#cli)
 - **写剪贴板**：https 下用 `navigator.clipboard`；本地 http 预览没有这个接口，退回隐藏 textarea 加 `execCommand("copy")`
 

@@ -109,6 +109,8 @@ plugins:
         posts/dev-env.md: posts/ai-assistant/dev-env.md
         # 2026-10-01 存 key 那篇和打码合成一篇，key 本身改成打码写进 API 中转
         posts/ai-assistant/key-storage.md: posts/wiki-tech/age-mosaic.md
+        # 2026-10-15 吸纳记录从 skill 目录里的 MIRROR.md 挪进维护目录
+        skills/collab/grilling/MIRROR.md: posts/ai-assistant/maintenance/skills/grilling.md
         #     posts/guide.md#installation: posts/guide.md#getting-started
         # 2026-09-29 本 wiki 自己的写作规范从「写作口味」拆出，单开 skills/wiki-guide/
         skills/writing/mkdocs-wiki/index.md: skills/wiki-guide/mkdocs-wiki/index.md
@@ -220,6 +222,7 @@ nav:
           - 复制本页 Markdown 源: posts/wiki-tech/md-copy.md
           - Zensical 升级评估: posts/wiki-tech/zensical-upgrade/index.md
       - 本 wiki 的目标与计划: posts/wiki-roadmap.md
+      - 把 wiki 当远程 skill: posts/everything-skill.md
       - 预测项目闭环: posts/prediction-loop.md
       - AI 时代的产品经理: posts/ai-pm.md
       - 动画网页 PPT: posts/animated-ppt/index.md
@@ -241,15 +244,18 @@ nav:
           - 邮件采集：自己说 SMTP: posts/ai-assistant/mail-intake.md
           - 维护目录:
               - posts/ai-assistant/maintenance/index.md
-              - 读 PDF 脚本: posts/ai-assistant/maintenance/pdf-reading.md
-              - 网络搜索: posts/ai-assistant/maintenance/web-search.md
-              - 语音合成: posts/ai-assistant/maintenance/tts.md
-              - 图片生成: posts/ai-assistant/maintenance/image.md
-              - 视频生成: posts/ai-assistant/maintenance/video.md
-              - 音乐生成: posts/ai-assistant/maintenance/music.md
-              - 音频转录: posts/ai-assistant/maintenance/transcribe.md
-              - 解析分享链接: posts/ai-assistant/maintenance/share-link.md
-              - 结构化判断: posts/ai-assistant/maintenance/jev.md
+              - Agent 能力:
+                  - 读 PDF 脚本: posts/ai-assistant/maintenance/pdf-reading.md
+                  - 网络搜索: posts/ai-assistant/maintenance/web-search.md
+                  - 语音合成: posts/ai-assistant/maintenance/tts.md
+                  - 图片生成: posts/ai-assistant/maintenance/image.md
+                  - 视频生成: posts/ai-assistant/maintenance/video.md
+                  - 音乐生成: posts/ai-assistant/maintenance/music.md
+                  - 音频转录: posts/ai-assistant/maintenance/transcribe.md
+                  - 解析分享链接: posts/ai-assistant/maintenance/share-link.md
+                  - 结构化判断: posts/ai-assistant/maintenance/jev.md
+              - Skill 吸纳:
+                  - 盘问我: posts/ai-assistant/maintenance/skills/grilling.md
       - 工作方法:
           - posts/methods/index.md
           - 精力管理:

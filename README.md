@@ -145,7 +145,7 @@ HTTPS 证书自动续期见 [`deploy-cert/install.sh`](deploy-cert/)，来龙去
 规矩都沉淀在文章里，改内容前先读 [本 wiki 写作规范 · 格式怎么写](docs/skills/wiki-guide/mkdocs-wiki/index.md)。几条最容易踩的：
 
 - **引外部资料三步**：真身存档进 `assets/`（软链或 clone）+ 正文摘句 + 自己的分析；吸收整个开源项目时例外 —— 原文不本地存档，Invariants 提炼进文章、钉 commit 的 GitHub 永链指路（范例：[dashboard 的 MIRROR.md](docs/skills/dashboard/assets/open-dashboard/MIRROR.md)）
-- **吸收型 skill 的 `index.md` 是上游原文照录，不许改**：本地归档的链接责任落在同目录的 `MIRROR.md` 上（范例：[xi-wen](docs/skills/writing/xi-wen/index.md)、[qu-ai-wei](docs/skills/writing/qu-ai-wei/index.md)）
+- **吸纳来的 skill 中译、收进来就能改**：入口页 frontmatter 忠实保留、只译 `name` 和 `description`，从哪来、改了什么记在维护目录（范例：[盘问我](docs/skills/collab/grilling/index.md)，步骤见 [skill 怎么收纳](docs/skills/wiki-guide/remote-skill.md)）。2026-10-15 之前收的还是旧形态：`index.md` 上游原文照录、不改，链接责任落在同目录的 `MIRROR.md` 上（范例：[xi-wen](docs/skills/writing/xi-wen/index.md)）
 - **交互 demo**：自包含静态单页进 `assets/`，iframe 同域嵌入且 `src` 写到具体 `.html` 文件，逻辑不压缩（人玩交互、AI 读同一 URL 下的源码），运行时共用 `docs/vendor/`
 - **图表声明式写**：```` ```mermaid ```` 与 ```` ```echarts ```` 代码块直接渲染，真身都在本地 `vendor/`；概念配图统一白底黑色马克笔草图
 - **nav 随便重排，链接图纹丝不动**：页面路径只由 `docs/` 里的文件位置决定，`mkdocs.yml` 的 `nav` 是纯策展层；真正动链接图的操作只有挪文件

@@ -6,9 +6,9 @@ description: "本 wiki 自己的写作规范：MkDocs 语法与站点规矩、�
 
 往这个 wiki 里写东西之前先读这里。三篇各管一件事：
 
-- [格式怎么写](mkdocs-wiki/index.md) —— 总规矩：Zensical / Material 语法、目录与 nav、AI 链路（父级索引挂载）、引用外部资料三步、iframe demo、吸收外部 skill 的归档规矩；另外两篇都是它的细化
+- [格式怎么写](mkdocs-wiki/index.md) —— 总规矩：Zensical / Material 语法、目录与 nav、AI 链路（父级索引挂载）、引用外部资料三步、iframe demo、吸纳来的 skill 长什么样；另外两篇都是它的细化
 - [课程页怎么写](course-page.md) —— 讲解在前、题在后的伴读：页面骨架、题目写成 git 冲突标记、答完才用 `scripts/course.py add` 归档进 `notes/`
-- [skill 怎么收纳](remote-skill.md) —— 调用方分有 shell 和只能抓网页两种；上游脚本按「预算 / 查表 / 本地执行」三类处理，`MIRROR.md` 必写清单
+- [skill 怎么收纳](remote-skill.md) —— 按插件的部件逐个看：skills 译成中文收进来，hooks、agents、commands、mod、MCP 暂不收；收进来就是自己的，可以改；页尾用 zx-no-copy 块链到维护记录
 
 不强制、要用时自己引用的：
 

@@ -1,13 +1,22 @@
 ---
-title: 盘问我（grilling）
-name: grilling
-description: Grill the user relentlessly about a plan or design. Use when the user wants to stress-test a plan before building, or uses any 'grill' trigger phrases.
+name: 盘问我
+description: "就一个方案或设计穷追不舍地盘问用户。用户想在动手前给方案做压力测试，或说出任何 grill（盘问）类触发词时使用。"
 ---
 
-Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
+# 盘问我
 
-Ask the questions one at a time, waiting for feedback on each question before continuing. Asking multiple questions at once is bewildering.
+就这个方案的方方面面穷追不舍地盘问我，直到我们对它的理解达成一致。顺着设计树的每一条分支往下走，把决策之间的依赖一个一个理清。每个问题都给出你推荐的答案。
 
-If a *fact* can be found by exploring the codebase, look it up rather than asking me. The *decisions*, though, are mine — put each one to me and wait for my answer.
+一次只问一个问题，等我对这个问题给出反馈再往下问。一次抛好几个问题会让人无所适从。
 
-Do not enact the plan until I confirm we have reached a shared understanding.
+能通过查看代码库弄清的*事实*，自己去查，不要问我。但*决策*归我 —— 每一个都拿来问我，等我回答。
+
+在我确认我们已经达成一致之前，不要执行这个方案。
+
+<div class="zx-no-copy" markdown>
+
+---
+
+维护记录：[从哪来、改了什么](../../../posts/ai-assistant/maintenance/skills/grilling.md)。正常使用不用看，出问题再看。
+
+</div>

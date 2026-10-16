@@ -19,7 +19,7 @@ description: "本目录归档 mattpocock/skills 里 skills/engineering/grill-wit
 
 ## 吸收方式
 
-跟 [`grilling`](../grilling/MIRROR.md) 一样按 skill 吸收规矩归档：原文照录为 `index.md`，人读介绍压成一句话进分类索引 [`../index.md`](../index.md)。差别是这次多带了一层依赖（domain-modeling），因为不把依赖也存下来，grill-with-docs 的主文件单看只有一句话，起不到"真身可对照"的作用。
+按 skill 吸收规矩归档：原文照录为 `index.md`，人读介绍压成一句话进分类索引 [`../index.md`](../index.md)。差别是这次多带了一层依赖（domain-modeling），因为不把依赖也存下来，grill-with-docs 的主文件单看只有一句话，起不到"真身可对照"的作用。
 
 **改动声明**：正文原文照录；除改名外，仅在 `index.md` 的 frontmatter 补一行 `title:`（上游原文无 H1，不补则页面标题落回 "Index"）；`domain-modeling/` 三份未做任何改动。
 

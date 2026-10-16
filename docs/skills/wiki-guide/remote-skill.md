@@ -1,60 +1,83 @@
 ---
-description: "把外部 skill 收成远程 skill：文字原样照录，脚本按「预算 / 查表 / 本地执行」三类处理，同时照顾有 shell 和只能抓网页的两种调用方"
+description: "如何收纳别人的能力"
 ---
 
-# skill 怎么收纳
+# 怎么收纳能力
 
-本站的 skill 靠 URL 被读：调用方 GET `/skills/<name>/index.md`，顺着相对链接往下读。纯文字的 skill 这样读就够了；带脚本、带数据的 skill 要先想清楚一件事 —— **调用方不一定能执行任何东西**。
+为了实现一个能力需要的能力，官方提供了`插件`这个概念，根据官方 Plugins overview[^overview]，现在一个插件有以下几个部分组成：
 
-## 两种调用方
+- skills
+- hooks 钩子
+- agents 
+- commands
+- mod
+- MCP 服务器
 
-| 调用方 | 能力 | 读法 |
-|---|---|---|
-| 有 shell（Claude Code、Codex、Cursor …） | `curl`、`grep`、跑脚本 | 可以整包拉到本地磁盘，再按需取几行进上下文 |
-| 只能抓网页（网页对话、只有 WebFetch） | 一次 GET 一个 URL，内容直接进上下文，大文件常被截断或摘要 | 只能按需读小文件，脚本跑不了 |
+其物理形态就是一个git仓库。
 
-远程 skill 必须让后一种也能用；前一种只是多一条更快的路。
+里面可能有一个或者多个 skill ，还可能附带一些hooks，agents等元素。我们需要收纳到本地仓库为自己所用。收纳最重要的原则是**人可读**，所以注意事项1：需要全部翻译成中文。
 
-下载到磁盘不占上下文，读进上下文才占。「整个塞进上下文」和「整包下载到本地」是两回事，前者要避免，后者可以提供。
+本wiki核心原理是通过wiki静态网页替代传统的本地目录，wiki中markdown写的相对路径，到了网页中会自动转换成网页路径，从而作为AI追溯跳转的凭借，实现渐进式披露的AI友好的文档。
 
-## 按文件性质分类处理
+由于我们服务提供方并不提供，也不希望提供侵入客户端agent的能力，所以对于hooks，agents，commands这几个板块，需要提炼出文本prompt转换成skill，作为软引导。
 
-| 上游文件 | 处理 |
-|---|---|
-| 行为定义：`SKILL.md` + 它引用的 references | 原样照录，`SKILL.md` 改名 `index.md`，钉 commit（见 [吸收规矩](mkdocs-wiki/index.md)） |
-| 数据表（CSV / JSON） | 策展过的表原样照录；上游原始目录的整份拷贝（字体全表、图标全集之类，给脚本做校验用的）跳过，写进 `MIRROR.md` |
-| 脚本 | 看它在算什么，分三类，见下节 |
-| 安装器、CLI 打包副本、展示站、多语言 README、CI | 跳过，写进 `MIRROR.md` |
+对于mod(claude code的侵入式插件)和mcp，吸纳的时候需要明确告知吸纳发起人，会丢弃掉哪些内容。所以注意事项2：需要全部转换成skill。
 
-## 脚本的三类
+吸纳这个能力首先分析它的架构，可以收纳成几个skill：
 
-**1. 输入有限的纯函数 → 构建时预算成静态页。** 输入能枚举完（比如「192 个产品类型各出一套设计系统」），就在吸收时逐个跑一遍，产出为 `.md` 页面收进来。脚本变成吸收时的工具，调用方不执行任何代码，结果确定可复现。组合爆炸的参数只预算默认值。
+- 如果超级简单，就几句话，先看看是不是已经有相似的skill，可以收纳到已有skill之中，如果没有相似才新建目录
+- 如果只是一个skill，并且没有其他组件，那么吸纳之后的结果就是一个skill目录
+- 如果是多个skill或者包含其他组件，那么这个目录就是一个抽象skill，结构是 `foo/index.md`, `foo/skill1/`, `foo/skill2`，这个foo就是一个抽象的skill，index.md中讲解本能力是做什么的，然后各个部分什么时候用，但是注意不是照搬readme。
 
-**2. 查表和检索 → 给数据写导读，让 AI 自己查。** BM25、关键词匹配这类检索层不收，AI 自己判断的排序通常更好。补一页导读，写清：
+下面具体介绍吸纳每个部分的吸纳规范。
 
-- 每张表回答什么问题、主键、行数、约多少 token
-- 表之间怎么串（A 表的哪一列去查 B 表）
-- 读法：小表整张读；大表有 shell 先 `grep` 再读命中行，只能抓网页就一次只读一张
+## skills
 
-**3. 开放输入的真计算 → 下载后本地执行。** 只有前两类都装不下的才归这里（处理用户的图、校验用户的代码、任意参数的生成）。要求：
+标准的`SKILL.md` 是入口，需要改名成 `index.md`，从而符合wiki的渲染规。内容全部译为中文。这样一来之后入口页就是，prompt直接复制丢给AI
 
-- 构建时打成单个 `bundle.tar.gz`，一次下载，不让调用方逐个抓文件
-- 包旁放 manifest：上游 commit + sha256，同一个 URL 不许悄悄换内容
-- 在 `index.md` 旁（导读或 `MIRROR.md`）写明这是在执行第三方代码，让调用方和用户知情
+对于它引用的 references、依赖的其他 skill 一起译，按上游相对路径放，内部链接原样有效。目录名对齐上游 slug
 
-能归到 1、2 类的，绝不放进第 3 类。
+frontmatter 忠实保留，`allowed-tools`、`model` 等字段原样不动，只把 `name` 和 `description` 译成中文，复制按钮会自动去掉它。原文没有一级标题的补一个。
 
-## MIRROR.md 里必须写的
+`scripts/`、`assets/` 原样收；README、安装器、CI、测试跳过
 
-- 上游仓库、已吸收 commit 永链、抓取日期、许可证
-- 真正的原作者（上游可能也是转收的，追到源头）
-- 跳过了什么、为什么
-- 脚本各归哪一类；预算页和导读是本地产物，不是上游原文
-- 一句明确的声明：**内容已迁入本站，AI 不要去读上游仓库**；漂移同步只由人来做
-- 上游活跃的，写明这是哪个时间点的快照
+分类索引加一行（干什么、吸纳自谁），`mkdocs.yml` 注册 nav，页尾链到维护记录（见最后一节），跑 `python3 scripts/check-links.py`
 
-## 活例
+如果是顶层的skill（可能是能力作为抽象skill，也可能是普通的单个skill），在最后需要写入`维护记录`，具体见后面。
 
-- 纯文字、无脚本：[去 AI 味](../writing/qu-ai-wei/index.md)，来源见它的 [MIRROR](../writing/qu-ai-wei/MIRROR.md)
-- 追溯原作者 + 禁读上游声明：[get-prompt-from-image](../collab/get-prompt-from-image/MIRROR.md)
-- 带数据和脚本：还没有。第一例预定是 [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)（`--design-system` 走第 1 类、数据表走第 2 类、不需要第 3 类），落地后补到这里
+
+## 其他
+
+- **hooks**：转成文字，xxx之后，执行xxx脚本。其中脚本忠实保留。
+
+- **agents**：常见形态就是一句话，可以直接收纳。
+
+- **commands**：常见形态就是一句话，可以直接收纳。对于变量，使用特殊标记（现在这个功能还没做）。
+
+- **mod**：丢弃，但是在开发文档中写明丢弃了什么
+
+- **MCP**：丢弃，但是在开发文档中写明丢弃了什么
+
+
+## 维护记录 { #maintenance-record }
+
+在这个入口页末尾用分割线加一行链接，包进`zx-no-copy`块：网页上和源文件里都看得到，但是复制按钮复制出来的结果不会带上这个块的内容。
+
+```markdown
+<div class="zx-no-copy" markdown>
+
+---
+
+维护记录：[从哪来、改了什么](../../../posts/ai-assistant/maintenance/skills/<名字>.md)。正常使用不用看，出问题再看。
+
+</div>
+```
+
+记录本身写在 `posts/ai-assistant/maintenance/skills/<名字>.md`，挂进[维护目录](../../posts/ai-assistant/maintenance/index.md#skills)，只写四样：
+
+- 上游：仓库、作者、许可证
+- commit：一句话，钉在哪个 commit、哪天
+- 跳过了什么
+- 翻译之外的改动
+
+活例：[盘问我](../collab/grilling/index.md)。
