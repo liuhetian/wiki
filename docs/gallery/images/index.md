@@ -4,7 +4,7 @@ description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘�
 
 # 图片
 
-一张图配一段生成它的 prompt，看中哪张就把 prompt 拿走改一改。页面里只有图和 prompt；来源与授权记在各自的 MIRROR 里：[GPT Image 2 图库](gpt-image2/MIRROR.md)（收录自 wuyoscar/GPT-Image2-Skill，MIT，共 163 条，已译成中文）、[手绘风格库](handdraw-style/MIRROR.md)（收录自 yang0/handraw-style，MIT，280 种画风；配套的版式和主题色在[排版](../layouts/index.md)、[色彩](../colors/index.md)两区）、[二次元平面设计风格](linux-do-style/assets/MIRROR.md)（整理自 linux.do @sallyn 的帖子，12 组）和 [prompt-cards 生图条目](prompt-cards/MIRROR.md)（照录自 prompt-cards.cyanfish.site，10 条，英文的已译成中文，分散在角色设计、摄影、插画、复古与赛博朋克、字体与海报、品牌系统六页的末尾）；另有单条收进来的零散 prompt，来源记在 [零散收集](collected/MIRROR.md)。
+一张图配一段生成它的 prompt，看中哪张就把 prompt 拿走改一改。页面里只有图和 prompt；来源与授权记在各自的 MIRROR 里：[GPT Image 2 图库](gpt-image2/MIRROR.md)（收录自 wuyoscar/GPT-Image2-Skill，MIT，共 163 条，已译成中文）、[手绘风格库](handdraw-style/MIRROR.md)（收录自 yang0/handraw-style，MIT，280 种画风；配套的版式和主题色在[排版](../layouts/index.md)、[色彩](../colors/classic.md)两区）、[二次元平面设计风格](linux-do-style/assets/MIRROR.md)（整理自 linux.do @sallyn 的帖子，12 组）和 [prompt-cards 生图条目](prompt-cards/MIRROR.md)（照录自 prompt-cards.cyanfish.site，10 条，英文的已译成中文，分散在角色设计、摄影、插画、复古与赛博朋克、字体与海报、品牌系统六页的末尾）；另有单条收进来的零散 prompt，来源记在 [零散收集](collected/MIRROR.md)。
 
 怎么从一张图反推出 prompt，看 skills 里的[图片提示词反推](../../skills/collab/image-prompt-reverse/index.md)：简化版[七维拆解](../../skills/collab/image-prompt-reverse/seven-dimensions/index.md)和完整版[从图反推 prompt](../../skills/collab/image-prompt-reverse/get-prompt-from-image/index.md)。
 
@@ -14,7 +14,7 @@ description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘�
 
 - [手绘风格库](handdraw-style/index.md) —— 入口与拼接方法：风格 + 版式 + 主题色 + 主题，何时要垫样片、怎么写隔离声明
 - 画风：[社论漫画](handdraw-style/styles-a.md) · 35 / [绘本叙事](handdraw-style/styles-b.md) · 19 / [现代平面](handdraw-style/styles-c.md) · 28 / [日本插画](handdraw-style/styles-d.md) · 41 / [中国插画](handdraw-style/styles-e.md) · 31 / [网感媒介](handdraw-style/styles-f.md) · 46 / [中国插画补充](handdraw-style/styles-g.md) · 16 / [其他](handdraw-style/styles-h.md) · 64
-- 配套的[排版](../layouts/index.md) · 124 种、[色彩](../colors/index.md) · 36 种，各自单独成区
+- 配套的[排版](../layouts/index.md) · 124 种、[色彩](../colors/classic.md) · 36 种，各自单独成区
 
 ## 动漫、角色与游戏
 
@@ -39,6 +39,8 @@ description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘�
 - [字体与海报](gpt-image2/gallery-typography-and-posters.md) · 14 条
 - [品牌系统与视觉识别](gpt-image2/gallery-brand-systems-and-identity.md) · 4 条
 - [活动与体验](gpt-image2/gallery-events-and-experience.md) · 2 条
+- [品牌海报](collected/gallery-brand-posters.md) · 1 条（一杯狗宠物咖啡店的喷枪手绘海报原图，prompt 是七维拆解反推的）
+- [旧刊物海报](collected/gallery-pulp-posters.md) · 1 套做法（把照片重构成 2:3 的九十年代 pulp 印刷电影海报：一色平涂底、主体压硬边、金黄粗标题、旧纸颗粒；给 Agent 照做的读图、选档、编 prompt、质检流程，附上游示例和本站实测）
 
 ## 摄影与电影感
 

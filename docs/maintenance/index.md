@@ -18,7 +18,7 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [视频生成](video.md) —— AutoDL 工作流列表怎么找到、价格怎么换算，16 个视频工作流只收 8 个的理由，文字加图生成和首尾帧各实测一次
 - [音乐生成](music.md) —— 为什么选 OpenRouter 上的 Lyria 3、不选 Suno，请求格式从哪两份文档推出来，没实测
 - [阅读视频](read-video.md) —— 从视频笔记的关键帧和转写脚本里拆出来；静音检测、拼图按格子缩放、短拼图少几行是这次补的；2026-10-17 实测 B 站、小红书、抖音和单个视频文件
-- [解析分享链接](share-link.md) —— 为什么媒体走下载狗、正文作者走 TikHub，为什么写成脚本、B 站为什么并进来；下载狗对小红书各字段稳不稳，正文、作者、点赞收藏都拿不到，轮播视频没有原图；TikHub 补齐这些的实测和单价
+- [解析分享链接](share-link.md) —— 为什么媒体走下载狗、正文作者走 TikHub，为什么写成脚本、B 站为什么并进来；下载狗对小红书各字段稳不稳，正文、作者、点赞收藏都拿不到，轮播视频没有原图；TikHub 补齐这些的实测和单价；作者主页翻页为什么收进来、实测
 - [结构化判断](jev.md) —— OpenRouter 的 Jev 1.13 的请求格式从哪查来，经海外中转实测两个端点、三种题，含糊材料概率落在中间；2026-10-10 照调研接入微软、OpenAI、Mercury 三家，调研原文存档，四家同题实测：单价一样计费 token 差 3.5 倍，图片只有 OpenAI 和 Mercury 看得了
 
 ## Skill 吸纳 { #skills }
@@ -32,6 +32,7 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [七维拆解](skills/seven-dimensions.md) —— 整理自 linux.do 帖子《图片提示词反推》，原文和配图存档在 skill 目录的 `assets/`；图片提示词反推的简化版
 - [整理视频为笔记（video-note）](skills/video-note.md) —— 吸纳自 Rimagination/bili-note，钉在 08fe812；2026-10-17 改名，拆成下载、分析、输出三段，前两段并进 agent-io，本 skill 只留证据索引、篇幅预算和打分
 - [花卉动态生长海报（flower-growth-poster）](skills/flower-growth-poster.md) —— 整理自抖音「小洁AI实战」的设计教程；即梦平台存技能的操作和 Seedream、Seedance 的型号跳过，模型换成 agent-io 的 gpt-image-2.5 和 MiniMax H3 首尾帧；prompt 照画面关键词自己写，首帧改成截海报纸纹，补了接成循环一步
+- [anidoodle 代码手绘](skills/anidoodle.md) —— 吸纳自 alexgreensh/anidoodle，钉在 25aae33，73 篇文档全文中译；6 个撞网址或当不了索引的文件改名，正文路径改成相对链接，风格索引加配方列；registry.mjs 不再覆盖中文索引，docs-check.mjs 和 README 演示素材跳过
 - [对话提示词（chat-prompts）](skills/chat-prompts.md) —— 取自 prompt-cards.cyanfish.site 的 17 段对话 prompt，钉在 JS 包 index-IivKxZ0S.js；去掉卡牌包装按场景重组，修补了架构先知和深度天赋挖掘机各一处；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录
 
 ## 实测用的示例 { #fixtures }

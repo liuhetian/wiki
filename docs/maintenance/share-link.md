@@ -1,5 +1,5 @@
 ---
-description: "解析分享链接的维护记录：为什么媒体走下载狗、正文作者走 TikHub，为什么写成脚本、B 站为什么并进来；下载狗对小红书各字段稳不稳，正文、作者、点赞收藏都拿不到，轮播视频没有原图；TikHub 补齐这些的实测和单价；用接口不用看，出问题或想换接口再看"
+description: "解析分享链接的维护记录：为什么媒体走下载狗、正文作者走 TikHub，为什么写成脚本、B 站为什么并进来；下载狗对小红书各字段稳不稳，正文、作者、点赞收藏都拿不到，轮播视频没有原图；TikHub 补齐这些的实测和单价；作者主页翻页为什么收进来而不单独成 skill、实测；用接口不用看，出问题或想换接口再看"
 ---
 
 # 解析分享链接的维护记录：下载狗、TikHub 与 B 站
@@ -20,6 +20,9 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 - **出错留原样返回**：上游一改，脚本只会报错，不会像 AI 那样绕过去；所以先把每家的返回写进 `raw/` 再解析，AI 照各平台的底层页接着调
 - **B 站并进来**：B 站的元数据、分P、字幕、评论、图文动态原来只写在视频笔记的脚本和接口笔记里，agent-io 讲不清各家链接怎么取。2026-10-17 用户定下「视频笔记拆成下载、分析、输出，下载和分析归 agent-io」，`extract_bilibili.py`、`extract_bilibili_opus.py` 的取材部分并进 `share_link.py`，接口笔记改写成 [B 站](../skills/agent-io/reference/share-link/bilibili.md)这一页
 - **按平台拆开**：并进 B 站后脚本长到 784 行。用户说「不同平台的请求脚本不应该封装在一起，现在这个太大了，而且还要保留提供底层接口」，拆成 `xiaohongshu.py`、`douyin.py`、`bilibili.py`、`xiazaitool.py` 四个，各平台一样的部分放进 `share_common.py`：文件夹格式、下载、下载狗调用和续跑、花费、命令行骨架。每个平台页上面写脚本，下面写底层接口。平台脚本要 import `share_common.py`，所以调用一次也要整包
+- **作者主页收进来，不单独成 skill**：2026-10-17 用户问「tikhub 里面有没有办法获取一个人发出的所有内容」，又问「要做成一个独立的skill还是应该收纳在某个skill里」，定下收在 agent-io 里当一个 reference。主页链接也是从 App 分享出来的链接，翻出来的作品落进同一种文件夹，和单独取过的同名就跳过；以后要做账号拆解这类分析，再起一个上层 skill，下载交给这里
+- **主页模式的几个取舍**：抖音列表的字段和单条一样，直接拿来写 `meta.json`，不再调详情；小红书列表正文截到 100 字，每条还得调详情。上百个视频占盘也花下载狗的钱，所以默认不下视频。详情超过 1 美元先停，是照「大额批量先报预估」的规矩
+- **短链跟一次跳转**：只读跳转返回的 Location，不取页面，和上面「不直连小红书网页」不冲突。代价是单条的短链也多这一次请求
 - **统一的文件夹**：各平台都写成同一个形状，视频一律 `video/pNN.mp4`，每P的字幕、视频记在 `meta.json` 的 `parts` 里，后面阅读视频、整理笔记不用分平台；评论、图文转 Markdown 这些各平台独有的，放进文件夹里固定的文件名
 
 ## 接口从哪来 { #upstream }
@@ -47,7 +50,12 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
     | `douyin/app/v3/fetch_one_video_v3` | 0.001 美元 |
     | `douyin/app/v3/fetch_video_high_quality_play_url` | 0.005 美元 |
     | `xiaohongshu/app_v2/get_image_note_detail` | 0.01 美元 |
+    | `douyin/app/v3/fetch_user_post_videos`（作者主页，20 条一页） | 0.001 美元 |
+    | `xiaohongshu/app_v2/get_user_posted_notes`（作者主页，20 条一页） | 0.01 美元 |
+    | `xiaohongshu/app_v2/get_user_info` | 0.01 美元 |
     | `tikhub/user/get_user_info`（查余额） | 免费 |
+
+    作者主页那三行是调 `tikhub/user/get_endpoint_info?endpoint=<接口路径>` 查的，免费，还能看限流（都是每秒 10 次）
 
 - 小红书选 `app_v2/get_image_note_detail`，因为文档推荐它，只要 note_id，不用 xsec_token
 - `api.tikhub.io` 和 `api.tikhub.dev` 从本机都能直连，都在 Cloudflare 后面。中转接的是 `.io`，国内机连它 0.7 秒
@@ -104,6 +112,9 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 | 抖音 `fetch_video_high_quality_play_url`，`region=CN` | 200，6.5 秒；下下来是 2160×2880 H.264，107 MB。返回里的 `file_size` 写 343 字节、`content_type` 是 xml，对不上，但链接照样能下 |
 | 小红书 `get_image_note_detail`：下载狗缺正文的 2 条图文、1 条轮播视频 | 都是 200，1.3～2 秒；正文、作者、小红书号、赞藏评转、发布时间、IP 属地都有；下载狗 404 的那条 9 张图、轮播视频的 10 张原图全部下到，原尺寸 WebP |
 | 经中转调 `get_user_info`、`fetch_one_video_v3` | 都是 200；错误 token、不带 token 都是 401 |
+| 本机用 Python `urllib` 默认请求头调中转 | 403，加上浏览器的 User-Agent 就通；`share_common.py` 本来就带 |
+| 抖音 `fetch_user_post_videos`，165 条作品的作者 | 9 页翻完，`has_more` 到 0；第一页 22 条，其中 3 条 `is_top`；拿到 165 条，之前单条接口报这个作者 166 条作品 |
+| 小红书 `get_user_posted_notes`，33 条笔记的作者 | 2 页翻完，33 条，和 `get_user_info` 的 `note_num_stat.posted` 一致；`desc` 都截到 100 字，`original` 全是空的 |
 | 小红书 6 条比 `type` 能不能分出真视频和轮播视频 | 分不出，都是 `video`；标量字段里也没有能分开的。能分开的是 `images_list`：真视频只有 1 张封面，地址在 `spectrum/` 下；轮播视频有多张，地址在 `notes_pre_post/` 下 |
 
 ### 脚本
@@ -122,6 +133,11 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 | 并入 B 站后回归：小红书图文、真视频，抖音短链 | 都成功，视频改存 `video/p01.mp4`；抖音这次下载狗又能解析了 |
 | 续跑：删掉 B 站单P的视频、把 `meta.json` 改成缺视频，原样重跑 | 从 `raw/` 里的直链补下，花费 0 |
 | 按平台拆开后：四个脚本各跑一遍，加一条抖音链接传给 `xiaohongshu.py` | 都成功；传错平台的那条单独报错、提示换脚本，其余照常；抖音封面按文件头存成 `.webp` |
+| 加作者主页后：抖音 165 条的主页 | 0.009 美元，1 分 38 秒，大半时间在下封面；`list.json` 165 条，作品文件夹 165 个 |
+| 原样重跑这个主页，同时传一条抖音短链 | 主页只翻 1 页就碰到见过的，0.001 美元，165 条全跳过；短链那条 `fetch_one_video_v3` 返回 400「请重试」，不扣钱 → TikHub 调用统一重试三次，再跑成功 |
+| 小红书 33 条的主页，`--limit 3` | 1 页加 3 次详情，0.04 美元；详情给的正文是全文，381、437 字 |
+| 闸门：阈值临时调到 0.05 美元再跑 | 翻完 2 页停下，退出码 1，提示约 0.3 美元。第一版把已取过的 3 条也算进条数，`list.json` 里那 3 条丢了 `dir`，改掉；再跑只翻 1 页 |
+| 抖音图文 `/note/<ID>`，10 张图的配色帖 | 0.001 美元。原来取 `url_list[0]`，下下来是 HEIC，文件名却是 `.jpg`，浏览器打不开；`url_list` 最后一个是同尺寸 1080×1815 的 JPEG，改成跳过 `.heic` 后正常。同一条第一次重取 TikHub 返回 400「请重试」，不扣钱，再跑就好了 |
 
 ### 新 agent 只照用法页跑
 
@@ -133,7 +149,7 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 
 ## 没做的 { #not-done }
 
-- 快手、微博等平台没测，抖音图文也没测。
+- 快手、微博等平台没测；抖音、小红书的评论都没接，TikHub 有评论接口，没测。
 - 小红书传完整链接更快，但要 Agent 先自己跟一次跳转，用法页没写。
 - 下载狗文档说额度不够返回 429，没遇到过。
 - 下载狗给的小红书视频直链里 `t=` 换算出来正好是解析后 84 小时，像是有效期，没等到过期验证。
@@ -142,8 +158,13 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 - TikHub 小红书的视频地址接口 `get_video_note_detail`、评论接口没测；`share_text` 传短链没测。
 - TikHub 小红书更便宜的接口没比：`web_v3/fetch_note_detail` 要 note_id 加 xsec_token，单价没查。
 - TikHub 每次返回都带 `cache_url`，说 24 小时内再取不另收费，没测；同一条要反复取时可以先试它。
-- 脚本的抖音图文、小红书短链、`b23.tv` 短链三条路没测。
+- 脚本的小红书短链、`b23.tv` 短链两条路没测。
+- 作者主页的短链没测：手上没有抖音、小红书的主页短链，跟跳转那段只拿抖音作品短链试过；小红书 `share_text` 传主页链接也没测。
+- 主页模式加 `--video` 没测，走的是单条那条路。
+- 抖音作者少的那 1 条作品没查是不是私密或删了；作者删掉的作品，翻到底的新列表里不再有，文件夹还留着。
+- 别的平台的作者主页接口只查了价没接：B 站 `bilibili/web/fetch_user_post_videos` 0.001 美元，快手 `kuaishou/app/fetch_user_post_v2` 0.01 美元，微博 `weibo/web_v2/fetch_user_posts` 0.001 美元，另有视频号、知乎、TikTok、X、Instagram。
+- 抖音图文的 `download_url_list` 带水印、模板写的是 3000:3000，没下下来比过是不是比 `url_list` 的大。
 - TikHub 小红书视频笔记的 `native_voice_info.url` 是音轨直链（m4a 或 wav），按理能跳过下视频直接转写，没测。
 
 [^xiazaitool]: [下载狗 API 接口文档](https://www.xiazaitool.com/jiekou)，2026-10-10 读，2026-10-17 复核字段表和响应示例。
-[^tikhub]: [TikHub 文档](https://docs.tikhub.io/)，2026-10-17 读；单价取自同日 TikHub 后台的账单明细。
+[^tikhub]: [TikHub 文档](https://docs.tikhub.io/)，2026-10-17 读；单价取自同日 TikHub 后台的账单明细，作者主页那几个接口取自 `get_endpoint_info`。

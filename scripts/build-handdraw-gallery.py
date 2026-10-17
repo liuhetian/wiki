@@ -2,7 +2,7 @@
 """从 gallery/images/handdraw-style/assets/（上游 yang0/handraw-style 原样镜像）生成图库页面。
 
 画风页写进 gallery/images/handdraw-style/，版式页写进 gallery/layouts/，色卡页写成
-gallery/colors/index.md；后两者的图片仍指回 images/handdraw-style/assets/。
+gallery/colors/classic.md；后两者的图片仍指回 images/handdraw-style/assets/。两区的 index.md 手写，不归本脚本。
 
 上游是一个 skill：风格、版式、色卡的真身是 references/ 下的 JSON 和版式 md，
 这里把它们排成本站图库的「一张图 + 一段 prompt」形态。页面是生成物，别手改；
@@ -114,9 +114,9 @@ def build_colors():
         body += [f"### {head}", "",
                  f'<img src="{asset(c["image"], FROM_SIBLING)}" alt="{head}" width="320"/>', "",
                  fence(c["prompt_zh"])]
-    page(COLOR_DIR / "index.md",
+    page(COLOR_DIR / "classic.md",
          f"色彩参考：{len(colors)} 种经典单色主题色，蓝、绿、红绿、粉紫、大地、中性六个色系，每条一张色卡加一句主题色 prompt",
-         "色彩", body, FROM_SIBLING)
+         "经典主题色", body, FROM_SIBLING)
 
 
 if __name__ == "__main__":

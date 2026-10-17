@@ -317,4 +317,14 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 `mkdocs.yml` 的 `plugins` 加官方 `minify`，开 `minify_html: true`。`navigation.prune` 只是不输出剪掉的导航项，模板给它们留下的空格和换行还在：增删一个 nav 条目，全站每页的空白都挪位、字节都变。实测把测试skill 从 Skills 挪进维护，1047 页变化、重传 67 MB；开了以后只剩 532 页、28 MB，全在 Skills 和维护 —— 这两个分区每页的侧栏都列着本分区第一层，挪走一条是真变化，prune 管不了。新收一个顶层 skill 仍要重传 Skills 下 512 页，其中 HyperFrames 占 326 页。HTML 总量 70 MB 降到 50 MB。压缩前后用 HTML 解析器逐页比对，页面文字、代码块文字、输入控件全部一致，代码块只是属性去了引号；开启后第一次部署整站 HTML 重传一次。
 
+### 2026-10-17 · 整包声明不再限于入口 index.md {: data-kind="流水线" }
+
+> 第二个skill没有实现通过关键词，让skill打包吗？
+
+> 要拓展，但是我其实没搞懂为什么需要拓展，我想的本身就是拓展的版本，看需不需要重构，相当于gallery里面的skill也可以用这个功能
+
+`scripts/build-skill-bundles.py` 原来只扫各目录的 `index.md`，打它自己所在的目录；Gallery 的单条收录放在 `collected/gallery-*.md`，不占 `index.md`，写了标准那一行也打不了包。改成扫全站页面：标准那一行的链接指向 `<目录>/<目录名>.tar.gz`，就把那个目录打成包、放在它里面，原来 `index.md` 的写法是其中的特例，原有 5 个包重跑逐字节不变。代码块和行内代码里写的不再算声明；报错从「`index.md` 链了自己的包却不是标准写法」放宽成「链了全站没人声明的包」，子页链上级的包照旧不报。链接在三条路上都对：zensical 会把非 `index.md` 页面里指向构建时还不存在的文件的相对链接也改写对，用最小工程实测过；复制按钮和 AI 读的 `.md` 源按 `.md` 的地址解析相对链接，是读代码确认的。`deploy.sh` 的注释、写作规范、`CLAUDE.md` 跟着改。
+
+详见[收纳 skill · 带脚本的 skill](../../skills/wiki-guide/skill.md#scripts)。
+
 </div>

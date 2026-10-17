@@ -1,5 +1,5 @@
 ---
-description: "小红书笔记：脚本 xiaohongshu.py 一条一个文件夹；底层是 TikHub get_image_note_detail 一次拿正文、作者、点赞收藏和全部原图，经中转 https://tikhub-proxy.liuhetian.work，只传 note_id；原图把 format/webp 换成 format/jpg；真视频另调下载狗拿视频；轮播视频和真视频怎么分"
+description: "小红书笔记：脚本 xiaohongshu.py 一条一个文件夹；底层是 TikHub get_image_note_detail 一次拿正文、作者、点赞收藏和全部原图，经中转 https://tikhub-proxy.liuhetian.work，只传 note_id；原图把 format/webp 换成 format/jpg；真视频另调下载狗拿视频；轮播视频和真视频怎么分；作者主页用 get_user_posted_notes 翻页，列表正文截到 100 字，每条还要另取详情"
 ---
 
 # 小红书
@@ -15,6 +15,7 @@ python3 scripts/xiaohongshu.py <链接或整段分享文案>... --out <目录>
 - [`xiaohongshu.py`](../../scripts/xiaohongshu.py) 就是下面这套：图文、轮播视频给原图，真视频另给封面和视频
 - 一条 0.01 美元，真视频另加 0.005 元
 - TikHub 失败时退回下载狗，只剩标题和媒体，`warnings` 里会写
+- 传作者主页就翻完他发的全部，见[作者主页](index.md#profile)；底层是下面的[主页翻页](#profile)
 - 文件夹格式、共用参数和续跑见[解析分享链接](index.md#script)
 
 ## 底层：TikHub 拿正文、作者、原图 { #tikhub }
@@ -30,6 +31,20 @@ curl -sS -m 60 -G https://tikhub-proxy.liuhetian.work/api/v1/xiaohongshu/app_v2/
 - **字段**：笔记在 `data.data[0].note_list[0]`。`title`、`desc` 是标题和正文；`user.nickname` 是作者，`user.red_id` 是小红书号；`liked_count`、`collected_count`、`comments_count`、`shared_count` 是赞、藏、评、转；`time` 是秒级时间戳；`hash_tag[].name` 是全部话题（`topics` 只有一个）；`ip_location` 是 IP 属地
 - **原图**：`images_list[].original`，原尺寸 WebP，直接下，不用带 Referer。把链接里的 `format/webp` 换成 `format/jpg` 就直接拿到 JPEG，签名不管这一段
 - **一次 0.01 美元**
+
+## 底层：作者主页翻页 { #profile }
+
+```bash
+curl -sS -m 60 -G https://tikhub-proxy.liuhetian.work/api/v1/xiaohongshu/app_v2/get_user_posted_notes \
+  -H "Authorization: Bearer $MY_API_KEY" --data-urlencode "user_id=<用户 ID>"
+```
+
+- **用户 ID**：主页链接 `/user/profile/` 后面那串 24 位十六进制；笔记数据的 `user.userid` 也是它。文档说也可以改传 `share_text=<主页分享链接>`，没实测
+- **传错了照样扣钱**：ID 不存在时外层 `code` 照样是 200，`data` 里是小红书的「服务异常」
+- **翻页**：第一页不传 `cursor`，以后传上一页最后一条的 `cursor`，也就是它的笔记 ID，直到 `has_more` 为假
+- **笔记在 `data.data.notes[]`**：`id`、`title`、`type`、`likes`、`collected_count`、`comments_count`、`share_count`、`create_time`，`sticky` 为真的是置顶
+- **列表不够用**：`desc` 截到 100 字，`images_list[].original` 是空的，只有 1440 宽的 `url_size_large`。正文全文和原图还得每条调一次上面的 `get_image_note_detail`
+- **每页 0.01 美元，20 条**：2026-10-17 一个发了 33 条的作者，2 页翻完，和 `get_user_info` 里 `note_num_stat.posted` 一致
 
 ## 底层：图文、轮播视频、真视频怎么分 { #kinds }
 

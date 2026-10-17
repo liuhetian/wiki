@@ -22,12 +22,15 @@ Writes:
 
 Frames: videos up to 3 minutes follow scene changes, the biggest changes first, up to 24 frames,
 each taken just before the next cut: short tutorials flash a prompt or a settings screen for a few
-seconds, which evenly spaced frames miss, and type it out, which a frame right after the cut cuts off. Longer videos get 12 frames evenly spaced, at least one per part. --frames and --mode override.
+seconds, which evenly spaced frames miss, and type it out, which a frame right after the cut cuts off.
+Gaps of more than 6 s without a cut (a slowly scrolling screen recording) get a frame every 4 s.
+Longer videos get 12 frames evenly spaced, at least one per part. --frames and --mode override;
+--at adds frames at given times, for a span the automatic picks missed.
 --transcribe auto (default) transcribes parts that have a video, no subtitle and audible sound;
 always / never override that. A silent track (max volume under -50 dB) is never sent: it is billed
 and comes back empty. MAI-Transcribe-2 costs about 0.1 USD an hour; read.json adds up usage.cost.
 Temporary files go inside the output folder, not the system temp directory.
-Outputs that already exist are kept; --force redoes them.
+Outputs that already exist are kept; --force redoes keyframes and sheets, --retranscribe the transcripts.
 """
 
 from __future__ import annotations
@@ -102,7 +105,7 @@ def srt_time(seconds: float) -> str:
 
 # ---------------------------------------------------------------- frames
 
-def uniform_points(parts: list[dict], count: int) -> list[tuple[dict, float, None]]:
+def uniform_points(parts: list[dict], count: int) -> list[tuple[dict, float, None, str]]:
     """Evenly spaced over the total duration, then every part that got none takes one in its middle."""
     durations = [max(1.0, float(p["duration"] or 0)) for p in parts]
     starts = [sum(durations[:i]) for i in range(len(parts))]
@@ -113,14 +116,14 @@ def uniform_points(parts: list[dict], count: int) -> list[tuple[dict, float, Non
         crowded = max(range(len(parts)), key=lambda i: sum(owner(m) == i for m in marks))
         marks.remove(max(m for m in marks if owner(m) == crowded))
         marks.append(starts[missing] + durations[missing] / 2)
-    return [(parts[owner(m)], m - starts[owner(m)], None) for m in sorted(marks)]
+    return [(parts[owner(m)], m - starts[owner(m)], None, "uniform") for m in sorted(marks)]
 
 
-def scene_points(parts: list[dict], limit: int) -> list[tuple[dict, float, float | None]]:
+def scene_points(parts: list[dict], limit: int) -> list[tuple[dict, float, float | None, str]]:
     """The biggest scene changes, each shown just before the next cut: a prompt typed out letter by letter
     or a menu that unfolds is complete by then, half-drawn right after the cut."""
     total = sum(max(1.0, float(p["duration"] or 0)) for p in parts)
-    points: list[tuple[dict, float, float | None]] = []
+    points: list[tuple[dict, float, float | None, str]] = []
     for part in parts:
         duration = max(1.0, float(part["duration"] or 0))
         share = max(1, round(limit * duration / total))
@@ -138,15 +141,23 @@ def scene_points(parts: list[dict], limit: int) -> list[tuple[dict, float, float
             if all(abs(t - c) > 0.5 for c, _ in chosen):
                 chosen.append((t, score))
         cut_times = sorted(c for c, _ in cuts)
+        mine = []
         for t, score in sorted(chosen):
             following = next((c for c in cut_times if c > t + 0.05), duration)
-            points.append((part, min(duration - 0.1, max(t + 0.2, following - 0.3)), score))
+            mine.append((min(duration - 0.1, max(t + 0.2, following - 0.3)), score, "scene"))
+        # A screen recording that scrolls slowly has no cut for many seconds; put a frame every 4 s there.
+        edges = [0.0] + [t for t, _, _ in mine] + [duration]
+        for a, b in zip(edges, edges[1:]):
+            if b - a > max(6.0, duration / 8):
+                n = int((b - a) // 4)
+                mine += [(a + (b - a) * k / (n + 1), None, "fill") for k in range(1, n + 1)]
+        points += [(part, t, score, how) for t, score, how in sorted(mine)]
     return points
 
 
 def keyframes(folder: Path, parts: list[dict], args: argparse.Namespace) -> dict:
     manifest_path = folder / "keyframes.json"
-    if manifest_path.exists() and not args.force:
+    if manifest_path.exists() and not args.force and not args.at:
         return json.loads(manifest_path.read_text(encoding="utf-8"))
     kf_dir = folder / "keyframes"
     kf_dir.mkdir(parents=True, exist_ok=True)
@@ -161,8 +172,16 @@ def keyframes(folder: Path, parts: list[dict], args: argparse.Namespace) -> dict
             mode = "uniform"
     else:
         points = uniform_points(parts, args.frames or PER_SHEET)
+    by_page = {int(p["page"]): p for p in parts}
+    for spec in filter(None, (x.strip() for x in (args.at or "").split(","))):
+        page, _, seconds = spec.rpartition("@")
+        part = by_page.get(int(page or parts[0]["page"]))
+        if part:  # frames asked for by hand: a span the automatic picks missed
+            points.append((part, min(float(seconds), float(part["duration"] or 0) - 0.1), None, "at"))
+    order = {int(p["page"]): i for i, p in enumerate(parts)}
+    points.sort(key=lambda pt: (order[int(pt[0]["page"])], pt[1]))
     frames, files = [], []
-    for i, (part, t, score) in enumerate(points, 1):
+    for i, (part, t, score, how) in enumerate(points, 1):
         name = f"keyframes/{i:02d}.jpg"
         # Seek before -i: decoding from 00:00 to every point made 12 frames of a 50-minute lecture take 21 minutes.
         ffmpeg("-y", "-ss", f"{t:.3f}", "-i", str(part["path"]), "-frames:v", "1",
@@ -177,6 +196,7 @@ def keyframes(folder: Path, parts: list[dict], args: argparse.Namespace) -> dict
             "row": n // COLUMNS + 1,
             "column": n % COLUMNS + 1,
             "file": name,
+            "how": how,
             **({"scene_score": round(score, 3)} if score else {}),
         })
         files.append(folder / name)
@@ -355,7 +375,7 @@ def read(source: Path, args: argparse.Namespace) -> dict:
         silent = part["max_volume_db"] is None or part["max_volume_db"] < SILENT_DB
         done = folder / f"transcripts/p{part['page']:02d}.json"
         want = args.transcribe == "always" or (args.transcribe == "auto" and not part["subtitle_chars"])
-        if done.exists() and not args.force:
+        if done.exists() and not args.retranscribe:
             cached = json.loads(done.read_text(encoding="utf-8"))
             stem = f"transcripts/p{part['page']:02d}"
             entry["transcript"] = {"txt": f"{stem}.txt", "srt": f"{stem}.srt", "json": f"{stem}.json", "chars": sum(len(s["text"]) for s in cached["segments"]), "cost_usd": 0.0}
@@ -395,7 +415,9 @@ def main() -> int:
                         help="auto: parts without subtitles and with audible sound (default)")
     parser.add_argument("--language", help="language code such as zh or en; omit to auto-detect")
     parser.add_argument("--chunk-seconds", type=float, default=600.0, help="audio per transcription request; 0 sends it whole")
-    parser.add_argument("--force", action="store_true", help="redo keyframes, sheets and transcripts")
+    parser.add_argument("--at", help="extra frames at these times, e.g. 20,22.5 (part 1) or 2@30 (part 2); redoes the keyframes")
+    parser.add_argument("--force", action="store_true", help="redo keyframes and sheets (transcripts are kept)")
+    parser.add_argument("--retranscribe", action="store_true", help="transcribe again (pays again)")
     args = parser.parse_args()
     failed = False
     total = 0.0

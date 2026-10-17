@@ -40,8 +40,9 @@ awk 'NR==1 && /^---$/ {fm=1; next} fm && /^---$/ {fm=0; next} fm {next} {print}'
   "$PROJECT_DIR/site/index.md" \
   | perl -0pe 's/\A\s*(<!--.*?-->\s*)*//s' > "$PROJECT_DIR/site/llms.txt"
 
-# 3.6 skill 整包：入口 index.md 写了「如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录名>.tar.gz)
-#     下载到本地。」这一行的 skill，把整个目录原样打成这个包放进 site/；链接了包却不是这一行就报错停住。
+# 3.6 skill 整包：页面写了「如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录>/<目录名>.tar.gz)
+#     下载到本地。」这一行，就把链接指向的目录原样打成这个包放进 site/（入口 index.md 打自己的目录，
+#     Gallery 单页打自己的工程目录）；链接了全站没人声明的包就报错停住。
 #     远程逐个取文件的用法照旧，两种用法共用一套相对路径。
 #     包只在 site/ 和桶里，不进 git；字节级可复现，内容不变 MD5 就不变，第 4 步的 -s 会跳过重传
 python3 "$PROJECT_DIR/scripts/build-skill-bundles.py"

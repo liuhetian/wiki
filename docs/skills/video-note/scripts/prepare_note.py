@@ -26,6 +26,8 @@ from pathlib import Path
 
 
 CLIP_MINUTES = 3
+# Narration that points at the screen: the content is on screen even when the speech is dense.
+SCREEN_CUES = ("指令", "提示词", "描述词", "这段", "如图", "屏幕上", "画面上", "参数", "代码", "设置成", "点这里", "看这里")
 BLOCK_CHARS, BLOCK_LINES = 550, 14
 
 
@@ -191,6 +193,11 @@ def budget(meta: dict, read: dict, speech: list, article: list, comments: list, 
         visual = {"risk": "not_applicable", "needs_visual_review": False, "warnings": [] if not images else ["图片里的信息要看 images_sheet_NN.jpg，看不了图就写明没覆盖"]}
     else:
         visual = visual_dependency(minutes, speech_chars, blocks, parts)
+        speech_text = "".join(b["text"] for b in speech)
+        if cues := [c for c in SCREEN_CUES if c in speech_text]:
+            if visual["risk"] == "low":
+                visual.update(risk="medium", needs_visual_review=True)
+            visual["warnings"].append(f"口播提到「{'」「'.join(cues[:4])}」，内容在画面上：看关键帧，画面上的提示词、命令照原文抄")
         if minutes >= 120 or parts >= 10:
             granularity, guidance = "long_course", "按模块或分P写，保留逐P表；不要压成短视频式摘要"
         elif minutes >= 25:

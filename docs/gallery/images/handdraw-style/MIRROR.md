@@ -1,7 +1,7 @@
 # 手绘风格库来源与收录说明
 
 本目录收录 [yang0/handraw-style](https://github.com/yang0/handraw-style) 的**全部内容**。整个仓库原样镜像在 [`assets/`](assets/SKILL.md)，
-另外按本站图库「一张图 + 一段 prompt」的格式生成了浏览页：8 个画风页挂在 [手绘风格库](index.md) 下，版式和主题色分别单独成 [排版](../../layouts/index.md) 和 [色彩](../../colors/index.md) 两区。
+另外按本站图库「一张图 + 一段 prompt」的格式生成了浏览页：8 个画风页挂在 [手绘风格库](index.md) 下，版式和主题色分别单独成 [排版](../../layouts/index.md) 和 [色彩](../../colors/classic.md) 两区。
 
 ## 上游版本跟踪
 
@@ -18,8 +18,8 @@
 |---|---|
 | `assets/**` | 仓库根目录，逐文件原样，只去掉了 `.gitignore` |
 | `styles-a.md` … `styles-h.md` | 由 `skills/handdraw-style-prompter/references/styles.json` 生成，按 `group` 首字母分成 8 页 |
-| `gallery/layouts/*.md`（排版区） | 由 `references/layouts.json` 和 `references/layouts/*.md` 生成，只取 `<!-- zh -->` 段 |
-| `gallery/colors/index.md`（色彩区） | 由 `references/colors.json` 生成，取 `prompt_zh` |
+| `gallery/layouts/` 下除 `index.md` 外的三页（排版区） | 由 `references/layouts.json` 和 `references/layouts/*.md` 生成，只取 `<!-- zh -->` 段 |
+| `gallery/colors/classic.md`（色彩区的经典主题色） | 由 `references/colors.json` 生成，取 `prompt_zh` |
 
 ## 收录方式
 

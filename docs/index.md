@@ -52,9 +52,9 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 成品参考，别人的原样收录、本站自己做的链到做法 skill，按媒介分图片、排版、色彩、视频、音频、网页六区，全部在 [Gallery 索引](gallery/index.md)：
 
-- [图片](gallery/images/index.md) —— 一张图配一段生成它的 prompt，7 大类共 175 条：GPT Image 2 的 163 条（译成中文）+ [二次元平面设计风格](gallery/images/linux-do-style/gallery-anime-graphic-design.md) 12 组
+- [图片](gallery/images/index.md) —— 一张图配一段生成它的 prompt，7 大类共 175 条：GPT Image 2 的 163 条（译成中文）+ [二次元平面设计风格](gallery/images/linux-do-style/gallery-anime-graphic-design.md) 12 组；另有把照片做成[旧刊物海报](gallery/images/collected/gallery-pulp-posters.md)的整套做法
 - [网页](gallery/web/index.md) —— [前端风格收集](gallery/web/frontend-styles/index.md)：有特色的前端美学，一种风格一个可抄的活 demo
-- [视频](gallery/video/index.md) —— 视频成品配制作方法：本站自己做的[花卉动态生长海报](gallery/video/flower-growth-poster.md)，做法在 [视频制作](skills/video-production/index.md) skill
+- [视频](gallery/video/index.md) —— 视频成品配制作方法：本站自己做的[花卉动态生长海报](gallery/video/flower-growth-poster.md)，收录的[彩色手绘三维穿梭视频](gallery/video/collected/gallery-parallax-ink.md)，做法都写在成品下面
 - 音频区还没有收录
 
 ## 维护

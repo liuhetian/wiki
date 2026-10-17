@@ -19,6 +19,11 @@ Not run on its own. It holds what every platform does the same way:
 
     the command line: links in, one JSON summary per link out, total cost last, exit code 1 if any
     link failed; a folder with an error-free meta.json is skipped, --force fetches again.
+
+    an author's profile link (short links are followed to see where they land): page through every
+    post into <platform>_user_<id>/list.json, then give each post the usual folder beside it, without
+    videos unless --video. Posts that cost a call each stop first if the total would pass CONFIRM_USD.
+    A rerun pages only until it meets a post the last complete list already had.
 """
 
 from __future__ import annotations
@@ -44,7 +49,10 @@ TIKHUB_PRICE = {
     "/api/v1/douyin/web/get_aweme_id": 0.001,
     "/api/v1/douyin/app/v3/fetch_one_video_v3": 0.001,
     "/api/v1/xiaohongshu/app_v2/get_image_note_detail": 0.01,
+    "/api/v1/douyin/app/v3/fetch_user_post_videos": 0.001,
+    "/api/v1/xiaohongshu/app_v2/get_user_posted_notes": 0.01,
 }
+CONFIRM_USD = 1.0  # a profile whose posts would cost more stops after listing until --yes or --limit
 XIAZAITOOL_CNY = 0.005
 TZ = timezone(timedelta(hours=8))
 USER_AGENT = (
@@ -90,11 +98,22 @@ class Post:
         raw.mkdir(parents=True, exist_ok=True)
         (raw / f"{name}.json").write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    def tikhub(self, path: str, params: dict) -> dict:
-        obj = gateway_json(f"{TIKHUB}{path}?{urllib.parse.urlencode(params)}")
-        self.save_raw("tikhub_" + path.rsplit("/", 1)[-1], obj)
-        if obj.get("code") != 200:
-            raise RuntimeError(f"TikHub {path} code={obj.get('code')}: {obj.get('message_zh') or obj.get('message')}")
+    def tikhub(self, path: str, params: dict, raw_name: str | None = None) -> dict:
+        """TikHub now and then answers 400 "please retry", unbilled, so try three times."""
+        for attempt in range(3):
+            if attempt:
+                time.sleep(3)
+            try:
+                obj = gateway_json(f"{TIKHUB}{path}?{urllib.parse.urlencode(params)}")
+            except RuntimeError:
+                if attempt == 2:
+                    raise
+                continue
+            self.save_raw(raw_name or "tikhub_" + path.rsplit("/", 1)[-1], obj)
+            if obj.get("code") == 200:
+                break
+            if attempt == 2:
+                raise RuntimeError(f"TikHub {path} code={obj.get('code')}: {obj.get('message_zh') or obj.get('message')}")
         self.meta["cost"]["usd"] = round(self.meta["cost"]["usd"] + TIKHUB_PRICE.get(path, 0), 4)
         return obj.get("data")
 
@@ -171,6 +190,32 @@ class Post:
         return True
 
 
+class Profile:
+    """One platform's author page; douyin.py and xiaohongshu.py subclass it."""
+
+    short: tuple[str, ...] = ()  # short-link hosts, followed once to see whether they land on a profile
+    detail_usd = 0.0  # paid per post on top of the list pages
+
+    def user_id(self, url: str) -> str:
+        """The author id when the link is a profile, else ''."""
+        raise NotImplementedError
+
+    def page(self, lister: Post, uid: str, cursor: object, n: int) -> tuple[list[dict], object, bool]:
+        """Page n: (raw posts, next cursor, has more)."""
+        raise NotImplementedError
+
+    def item(self, raw: dict) -> dict:
+        """list.json's entry: id, url, title, published, pinned, kind, stats."""
+        raise NotImplementedError
+
+    def author(self, raw: dict) -> dict:
+        raise NotImplementedError
+
+    def fetch(self, post: Post, raw: dict | None, args: argparse.Namespace) -> None:
+        """Fill one post's folder; raw is its list entry, None when only an earlier run listed it."""
+        raise NotImplementedError
+
+
 def video_url(data: dict) -> str:
     """xiazaitool's videoUrls is a plain string, and for Bilibili sometimes a list."""
     video = data.get("videoUrls") or ""
@@ -194,6 +239,23 @@ def http_json(url: str, headers: dict | None = None, timeout: int = 30) -> dict:
         raise RuntimeError(f"HTTP {exc.code} from {url.split('?')[0]}: {body}") from exc
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
         raise RuntimeError(f"{type(exc).__name__} from {url.split('?')[0]}: {exc}") from exc
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args, **kwargs):  # noqa: ANN002, ANN003
+        return None
+
+
+def resolve_short(url: str) -> str:
+    """Where a short link points, read from its redirect without fetching the page; the link itself on failure."""
+    opener = urllib.request.build_opener(_NoRedirect)
+    try:
+        with opener.open(urllib.request.Request(url, headers={"User-Agent": USER_AGENT}), timeout=20):
+            return url
+    except urllib.error.HTTPError as exc:
+        return urllib.parse.urljoin(url, exc.headers.get("Location") or "") if 300 <= exc.code < 400 else url
+    except (urllib.error.URLError, TimeoutError):
+        return url
 
 
 def extract_url(text: str) -> str:
@@ -286,6 +348,106 @@ def run(source: str, out: Path, args: argparse.Namespace, platform: str, matches
     return summary(post.dir, post.meta)
 
 
+def profile_link(source: str, matches: Callable[[str], bool], profile: Profile) -> tuple[str, str] | None:
+    """(link, author id) when the source is a profile link, else None and it goes to run()."""
+    try:
+        url = extract_url(source)
+    except ValueError:
+        return None
+    if not matches(url):
+        return None
+    uid = profile.user_id(resolve_short(url) if host_in(url, profile.short) else url)
+    return (url, uid) if uid else None
+
+
+def run_profile(url: str, uid: str, out: Path, args: argparse.Namespace, platform: str, matches: Callable[[str], bool],
+                key_of: Callable[[str], str], profile: Profile) -> dict:
+    lister = Post(url, platform, "user_" + uid, out)
+    lister.dir.mkdir(parents=True, exist_ok=True)
+    list_path = lister.dir / "list.json"
+    old = json.loads(list_path.read_text(encoding="utf-8")) if list_path.exists() and not args.force else {}
+    # Posts come newest first, so meeting one a complete earlier list had means the rest is known too.
+    # Pinned posts sit on top whatever their age, so they never count as that meeting point.
+    known = {i["id"] for i in old.get("items") or []} if old.get("complete") else set()
+    listed: dict[str, dict] = {}
+    raws: dict[str, dict] = {}
+    cursor, more, reached, error, n = None, True, False, None, 0
+    while more and not reached and not (args.limit and len(listed) >= args.limit):
+        n += 1
+        try:
+            batch, cursor, more = profile.page(lister, uid, cursor, n)
+        except Exception as exc:  # noqa: BLE001 - keep what was listed; a rerun pages from the top again
+            error = f"listing stopped at page {n}: {type(exc).__name__}: {exc}"
+            break
+        for raw in batch:
+            item = profile.item(raw)
+            listed.setdefault(item["id"], item)
+            raws.setdefault(item["id"], raw)
+            reached = reached or (item["id"] in known and not item["pinned"])
+        if not batch:
+            break
+    complete = error is None and (not more or reached)
+    items = list(listed.values())
+    if reached or not complete:
+        items += [i for i in old.get("items") or [] if i["id"] not in listed]
+    author = next((profile.author(r) for r in raws.values()), old.get("author"))
+    todo = items[: args.limit] if args.limit else items
+
+    def folder(item: dict) -> Path:
+        return out / f"{platform}_{key_of(item['url'])}"
+
+    def done(item: dict) -> bool:
+        meta = folder(item) / "meta.json"
+        return meta.exists() and not args.force and not json.loads(meta.read_text(encoding="utf-8")).get("error")
+
+    def save() -> None:
+        for item in items:
+            item["dir"] = folder(item).name if (folder(item) / "meta.json").exists() else None
+        list_path.write_text(json.dumps({
+            "platform": platform, "user_id": uid, "url": url, "author": author, "complete": complete,
+            "listed_at": datetime.now(TZ).isoformat(timespec="seconds"), "items": items,
+        }, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    results: list[dict] = []
+    need = sum(1 for i in todo if not done(i))
+    estimate = round(need * profile.detail_usd, 4)
+    if estimate > CONFIRM_USD and not args.yes:
+        stop = (f"stopped after listing: {need} of {len(todo)} posts need a call each, about {estimate} USD, "
+                f"over {CONFIRM_USD}; rerun with --yes, or --limit N for the first N")
+        error = f"{error}; {stop}" if error else stop
+    else:
+        item_args = argparse.Namespace(**{**vars(args), "no_video": args.no_video or not args.video})
+        for item in todo:
+            raw = raws.get(item["id"])
+            results.append(run(item["url"], out, item_args, platform, matches, key_of,
+                               lambda post, a, raw=raw: profile.fetch(post, raw, a)))
+    save()
+    failed = [{"dir": r.get("dir"), "error": r["error"]} for r in results if r.get("error")]
+    if failed and error is None:
+        error = f"{len(failed)} of {len(results)} posts failed; see failed"
+    cost = dict(lister.meta["cost"])
+    for r in results:
+        for k in cost:
+            cost[k] = round(cost[k] + ((r.get("cost") or {}).get(k) or 0), 4)
+    return {
+        "dir": str(lister.dir),
+        "platform": platform,
+        "kind": "profile",
+        "author": (author or {}).get("name"),
+        "listed": len(items),
+        "complete": complete,
+        "posts": len(results),
+        "cached": sum(1 for r in results if r.get("cached")),
+        "images": sum(r.get("images") or 0 for r in results),
+        "videos": sum(r.get("videos") or 0 for r in results),
+        "estimate_usd": estimate,
+        "cost": cost,
+        "warnings": [f"{Path(r['dir']).name}: {w}" for r in results for w in r.get("warnings") or []],
+        "failed": failed,
+        "error": error,
+    }
+
+
 def summary(folder: Path, meta: dict, cached_run: bool = False) -> dict:
     files = meta.get("files") or {}
     parts = meta.get("parts") or []
@@ -308,7 +470,8 @@ def summary(folder: Path, meta: dict, cached_run: bool = False) -> dict:
 
 
 def cli(doc: str, platform: str, matches: Callable[[str], bool], key_of: Callable[[str], str],
-        fetch: Callable[[Post, argparse.Namespace], None], add_args: Callable[[argparse.ArgumentParser], None] | None = None) -> int:
+        fetch: Callable[[Post, argparse.Namespace], None], add_args: Callable[[argparse.ArgumentParser], None] | None = None,
+        profile: Profile | None = None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=doc, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -316,11 +479,20 @@ def cli(doc: str, platform: str, matches: Callable[[str], bool], key_of: Callabl
     parser.add_argument("--out", required=True, help="output directory; one subfolder per link")
     parser.add_argument("--no-video", action="store_true", help="skip video downloads (and their xiazaitool calls)")
     parser.add_argument("--force", action="store_true", help="fetch again even if meta.json exists; pays again")
+    if profile:
+        parser.add_argument("--limit", type=int, default=0, help="profile links: only the first N posts, pinned ones first")
+        parser.add_argument("--video", action="store_true", help="profile links: download videos too (off by default there)")
+        parser.add_argument("--yes", action="store_true", help=f"profile links: go on even when the posts cost over {CONFIRM_USD} USD")
     if add_args:
         add_args(parser)
     args = parser.parse_args()
     out = Path(args.out).resolve()
-    results = [run(link, out, args, platform, matches, key_of, fetch) for link in args.links]
+    results = []
+    for link in args.links:
+        if profile and (found := profile_link(link, matches, profile)):
+            results.append(run_profile(*found, out, args, platform, matches, key_of, profile))
+        else:
+            results.append(run(link, out, args, platform, matches, key_of, fetch))
     for item in results:
         print(json.dumps(item, ensure_ascii=False))
     total_usd = round(sum((r.get("cost") or {}).get("usd", 0) for r in results), 4)

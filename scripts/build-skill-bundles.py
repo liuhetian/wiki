@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """把带脚本的 skill 打成整包 —— deploy.sh 在 md 源镜像之后调用。
 
-声明就是入口页里给客户端看的那一行，一字不差：
+声明就是页面里给客户端看的那一行，一字不差，只有链接随页面变：
 
-    如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录名>.tar.gz)下载到本地。
+    如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录>/<目录名>.tar.gz)下载到本地。
 
-某个目录的 index.md 有这一行，就把整个目录打成 <out>/<同一相对路径>/<目录名>.tar.gz。
-指引和链接缺一不可：只在代码块里写个下载地址不算声明。链接了 <目录名>.tar.gz 却不是这一行，
-直接报错退出 —— 宁可部署停住，也不让入口页挂一个线上 404 的包。活例：
-docs/maintenance/mock-bundle/index.md。
+哪个页面有这一行，就把链接指向的那个目录原样打成包，放在这个目录里、以目录名命名：
+<out>/<目录的相对路径>/<目录名>.tar.gz。入口是 index.md 时，要打的就是它自己的目录，
+链接写成 <目录名>.tar.gz（docs/maintenance/mock-bundle/index.md）；不占 index.md 的单页
+（Gallery 的 collected/ 里那种）指向自己的工程目录，比如
+docs/gallery/video/collected/gallery-parallax-ink.md 写的
+assets/parallax-ink-starter/parallax-ink-starter.tar.gz。
+指引和链接缺一不可：代码块和行内代码里写的不算声明。页面链接了某个目录的包，
+全站却没有一处用标准那一行声明它，直接报错退出 —— 宁可部署停住，也不让页面挂一个线上 404 的包；
+子页链到上级已经声明过的包（mock-bundle/count/index.md 那样）不受影响。
 
 - 包内顶层目录就是 skill 目录名，下面是原样的目录树：解压出来的相对路径和网页上一一对应，
   文档一个字不用改，客户端远程逐个取文件和整包解压两种用法共用一套文档
@@ -36,28 +41,69 @@ ROOT = Path(__file__).resolve().parent.parent
 MTIME = 0  # 固定时间戳，包才可复现
 
 
-STANDARD = "如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill]({name}.tar.gz)下载到本地。"
+STANDARD = "如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill]({link})下载到本地。"
+LINK = re.compile(r"\]\(\s*<?([^()\s<>]+\.tar\.gz)>?\s*\)")
+FENCE = re.compile(r"^\s*(`{3,}|~{3,})")
+
+
+def prose(text: str) -> str:
+    """去掉代码块和行内代码：那里写的包地址只是举例，不算声明，也不该报错。"""
+    lines, fence = [], None
+    for line in text.splitlines():
+        mark = FENCE.match(line)
+        if mark:
+            token = mark.group(1)
+            if fence is None:
+                fence = token
+            elif token[0] == fence[0] and len(token) >= len(fence):
+                fence = None
+            continue
+        if fence is None:
+            lines.append(re.sub(r"`[^`]*`", "", line))
+    return "\n".join(lines)
+
+
+def bundle_dir(page: Path, link: str, docs: Path) -> Path | None:
+    """链接形如 <目录>/<目录名>.tar.gz 时返回那个目录；不是这个形状、目录不存在或在 docs/ 外都返回 None。"""
+    if "://" in link or link.startswith("/"):
+        return None
+    archive = Path(os.path.normpath(page.parent / link))
+    folder = archive.parent
+    if archive.name != f"{folder.name}.tar.gz" or not folder.is_dir():
+        return None
+    if folder == docs or not folder.is_relative_to(docs):
+        return None
+    if any(part.startswith(".") for part in folder.relative_to(docs).parts):
+        return None
+    return folder
 
 
 def declared_bundles(docs: Path) -> list[Path]:
-    """入口 index.md 有标准那一行的目录；链接了包却不是标准写法的，报错退出。"""
-    found, bad = [], []
-    for index in sorted(docs.rglob("index.md")):
-        skill_dir = index.parent
-        if skill_dir == docs or any(part.startswith(".") for part in index.relative_to(docs).parts):
+    """全站页面里用标准那一行声明过的目录；链接了没人声明的包，报错退出。"""
+    declared: dict[Path, Path] = {}
+    loose: list[tuple[Path, str, Path]] = []
+    for page in sorted(docs.rglob("*.md")):
+        if any(part.startswith(".") for part in page.relative_to(docs).parts):
             continue
-        text = index.read_text(encoding="utf-8")
-        name = skill_dir.name
-        if STANDARD.format(name=name) in text:
-            found.append(skill_dir)
-        elif re.search(rf"\]\(\s*<?{re.escape(name)}\.tar\.gz>?\s*\)", text):
-            bad.append(index)
+        text = prose(page.read_text(encoding="utf-8"))
+        if ".tar.gz" not in text:
+            continue
+        for match in LINK.finditer(text):
+            link = match.group(1)
+            folder = bundle_dir(page, link, docs)
+            if folder is None:
+                continue
+            if STANDARD.format(link=link) in text:
+                declared.setdefault(folder, page)
+            else:
+                loose.append((page, link, folder))
+    bad = [(page, link) for page, link, folder in loose if folder not in declared]
     if bad:
-        for index in bad:
-            line = STANDARD.format(name=index.parent.name)
-            print(f"✗ {index.relative_to(docs)} 链接了整包，但不是标准那一行，应写成：\n    {line}", file=sys.stderr)
+        for page, link in bad:
+            line = STANDARD.format(link=link)
+            print(f"✗ {page.relative_to(docs)} 链接了整包 {link}，但全站没有一处用标准那一行声明它，应写成：\n    {line}", file=sys.stderr)
         sys.exit(1)
-    return found
+    return sorted(declared)
 
 
 def skipped(name: str) -> bool:
@@ -114,7 +160,7 @@ def build(skill_dir: Path, out_file: Path) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="入口页提到 <目录名>.tar.gz 的 skill 打成整包")
+    parser = argparse.ArgumentParser(description="页面里用标准那一行声明的目录打成整包")
     parser.add_argument("--docs", type=Path, default=ROOT / "docs", help="源目录，默认 docs/")
     parser.add_argument("--out", type=Path, default=ROOT / "site", help="输出根目录，默认 site/")
     args = parser.parse_args()

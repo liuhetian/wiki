@@ -50,7 +50,7 @@ description: "在 skills/ 下收纳或改 skill 时读（先读写作规范）�
 
 来源自带的形式和框架不跟着进来：卡牌、稀有度、站点自己的分类、几套并存的占位写法这类包装一律丢掉，按本站的 skill 形态重新组织，分组按使用场景来。所以注意事项3：只收能直接拿来用的内容，分析来源本身的话（比如从写法推断出处）不进 skill，确实有用的写进维护记录的「上游」。活例：[对话提示词](../collab/chat-prompts/index.md)，原来是一套提示词卡牌。
 
-来源是教程、视频这类教人怎么做的内容，先照做一遍再收。原文多半只露关键词和成品，照着说的做不一定行，坑要自己跑出来：跑通的 prompt、参数和坑写进 skill，和原文不一样的地方写进维护记录的「翻译之外的改动」。视频先用[整理视频为笔记](../video-note/index.md)记成文章，文章和 skill 互链。所以注意事项4：教程类来源跑通再收。活例：[花卉动态生长海报](../video-production/flower-growth-poster/index.md)，原视频只给了风格关键词，首帧怎么做、比例怎么补、怎么接成循环都是照做时发现的。
+来源是教程、视频这类教人怎么做的内容，先照做一遍再收。原文多半只露关键词和成品，照着说的做不一定行，坑要自己跑出来：跑通的 prompt、参数和坑写进 skill，和原文不一样的地方写进维护记录的「翻译之外的改动」。视频先用[整理视频为笔记](../video-note/index.md)记成文章，文章和 skill 互链。所以注意事项4：教程类来源跑通再收。活例：Gallery 的[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)，原视频只给了风格关键词，首帧怎么做、比例怎么补、怎么接成循环都是照做时发现的。
 
 吸纳这个能力首先分析它的架构，可以收纳成几个skill：
 
@@ -76,7 +76,7 @@ frontmatter 忠实保留，`allowed-tools`、`model` 等字段原样不动；`na
 
 prompt 里的占位也要深度收纳：上游的 `{{idea}}`、`[产品名]`、【…】这类，一律改成[填空](reference/components.md#fill)输入框，读者在网页上填好再复制；为占位写给 AI 的说明（「【】里的内容用户还没给，先问用户要，齐了再开始」这类）随之删掉，输入框本身就说明了哪里要填。活例：[人话翻译](../collab/chat-prompts/plain-talk.md)。
 
-反过来也一样：自己跑通的具体 prompt 收成 skill 时，换题材要改的值挖成填空，placeholder 写成「比如」加实测那次的值，照着填回去就是跑通过的那条。活例：[花卉动态生长海报](../video-production/flower-growth-poster/index.md)，花名、颜色、海报文字挖空，placeholder 是洋桔梗那次的值。
+反过来也一样：自己跑通的具体 prompt 收成 skill 时，换题材要改的值挖成填空，placeholder 写成「比如」加实测那次的值，照着填回去就是跑通过的那条。活例：Gallery 的[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)，花名、颜色、海报文字挖空，placeholder 是洋桔梗那次的值。
 
 上级入口加一行（干什么、吸纳自谁），`mkdocs.yml` 注册 nav，页尾链到维护记录（见最后一节），跑 `python3 scripts/check-links.py`
 
@@ -87,14 +87,15 @@ prompt 里的占位也要深度收纳：上游的 `{{idea}}`、`[产品名]`、�
 
 ### 带脚本的 skill：远程为主，整包兜底 { #scripts }
 
-默认走网络请求：文档在网页上读，脚本用到哪个取哪个。入口 `index.md` 开头介绍那一段的末尾写这一句，一字不差，只换链接里的目录名：
+默认走网络请求：文档在网页上读，脚本用到哪个取哪个。skill 页面开头介绍那一段的末尾写这一句，一字不差，只换链接：
 
 ```markdown
 如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录名>.tar.gz)下载到本地。
 ```
 
 - **放在开头介绍段，不单独成节、不放进「用法」**：它是例外的指引，放进用法读起来像在引导人下载。要补一句为什么非整包不可（比如跑一次总入口就算调用多次），另起一句接在后面，别用分号连 —— 句号是标准句的一部分
-- **这一行同时是指引和声明**：客户端照它决定要不要整包；部署时 `scripts/build-skill-bundles.py` 认这一行，把整个目录原样打成 `<目录名>.tar.gz`。只在代码块里写下载地址不算；链接了包却不是这一行，部署直接停住，免得线上挂一个 404 的包
+- **这一行同时是指引和声明**：客户端照它决定要不要整包；部署时 `scripts/build-skill-bundles.py` 认这一行，把链接指向的目录原样打成包。代码块和行内代码里写的不算；链了一个全站没人用这一行声明过的包，部署直接停住，免得线上挂一个 404 的包
+- **链接指向要打的那个目录**：包放在被打包的目录里、以目录名命名。入口是 `index.md` 的打它自己的目录，链接就是 `<目录名>.tar.gz`；Gallery 里不占 `index.md` 的单页打它的工程目录，比如[彩色手绘三维穿梭视频](../../gallery/video/collected/gallery-parallax-ink.md)写的是 `assets/parallax-ink-starter/parallax-ink-starter.tar.gz`，包里只有工程，页面照旧在网页上读
 - **整个 skill 都调用不到 2 次的不写**：脚本单文件、自包含，远程取一个就够，比如 agent-io 的 `pdf_read.py`
 - **调用一次也要整包的，在子 skill 里说一句**，链到上级的包，比如[数字数](../../maintenance/mock-bundle/count/index.md)页的 `所以调用一次也要整包：直接将[测试skill](../mock-bundle.tar.gz)下载到本地`
 - **文档里只写相对路径**：链接相对当前文件，命令相对 skill 自己的目录，直接写 `python3 scripts/xxx.py`
@@ -106,7 +107,7 @@ prompt 里的占位也要深度收纳：上游的 `{{idea}}`、`[产品名]`、�
 - **不附下载命令**：下载、解压、放哪、要不要先清旧目录，客户端 AI 看到这一句自己会写
 - **不讲根目录**：相对路径的基准就是文档自己的位置，这是 URL 和文件系统的默认语义；复制按钮还会把链接转成绝对地址。入口页再写一句「根目录是 `…/skills/x/`，相对路径拼上它」，等于另立一个基准，在抽象 skill 里和子 skill 的目录对不上。实测过：subagent 照这句把子 skill 的 `scripts/foo.py` 拼到父目录下，拿到 404
 
-活例：[测试skill](../../maintenance/mock-bundle/index.md)（两个子 skill 互相引用，一个脚本跨目录 import 另一个）、[整理视频为笔记](../video-note/index.md)、[HyperFrames](../hyperframes/index.md)。
+活例：[测试skill](../../maintenance/mock-bundle/index.md)（两个子 skill 互相引用，一个脚本跨目录 import 另一个）、[整理视频为笔记](../video-note/index.md)、[HyperFrames](../hyperframes/index.md)、Gallery 单页[彩色手绘三维穿梭视频](../../gallery/video/collected/gallery-parallax-ink.md)。
 
 ## 其他
 

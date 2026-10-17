@@ -1,5 +1,5 @@
 ---
-description: "音乐生成的维护记录：2026-10-02 选 OpenRouter 上的 Google Lyria 3，不选 Suno（没有公开的官方 API）；模型元数据和价格，请求格式从 OpenRouter 音频输出文档和 Google Lyria 3 文档推出来；用户决定不实测；用接口不用看，出问题再看"
+description: "音乐生成的维护记录：2026-10-02 选 OpenRouter 上的 Google Lyria 3，不选 Suno（没有公开的官方 API）；模型元数据和价格，请求格式从 OpenRouter 音频输出文档和 Google Lyria 3 文档推出来；2026-10-17 clip 版纯音乐实测跑通；用接口不用看，出问题再看"
 ---
 
 # 音乐生成的维护记录：OpenRouter 上的 Lyria 3
@@ -27,10 +27,18 @@ description: "音乐生成的维护记录：2026-10-02 选 OpenRouter 上的 Goo
 
 ## 实测 { #tests }
 
-没测。用户决定先接入、不测。第一次真用时，把请求和返回补进这里。
+接入时用户决定先不测。2026-10-17 给[彩色手绘三维穿梭视频](../gallery/video/collected/gallery-parallax-ink.md)配乐时第一次真用：
+
+| 请求 | 结果 |
+|---|---|
+| `google/lyria-3-clip-preview`，照接口页的写法，不带 `audio` 参数；prompt 是「纯音乐，不要人声。约 110 BPM 的轻快原声小品……结尾自然收住」；Python urllib 发 | 200，15 秒，`provider` 是 Google AI Studio |
+
+- 文字只有一块 `<instrumental>`；音频在一块 `delta.audio.data` 里给完，解出来是带 ID3 的 MP3，192 kbps、44.1 kHz、立体声，30.8 秒，744 KB。
+- `usage.cost` 是 0.0396 美元，跟模型说明里的 0.04 美元一段对得上。
+- 听感没人听过：AI 听不了，只用 ffprobe 看了时长和格式。
 
 ## 没做的 { #not-done }
 
-- 一次都没跑过，上面没确认的几点要第一次用时验证。
+- pro 版、带歌词、传图片配乐都没跑过；文字部分是不是歌词还没确认。
 - 没比较过 Lyria 和别的音乐模型的效果。
 - 海外机的 SSH 公钥还没装回去，OpenRouter 的中转配置没同步进 `assets/gateway/`。

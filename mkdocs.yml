@@ -103,7 +103,7 @@ plugins:
         gallery/images/handdraw-style/layouts-social-cards.md: gallery/layouts/social-cards.md
         gallery/images/handdraw-style/layouts-infographics.md: gallery/layouts/infographics.md
         gallery/images/handdraw-style/layouts-comic-storyboards.md: gallery/layouts/comic-storyboards.md
-        gallery/images/handdraw-style/colors.md: gallery/colors/index.md
+        gallery/images/handdraw-style/colors.md: gallery/colors/classic.md
         # 例：posts/old-name.md: posts/new-name.md
         # 2026-10-01 本 wiki 的技术归成一个系列 posts/wiki-tech/，建站手记删掉
         posts/cos-wiki-deploy/index.md: posts/wiki/cos-deploy/index.md
@@ -191,6 +191,9 @@ plugins:
         skills/bili-note/index.md: skills/video-note/index.md
         skills/bili-note/references/bilibili-api-notes.md: skills/agent-io/reference/share-link/bilibili.md
         maintenance/skills/bili-note.md: maintenance/skills/video-note.md
+        # 2026-10-17 视频制作 skill 并进 Gallery：花卉动态生长海报的做法直接写在成品页
+        skills/video-production/index.md: gallery/video/index.md
+        skills/video-production/flower-growth-poster/index.md: gallery/video/flower-growth-poster.md
         # 2026-10-17 视频笔记改名整理视频为笔记、拆成下载分析输出三段，B站接口笔记并进 agent-io
         skills/video-note/references/bilibili-api-notes.md: skills/agent-io/reference/share-link/bilibili.md
         # 2026-10-17 测试skill是实测流水线用的 mock，从 Skills 挪进维护
@@ -987,9 +990,87 @@ nav:
               - "接入 component": skills/hyperframes/hyperframes-registry/references/wiring-components.md
           - "figma": skills/hyperframes/figma/index.md
           - "hyperframes-studio": skills/hyperframes/hyperframes-studio/index.md
-      - 视频制作:
-          - skills/video-production/index.md
-          - 花卉动态生长海报: skills/video-production/flower-growth-poster/index.md
+      - anidoodle 代码手绘:
+          - skills/anidoodle/index.md
+          - 工作流:
+              - "从这里开始": skills/anidoodle/references/workflows/start-here.md
+              - "自己画出来的画": skills/anidoodle/references/workflows/drawing-process.md
+              - "任意长度的影片": skills/anidoodle/references/workflows/long-film.md
+              - "讲解片和信息图": skills/anidoodle/references/workflows/explainer.md
+              - "机械讲解": skills/anidoodle/references/workflows/machines.md
+              - "发布片": skills/anidoodle/references/workflows/launch-video.md
+              - "发布套件": skills/anidoodle/references/workflows/launch-video-kit.md
+              - "网站配图": skills/anidoodle/references/workflows/site-art.md
+              - "交互式网页动画": skills/anidoodle/references/workflows/interactive.md
+              - "教绘画": skills/anidoodle/references/workflows/teach-drawing.md
+              - "角色保持一致": skills/anidoodle/references/workflows/character-consistency.md
+              - "照图改编画风": skills/anidoodle/references/workflows/adapt-a-style.md
+              - "审片": skills/anidoodle/references/workflows/review.md
+          - 手艺与契约:
+              - "故事": skills/anidoodle/references/storytelling.md
+              - "写实与手艺": skills/anidoodle/references/realism-and-craft.md
+              - "解剖": skills/anidoodle/references/anatomy.md
+              - "画风与工具包": skills/anidoodle/references/style-guide.md
+              - "手艺及格线": skills/anidoodle/references/craft-bar.md
+              - "工作方法": skills/anidoodle/references/working-method.md
+              - "确定性与契约": skills/anidoodle/references/determinism-and-contract.md
+              - "格式": skills/anidoodle/references/formats.md
+              - "镜头": skills/anidoodle/references/camera.md
+              - "运动语法": skills/anidoodle/references/motion-grammar.md
+              - "后端与适配器": skills/anidoodle/references/backends-and-adapters.md
+          - 画风:
+              - skills/anidoodle/references/styles/index.md
+              - "蓝晒蓝图": skills/anidoodle/references/styles/blueprint.md
+              - "破色": skills/anidoodle/references/styles/brokenColour.md
+              - "炭笔，擦掉再画": skills/anidoodle/references/styles/charcoalErasure.md
+              - "彩色铅笔": skills/anidoodle/references/styles/colouredPencil.md
+              - "梦境罩染": skills/anidoodle/references/styles/dreamGlaze.md
+              - "手工刺绣": skills/anidoodle/references/styles/embroidery.md
+              - "扁平矢量": skills/anidoodle/references/styles/flatVector.md
+              - "民间故事绘本": skills/anidoodle/references/styles/folkTale.md
+              - "剪纸拼贴": skills/anidoodle/references/styles/foxDraw.md
+              - "新闻纸半色调": skills/anidoodle/references/styles/halftone.md
+              - "等轴剖视": skills/anidoodle/references/styles/isometric.md
+              - "马克笔漫画": skills/anidoodle/references/styles/koiDraw.md
+              - "孔版印刷": skills/anidoodle/references/styles/lighthouseDraw.md
+              - "低多边形": skills/anidoodle/references/styles/lowPoly.md
+              - "世纪中期水粉": skills/anidoodle/references/styles/midCentury.md
+              - "黑板粉笔": skills/anidoodle/references/styles/moonPhasesDraw.md
+              - "布面油画": skills/anidoodle/references/styles/paintedOil.md
+              - "玩具剧场纸拼贴": skills/anidoodle/references/styles/paperCraft.md
+              - "像素画": skills/anidoodle/references/styles/pixelArt.md
+              - "圆珠笔速写": skills/anidoodle/references/styles/pocketWatchDraw.md
+              - "铅笔水彩": skills/anidoodle/references/styles/ranunculusDraw.md
+              - "橡皮管动画": skills/anidoodle/references/styles/rubberHose.md
+              - "档案剪贴簿": skills/anidoodle/references/styles/scrapbook.md
+              - "刮画板": skills/anidoodle/references/styles/scratchboard.md
+              - "钢笔点画": skills/anidoodle/references/styles/stipple.md
+              - "绘本铅笔 + 水彩": skills/anidoodle/references/styles/storybookDraw.md
+              - "水墨画": skills/anidoodle/references/styles/sumiE.md
+              - "玩具积木": skills/anidoodle/references/styles/toyBrick.md
+              - "浮世绘套色木版": skills/anidoodle/references/styles/woodcut.md
+              - "钢笔淡彩": skills/anidoodle/references/styles/wrenDraw.md
+          - 配乐:
+              - skills/anidoodle/references/music/index.md
+              - "作曲": skills/anidoodle/references/music/compose.md
+              - "音效设计": skills/anidoodle/references/music/sound-design.md
+              - "音源包许可证": skills/anidoodle/references/music/sounds-licenses.md
+              - 音乐风格:
+                  - "风格词汇": skills/anidoodle/references/music/styles/vocabularies.md
+                  - "lo-fi 电子": skills/anidoodle/references/music/styles/lofi-electronic.md
+                  - "八音盒": skills/anidoodle/references/music/styles/music-box.md
+              - 乐理:
+                  - skills/anidoodle/references/music/theory/index.md
+                  - "曲式与配器": skills/anidoodle/references/music/theory/form.md
+                  - "和声": skills/anidoodle/references/music/theory/harmony.md
+                  - "旋律": skills/anidoodle/references/music/theory/melody.md
+                  - "节奏与律动": skills/anidoodle/references/music/theory/rhythm.md
+                  - "情绪映射": skills/anidoodle/references/music/theory/mood.md
+                  - "声音理论": skills/anidoodle/references/music/theory/sound.md
+          - 范例:
+              - skills/anidoodle/example/index.md
+              - "影片规格书": skills/anidoodle/example/butterfly-film-spec.md
+          - "渲染适配器": skills/anidoodle/engine/tools/adapters/index.md
       - FastAPI 后端:
           - skills/fastapi/index.md
           - 项目布局: skills/fastapi/reference/项目布局.md
@@ -1205,6 +1286,8 @@ nav:
               - gallery/images/gpt-image2/gallery-typography-and-posters.md
               - gallery/images/gpt-image2/gallery-brand-systems-and-identity.md
               - gallery/images/gpt-image2/gallery-events-and-experience.md
+              - gallery/images/collected/gallery-brand-posters.md
+              - gallery/images/collected/gallery-pulp-posters.md
           - 摄影与电影感:
               - gallery/images/gpt-image2/gallery-photography.md
               - gallery/images/gpt-image2/gallery-fashion-editorial.md
@@ -1242,10 +1325,14 @@ nav:
           - gallery/layouts/social-cards.md
           - gallery/layouts/infographics.md
           - gallery/layouts/comic-storyboards.md
-      - 色彩: gallery/colors/index.md
+      - 色彩:
+          - gallery/colors/index.md
+          - gallery/colors/classic.md
+          - gallery/colors/collected/gallery-imagery-gradients.md
       - 视频:
           - gallery/video/index.md
           - 花卉动态生长海报: gallery/video/flower-growth-poster.md
+          - 彩色手绘三维穿梭视频: gallery/video/collected/gallery-parallax-ink.md
       - 音频: gallery/audio/index.md
       - 网页:
           - gallery/web/index.md
@@ -1312,6 +1399,7 @@ nav:
           - 对话提示词: maintenance/skills/chat-prompts.md
           - 整理视频为笔记: maintenance/skills/video-note.md
           - 花卉动态生长海报: maintenance/skills/flower-growth-poster.md
+          - anidoodle 代码手绘: maintenance/skills/anidoodle.md
       - 实测用的示例:
           - 测试skill:
               - maintenance/mock-bundle/index.md

@@ -19,14 +19,14 @@ description: "在本 wiki 新建或修改任何页面前读：写作流程、内
 
 顶层六个板块按用途分，主题只做板块内的二级目录。按顺序问：
 
-1. 收录一件成品当参考 —— 一张图配 prompt、一种前端风格配 demo？→ [Gallery](../../gallery/index.md)，按媒介进 images / layouts / colors / video / audio / web 六区之一。原样收录，只调排版和图片路径，来源写进各自的 `MIRROR.md`；本站自己做的只放成品，做法收成 skill 链过去，不写 MIRROR；skill 页要展示成品就直接引 Gallery 里的文件，不复制一份（[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)）；layouts、colors 两区由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改。活例：[GPT Image 2 的动漫与漫画](../../gallery/images/gpt-image2/gallery-anime-and-manga.md)、[前端风格收集](../../gallery/web/frontend-styles/index.md)
+1. 收录一件成品当参考 —— 一张图配 prompt、一种前端风格配 demo？→ [Gallery](../../gallery/index.md)，按媒介进 images / layouts / colors / video / audio / web 六区之一。原样收录，只调排版和图片路径，来源写进各自的 `MIRROR.md`；本站自己做的，成品和做法写在同一页，不写 MIRROR（[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)）；layouts 区的三个分类页和 colors 区的经典主题色页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改；两区的 `index.md` 手写。活例：[GPT Image 2 的动漫与漫画](../../gallery/images/gpt-image2/gallery-anime-and-manga.md)、[前端风格收集](../../gallery/web/frontend-styles/index.md)
 2. 给 agent 直接挂载的成套资产？→ [Skills](../index.md)
 3. 一个 skill 或 Agent 能力背后的事 —— 从哪来、为什么这么选、改过什么、实测过什么？→ [维护](../../maintenance/index.md)。skill 页只写怎么用，页尾链过来，写法见[收纳 skill · 维护记录](skill.md#maintenance-record)
 4. 跟着一本书或一套实操走、自己做完才算数？→ [课程](../../courses/index.md)
 5. 算法、机器学习、编程语言等专业科目的学习、推导、题解？→ [笔记](../../notes/index.md)
 6. 其余能独立阅读的复盘、观点和方法整理 → [文章](../../posts/index.md)
 
-- Gallery 只放成品，从成品里提炼出的方法归 skill —— [图片提示词反推 · 七维拆解](../collab/image-prompt-reverse/seven-dimensions/index.md)是 skill，它整理的合集进了 [Gallery](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)，两边互链
+- 能用在任意成品上的方法归 skill，只做一种成品的做法写在 Gallery 那页 —— [花卉动态生长海报](../../gallery/video/flower-growth-poster.md)的五步只做这一种海报，写在成品页；[图片提示词反推 · 七维拆解](../collab/image-prompt-reverse/seven-dimensions/index.md)是 skill，它整理的合集进了 [Gallery](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)，两边互链
 - 课程是题、笔记是答卷：同名文件，答完才从 `courses/` 归档进 `notes/`
 - 文章和 skill 共生：复盘归文章，复盘里沉淀出的可复用手册归 skill，互链 —— [动画 PPT 复盘](../../posts/animated-ppt/index.md)与它的[工程手册](../writing/deck.md)
 - 归属变了就把文件真的搬过去，按下一节「挪文件」办
@@ -84,7 +84,7 @@ Material / pymdownx 的语法照常写，这张表只提醒什么时候该用上
 | 外部来源 | 脚注 `[^名]` |
 | 读者要看到 JS 跑出来的结果 | ```` ```{.js .run} ```` → [可运行 JS 代码块](reference/components.md#js-run) |
 | 交互演示 | iframe 嵌自包含单页 → [嵌入交互单页](reference/components.md#iframe-demo) |
-| 放图片、视频 | 按怎么看来排：单张用 `<figure markdown>` 居中；要对照着看的几张（首尾帧、改前改后）放进 `<div class="grid" markdown>` 并排，一张一个 figure 配 `<figcaption>`。别把几张塞进同一个 figure，主题把 figure 里的图设成块级，会上下摞成一长条。动图效果放静音循环的 mp4，`<video autoplay loop muted playsinline>`，`src` 写站点根绝对路径，不放 GIF（体积是 mp4 的好几倍）→ 活例 [花卉动态生长海报](../video-production/flower-growth-poster/index.md) |
+| 放图片、视频 | 按怎么看来排：单张用 `<figure markdown>` 居中；要对照着看的几张（首尾帧、改前改后）放进 `<div class="grid" markdown>` 并排，一张一个 figure 配 `<figcaption>`。别把几张塞进同一个 figure，主题把 figure 里的图设成块级，会上下摞成一长条。动图效果放静音循环的 mp4，`<video autoplay loop muted playsinline>`，`src` 写站点根绝对路径，不放 GIF（体积是 mp4 的好几倍）→ 活例 [花卉动态生长海报](../../gallery/video/flower-growth-poster.md) |
 | 不想公开的小字：服务器地址、域名、用户名 | `` `age:…` `` 打码 → [打码](reference/components.md#age-mosaic) |
 | 一串按时间排的事件 | `zx-timeline` 块 → [时间线](reference/components.md#timeline) |
 | 读者要看、粘进对话框会被误读的内容 | `zx-no-copy` 块 → [复制时跳过](reference/components.md#no-copy) |
