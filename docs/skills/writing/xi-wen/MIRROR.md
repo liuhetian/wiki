@@ -18,7 +18,7 @@ description: "本目录归档 YuanZHAO321/XiWen 的真身，供未来上游漂�
 
 ## 吸收方式
 
-按 skill 吸收规矩归档：目录镜像上游布局——主文件原文照录为 `index.md`、依赖的 `references/` 与 `references/originals/` 平级归档，内部相对链接（如 `references/逐篇精读.md`、`originals/为袁绍檄豫州文.md`）原样有效。人读介绍压成一句话进分类索引。
+归档方式：目录镜像上游布局——主文件原文照录为 `index.md`、依赖的 `references/` 与 `references/originals/` 平级归档，内部相对链接（如 `references/逐篇精读.md`、`originals/为袁绍檄豫州文.md`）原样有效。人读介绍压成一句话进分类索引。
 
 这个 skill 的行为定义横跨三层：第一层是 `SKILL.md`（骨架 + 套语速查，触发即加载）；第二层是 `references/` 的四份精讲（症状→药方式按需读 1–2 份）；第三层是 `references/originals/` 的五篇原文（沉浸语感、核对引文）。三层都是 `SKILL.md` 显式声明的"行为定义"，只留主文件会让第二第三层的相对链接全成死链，起不到"真身可对照"的作用，故 10 份全部照录。
 

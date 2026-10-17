@@ -78,6 +78,13 @@ markdown_extensions:
 # 写上名字即可。显式声明 plugins 不会关掉搜索 —— 实测 site/search.json 照常产出。
 plugins:
 
+  # 压掉 HTML 里的空白。navigation.prune 剪掉的导航项在模板里仍留下空格换行，增删一个 nav 条目，
+  # 全站每页的空白都挪位、字节都变：挪一个 skill 实测 1047 页变化、重传 67 MB；开了只剩真正显示
+  # 那个条目的分区（532 页、28 MB），HTML 总量 70 MB → 50 MB（2026-10-17 实测）。
+  # pre / code / textarea 里的原文不动，mermaid、echarts、打码、可运行代码块都靠它们
+  - minify:
+      minify_html: true
+
   # 目录级 frontmatter 默认值：某目录放一个 .meta.yml，里面的键给该目录**及其子目录**下
   # 所有页面当默认，页面自己的 frontmatter 优先。用来给两类不能动的文件补 description：
   # 上游原文照录的存档（改了就不是原文），和被 --8<-- 当 snippet 引用的真身（加 frontmatter
@@ -110,11 +117,88 @@ plugins:
         # 2026-10-01 存 key 那篇和打码合成一篇，key 本身改成打码写进 API 中转
         posts/ai-assistant/key-storage.md: posts/wiki-tech/age-mosaic.md
         # 2026-10-15 吸纳记录从 skill 目录里的 MIRROR.md 挪进维护目录
-        skills/collab/grilling/MIRROR.md: posts/ai-assistant/maintenance/skills/grilling.md
+        skills/collab/grilling/MIRROR.md: maintenance/skills/grilling.md
         #     posts/guide.md#installation: posts/guide.md#getting-started
         # 2026-09-29 本 wiki 自己的写作规范从「写作口味」拆出，单开 skills/wiki-guide/
-        skills/writing/mkdocs-wiki/index.md: skills/wiki-guide/mkdocs-wiki/index.md
-        skills/writing/mkdocs-wiki/reference/course-page.md: skills/wiki-guide/course-page.md
+        skills/writing/mkdocs-wiki/index.md: skills/wiki-guide/index.md
+        skills/writing/mkdocs-wiki/reference/course-page.md: skills/wiki-guide/course.md
+        # 2026-10-16 写作规范改成抽象 skill：页面规矩提进入口，组件和配图进 reference/，课程页、skill、精简检查成子 skill
+        skills/wiki-guide/mkdocs-wiki/index.md: skills/wiki-guide/index.md
+        skills/wiki-guide/mkdocs-wiki/index.md#iframe-demo: skills/wiki-guide/reference/components.md#iframe-demo
+        skills/wiki-guide/mkdocs-wiki/index.md#js-run: skills/wiki-guide/reference/components.md#js-run
+        skills/wiki-guide/mkdocs-wiki/index.md#age-mosaic: skills/wiki-guide/reference/components.md#age-mosaic
+        skills/wiki-guide/mkdocs-wiki/index.md#timeline: skills/wiki-guide/reference/components.md#timeline
+        skills/wiki-guide/mkdocs-wiki/index.md#no-copy: skills/wiki-guide/reference/components.md#no-copy
+        skills/wiki-guide/mkdocs-wiki/index.md#marker-doodle-images: skills/wiki-guide/reference/marker-doodle.md
+        skills/wiki-guide/mkdocs-wiki/index.md#absorbed-skill: skills/wiki-guide/skill.md#principles
+        skills/wiki-guide/course-page.md: skills/wiki-guide/course.md
+        skills/wiki-guide/remote-skill.md: skills/wiki-guide/skill.md#principles
+        # 2026-10-16 skill 怎么写和收纳合成一页「收纳 skill」，skill/index.md 与 skill.md 同一个网页地址，不用跳
+        skills/wiki-guide/skill/reference/absorb.md: skills/wiki-guide/skill.md#principles
+        skills/wiki-guide/trim-ai-knowledge.md: skills/wiki-guide/trim.md
+        # 2026-10-16 CLAUDE.md 初始化模板删除，Karpathy 四条原则改为整页中译吸纳成「初始化项目」
+        skills/collab/claude-md-template/index.md: skills/collab/init-project.md
+        # 2026-10-16 带文档盘问改为整页中译重新吸纳：来源进维护目录，domain-modeling 的两份格式挪进 reference/
+        skills/collab/grill-with-docs/MIRROR.md: maintenance/skills/grill-with-docs.md
+        skills/collab/grill-with-docs/domain-modeling/SKILL.md: skills/collab/grill-with-docs/domain-modeling/index.md
+        skills/collab/grill-with-docs/domain-modeling/CONTEXT-FORMAT.md: skills/collab/grill-with-docs/domain-modeling/reference/glossary-format.md
+        skills/collab/grill-with-docs/domain-modeling/ADR-FORMAT.md: skills/collab/grill-with-docs/domain-modeling/reference/adr-format.md
+        # 2026-10-16 两个图片反推 skill 合并成抽象能力「图片提示词反推」：七维拆解是简化版，get-prompt-from-image 是完整版，来源进维护目录
+        skills/collab/analysis_image/index.md: skills/collab/image-prompt-reverse/seven-dimensions/index.md
+        skills/collab/analysis_image/assets/linux-do-2729491/MIRROR.md: skills/collab/image-prompt-reverse/seven-dimensions/assets/linux-do-2729491/MIRROR.md
+        skills/collab/analysis_image/assets/linux-do-2729491/post.md: skills/collab/image-prompt-reverse/seven-dimensions/assets/linux-do-2729491/post.md
+        skills/collab/get-prompt-from-image/index.md: skills/collab/image-prompt-reverse/get-prompt-from-image/index.md
+        skills/collab/get-prompt-from-image/MIRROR.md: maintenance/skills/get-prompt-from-image.md
+        skills/collab/get-prompt-from-image/references/analysis-framework.md: skills/collab/image-prompt-reverse/get-prompt-from-image/references/analysis-framework.md
+        skills/collab/get-prompt-from-image/references/category-guides.md: skills/collab/image-prompt-reverse/get-prompt-from-image/references/category-guides.md
+        skills/collab/get-prompt-from-image/references/illustration-style.md: skills/collab/image-prompt-reverse/get-prompt-from-image/references/illustration-style.md
+        # 2026-10-16 提示词卡牌去掉卡牌包装重新收纳成「对话提示词」：一段 prompt 一个子 skill，来源进维护目录，生图卡来源挪进 Gallery
+        skills/collab/prompt-cards/index.md: skills/collab/chat-prompts/index.md
+        skills/collab/prompt-cards/MIRROR.md: maintenance/skills/chat-prompts.md
+        skills/collab/prompt-cards/reference/persona.md: skills/collab/chat-prompts/index.md
+        skills/collab/prompt-cards/reference/persona.md#role-architect: skills/collab/chat-prompts/architect.md
+        skills/collab/prompt-cards/reference/persona.md#role-talent-miner: skills/collab/chat-prompts/talent-miner.md
+        skills/collab/prompt-cards/reference/persona.md#role-life-designer: skills/collab/chat-prompts/life-designer.md
+        skills/collab/prompt-cards/reference/persona.md#role-critic: skills/collab/chat-prompts/critic.md
+        skills/collab/prompt-cards/reference/playbook.md: skills/collab/chat-prompts/index.md
+        skills/collab/prompt-cards/reference/playbook.md#flow-refine: skills/collab/chat-prompts/prompt-refine.md
+        skills/collab/prompt-cards/reference/playbook.md#flow-socratic: skills/collab/chat-prompts/socratic.md
+        skills/collab/prompt-cards/reference/playbook.md#flow-dual-explain: skills/collab/chat-prompts/dual-explain.md
+        skills/collab/prompt-cards/reference/playbook.md#flow-cross-axis: skills/collab/chat-prompts/cross-axis.md
+        skills/collab/prompt-cards/reference/playbook.md#flow-fact-check: skills/collab/chat-prompts/fact-check.md
+        skills/collab/prompt-cards/reference/playbook.md#flow-expert-panel: skills/collab/chat-prompts/expert-panel.md
+        skills/collab/prompt-cards/reference/playbook.md#flow-first-principles: skills/collab/chat-prompts/first-principles.md
+        skills/collab/prompt-cards/reference/playbook.md#flow-cross-domain: skills/collab/chat-prompts/cross-domain.md
+        skills/collab/prompt-cards/reference/playbook.md#flow-steelman: skills/collab/chat-prompts/steelman.md
+        skills/collab/prompt-cards/reference/playbook.md#flow-debug: skills/collab/chat-prompts/root-cause.md
+        skills/collab/prompt-cards/reference/guard.md: skills/collab/chat-prompts/index.md
+        skills/collab/prompt-cards/reference/guard.md#trap-scope: skills/collab/chat-prompts/scope-lock.md
+        skills/collab/prompt-cards/reference/guard.md#trap-plain: skills/collab/chat-prompts/plain-talk.md
+        skills/collab/prompt-cards/reference/guard.md#trap-facts: skills/collab/chat-prompts/seek-truth.md
+        # 2026-10-16 B站视频笔记按新规范重新吸纳：来源进维护目录，下载和转写改走 agent-io
+        skills/bili-note/MIRROR.md: maintenance/skills/bili-note.md
+        # 2026-10-17 测试skill是实测流水线用的 mock，从 Skills 挪进维护
+        skills/mock-bundle/index.md: maintenance/mock-bundle/index.md
+        skills/mock-bundle/greet/index.md: maintenance/mock-bundle/greet/index.md
+        skills/mock-bundle/count/index.md: maintenance/mock-bundle/count/index.md
+        # 2026-10-16 维护目录从「搭建 AI 助手」里挪出来，成为和 Skills、Gallery 平级的顶层板块「维护」
+        posts/ai-assistant/maintenance/assets/decision-models-research.md: maintenance/assets/decision-models-research.md
+        posts/ai-assistant/maintenance/image.md: maintenance/image.md
+        posts/ai-assistant/maintenance/index.md: maintenance/index.md
+        posts/ai-assistant/maintenance/jev.md: maintenance/jev.md
+        posts/ai-assistant/maintenance/music.md: maintenance/music.md
+        posts/ai-assistant/maintenance/pdf-reading.md: maintenance/pdf-reading.md
+        posts/ai-assistant/maintenance/share-link.md: maintenance/share-link.md
+        posts/ai-assistant/maintenance/skills/chat-prompts.md: maintenance/skills/chat-prompts.md
+        posts/ai-assistant/maintenance/skills/get-prompt-from-image.md: maintenance/skills/get-prompt-from-image.md
+        posts/ai-assistant/maintenance/skills/grill-with-docs.md: maintenance/skills/grill-with-docs.md
+        posts/ai-assistant/maintenance/skills/grilling.md: maintenance/skills/grilling.md
+        posts/ai-assistant/maintenance/skills/init-project.md: maintenance/skills/init-project.md
+        posts/ai-assistant/maintenance/skills/seven-dimensions.md: maintenance/skills/seven-dimensions.md
+        posts/ai-assistant/maintenance/transcribe.md: maintenance/transcribe.md
+        posts/ai-assistant/maintenance/tts.md: maintenance/tts.md
+        posts/ai-assistant/maintenance/video.md: maintenance/video.md
+        posts/ai-assistant/maintenance/web-search.md: maintenance/web-search.md
         # 2026-09-29 前端风格收集从 skills/ 挪进 gallery/web/（Gallery 分图片/视频/音频/网页四区）
         skills/frontend-styles/haoqi/01-opening.md: gallery/web/frontend-styles/haoqi/01-opening.md
         skills/frontend-styles/haoqi/index.md: gallery/web/frontend-styles/haoqi/index.md
@@ -162,7 +246,7 @@ plugins:
         skills/collab/gpt-image2-skill/MIRROR.md: gallery/images/gpt-image2/MIRROR.md
         skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery.md: gallery/images/index.md
         skills/collab/gpt-image2-skill/docs/sunburst-samples.md: gallery/images/index.md
-        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/SKILL.md: skills/collab/get-prompt-from-image/index.md
+        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/SKILL.md: skills/collab/image-prompt-reverse/get-prompt-from-image/index.md
         skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-anime-and-manga.md: gallery/images/gpt-image2/gallery-anime-and-manga.md
         skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-gaming.md: gallery/images/gpt-image2/gallery-gaming.md
         skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-retro-and-cyberpunk.md: gallery/images/gpt-image2/gallery-retro-and-cyberpunk.md
@@ -194,9 +278,9 @@ plugins:
         skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-events-and-experience.md: gallery/images/gpt-image2/gallery-events-and-experience.md
         skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-tattoo-design.md: gallery/images/gpt-image2/gallery-tattoo-design.md
         skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery-screen-photography.md: gallery/images/gpt-image2/gallery-screen-photography.md
-        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/analysis-framework.md: skills/collab/get-prompt-from-image/references/analysis-framework.md
-        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/category-guides.md: skills/collab/get-prompt-from-image/references/category-guides.md
-        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/illustration-style.md: skills/collab/get-prompt-from-image/references/illustration-style.md
+        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/analysis-framework.md: skills/collab/image-prompt-reverse/get-prompt-from-image/references/analysis-framework.md
+        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/category-guides.md: skills/collab/image-prompt-reverse/get-prompt-from-image/references/category-guides.md
+        skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/illustration-style.md: skills/collab/image-prompt-reverse/get-prompt-from-image/references/illustration-style.md
 
 # 链接校验。0.0.53 及更早版本有并行竞态：同一份内容偶发（约 1/15 次构建）误报大量
 # "page does not exist"，产物 HTML 实测无差异，只能关掉。0.0.62 上复现不出来了 ——
@@ -242,20 +326,6 @@ nav:
           - 新机器配开发环境: posts/ai-assistant/dev-env.md
           - API 中转：Caddy 换 key: posts/ai-assistant/api-gateway.md
           - 邮件采集：自己说 SMTP: posts/ai-assistant/mail-intake.md
-          - 维护目录:
-              - posts/ai-assistant/maintenance/index.md
-              - Agent 能力:
-                  - 读 PDF 脚本: posts/ai-assistant/maintenance/pdf-reading.md
-                  - 网络搜索: posts/ai-assistant/maintenance/web-search.md
-                  - 语音合成: posts/ai-assistant/maintenance/tts.md
-                  - 图片生成: posts/ai-assistant/maintenance/image.md
-                  - 视频生成: posts/ai-assistant/maintenance/video.md
-                  - 音乐生成: posts/ai-assistant/maintenance/music.md
-                  - 音频转录: posts/ai-assistant/maintenance/transcribe.md
-                  - 解析分享链接: posts/ai-assistant/maintenance/share-link.md
-                  - 结构化判断: posts/ai-assistant/maintenance/jev.md
-              - Skill 吸纳:
-                  - 盘问我: posts/ai-assistant/maintenance/skills/grilling.md
       - 工作方法:
           - posts/methods/index.md
           - 精力管理:
@@ -503,10 +573,11 @@ nav:
       - skills/index.md
       - 本 wiki 写作规范:
           - skills/wiki-guide/index.md
-          - 格式怎么写: skills/wiki-guide/mkdocs-wiki/index.md
-          - 课程页怎么写: skills/wiki-guide/course-page.md
-          - skill 怎么收纳: skills/wiki-guide/remote-skill.md
-          - 精简检查（按需引用）: skills/wiki-guide/trim-ai-knowledge.md
+          - 自研组件: skills/wiki-guide/reference/components.md
+          - 配图: skills/wiki-guide/reference/marker-doodle.md
+          - 课程页怎么写: skills/wiki-guide/course.md
+          - 收纳 skill: skills/wiki-guide/skill.md
+          - 精简检查（按需引用）: skills/wiki-guide/trim.md
       - Agent 基础能力:
           - skills/agent-io/index.md
           - 阅读 PDF: skills/agent-io/reference/pdf.md
@@ -1018,7 +1089,7 @@ nav:
       - 写作口味:
           - skills/writing/index.md
           - 报纸版 HTML: skills/writing/newspaper/index.md
-          - 滚动 deck 工程手册: skills/writing/deck/index.md
+          - 滚动 deck 工程手册: skills/writing/deck.md
           - 去 AI 味:
               - skills/writing/qu-ai-wei/index.md
               - 51 条 AI 腔模式: skills/writing/qu-ai-wei/references/patterns.md
@@ -1043,24 +1114,46 @@ nav:
               - 底本·讨粤匪檄: skills/writing/xi-wen/references/originals/讨粤匪檄.md
       - 和 AI 协作:
           - skills/collab/index.md
-          - CLAUDE.md 初始化模板: skills/collab/claude-md-template/index.md
-          - 盘问我: skills/collab/grilling/index.md
+          - 初始化项目: skills/collab/init-project.md
+          - 盘问我: skills/collab/grilling.md
           - 带文档盘问:
               - skills/collab/grill-with-docs/index.md
-              - Domain Modeling: skills/collab/grill-with-docs/domain-modeling/SKILL.md
-              - CONTEXT.md 格式: skills/collab/grill-with-docs/domain-modeling/CONTEXT-FORMAT.md
-              - ADR 格式: skills/collab/grill-with-docs/domain-modeling/ADR-FORMAT.md
-          - 提示词卡牌:
-              - skills/collab/prompt-cards/index.md
-              - 角色卡: skills/collab/prompt-cards/reference/persona.md
-              - 流程卡: skills/collab/prompt-cards/reference/playbook.md
-              - 约束卡: skills/collab/prompt-cards/reference/guard.md
-          - 图片提示词反推: skills/collab/analysis_image/index.md
-          - 从图反推 prompt:
-              - skills/collab/get-prompt-from-image/index.md
-              - 分析框架: skills/collab/get-prompt-from-image/references/analysis-framework.md
-              - 题材与媒介: skills/collab/get-prompt-from-image/references/category-guides.md
-              - 插画风格: skills/collab/get-prompt-from-image/references/illustration-style.md
+              - 领域建模:
+                  - skills/collab/grill-with-docs/domain-modeling/index.md
+                  - GLOSSARY.md 格式: skills/collab/grill-with-docs/domain-modeling/reference/glossary-format.md
+                  - ADR 格式: skills/collab/grill-with-docs/domain-modeling/reference/adr-format.md
+          - 对话提示词:
+              - skills/collab/chat-prompts/index.md
+              - 理清问题、做决定:
+                  - 苏格拉底式提问: skills/collab/chat-prompts/socratic.md
+                  - 第一性原理: skills/collab/chat-prompts/first-principles.md
+                  - 跨领域借解: skills/collab/chat-prompts/cross-domain.md
+                  - 双向钢人论证: skills/collab/chat-prompts/steelman.md
+                  - 专家会诊: skills/collab/chat-prompts/expert-panel.md
+              - 查证与研究:
+                  - 事实核查: skills/collab/chat-prompts/fact-check.md
+                  - 纵横分析法: skills/collab/chat-prompts/cross-axis.md
+                  - 根因追踪: skills/collab/chat-prompts/root-cause.md
+                  - 实事求是: skills/collab/chat-prompts/seek-truth.md
+              - 学概念:
+                  - 双层解释法: skills/collab/chat-prompts/dual-explain.md
+                  - 人话翻译: skills/collab/chat-prompts/plain-talk.md
+              - 写作与方案:
+                  - 提示炼金: skills/collab/chat-prompts/prompt-refine.md
+                  - 毒舌审稿: skills/collab/chat-prompts/critic.md
+                  - 架构先知: skills/collab/chat-prompts/architect.md
+                  - 范围铁闸: skills/collab/chat-prompts/scope-lock.md
+              - 职业与人生:
+                  - 深度天赋挖掘机: skills/collab/chat-prompts/talent-miner.md
+                  - 人生设计师: skills/collab/chat-prompts/life-designer.md
+          - 图片提示词反推:
+              - skills/collab/image-prompt-reverse/index.md
+              - 七维拆解: skills/collab/image-prompt-reverse/seven-dimensions/index.md
+              - 从图反推 prompt:
+                  - skills/collab/image-prompt-reverse/get-prompt-from-image/index.md
+                  - 分析框架: skills/collab/image-prompt-reverse/get-prompt-from-image/references/analysis-framework.md
+                  - 题材与媒介: skills/collab/image-prompt-reverse/get-prompt-from-image/references/category-guides.md
+                  - 插画风格: skills/collab/image-prompt-reverse/get-prompt-from-image/references/illustration-style.md
       - AI 调研写手册:
           - skills/book-writer/index.md
           - SillyTavern 调研计划: skills/book-writer/reference/goal-st.md
@@ -1169,3 +1262,28 @@ nav:
                   - Wearable 一幕: gallery/web/frontend-styles/oryzo/wearable-scene.md
                   - RGB 呼吸光边: gallery/web/frontend-styles/oryzo/rgb-glow-border.md
           - Sandboard WebGPU 沙盘: gallery/web/sandboard/index.md
+  - 维护:
+      - maintenance/index.md
+      - Agent 能力:
+          - 读 PDF 脚本: maintenance/pdf-reading.md
+          - 网络搜索: maintenance/web-search.md
+          - 语音合成: maintenance/tts.md
+          - 图片生成: maintenance/image.md
+          - 视频生成: maintenance/video.md
+          - 音乐生成: maintenance/music.md
+          - 音频转录: maintenance/transcribe.md
+          - 解析分享链接: maintenance/share-link.md
+          - 结构化判断: maintenance/jev.md
+      - Skill 吸纳:
+          - 盘问我: maintenance/skills/grilling.md
+          - 带文档盘问: maintenance/skills/grill-with-docs.md
+          - 初始化项目: maintenance/skills/init-project.md
+          - 从图反推 prompt: maintenance/skills/get-prompt-from-image.md
+          - 七维拆解: maintenance/skills/seven-dimensions.md
+          - 对话提示词: maintenance/skills/chat-prompts.md
+          - B站视频笔记: maintenance/skills/bili-note.md
+      - 实测用的示例:
+          - 测试skill:
+              - maintenance/mock-bundle/index.md
+              - 打招呼: maintenance/mock-bundle/greet/index.md
+              - 数字数: maintenance/mock-bundle/count/index.md

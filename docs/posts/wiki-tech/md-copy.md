@@ -66,13 +66,15 @@ const abs = (target, base) => (!target || KEEP.test(target) ? target : new URL(t
 转出来的是 `.md` 源和真身文件的地址，不是 HTML 页面——源文件里的链接本来就指向 `.md`，AI 拿到直接读源。
 
 - **拼出来的地址一定存在**：`deploy.sh` 用 rsync 把 `docs/` 原样镜像上桶，每个源文件在线上的相对位置和在 `docs/` 里一样，在 `docs/` 里成立的相对路径，以线上地址为基准解析也成立。这也是镜像必须放 `/x.md`、不能像官方那样放 `/x/index.md` 的原因——基准深一层，相对链接全错
-- **基准用线上，取文件用当前站点**：基准取发现链接的完整地址，复制出去的链接都指向线上；取源文件只用它的路径部分、按当前站点去拿，本地预览上也能点
+- **基准用线上，取文件用当前站点**：基准取发现链接的完整地址，复制出去的链接都指向线上；取源文件只用它的路径部分、按当前站点去拿，本地预览上也能点（要先镜像 `.md`，见下一条）
+- **本地预览要先镜像 `.md`**：`zensical serve` 不出源文件，请求 `/x.md` 被路由到网页 `/x/`，状态码照样是 200。在仓库根跑一次 `deploy.sh` 里那行 rsync，把 `.md` 镜像进 `site/`，serve 才原样给出源文件；按钮见到 `text/html` 就报「取到的是网页不是源文件」，不把整页 HTML 当源文件复制。serve 有时漏拷刚改过的 `vendor/` 脚本，改了脚本效果没变，先比一下 `docs/vendor/` 和 `site/vendor/` 里的是否一致
 - **改写哪些**：逐行匹配 Markdown 链接和图片的 `](目标)`、链接定义 `[名字]: 目标`（脚注 `[^1]:` 除外）、HTML 的 `src="…"` 和 `href="…"`
 - **不动哪些**：已带协议的（`https:`、`mailto:`）、页内锚点 `#cli`、`//` 开头、`<…>` 包着的；代码块里（按 ```` ``` ```` / `~~~` 围栏判断进出）和行内代码里的——写作规范里举例写的链接不能被改
 - **snippet 另算**：`--8<-- "路径"` 的路径不相对当前页，相对 snippet 的 `base_path`（先 `docs/`，再仓库根）。先拼「站点根 + 路径」，发一个 HEAD 请求：站上有就用站上的地址（如 `vendor/age-core.js`）；没有说明它只在仓库根（如 `scripts/age-open.py`），指向 GitHub 仓库
 - **去掉 frontmatter，不加来源**：`description` 这类元数据是给站点用的，粘进对话框是噪音，连同后面的空行一起去掉；贴出去的只有正文（2026-10-15 起。此前 frontmatter 原样保留，后面插一行 `<!-- 来源：… -->` 注释，粘贴后也是噪音，一并去掉）
-- **`zx-no-copy` 块整块不复制**：用 `<div class="zx-no-copy" markdown>` 和 `</div>` 包起来的内容（写法同[时间线](../../skills/wiki-guide/mkdocs-wiki/index.md#timeline)：开头结尾前后各空一行，里面不缩进），网页上照常显示、读 `.md` 源的 AI 也看得到，只是不进对话框。给维护记录这类「读者要看得到、但粘进对话框会被当成在说正在讨论的事」的内容用；块可以放在页面任何位置，前后的正文、脚注照常复制。块里嵌套的 div 按层数配对，代码块里写的不算。活例：[盘问我](../../skills/collab/grilling/index.md)页尾的维护记录
+- **`zx-no-copy` 块整块不复制**：用 `<div class="zx-no-copy" markdown>` 和 `</div>` 包起来的内容（写法同[时间线](../../skills/wiki-guide/reference/components.md#timeline)：开头结尾前后各空一行，里面不缩进），网页上照常显示、读 `.md` 源的 AI 也看得到，只是不进对话框。给维护记录这类「读者要看得到、但粘进对话框会被当成在说正在讨论的事」的内容用；块可以放在页面任何位置，前后的正文、脚注照常复制。块里嵌套的 div 按层数配对，代码块里写的不算。活例：[盘问我](../../skills/collab/grilling.md)页尾的维护记录
 - **去掉 HTML 注释**：网页上本来不显示，对话框里也不要，整行、行尾、跨行的都去；代码块和行内代码里举例写的注释不动。删完留下的连续空行并成一行
+- **填空换成填的值**：正文里的 `<input>`、`<textarea>`、`<select>` 是给读者填的空，复制时标签换成填的值，空着的写成【placeholder】；值在链接改写之后才嵌进去，填的内容不会被当成链接改写。写法见[自研组件 · 填空](../../skills/wiki-guide/reference/components.md#fill)
 - **打码原样复制**：取的是源文件，页面上解锁过也还是密文；要明文接 [`age-open.py`](age-mosaic.md#cli)
 - **写剪贴板**：https 下用 `navigator.clipboard`；本地 http 预览没有这个接口，退回隐藏 textarea 加 `execCommand("copy")`
 
@@ -83,7 +85,8 @@ const abs = (target, base) => (!target || KEEP.test(target) ? target : new URL(t
 | `mkdocs.yml` | `repo_url`、`edit_uri` 设成站点根；`extra_javascript` 挂 `vendor/md-copy.js` |
 | `overrides/main.html`、`overrides/home.html` | 页头写 `alternate` 和 `describedby` 两行 |
 | `overrides/partials/source.html` | 空文件，关掉 `repo_url` 带出来的仓库入口 |
-| [`vendor/md-copy.js`](../../vendor/md-copy.js) | 复制按钮和改写，约 110 行，不压缩 |
+| [`vendor/md-copy.js`](../../vendor/md-copy.js) | 复制按钮、改写和填空，约 200 行，不压缩 |
+| `stylesheets/zx-theme.css` 第 11 节 | 填空控件的样式 |
 
 2026-10-15 测过：正式站构建并照 `deploy.sh` 镜像 `.md` 后起本地预览，在打码那篇把剪贴板接口换成记录、自动点按钮——frontmatter 保留、来源注释在、三种 snippet 各指对地方、正文相对链接和 iframe 的 `src` 改成线上地址、`#cli` 锚点和代码块里的命令不动。
 

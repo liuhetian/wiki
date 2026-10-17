@@ -23,7 +23,7 @@ description: "新 Ubuntu 机器从零配到能写代码：按顺序复制粘贴�
     export HTTPS_PROXY=socks5h://127.0.0.1:1080
     ```
 
-    ssh 问密码时填 `age:YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBlbVdTNGk1MFNZWWIzZWdhckcvT21kRDM3ZVVVVjJxU1gzdGtaSnB6MlNNCnMyb1BTaE5EODdmK2xYYmd5UURLK2xDNE5GZExpSGFQZmtqVzBSV2pEclUKLS0tIGFrcXFrdjRqKzVaUGpBcXNqUHNYY21ZOHJaWUVMYk84UTNrMXJ0UkpkSU0KWPtwciteS4n+zH7vUW5e5Mkvf39C+JXmBGhbCaBbGXv5I2aEdp8hqNR+Q7h7fu68WA==`。服务器地址和密码都打了码，点马赛克解锁，规矩见[写作规范的打码一节](../../skills/wiki-guide/mkdocs-wiki/index.md#age-mosaic)。
+    ssh 问密码时填 `age:YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBlbVdTNGk1MFNZWWIzZWdhckcvT21kRDM3ZVVVVjJxU1gzdGtaSnB6MlNNCnMyb1BTaE5EODdmK2xYYmd5UURLK2xDNE5GZExpSGFQZmtqVzBSV2pEclUKLS0tIGFrcXFrdjRqKzVaUGpBcXNqUHNYY21ZOHJaWUVMYk84UTNrMXJ0UkpkSU0KWPtwciteS4n+zH7vUW5e5Mkvf39C+JXmBGhbCaBbGXv5I2aEdp8hqNR+Q7h7fu68WA==`。服务器地址和密码都打了码，点马赛克解锁，规矩见[写作规范的打码一节](../../skills/wiki-guide/reference/components.md#age-mosaic)。
 
     验收：`curl -sI https://github.com | head -1` 打印 `HTTP/2 200`。
 

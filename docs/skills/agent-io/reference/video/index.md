@@ -40,4 +40,4 @@ curl -sS https://autodl-proxy.liuhetian.work/api/v1/comfyui/comfyui_workflow/res
 | [对口型](lip-sync.md) | `minimax_h3_image_audio_to_video` | 一张人物图加一段语音，做口播 |
 | [动作迁移](motion-transfer.md) | `wan2.2animate-v4-motion_retargeting` | 让照片里的人照着一段视频做动作 |
 
-维护记录：[工作流从哪找、价格怎么算、为什么只收这几个、实测结果](../../../../posts/ai-assistant/maintenance/video.md)。正常使用不用看，出问题或者想换工作流时再看。
+维护记录：[工作流从哪找、价格怎么算、为什么只收这几个、实测结果](../../../../maintenance/video.md)。正常使用不用看，出问题或者想换工作流时再看。

@@ -22,4 +22,4 @@ uv run pdf_read.py markdown report.pdf --pages 12    # 表格页重建成表格
 - 页码从 1 开始，写成 `1-3,7` 或 `4-`；`render` 一次最多 10 页；加密 PDF 传 `--password`（`markdown` 不支持）。
 - 退出码 2 表示参数不对，stderr 一行写出原因和改法。
 
-维护记录：[引擎为什么这样选、吸收了哪些上游插件](../../../posts/ai-assistant/maintenance/pdf-reading.md)。正常使用不用看，脚本出问题再看。
+维护记录：[引擎为什么这样选、吸收了哪些上游插件](../../../maintenance/pdf-reading.md)。正常使用不用看，脚本出问题再看。

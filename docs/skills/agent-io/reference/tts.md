@@ -55,4 +55,4 @@ curl -sS -o out.mp3 -w '%{http_code}\n' https://openrouter.reverse-pro.xyz/api/v
 - **长稿子**：一次能读多长没测过，几千字的稿子按段落拆开分别生成
 - **不能克隆、不能多人对话**：要特定人声用方案一
 
-维护记录：[接口从哪来、实测结果、为什么从 Gemini 换成 MAI-Voice](../../../posts/ai-assistant/maintenance/tts.md)。正常使用不用看，出问题再看。
+维护记录：[接口从哪来、实测结果、为什么从 Gemini 换成 MAI-Voice](../../../maintenance/tts.md)。正常使用不用看，出问题再看。

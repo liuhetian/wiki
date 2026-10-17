@@ -19,4 +19,4 @@ curl -sS -m 90 -G https://xiazaitool-proxy.liuhetian.work/ \
 - **耗时**：B 站 0.5 秒左右，小红书几秒到十几秒，超时设一分钟以上
 - **下载直链**：直接下，不经过中转。B 站带上 `Referer: https://www.bilibili.com/`
 
-维护记录：[实测结果、没做的事](../../../posts/ai-assistant/maintenance/share-link.md)。正常使用不用看，解析出问题再看。
+维护记录：[实测结果、没做的事](../../../maintenance/share-link.md)。正常使用不用看，解析出问题再看。

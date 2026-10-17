@@ -5,7 +5,7 @@ description: "Agent 生成音乐：OpenRouter 上 Google 的 Lyria 3，google/ly
 # 生成音乐
 
 !!! warning "没实测"
-    下面的请求格式是按 OpenRouter 音频输出的通用文档和 Google Lyria 3 的文档推出来的，一次都没跑过。第一次用时如果对不上，以实际返回为准，跑通后回来改这一页，把结果记进[维护记录](../../../posts/ai-assistant/maintenance/music.md)。
+    下面的请求格式是按 OpenRouter 音频输出的通用文档和 Google Lyria 3 的文档推出来的，一次都没跑过。第一次用时如果对不上，以实际返回为准，跑通后回来改这一页，把结果记进[维护记录](../../../maintenance/music.md)。
 
 用 OpenRouter 上 Google 的 Lyria 3，走[中转](../../../posts/ai-assistant/api-gateway.md)的海外机：
 
@@ -33,4 +33,4 @@ curl -sSN https://openrouter.reverse-pro.xyz/api/v1/chat/completions \
 - **图片**：两个模型都收图片，可以给一张图让它照着画面配乐
 - **先用 clip 版**试风格，满意了再用 pro 版出整首
 
-维护记录：[为什么选 Lyria、请求格式从哪推的](../../../posts/ai-assistant/maintenance/music.md)。正常使用不用看，出问题再看。
+维护记录：[为什么选 Lyria、请求格式从哪推的](../../../maintenance/music.md)。正常使用不用看，出问题再看。

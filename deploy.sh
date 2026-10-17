@@ -40,6 +40,12 @@ awk 'NR==1 && /^---$/ {fm=1; next} fm && /^---$/ {fm=0; next} fm {next} {print}'
   "$PROJECT_DIR/site/index.md" \
   | perl -0pe 's/\A\s*(<!--.*?-->\s*)*//s' > "$PROJECT_DIR/site/llms.txt"
 
+# 3.6 skill 整包：入口 index.md 写了「如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录名>.tar.gz)
+#     下载到本地。」这一行的 skill，把整个目录原样打成这个包放进 site/；链接了包却不是这一行就报错停住。
+#     远程逐个取文件的用法照旧，两种用法共用一套相对路径。
+#     包只在 site/ 和桶里，不进 git；字节级可复现，内容不变 MD5 就不变，第 4 步的 -s 会跳过重传
+python3 "$PROJECT_DIR/scripts/build-skill-bundles.py"
+
 # 4. 同步 site/ 到 bucket 根（cd 进 site/ 用绝对路径 coscmd；不能用 uv run --directory，
 #    它会把 CWD 切回项目根、把 .venv/.env 一起传上去）
 #    .md 必须先传：coscmd 默认给 .md 配 octet-stream，所以新增/变动的 .md 要由这条带
@@ -59,6 +65,8 @@ cd "$PROJECT_DIR/site"
 #    （桶里错类型的历史对象已在 2026-08 前的部署里全量重传修正过，此后无需再无条件重传；
 #    若哪天又混入错类型对象，临时去掉 -s 跑一次即可自愈）
 "$COSCMD" upload -rs --include '*.ts,*.tsx,*.jsx,*.mjs,*.cjs,*.py,*.sh,*.csv,*.caddy,*.conf,*/LICENSE' -H 'Content-Type: text/plain; charset=utf-8' ./ /
+#    skill 整包（第 3.6 步）同理钉成 application/gzip，不留给 COS 按扩展名去猜
+"$COSCMD" upload -rs --include '*.tar.gz' -H 'Content-Type: application/gzip' ./ /
 # llms.txt 不带 -s：coscmd 单文件 upload -s 命中"MD5 一致跳过"时退出码是 254（且静默），
 # 会被 set -e 误杀、后面的全量镜像不再执行；2KB 每次直传换脚本必然走完。
 "$COSCMD" upload -H 'Content-Type: text/plain; charset=utf-8' llms.txt /llms.txt  # 内容是 markdown，扩展名按 llms.txt 规范用 .txt，浏览器直读用 text/plain

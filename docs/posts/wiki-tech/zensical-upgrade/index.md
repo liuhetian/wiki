@@ -84,7 +84,7 @@ description: "本站钉在 Zensical 0.0.62，最新是 0.0.70：八个版本加�
 **1. 全面换成官方插件**
 
 - 得到：一键复制、发现链接、预览就有副本；URL 规则统一成一条「页面地址加 `index.md`」，比现在两条简单；`deploy.sh` 少一段 rsync
-- 代价：AI 读转换版；905 篇普通文章的 `.md` 地址从 `/x.md` 变成 `/x/index.md`，旧地址全部 404；`llms.txt` 变成 1030 行清单；「同一份 markdown 双发布」这个核心设计要重写——首页、README、`CLAUDE.md`、[对象存储部署](../cos-deploy/index.md)、[skill 怎么收纳](../../../skills/wiki-guide/remote-skill.md)
+- 代价：AI 读转换版；905 篇普通文章的 `.md` 地址从 `/x.md` 变成 `/x/index.md`，旧地址全部 404；`llms.txt` 变成 1030 行清单；「同一份 markdown 双发布」这个核心设计要重写——首页、README、`CLAUDE.md`、[对象存储部署](../cos-deploy/index.md)、[收纳 skill](../../../skills/wiki-guide/skill.md)
 
 **2. 官方为主，旧地址兼容**
 

@@ -81,7 +81,7 @@ MCP 给模型新增工具，背后是一个随会话常驻的进程。skill 只�
 
 **skill 能替换插件里「告诉模型怎么做」的那一半，替换不了「Claude Code 自己执行」的那一半。** 可行的形态是薄本地壳 + 厚远程内容：本地只留一行 CLAUDE.md 入口（或一个 SessionStart hook 把 `llms.txt` 拉进上下文）解决触发，非拦不可的少数 hook 留在本地，其余全走网络。
 
-根据本文的理论，衍生出了本站的 skill 收纳方案：[skill 怎么收纳](../skills/wiki-guide/remote-skill.md)。
+根据本文的理论，衍生出了本站的 skill 收纳方案：[收纳 skill](../skills/wiki-guide/skill.md)。
 
 [^overview]: [Plugins overview](https://code.claude.com/docs/en/plugins/overview) —— Claude Code 官方文档，2026-10-14 读。
 [^mods]: [Mods overview](https://code.claude.com/docs/en/plugins/mods/overview) —— Claude Code 官方文档，2026-10-14 读。原文专门澄清两种都叫 hook：mods 页里的 hook 指 mod 的函数，配置文件里那种改叫 settings hook。

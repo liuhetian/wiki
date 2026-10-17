@@ -1,10 +1,10 @@
 """Archive Bilibili extraction outputs for long-term knowledge-base use.
 
-Input is an extraction directory created by extract_bilibili.py,
-extract_bilibili_opus.py, extract_video_keyframes.py, and optionally
-fetch_browser_ai_subtitles.py. The script copies raw
-subtitles/articles/comments/keyframes into a stable archive and builds
-retrieval-friendly Markdown and JSONL indexes.
+Input is an extraction directory created by extract_bilibili.py (including
+its --transcribe output), extract_bilibili_opus.py, and
+extract_video_keyframes.py. The script copies raw
+subtitles/transcripts/articles/comments/keyframes into a stable archive and
+builds retrieval-friendly Markdown and JSONL indexes.
 """
 
 from __future__ import annotations
@@ -92,11 +92,7 @@ def safe_relative_path(value: Any) -> Path | None:
 
 
 def find_subtitle_manifest(extract_dir: Path) -> Path | None:
-    for name in (
-        "browser_ai_subtitle_manifest.json",
-        "browser_subtitle_manifest.json",
-        "subtitle_manifest.json",
-    ):
+    for name in ("subtitle_manifest.json",):
         path = extract_dir / name
         if path.exists() and path.stat().st_size > 2:
             return path
@@ -104,6 +100,13 @@ def find_subtitle_manifest(extract_dir: Path) -> Path | None:
 
 
 def transcript_manifest_from_run_summary(extract_dir: Path) -> dict[str, Any] | None:
+    # extract_bilibili.py --transcribe writes this manifest; a later run without
+    # --transcribe rewrites run_summary.json, so it is only the fallback.
+    manifest_path = extract_dir / "transcript_manifest.json"
+    if manifest_path.exists():
+        manifest = read_json(manifest_path)
+        if isinstance(manifest, dict) and manifest.get("outputs"):
+            return {**manifest, "source_manifest": "transcript_manifest.json"}
     summary_path = extract_dir / "run_summary.json"
     if not summary_path.exists():
         return None
@@ -210,7 +213,7 @@ def archive_subtitles(extract_dir: Path, archive_dir: Path) -> dict[str, Any]:
     if not manifest_path:
         manifest = transcript_manifest_from_run_summary(extract_dir)
         if manifest:
-            manifest_path = extract_dir / "run_summary.json"
+            manifest_path = extract_dir / manifest["source_manifest"]
         else:
             existing_manifest = archive_dir / "metadata" / "subtitles_manifest.clean.json"
             if existing_manifest.exists():
@@ -227,8 +230,8 @@ def archive_subtitles(extract_dir: Path, archive_dir: Path) -> dict[str, Any]:
         outputs = []
     if not outputs_have_subtitle_files(outputs):
         transcript_manifest = transcript_manifest_from_run_summary(extract_dir)
-        if transcript_manifest and manifest_path.name != "run_summary.json":
-            manifest_path = extract_dir / "run_summary.json"
+        if transcript_manifest and manifest_path.name != transcript_manifest["source_manifest"]:
+            manifest_path = extract_dir / transcript_manifest["source_manifest"]
             manifest = transcript_manifest
             outputs = manifest.get("outputs") or []
 
@@ -1025,6 +1028,7 @@ def archive_metadata(extract_dir: Path, archive_dir: Path) -> dict[str, bool]:
         "source.md",
         "run_summary.json",
         "subtitle_probe.json",
+        "transcript_manifest.json",
         "visual_preflight.json",
         "visual_review_choice.json",
         "opus_raw.json",

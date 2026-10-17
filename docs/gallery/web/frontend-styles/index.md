@@ -32,5 +32,5 @@ description: "有特色的前端美学，一种风格一个可抄的活 demo"
 每篇风格文章按同一个模子写：**iframe 活例 → 一两句气质定义 → prompt 式要点清单 → 完整实现入口**。单页实验可以把源码直接放进一个 HTML；从完整项目收录时则保留原构建、素材和可读源码目录，不能为了满足单文件格式重写或删减交互。
 
 - 要点清单一行一条，每条是可直接喂给 AI 的指令（如「用 SVG `<text>` + `paint-order:stroke` 实现大标题按字体笔画描边」），不写「**小标题**：多行解释」的格式
-- demo 必须能随 wiki 独立运行：轻量单页的运行时走全站共享 `/vendor/`；完整项目保留自己的已构建运行时并改成相对资源路径，不依赖原工作区开发服务器。规矩见[写作规范·嵌入交互单页](../../../skills/wiki-guide/mkdocs-wiki/index.md#iframe-demo)
+- demo 必须能随 wiki 独立运行：轻量单页的运行时走全站共享 `/vendor/`；完整项目保留自己的已构建运行时并改成相对资源路径，不依赖原工作区开发服务器。规矩见[写作规范·嵌入交互单页](../../../skills/wiki-guide/reference/components.md#iframe-demo)
 - 删原稿的 CDN 字体前，先确认字体是不是视觉效果本身的一部分（nexus-2030 的笔画描边依赖 Noto Sans SC 保留笔画重叠轮廓，换系统字体效果即失）；是的话用 `fonts.googleapis.com/css2?family=...&text=<那几个字>` 拿几 KB 的子集 woff2 vendor 进文章 `assets/`，`@font-face` + `unicode-range` 钉死那几个码位

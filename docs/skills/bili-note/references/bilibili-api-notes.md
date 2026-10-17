@@ -1,3 +1,7 @@
+---
+description: "B站视频笔记的接口笔记：元数据、字幕、评论、图文接口怎么调、有哪些坑；音视频经 agent-io 下载狗拿直链，转写经 MAI-Transcribe-2；字幕稀疏时怎么补视觉证据"
+---
+
 # B站接口笔记
 
 调用公开接口时带上仿浏览器的 `User-Agent` 和 `Referer`。
@@ -14,12 +18,26 @@
 - `https://api.bilibili.com/x/player/v2?bvid=<BVID>&cid=<CID>`
 - 检查 `data.subtitle.subtitles`。
 - 如果 `need_login_subtitle` 为 true 且 `subtitles` 为空，说明拿不到公开字幕。
+- 只列出 `ai-zh`、`subtitle_url` 却为空，是 B站自动生成的 AI 字幕要登录才给地址，不是视频没有字幕。本 skill 不走登录态，这种情况按拿不到公开字幕处理，改走音频转写。
 
-## 音频
+## 音视频
 
-- `https://api.bilibili.com/x/player/playurl?bvid=<BVID>&cid=<CID>&qn=16&fnval=16&fourk=1`
-- 取 `data.dash.audio`，选 `bandwidth` 最高的一条，下载它的 `baseUrl`。
-- 用 `ffmpeg -i audio.m4s -ar 16000 -ac 1 audio.wav` 转换。
+不调 B站的播放接口，也不用 yt-dlp，走 [Agent 基础能力 · 解析分享链接](../../agent-io/reference/share-link.md)：
+
+- 分P链接写成 `https://www.bilibili.com/video/<BVID>/?p=<N>`，第 1 P 不带 `?p=`。
+- `data.videoUrls` 是一个字符串，指向音视频合一的 mp4；直链路径里带这一 P 的 `cid`，可以拿来核对没拿错 P。
+- 每个分P解析一次扣一次额度，失败不扣；同一个分P的视频缓存在工作目录的 `video/` 下，转写和抽关键帧共用，不重复解析。
+- 下载直链不经过中转，请求头带 B站 `Referer`。
+
+## 转写
+
+走 [Agent 基础能力 · 转录音频](../../agent-io/reference/transcribe.md)：
+
+- 视频先用 ffmpeg 抽成 16 kHz 单声道 32 kbps mp3，默认每 10 分钟切一块，一块一个请求（`--asr-chunk-seconds`，0 表示整段发）。
+- 请求带 `verbose_json`、词级时间戳和 `diarization`。
+- 一个人讲的视频，一整块只返回一个 segment。所以按词级时间戳重新切行：遇到句末标点就断；遇到逗号且这一行已满 40 字也断；词间停顿超过 1.5 秒或换了说话人同样断开。标点在 `words` 里自成一条，带自己的时间戳。
+- 每块的时间戳加上这一块的起点偏移，合成一份 `segments`，和字幕走同一套归档、证据索引。
+- 不填 `--asr-language` 就自动识别语言；确定是哪种语言再填，比如 `zh`。
 
 ## 评论
 
@@ -44,12 +62,12 @@
 - 从 opus 页面解析 `window.__INITIAL_STATE__`。
 - 正文在 `detail.modules[]` 下，重点是 `MODULE_TYPE_TITLE`、`MODULE_TYPE_AUTHOR`、`MODULE_TYPE_CONTENT`、`MODULE_TYPE_STAT` 和 `MODULE_TYPE_COPYRIGHT`。
 - `MODULE_TYPE_CONTENT.module_content.paragraphs[]` 中已观察到的段落类型：
-  - `para_type=1`：文本节点。
-  - `para_type=2`：图片，在 `pic.pics[]` 下。
-  - `para_type=5`：列表，在 `list.children[]` 下。
-  - `para_type=6`：链接卡片。
-  - `para_type=7`：代码块，在 `code.lang` 和 `code.content` 下。
-  - `para_type=8`：标题。
+    - `para_type=1`：文本节点。
+    - `para_type=2`：图片，在 `pic.pics[]` 下。
+    - `para_type=5`：列表，在 `list.children[]` 下。
+    - `para_type=6`：链接卡片。
+    - `para_type=7`：代码块，在 `code.lang` 和 `code.content` 下。
+    - `para_type=8`：标题。
 - `https://api.bilibili.com/x/polymer/web-dynamic/v1/detail?id=<opus_id>` 可能返回 `-352` 之类的反爬错误，即使公开页面的 HTML 里有完整正文。
 
 图文评论不要把 opus id 当 `oid` 用，而是读取：
@@ -59,19 +77,9 @@
 
 某个公开 opus 页面的例子：`comment_type=12`、`comment_id_str=48091857`。
 
-## 本地转写
-
-示例命令：
-
-```powershell
-python "<skill>\scripts\extract_bilibili.py" "<BVID>" --out "<tmp>" --parts "2,20,22,23" --download-audio --transcribe --whisper-site-packages "<python-site-packages>"
-```
-
-图快用 `base` 规格的 Whisper 模型。只有第一遍转写噪声太大、而且任务值得多花时间时，才换更大的模型。
-
 ## 字幕 / 转写稀疏时的处理
 
-有字幕不等于完整理解了视频。归档后，把视频时长和字幕或 ASR 的字数对比一下：
+有字幕不等于完整理解了视频。归档后，把视频时长和字幕或转写的字数对比一下：
 
 - 长视频的 `subtitle_chars_per_minute` 很低时，内容可能依赖 PPT、板书、代码编辑器、界面演示、产品画面或无解说的画面片段。
 - 只凭稀疏字幕，不要写「完整提取」，也不要写成完整的学习笔记。

@@ -4,7 +4,7 @@ description: "这个 wiki 自己用到的技术：值得细讲的一项一页（
 
 # 本 wiki 用到的技术
 
-这个 wiki 自己用到的技术，一项一页。每页讲清楚这项技术是什么、为什么这么选、换到别的站要改哪里。写作时怎么用这些机制是写作规矩，在[写作规范](../../skills/wiki-guide/mkdocs-wiki/index.md)里。按时间看所有功能是怎么一项项加上来的，见文末的[能力时间线](#timeline)。
+这个 wiki 自己用到的技术，一项一页。每页讲清楚这项技术是什么、为什么这么选、换到别的站要改哪里。写作时怎么用这些机制是写作规矩，在[写作规范](../../skills/wiki-guide/index.md)里。按时间看所有功能是怎么一项项加上来的，见文末的[能力时间线](#timeline)。
 
 - [用对象存储部署 AI 友好的个人知识库](cos-deploy/index.md) —— 总纲：什么算对 AI 友好、同一份 markdown 双发布、为什么是对象存储而不是服务器；附[部署实操手册](cos-deploy/reference/deploy.md)
 - [用自己的对象存储做 git-lfs 后端](git-lfs.md) —— standalone custom transfer agent：140 行脚本替掉整个 LFS 服务，协议、坑和换存储的改法
@@ -18,7 +18,7 @@ description: "这个 wiki 自己用到的技术：值得细讲的一项一页（
 
 上面是单独成篇的技术；这里按落地日期从上往下，列出在 Zensical 之上加过的每一项功能，有专文的条目末尾带「详见」。每条三样：标题是日期和功能名，引用块是我当时提需求的原话（取自和 AI 的对话记录，只做删节），正文一段说改了哪里。
 
-标题旁的分类：**配置**是只动 `mkdocs.yml` 的官方能力，**前端**是自己写的 CSS、JS、模板，**流水线**是 `deploy.sh` 和 `scripts/` 里的脚本。只记功能，不记内容：新增文章、分区、收录的资料不算，只为某一批内容服务的脚本（比如 LeetCode 笔记的校验、手绘风格库的页面生成器）也不算。只收做成了的，以及实测后决定不用的官方功能（写清不用的理由）；只是讨论过、没动手的（比如上 CDN）不收；做了又撤掉的照记，撤回写进当初加它的那一条，标题注明。以后每加一项功能，在末尾追加一条，写法见[写作规范 · 时间线](../../skills/wiki-guide/mkdocs-wiki/index.md#timeline)。
+标题旁的分类：**配置**是只动 `mkdocs.yml` 的官方能力，**前端**是自己写的 CSS、JS、模板，**流水线**是 `deploy.sh` 和 `scripts/` 里的脚本。只记功能，不记内容：新增文章、分区、收录的资料不算，只为某一批内容服务的脚本（比如 LeetCode 笔记的校验、手绘风格库的页面生成器）也不算。只收做成了的，以及实测后决定不用的官方功能（写清不用的理由）；只是讨论过、没动手的（比如上 CDN）不收；做了又撤掉的照记，撤回写进当初加它的那一条，标题注明。以后每加一项功能，在末尾追加一条，写法见[写作规范 · 时间线](../../skills/wiki-guide/reference/components.md#timeline)。
 
 <div class="zx-timeline" markdown>
 
@@ -52,7 +52,7 @@ description: "这个 wiki 自己用到的技术：值得细讲的一项一页（
 
 demo 写成自包含的静态单页，放进各自的 `assets/`，正文用 iframe 同域嵌入。React 18 UMD + `htm` 放进 `docs/vendor/`，不用 JSX 编译、不走 CDN。demo 逻辑不压缩，AI 读同一 URL 下的源码。
 
-详见[写作规范 · 嵌入交互单页](../../skills/wiki-guide/mkdocs-wiki/index.md#iframe-demo)。
+详见[写作规范 · 嵌入交互单页](../../skills/wiki-guide/reference/components.md#iframe-demo)。
 
 ### 2026-07-09 · llms.txt {: data-kind="流水线" }
 
@@ -164,7 +164,7 @@ Zensical 内置的加载器在 `mermaid` 未定义时会去 unpkg 拉。`overrid
 
 代码块写成 ```` ```{.js .run} ````，`vendor/js-runner.js` 找到这类块，在 Worker 沙箱里执行并接一个输出面板；运行按钮放进代码框右上角，hover 才出现。[b93e43c](https://github.com/liuhetian/wiki/commit/b93e43c)
 
-详见[写作规范 · 可运行 JS 代码块](../../skills/wiki-guide/mkdocs-wiki/index.md#js-run)。
+详见[写作规范 · 可运行 JS 代码块](../../skills/wiki-guide/reference/components.md#js-run)。
 
 ### 2026-09-04 · 冲突标记出题与归档闸门 {: data-kind="配置 + 前端 + 流水线" }
 
@@ -186,7 +186,7 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 `plugins` 接上 `meta`：目录里放 `.meta.yml`，给上游原文、snippet 真身这类不能加 frontmatter 的文件补 description。接上 `redirects`：挪文件不留存根页，写一行旧路径到新路径。08-12 因为并行竞态误报而关掉的 `invalid_links` 校验改回 `warn`。[d73ce14](https://github.com/liuhetian/wiki/commit/d73ce14)
 
-详见[写作规范 · 不能动的文件：目录级 .meta.yml](../../skills/wiki-guide/mkdocs-wiki/index.md#meta-yml)。
+详见[写作规范 · 不能动的文件：目录级 .meta.yml](../../skills/wiki-guide/index.md#meta-yml)。
 
 ### 2026-09-29 · 图文并排与长文本换行 {: data-kind="配置 + 前端" }
 
@@ -206,7 +206,7 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 > 我发现本wiki 每次 deploy 如果有修改目录，就需要依次上传所有文件，相当于重新上传，非常非常慢。这是正常的吗？
 
-官方 `theme.features` 加 `navigation.prune`，每页只渲染看得见的导航项。原来整棵导航（800 多篇）嵌进每一页，占页面体积的 94%，改一个 nav 标题就有 1024 个 HTML 变化、重传约 400MB；开了之后只变 18 个，HTML 总量从 447MB 降到 65MB。代价是侧栏里别的分区不能就地展开。
+官方 `theme.features` 加 `navigation.prune`，每页只渲染看得见的导航项。原来整棵导航（800 多篇）嵌进每一页，占页面体积的 94%，改一个 nav 标题就有 1024 个 HTML 变化、重传约 400MB；开了之后只变 18 个，HTML 总量从 447MB 降到 65MB。代价是侧栏里别的分区不能就地展开。2026-10-17 补：这只对改标题成立，增删条目时剪掉的导航项留下的空白会挪位，照样波及全站，见下面 minify 那条。
 
 ### 2026-10-14 · 时间线组件 {: data-kind="前端" }
 
@@ -214,7 +214,7 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 不用插件。官方 `md_in_html` 写 `<div class="zx-timeline" markdown>` 包住条目，`zx-theme.css` 第 10 节画线：竖线挂在容器的 `::before` 上、贯穿整个容器，条目只是 h3 前的一个方块，条目里放什么都不会把线打断，也不靠 JS。分类用 `attr_list` 写在标题上 `{: data-kind="…" }`，渲染成角标；纯官方配置的方块空心，涉及自写代码的填荧光绿。AI 读 `.md` 源看到的仍是普通 markdown，只多一对 div。
 
-详见[写作规范 · 时间线](../../skills/wiki-guide/mkdocs-wiki/index.md#timeline)。
+详见[写作规范 · 时间线](../../skills/wiki-guide/reference/components.md#timeline)。
 
 ### 2026-10-15 · 时间线正序 / 倒序切换（当天撤回） {: data-kind="前端" }
 
@@ -257,5 +257,55 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 `vendor/md-copy.js` 复制时去掉 frontmatter，也不再插 `<!-- 来源：… -->` 注释；此前 frontmatter 原样保留、来源注释插在它后面。另外两条：`<div class="zx-no-copy" markdown>` 包起来的块整块不复制，维护记录写在里面，网页上照常显示、读 `.md` 源的 AI 也看得到，只是不进对话框（先做过一行截止标记，因为切不掉中间段、会把后面的脚注一起切掉，改成了块）；代码以外的 HTML 注释去掉。全站生效，`.md` 源文件和镜像不变。起因是 skill 页要能直接粘进对话框当 prompt，`name`、`description` 是给自动触发和站点用的，页尾那行维护记录粘进去会被 AI 当成在说正在讨论的方案。
 
 详见[复制本页 Markdown 源](md-copy.md)。
+
+### 2026-10-16 · 死链检查跳过代码块 {: data-kind="流水线" }
+
+> 看本文，收纳skill： https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs
+
+`scripts/check-links.py` 的死链检查只看代码块和行内 code 之外的链接，剥离规则和资源死链检查共用一套；父级链接照旧认代码块里的链接。起因是收纳这个 skill：领域建模的 GLOSSARY.md 格式模板在代码块里举例 `[Ordering](./src/ordering/GLOSSARY.md)`，那是写进别人项目的路径。吸收来的 skill 原先原文照录、目录里有 `MIRROR.md`，这类死链降级成警告；改成中译收纳后没有 `MIRROR.md`，豁免注释又只管父级链接和 nav 注册，这份模板就会挡住部署。
+
+详见[对象存储部署 · 闸门](cos-deploy/index.md#link-check)。
+
+### 2026-10-16 · 复制按钮支持填空：正文里直接写 HTML 输入框 {: data-kind="前端" }
+
+> 我还设计了一个format功能，本质上是使用jinja2一样的语法，用户点击复制按钮的时候，如果发现有变量，就变成一个输入框，需要先填写
+
+> md里面写html的input方法，这样渲染的时候可以直接用，而且提示啊，可选啊什么的，就直接被渲染出来了，写作AI也写起来容易，不需要重新定义一套语法
+
+> 写入一个变量，可能要多次使用，这个有办法解决吗？
+
+> 能够给这几个组件加一个默认样式吗，现在裸html很丑呢
+
+正文里手写的 `<input>`、`<textarea>`、`<select>` 当填空，读者在网页上就地填。`vendor/md-copy.js` 复制时把源文件里的标签换成填的值，下拉框取选中项的文字；空着的写成 `【placeholder】`；写了 `required` 的没填就不复制，用浏览器自带的气泡指过去。网页上第 n 个控件对应源文件代码以外第 n 个标签，数量对不上就报错、不复制。一个变量用几次，就把带同一个 `name` 的标签写几次，在一个框里填，别的同名框跟着变。`zx-theme.css` 第 11 节给控件配了站点样式：行内的单行框和下拉框画成纸上的填空横线，只留一条墨线，填过的铺荧光笔底；多行框是 1px 墨框，聚焦时右下一道荧光绿硬投影；框随内容伸缩，Firefox 退回定宽。没用最初想的 Jinja `{{ 变量 }}`：要另造一套语法，而且 `**粗体**{{ 变量 }}` 这种紧贴行内元素的写法会被 attr_list 静默吃成属性，构建不报错。[对话提示词](../../skills/collab/chat-prompts/index.md)的占位全部换成了输入框。
+
+详见[自研组件 · 填空](../../skills/wiki-guide/reference/components.md#fill)。
+
+### 2026-10-17 · 带脚本的 skill 部署时打整包 {: data-kind="流水线" }
+
+> 客户端使用这个skill，是不是要先下载一些脚本？我在想deploy的时候进行一个打包，便于客户端下载，该如何设计
+
+> 应该是在skill的index.md里面会写一个 xxx.tar.gz ，让客户端自己下载并解压就好
+
+> 应该是仍然允许全部用远程的方式（用于简单调用），也支持压缩包（里面全部都是原始的相对路径）用于大型任务，远程客户端可以自己选择。
+
+> 如果要调用2次以上本skill中的脚本，直接将[本skill](xxx.tar.gz)下载到本地。 相当于不光是tar.gz 而是要一句有指引，有链接才行，这样更准确
+
+> 这种命令也不需要，别人ai自己会写，所以只会留下一句话
+
+> 这句话不要放在用法里，显得就是引导别人下载一样，感觉放在开头第一段介绍里，而且默认是保持走网络请求
+
+新增 `scripts/build-skill-bundles.py`，`deploy.sh` 在 md 源镜像之后调用：入口 `index.md` 写了标准那一行「如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录名>.tar.gz)下载到本地。」，就把整个目录原样打成这个包（跳过点开头的文件、`__pycache__` 和 `.pyc`），放进 `site/` 的同一位置，上传时钉 `application/gzip`；链接了包却不是这一行，部署停住。包按路径排序、时间戳和属主固定，内容不变字节就不变，`-s` 跳过重传；只在 `site/` 和桶里，不进 git。远程和整包共用一套文档，只写相对路径，不讲根目录：先前入口页写过「根目录是…，相对路径拼上它」，subagent 实测照着把子 skill 的脚本拼到父目录下拿到 404，已删。命令不用 shell 变量，因为 Agent 每次执行命令都是新环境。入口页只在开头介绍段末尾写这一句，默认走网络请求，不单独成节；不附下载命令，客户端 AI 自己会写。HyperFrames 的 `MANIFEST.txt` 清单删掉，换成整包；B站视频笔记逐个下载脚本的循环删掉，换成首段那一句；新增 mock 抽象 skill [测试skill](../../maintenance/mock-bundle/index.md)对照。
+
+详见[收纳 skill · 带脚本的 skill](../../skills/wiki-guide/skill.md#scripts)。
+
+### 2026-10-17 · minify：增删 nav 条目不再波及全站 {: data-kind="配置" }
+
+> 为什么现在改变nav就会全部重新上传所有内容？现在不是启用了一个 nav 公用的功能吗
+
+> 第一种就是大问题，第二种一年都不会变吧？很少会新增板块？
+
+> 好，开 minify 吧
+
+`mkdocs.yml` 的 `plugins` 加官方 `minify`，开 `minify_html: true`。`navigation.prune` 只是不输出剪掉的导航项，模板给它们留下的空格和换行还在：增删一个 nav 条目，全站每页的空白都挪位、字节都变。实测把测试skill 从 Skills 挪进维护，1047 页变化、重传 67 MB；开了以后只剩 532 页、28 MB，全在 Skills 和维护 —— 这两个分区每页的侧栏都列着本分区第一层，挪走一条是真变化，prune 管不了。新收一个顶层 skill 仍要重传 Skills 下 512 页，其中 HyperFrames 占 326 页。HTML 总量 70 MB 降到 50 MB。压缩前后用 HTML 解析器逐页比对，页面文字、代码块文字、输入控件全部一致，代码块只是属性去了引号；开启后第一次部署整站 HTML 重传一次。
 
 </div>

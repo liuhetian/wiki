@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 这是什么
 
-用 Zensical（MkDocs Material 兼容）构建、托管在腾讯云 COS 上的个人知识库。核心设计只有一件事：**同一份 markdown 同时发布为给人看的 HTML 和给 AI 读的 `.md` 源**。人访问 `/foo/` 拿 HTML，AI 访问 `/foo.md` 拿源，整个 wiki 可当远程 skill 用。README.md 有完整的定位说明与内容导览，先读它。
+用 Zensical（MkDocs Material 兼容）构建、托管在腾讯云 COS 上的个人知识库。核心设计只有一件事：**同一份 markdown 同时发布为给人看的 HTML 和给 AI 读的 `.md` 源**。人访问 `/foo/` 拿 HTML，AI 访问 `/foo.md` 拿源，整个 wiki 可当远程 skill 用。
 
 ## 常用命令
 
@@ -12,57 +12,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 uv run zensical serve              # 本地预览（Python ≥3.13，依赖由 uv 管）
 uv run zensical build              # 构建到 site/
 python3 scripts/check-links.py     # AI 链路校验：父级链接 + 死链 + nav 注册 + 笔记未答题 + 图片/demo 资源死链；写完文章必跑
-./deploy.sh                        # git pull --ff-only → check-links → 构建 → md 源镜像 + llms.txt → 同步 COS
+./deploy.sh                        # git pull --ff-only → check-links → 构建 → md 源镜像 + llms.txt + skill 整包 → 同步 COS
 node scripts/validate-lieflat-charts.mjs   # 只在改 data-visualization/lieflat-charts 时跑：48 篇 reference ↔ 48 个 demo 一一对应
 python3 scripts/check-leetcode.py         # 只在改 notes/leetcode 时跑：每篇 python 块拼起来真跑 assert + 五段骨架 + 热题 100 覆盖
 python3 scripts/course.py checkout <分类>/<slug>   # 课程：领题到 docs/notes/ 同名文件；status 看进度，add 归档（答完才通过）
 bash scripts/course-smoke.sh               # 只在改 courses-src/git/assets/ 时跑：33 个 init.sh 各跑两遍
 ```
 
-正式上线在部署机执行，本地只负责 commit + push：
+## 做到哪一步为止
 
-```bash
-ssh lht@172.20.90.202 'export PATH=/home/lht/.local/bin:$PATH; cd /data2/work/lht/study/26.06/zensical-wiki && ./deploy.sh'
-```
-
-以部署脚本成功退出为结果。**除非看到明确报错，不要主动去浏览器或发网络请求验证线上效果**，那一步由人来做。
-
-新机器初始化、`.env` 字段、LFS 接入见 README「本地开发与部署」。`.env` 不入库；只写文字的机器可以不配。
+- **写或改任何页面，先读 `docs/skills/wiki-guide/index.md`**（写作规范），按里面的写作流程走
+- **终点**：文件写好 + 父级索引挂钩子 + `mkdocs.yml` 注册 nav + 跑一次 `check-links.py`。不反复构建复查
+- **commit、push、部署都等用户说**。部署是在部署机的仓库根跑 `./deploy.sh`，以脚本成功退出为结果；它用工作树构建，没提交的改动也会一起上线，跑之前提醒用户
+- **渲染效果由用户自己看**：AI 不截图、不开浏览器、不发网络请求验证线上效果，mermaid 也一样；除非看到明确报错
+- 新机器初始化、`.env` 字段、LFS 接入见 README「本地开发与部署」，只在配新机器时读。`.env` 不入库；只写文字的机器可以不配
 
 ## 架构：几件要读多个文件才能拼出来的事
 
-**AI 链路靠相对链接，不靠 nav。** `mkdocs.yml` 的 `nav` 只是给人的策展层。一篇文章只有被某个祖先目录的索引页（`index.md` / `MIRROR.md` / `SKILL.md`）用 markdown 链接直接指到，AI 才能读到它；`nav` 里有、索引里没有，对 AI 等于不存在。`scripts/check-links.py` 是这条规则的闸门，`deploy.sh` 在读凭证和构建之前就跑它，非零退出即中止部署。页面 URL 只由 `docs/` 里的文件位置决定，所以重排 nav 随意，挪文件才是动链接图的操作。挪走之后不留旧地址存根页，改在 `mkdocs.yml` 的 `redirects` 插件里写一行 `旧路径.md: 新路径.md`（支持 `#锚点` 级，改标题不炸别人的书签）—— 但它只产出 HTML 跳转页，`.md` 那一半是 `deploy.sh` 从 `docs/` 实镜像出来的，旧的 `/旧路径.md` 仍然 404，所以站内引用还是得一并改掉，redirects 兜的是站外链接和书签。
+**AI 链路靠相对链接，不靠 nav。** 页面 URL 只由 `docs/` 里的文件位置决定，`nav` 只是给人的策展层；AI 只能顺祖先目录索引页（`index.md` / `MIRROR.md` / `SKILL.md`）的 markdown 链接读到页面。`scripts/check-links.py` 是这条规则的闸门，`deploy.sh` 在读凭证和构建之前跑它，非零退出即中止部署。挪文件后在 `mkdocs.yml` 的 `redirects` 写 `旧路径.md: 新路径.md`，支持 `#锚点` 级；它只产出 HTML 跳转页，`.md` 那一半是从 `docs/` 实镜像的，旧的 `/旧路径.md` 仍然 404，站内引用得一并改。
 
-**双产物是怎么出来的。** `zensical build` 只出 HTML；`deploy.sh` 用一行 rsync 把 `docs/` 下的 `.md` 树原样镜像进 `site/`。`use_directory_urls` 让页面占 `/x/index.html`，`/x.md` 这个 key 恰好空着，两者同域不撞。`site/llms.txt` 是 `docs/index.md` 剥掉 frontmatter 后的构建期副本，只维护 `index.md` 一份。每页页头的 `<link rel="alternate" type="text/markdown">` 和右上角的复制按钮（`vendor/md-copy.js`）都靠 `page.edit_url` 指向 `.md` 源：`mkdocs.yml` 的 `repo_url`、`edit_uri` 设成站点根不是为了显示仓库，别删；顶栏仓库入口由空的 `overrides/partials/source.html` 关掉。复制时去掉 frontmatter、代码以外的 HTML 注释和 `<div class="zx-no-copy" markdown>` 块（读者要看、粘进对话框会被误读的内容，如 skill 页末的维护记录）。来龙去脉见 `posts/wiki-tech/md-copy.md`。上传时 `.md` 与 demo 源码（`.ts/.tsx/.jsx/.mjs/.py`）要钉文本类 Content-Type，否则 COS 按扩展名乱猜，AI 抓取工具拒收。
+**双产物是怎么出来的。** `zensical build` 只出 HTML；`deploy.sh` 用一行 rsync 把 `docs/` 下的 `.md` 树原样镜像进 `site/`。`use_directory_urls` 让页面占 `/x/index.html`，`/x.md` 这个 key 恰好空着，两者同域不撞。`site/llms.txt` 是 `docs/index.md` 剥掉 frontmatter 后的构建期副本，只维护 `index.md` 一份。每页页头的 `<link rel="alternate" type="text/markdown">` 和右上角的复制按钮（`vendor/md-copy.js`）都靠 `page.edit_url` 指向 `.md` 源：`mkdocs.yml` 的 `repo_url`、`edit_uri` 设成站点根不是为了显示仓库，别删；顶栏仓库入口由空的 `overrides/partials/source.html` 关掉。复制时去掉 frontmatter、代码以外的 HTML 注释和 `zx-no-copy` 块，正文里的 `<input>`、`<textarea>`、`<select>` 换成读者填的值。来龙去脉见 `posts/wiki-tech/md-copy.md`。上传时 `.md` 与 demo 源码（`.ts/.tsx/.jsx/.mjs/.py`）要钉文本类 Content-Type，否则 COS 按扩展名乱猜，AI 抓取工具拒收。入口 `index.md` 写了「如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录名>.tar.gz)下载到本地。」这一行的 skill，由 `scripts/build-skill-bundles.py` 在部署时把整个目录打成这个包放进 `site/`，只上桶、不进 git；写法见写作规范「收纳 skill · 带脚本的 skill」。
 
 **首页有两个身子。** 浏览器里 `docs/index.md` 由 `overrides/home.html` 的开屏模板渲染，正文不上屏；但正文照样发布为 `/index.md` 与 `/llms.txt` 给 AI 读。改首页内容两边要同步。
 
-**Skills 目录形态即 skill。** `docs/skills/<name>/` 按 Anthropic skill 标准布局：`index.md` + `reference/` + `assets/`。吸纳来的 skill 2026-10-15 起中译、收进来就能改：入口页 frontmatter 忠实保留，只把 `name`、`description` 译成中文（复制按钮会去掉它），从哪来、改了什么记在 `posts/ai-assistant/maintenance/skills/` 一个 skill 一篇，步骤见 `skills/wiki-guide/remote-skill.md`，活例 collab/grilling。之前收的（如 writing/qu-ai-wei、writing/xi-wen）还是旧形态：`index.md` 是上游原文照录、不改，本地归档的链接责任落在同目录 `MIRROR.md` 上，来源钉 commit 永链；不批量迁，用到时逐个迁。
+**运行时全在本地 vendor。** `docs/vendor/` 里有 React UMD + htm、React ESM、three/r3f、MathJax、ECharts、Chart.js、Mermaid、Maple Mono 字体，线上不走任何 CDN，demo 引 `/vendor/...` 根绝对路径。真身大的按需加载，不给无关页面付代价：MathJax（2MB）由 `vendor/mathjax-init.js` 查到 `.arithmatex` 才拉，ECharts 由 `vendor/echarts-init.js` 查到 ```echarts 块才拉，`overrides/main.html` 只给含 mermaid 块的页面同步引入 mermaid 真身。升级 vendor 版本用 `scripts/fetch-vendor.sh`，换字体版本用 `scripts/build-fonts.py`（中文按 GB2312 + 本站用字子集化），两者只在升级时跑一次。
 
-**每页一行 description，动不了的文件用 `.meta.yml`。** 上游原文照录的存档（改了就不是原文）、被 `--8<--` 引用的 snippet 真身（frontmatter 会漏进引用它的正文）不塞 frontmatter，改在目录里放 `.meta.yml`，键值给该目录及子目录下的页面当默认、页面自己写的优先。
-
-**代码即引用。** 文章里的代码用 `--8<--` snippet 引用仓库真实文件，snippet `base_path` 是 `docs` 再回退到项目根，所以 docs 内引用写 `skills/.../x.md`（不带 `docs/` 前缀），根文件写 `mkdocs.yml`、`deploy.sh` 这样的相对根路径。
-
-**交互 demo。** 自包含静态单页放进各 skill 的 `assets/`，iframe 同域嵌入，`src` 用站点根绝对路径且写到具体 `.html` 文件；逻辑不压缩，AI 读同一 URL 下的源码。运行时库全部在 `docs/vendor/`（React UMD + htm、React ESM、three/r3f、MathJax、ECharts、Chart.js、Mermaid、Maple Mono 字体），线上不走任何 CDN —— demo 里写 `cdn.jsdelivr.net` 之类的 `<script src>` 一律要改成 `../../../../vendor/...` 的相对路径。真身大的按需加载，不给无关页面付代价：MathJax（2MB）由 `vendor/mathjax-init.js` 查到 `.arithmatex` 才拉，ECharts 由 `vendor/echarts-init.js` 查到 ```echarts 块才拉，`overrides/main.html` 只给含 mermaid 块的页面同步引入 mermaid 真身。升级 vendor 版本用 `scripts/fetch-vendor.sh`，换字体版本用 `scripts/build-fonts.py`（中文按 GB2312 + 本站用字子集化），两者只在升级时跑一次。
-
-**打码靠密文直接进源文件。** 不想公开的东西（API key、服务器地址等）写成 `` `age:…` `` 或 ```` ```age ```` 块，由 `scripts/age-seal.sh` 用 wiki 公钥加密生成；`vendor/age-init.js` 在浏览器里打码、解锁后还原，按需加载 `vendor/age-core.js`（age 解密核心，口令 / X25519 两种模式，解密演示页也用它）；命令行读 `.md` 源时用 `scripts/age-open.py` 整页解开，口令走环境变量 `WIKI_AGE_PASS`，不收命令行参数。私钥在部署机 `~/.config/age/wiki.key`，不进仓库；用口令锁住的副本内嵌在 `age-init.js`。encryptcontent 这类插件只加密 HTML，`.md` 镜像照样明文，所以不能用。规矩见写作规范「打码」一节，来龙去脉见 `posts/wiki-tech/age-mosaic.md`。
+**打码靠密文直接进源文件。** `vendor/age-init.js` 在浏览器里把 `` `age:…` `` 和 ```` ```age ```` 块打码、解锁后还原，按需加载 `vendor/age-core.js`（age 解密核心，口令 / X25519 两种模式）；命令行读 `.md` 源时用 `scripts/age-open.py` 整页解开，口令走环境变量 `WIKI_AGE_PASS`，不收命令行参数。私钥在部署机 `~/.config/age/wiki.key`，不进仓库；用口令锁住的副本内嵌在 `age-init.js`。encryptcontent 这类插件只加密 HTML，`.md` 镜像照样明文，所以不能用。写法见写作规范「打码」一节，来龙去脉见 `posts/wiki-tech/age-mosaic.md`。
 
 **媒体走自制 git-lfs。** `.gitattributes` 把图/视频/字体/vendor 真身交给 LFS，blob 由 `scripts/lfs-cos-agent.py`（standalone custom transfer agent）存到备份桶 `lfs/` 前缀，与部署桶隔离。`git push` 自动上传，部署机 pull 自动取回。
 
-## 写作规矩
+## 加功能就记一笔时间线，内容不记
 
-规矩的真身是 `docs/skills/wiki-guide/mkdocs-wiki/index.md`，改内容前先读它。写作流程：
+改了 `mkdocs.yml` 里 nav 和 redirects 以外的部分、`overrides/`、`docs/stylesheets/`、`docs/vendor/` 下的 init 脚本、`deploy.sh`，或 `scripts/` 里作用于全站的脚本，在 `docs/posts/wiki-tech/index.md` 的「能力时间线」一节末尾追加一条。新增文章、分区、收录资料不记，只为某一批内容服务的脚本（如 `check-leetcode.py`、`build-handdraw-gallery.py`）也不记。功能撤回也记，写进当初加它的那一条，标题注明撤回；实测后决定不用的官方功能也记一条，写清不用的理由，只是讨论过的不记。每条写：日期 + 分类（配置 / 前端 / 流水线）、用户提需求的原话（删节可以，key、口令、服务器地址不进）、一段改了哪里。原话取自本次对话；有专文的条目末尾加一行「详见」链过去；写法见写作规范「时间线」一节。
 
-1. 读写作规范和部署说明。
-2. 写文章（可能需要生图：概念图统一白底黑色马克笔草图），在 `mkdocs.yml` 注册 nav，并在父级索引页挂一行带钩子的链接。
-3. `python3 scripts/check-links.py` 自查。
-4. git commit + push。
-5. SSH 部署机跑 `./deploy.sh`。
+## 两道链接校验
 
-五个顶层分区分工：`posts/` 讲完整来龙去脉，`notes/` 记专业科目的学习推导（每个分类有统一骨架），`courses/` 是**讲解在前、题在后**的伴读（题写成 git 冲突标记，答完才用 `scripts/course.py add` 归档进 `notes/` 同名文件，详见 `docs/courses/index.md`），`skills/` 是能直接交给 AI 执行的成套资产，`gallery/` 是原样收录的成品参考库，按媒介分 `images/`（图配 prompt，只调排版和图片路径，来源写进各自的 `MIRROR.md`）、`layouts/`（排版）、`colors/`（色彩）、`video/`、`audio/`（暂空）、`web/`（前端风格收集，一种风格一个活 demo，2026-09-29 从 `skills/` 挪来）六区；排版和色彩页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改。原来那 33 课 Git 课程 2026-09-17 下线（一课都没答完，门槛太高），素材留在不发布的 `courses-src/git/`。引外部资料三步：真身存档进 `assets/` + 正文摘句 + 自己的分析。图表优先用 ```` ```mermaid ```` / ```` ```echarts ```` 代码块声明式写。
-
-**加功能就记一笔时间线，内容不记。** 改了 `mkdocs.yml` 里 nav 和 redirects 以外的部分、`overrides/`、`docs/stylesheets/`、`docs/vendor/` 下的 init 脚本、`deploy.sh`，或 `scripts/` 里作用于全站的脚本，在 `docs/posts/wiki-tech/index.md` 的「能力时间线」一节末尾追加一条。新增文章、分区、收录资料不记，只为某一批内容服务的脚本（如 `check-leetcode.py`、`build-handdraw-gallery.py`）也不记。功能撤回也记，写进当初加它的那一条，标题注明撤回；实测后决定不用的官方功能也记一条，写清不用的理由，只是讨论过的不记。每条写：日期 + 分类（配置 / 前端 / 流水线）、用户提需求的原话（删节可以，key、口令、服务器地址不进）、一段改了哪里。原话取自本次对话；有专文的条目末尾加一行「详见」链过去；写法见写作规范「时间线」一节。
-
-## 已知的构建怪癖
-
-zensical 自带的 `invalid_links` 校验在 0.0.53 及更早版本有并行竞态，偶发大量误报，一度只能关掉；0.0.62 上复现不出来了（20 次构建零误报，另用故意的死链探针确认校验仍在工作），现已改回 `warn`。它报错带 `文件:行:列` 定位，`serve` 时当场可见；阻断部署的职责仍归 check-links.py —— 两者不重叠的那四项（父级索引挂载、nav 注册、笔记未答题、资源死链）只有脚本管。竞态若复发，改回 `false` 即可。check-links.py 对吸收型 skill 上游原文里的死链只警告不阻断，判据是同级或祖先目录存在 `MIRROR.md`。
+zensical 自带的 `invalid_links` 设为 `warn`，报错带 `文件:行:列`，`serve` 时当场可见。阻断部署只靠 check-links.py —— 父级索引挂载、nav 注册、笔记未答题、资源死链这四项只有它管。

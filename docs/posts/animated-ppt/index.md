@@ -28,7 +28,7 @@ scene0.png ──trans0to1.mp4──▶ scene1.png ──trans1to2.mp4──▶ 
 
 ## 素材管线：关键帧图 + 首尾帧视频 { #素材 }
 
-**第一步，出关键帧。** 12 个场景 = 12 张柴犬图，用 GPT 网页批量生成 image2 再人工筛选。出图不是随便出，有三条规矩（来自工程手册 [deck skill](../../skills/writing/deck/index.md) 的 Scene Anatomy 章）：
+**第一步，出关键帧。** 12 个场景 = 12 张柴犬图，用 GPT 网页批量生成 image2 再人工筛选。出图不是随便出，有三条规矩（来自工程手册 [deck skill](../../skills/writing/deck.md) 的 Scene Anatomy 章）：
 
 - 统一 16:9 灰底，柴犬主体只占 1/3 ~ 1/2 画面，**剩余大量留白是给文字的**——文字盖到柴犬脸上就是设计失败；
 - 每张图先想清楚「柴犬落在九宫格哪个位置」，再决定这一页文字走哪种版式；
@@ -62,7 +62,7 @@ ffmpeg -y -i in.mp4 \
   out.mp4
 ```
 
-`-g 1` 就是「GOP = 1，每帧皆 keyframe」。代价是体积变为 1.5~3 倍，但几秒的过场绝对体积仍然很小，换来帧级精确 seek。经验教训是把它做成**素材入库仪式**：每段新视频进目录先跑诊断（keyframe 数应 ≈ 总帧数），不达标立即重编码，不要等浏览器里「卡住了」再回头查——诊断命令和批量脚本都在[工程手册](../../skills/writing/deck/index.md)里。
+`-g 1` 就是「GOP = 1，每帧皆 keyframe」。代价是体积变为 1.5~3 倍，但几秒的过场绝对体积仍然很小，换来帧级精确 seek。经验教训是把它做成**素材入库仪式**：每段新视频进目录先跑诊断（keyframe 数应 ≈ 总帧数），不达标立即重编码，不要等浏览器里「卡住了」再回头查——诊断命令和批量脚本都在[工程手册](../../skills/writing/deck.md)里。
 
 前端配套三件套也别漏：`<video muted playsinline preload="auto">`（iOS Safari 没有 `playsinline` 直接不渲染）；本地预览必须走 HTTP server（`file://` 下浏览器不给视频 byte-range）；改完视频记得硬刷新清缓存——最后这条最蠢也最常踩。
 
@@ -87,7 +87,7 @@ ffmpeg -y -i in.mp4 \
 
 ## 把坑沉淀成 SKILL，让 AI 下次不再踩 { #skill }
 
-这个项目从 v0.1 迭代到 v0.3，目录里最有价值的演变不是代码，是文档：v0.1 时视频处理、场景排布、视觉风格是三份散的笔记，v0.3 合并成一份带 frontmatter 的 [`SKILL.md`](../../skills/writing/deck/index.md)——「新人看完就能改内容、加页、换图、排查视频问题」，而这个「新人」主要是 AI。下次再做同类 deck，把手册喂进上下文，all-intra、九宫格、单点橙这些坑一个都不用重踩。
+这个项目从 v0.1 迭代到 v0.3，目录里最有价值的演变不是代码，是文档：v0.1 时视频处理、场景排布、视觉风格是三份散的笔记，v0.3 合并成一份带 frontmatter 的 [`SKILL.md`](../../skills/writing/deck.md)——「新人看完就能改内容、加页、换图、排查视频问题」，而这个「新人」主要是 AI。下次再做同类 deck，把手册喂进上下文，all-intra、九宫格、单点橙这些坑一个都不用重踩。
 
 另外存档了一份更早的化石：[prompt-v0.md](assets/prompt-v0.md)，第一版滚动开场的一次成型 prompt——从资产清单、滚动区间映射表到「scroll 事件只更新目标值、rAF 里缓动 seek」的实现要点全部写死在 prompt 里，AI 一发直出完整 HTML。对比它和后来的三层引擎能看出这类项目的自然演化：**一次性 prompt 长出可维护的架构，踩坑记录长出 SKILL**。
 
@@ -104,7 +104,7 @@ ffmpeg -y -i in.mp4 \
 
 ## 附：源码与手稿原文 { #原文 }
 
-引擎真身在本文 `assets/deck/` 下，线上有独立 URL 可直接 GET；此处按规矩折叠展示，方便就地查看。工程手册已沉淀为独立 skill——[滚动 deck 工程手册](../../skills/writing/deck/index.md)（Skills · 写作口味，导航可达），不在此重复。
+引擎真身在本文 `assets/deck/` 下，线上有独立 URL 可直接 GET；此处按规矩折叠展示，方便就地查看。工程手册已沉淀为独立 skill——[滚动 deck 工程手册](../../skills/writing/deck.md)（Skills · 写作口味，导航可达），不在此重复。
 
 引擎五件套（wiki 发布版：字体已本地化、内网 iframe 与失效外链已摘除，均留有注释）：
 

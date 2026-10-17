@@ -2,7 +2,7 @@
 
 本目录归档 [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) 仓库 `skills/` 下发布的全部 21 个 skill。HyperFrames 是 HeyGen 开源的「写 HTML、渲染视频」框架，这套 skill 教 AI 走完它的制作流程，Claude Code 插件 `hyperframes@hyperframes` 装的就是这一套。目录结构镜像上游 `skills/`：每个 skill 的 `SKILL.md` 改名为 `index.md`，其余文件按原相对路径放在同级，所以 skill 之间、文件之间的相对引用原样有效。人读的介绍和远程使用须知在 [index.md](index.md)。
 
-**全部 330 篇 markdown 是中译版**（2026-10-09 按要求译成简体中文），脚本、模板、数据和二进制素材原样照录。这偏离了本 wiki「吸收型 skill 原文照录」的默认规矩，是按要求做的，先例见 [GPT Image 2 图库](../../gallery/images/gpt-image2/MIRROR.md)和 [bili-note](../bili-note/MIRROR.md)。英文原文看下面钉 commit 的永链。
+**全部 330 篇 markdown 是中译版**（2026-10-09 译成简体中文），脚本、模板、数据和二进制素材原样随附。吸纳 skill 要深度收纳：译成中文，允许为贴合本站大幅改动，规矩见[收纳 skill](../wiki-guide/skill.md)。英文原文看下面钉 commit 的永链。
 
 !!! warning "AI 不要去读上游仓库，也不要装上游 skill"
 
@@ -55,7 +55,7 @@
 | 脚本、模板、JSON、字体、音效、图片（539 个，照录） | 同相对路径 |
 | [LICENSE](LICENSE) | 仓库根 `LICENSE` |
 
-自己写的只有 [index.md](index.md)、本页、`.meta.yml`（给没有 frontmatter 的译文补默认 description）和 `MANIFEST.txt`（见下文整包下载）。
+自己写的只有 [index.md](index.md)、本页和 `.meta.yml`（给没有 frontmatter 的译文补默认 description）。
 
 ## 没收的
 
@@ -68,7 +68,7 @@
 
 ## 脚本归类 { #scripts }
 
-按 [skill 怎么收纳](../wiki-guide/remote-skill.md) 的三类，142 个运行时脚本**全部属于第 3 类「下载后本地执行」**：输入是用户的项目、素材或网站，要调 HyperFrames CLI、FFmpeg、无头浏览器、TTS 和转录模型，既没法预算，也不是查表。分布如下：
+按 [收纳 skill](../wiki-guide/skill.md) 的三类，142 个运行时脚本**全部属于第 3 类「下载后本地执行」**：输入是用户的项目、素材或网站，要调 HyperFrames CLI、FFmpeg、无头浏览器、TTS 和转录模型，既没法预算，也不是查表。分布如下：
 
 | skill | 脚本数 | 主要用途 |
 |---|---|---|
@@ -94,17 +94,7 @@
 
 ## 整包下载 { #download }
 
-文件太多（872 个），不适合一个个抓。`MANIFEST.txt` 是本目录全部文件的 sha256 清单（`sha256sum` 格式，相对路径），有 shell 的调用方照它整包拉下来再校验：
-
-```bash
-BASE=https://wiki.liuhetian.work/skills/hyperframes
-mkdir -p hyperframes-skills && cd hyperframes-skills
-curl -fsSL "$BASE/MANIFEST.txt" -o MANIFEST.txt
-awk '{print $2}' MANIFEST.txt | xargs -P 8 -I{} curl -fsSL --create-dirs -o {} "$BASE/{}"
-sha256sum -c --quiet MANIFEST.txt && echo OK
-```
-
-拉下来的目录就是 21 个 skill 的完整本地副本，`<SKILL_DIR>` 指向其中某个 skill 目录即可。没打 `bundle.tar.gz`：内容里有 8MB 字体和音效走 LFS，再打一份压缩包会把它们重复存进 git，而且译文一改压缩包就过期；清单是纯文本，改了译文重新生成一次即可。
+部署时把整个目录打成 `hyperframes.tar.gz`，下载命令和用法见入口页的[使用须知](index.md#remote-use)。包只在线上，不进 git。
 
 ## 未来漂移处置
 
@@ -113,16 +103,11 @@ sha256sum -c --quiet MANIFEST.txt && echo OK
 1. `git clone --depth 1` 拿上游新 commit，和 `46f6cb3` 比对 `skills/`
 2. 非 `.md` 文件有变化直接覆盖；`.md` 有变化的按上面「翻译做了哪些改动」的规则重译那几篇，FRAME.md 的 frontmatter 照旧原样
 3. 上游增删了文件：同步 `mkdocs.yml` 的 nav 和本页「本地归档」一栏
-4. 更新本页的 commit、日期和永链，最后在本目录重新生成清单：
-
-```bash
-cd docs/skills/hyperframes
-find . -type f ! -name '.*' ! -name MANIFEST.txt | sed 's|^\./||' | LC_ALL=C sort | xargs sha256sum > MANIFEST.txt
-```
+4. 更新本页的 commit、日期和永链
 
 ## 本地归档 { #archive }
 
-21 个 skill 的全部 330 篇，按 skill 分组，链接文字是文件路径，后面是译文标题。脚本、模板和素材不逐个列出，见 `MANIFEST.txt`。
+21 个 skill 的全部 330 篇，按 skill 分组，链接文字是文件路径，后面是译文标题。脚本、模板和素材不逐个列出，见整包。
 
 ### hyperframes
 

@@ -16,4 +16,4 @@ curl -sS https://autodl-proxy.liuhetian.work/api/v1/comfyui/comfyui_workflow/wan
 - **必填**：`ref_image`（JPG、PNG、WebP，正面、清晰的人物照片）和 `ref_video`（MP4 或 WebM）。没有 `prompt`，也没有时长参数
 - **分辨率**：只有 `464*832px(竖版)` 和 `832*464px(横版)` 两种
 - **价钱**：按生成视频的实际时长算，高峰每秒 0.04 元，闲时 0.03 元。生成多长应该跟着动作视频走，所以动作视频先剪到要的长度再传
-- **没实测**：参数取自 2026-10-02 的元数据。第一次用完，把耗时和结果补进[维护记录](../../../../posts/ai-assistant/maintenance/video.md)
+- **没实测**：参数取自 2026-10-02 的元数据。第一次用完，把耗时和结果补进[维护记录](../../../../maintenance/video.md)

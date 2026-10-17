@@ -300,10 +300,11 @@
 .md-typeset table:not([class]) tbody tr:first-child td { border-top: 0; }   /* 免得和表头墨线叠成双线 */
 /* 行内码芯片继承了全局 break-word，窄列里会把 terminate 掰成 terminat/e */
 .md-typeset table:not([class]) code { word-break: normal; }
-/* 窄表整体居中：包装层 .md-typeset__table 是 inline-block，跟随父层 text-align；
-   中层复位，免得单元格文字也跟着居中 */
-.md-typeset .md-typeset__scrollwrap { text-align: center; }
-.md-typeset .md-typeset__table { text-align: left; }
+/* 一律撑满正文栏，横线两端都落在版心边缘。包装层 .md-typeset__table 默认 inline-block 按内容收缩，改 block；
+   表本身的 inline-block（0,2,1）压过主题给的 display: table（0,1,2），不扳回来就是墨线撑满、格子缩在左边。
+   宽表照旧在 scrollwrap 里横向滚动 */
+.md-typeset .md-typeset__table { display: block; }
+.md-typeset .md-typeset__table table:not([class]) { display: table; width: 100%; }
 /* 默认 hover 带 box-shadow inset 一条 bg 色，在纸白底上是一道浅缝，关掉 */
 .md-typeset table:not([class]) tbody tr:hover {
   background-color: var(--coral-wash);
@@ -878,4 +879,67 @@
 [dir=ltr] .md-typeset .zx-timeline blockquote { border-left-color: var(--coral); }
 @media (max-width: 40em) {
   .md-typeset .zx-timeline { --tl-gutter: 1.4rem; --tl-axis: .4rem; }
+}
+
+/* ================================================================
+   11. 填空控件（活例：skills/collab/chat-prompts/plain-talk.md）
+   正文里手写的 <input> / <textarea> / <select>，读者就地填，复制按钮把填的值换进源文件
+   （vendor/md-copy.js）。单选、复选不算填空，不碰 —— 选项卡（tabbed）底下就是隐藏的 radio。
+   行内的 input / select 画成纸上的填空横线：只有一条墨线，填过的铺荧光笔底，聚焦时线变 2px 深绿
+   （同正文链接的 hover）；textarea 是 1px 墨框，聚焦时右下一道荧光绿硬投影。
+   field-sizing 让框随内容伸缩（Chromium / Safari），不支持的浏览器（Firefox）退回定宽。
+   ================================================================ */
+.md-typeset input:not([type=radio]):not([type=checkbox]),
+.md-typeset select {
+  width: 12em;
+  min-width: 6em;
+  max-width: 100%;
+  margin: 0 .15em;
+  padding: 0 .3em;
+  border: none;
+  border-bottom: 1px solid var(--ink);
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.5;
+  transition: background-color .15s, box-shadow .15s;
+}
+.md-typeset input:not([type=radio]):not([type=checkbox]):not(:placeholder-shown) { background-color: var(--coral-wash); }
+.md-typeset input:not([type=radio]):not([type=checkbox]):focus,
+.md-typeset select:focus {
+  outline: none;
+  background-color: var(--coral-wash);
+  border-bottom-color: var(--coral-deep);
+  box-shadow: 0 1px 0 var(--coral-deep);   /* 线下再垫 1px 凑成 2px，不撑行高 */
+}
+.md-typeset select {
+  width: auto;
+  appearance: none;
+  padding-right: 1.3em;
+  background: no-repeat right .3em center / .6em
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23262626'/%3E%3C/svg%3E");
+  cursor: pointer;
+}
+.md-typeset textarea {
+  display: block;
+  width: 100%;
+  min-height: 6em;
+  margin: .6em 0;
+  padding: .5em .7em;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background: var(--bone);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  transition: box-shadow .15s;
+}
+.md-typeset textarea:focus { outline: none; box-shadow: 3px 3px 0 var(--coral); }
+.md-typeset input::placeholder,
+.md-typeset textarea::placeholder { color: var(--ink-faint); opacity: 1; }
+@supports (field-sizing: content) {
+  .md-typeset input:not([type=radio]):not([type=checkbox]) { field-sizing: content; width: auto; }
+  .md-typeset textarea { field-sizing: content; }
 }

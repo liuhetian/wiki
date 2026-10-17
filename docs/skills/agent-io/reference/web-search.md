@@ -41,4 +41,4 @@ curl -sS https://deepseek-proxy.liuhetian.work/anthropic/v1/messages \
 - **API key**：用 `.env` 里的 `MY_API_KEY`，放在 `Authorization: Bearer` 里，别打印出来。中转只认这个头：Anthropic SDK 要传 `auth_token=`，传 `api_key=` 会 401
 - **结果**：来源从 `web_search_tool_result` 块里取 `url`、`title`。`text` 块是模型写的总结，不带逐条引用，要核实就按 URL 去读原文。有的 URL 末尾带 `#1`，去重前先去掉
 
-维护记录：[做法从哪来、实测结果](../../../posts/ai-assistant/maintenance/web-search.md)。正常使用不用看，搜索出问题再看。
+维护记录：[做法从哪来、实测结果](../../../maintenance/web-search.md)。正常使用不用看，搜索出问题再看。

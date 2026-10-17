@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""Extract public Bilibili metadata, audio, transcripts, and comments."""
+"""Extract public Bilibili metadata, subtitles, comments, and gateway transcripts."""
 
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
-import importlib.util
 import json
 import os
 import re
-import shutil
 import subprocess
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone, timedelta
@@ -21,7 +21,12 @@ from pathlib import Path
 
 BASE = "https://api.bilibili.com"
 TZ = timezone(timedelta(hours=8))
-DEFAULT_QWEN_MODEL = "Qwen/Qwen3-ASR-0.6B"
+# agent-io gateways: share-link (xiazaitool) for direct video URLs, OpenRouter for transcription.
+SHARE_LINK_GATEWAY = "https://xiazaitool-proxy.liuhetian.work/"
+TRANSCRIBE_GATEWAY = "https://openrouter.reverse-pro.xyz/api/v1/audio/transcriptions"
+TRANSCRIBE_MODEL = "microsoft/mai-transcribe-2"
+SENTENCE_ENDS = set("。！？!?；;…")
+SOFT_BREAKS = set("，,、：:")
 MIXIN_KEY_ENC_TAB = [
     46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35,
     27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13,
@@ -38,46 +43,6 @@ def configure_stdout() -> None:
 
 
 configure_stdout()
-
-
-def is_chinese_language(value: str | None) -> bool:
-    key = (value or "").strip().lower()
-    return key in {"", "zh", "zh-cn", "zh_cn", "cn", "chinese", "mandarin"}
-
-
-def qwen_venv_python_paths(venv: Path) -> list[Path]:
-    return [venv / "Scripts" / "python.exe", venv / "bin" / "python"]
-
-
-def qwen_python_candidates(explicit: str | None = None) -> list[str]:
-    candidates: list[str] = []
-    if explicit:
-        candidates.append(explicit)
-    for env_name in ("RIMAGINATION_QWEN_PYTHON", "BILI_NOTE_QWEN_PYTHON", "DOUYIN_NOTE_QWEN_PYTHON"):
-        if os.environ.get(env_name):
-            candidates.append(os.environ[env_name])
-    shared_cache = Path(os.environ.get("RIMAGINATION_NOTE_CACHE", Path.home() / ".cache" / "rimagination-notes")).expanduser()
-    for venv in [
-        shared_cache / "qwen3-asr-venv",
-        Path.home() / ".cache" / "dy-note" / "qwen3-asr-venv",
-        Path.home() / ".cache" / "douyin-note" / "qwen3-asr-venv",
-    ]:
-        candidates.extend(str(path) for path in qwen_venv_python_paths(venv))
-    candidates.append(sys.executable)
-    return candidates
-
-
-def find_qwen_python(explicit: str | None = None) -> str:
-    for candidate in qwen_python_candidates(explicit):
-        if candidate and Path(candidate).exists():
-            return candidate
-    return explicit or sys.executable
-
-
-def qwen_available() -> bool:
-    if importlib.util.find_spec("qwen_asr"):
-        return True
-    return any(Path(candidate).exists() for candidate in qwen_python_candidates(None)[:-1])
 
 
 def headers(bvid: str | None = None) -> dict[str, str]:
@@ -186,67 +151,6 @@ def write_bilibili_subtitle_outputs(payload: dict, out_dir: Path, stem: str, lan
     return {"json": str(json_path), "txt": str(txt_path), "srt": str(srt_path)}
 
 
-def resolve_asr_backend(requested: str, language: str = "zh") -> str:
-    aliases = {
-        "whisper": "openai-whisper",
-        "openai": "openai-whisper",
-        "openai-whisper": "openai-whisper",
-        "faster": "faster-whisper",
-        "faster-whisper": "faster-whisper",
-        "funasr": "funasr",
-        "sensevoice": "funasr",
-        "qwen": "qwen3-asr",
-        "qwen3": "qwen3-asr",
-        "qwen3-asr": "qwen3-asr",
-        "auto": "auto",
-    }
-    key = aliases.get((requested or "auto").lower())
-    if not key:
-        raise ValueError(f"Unsupported ASR backend: {requested}")
-    if key != "auto":
-        return key
-    if is_chinese_language(language) and qwen_available():
-        return "qwen3-asr"
-    for module_name, backend in (("faster_whisper", "faster-whisper"), ("whisper", "openai-whisper")):
-        if importlib.util.find_spec(module_name):
-            return backend
-    for module_name, backend in (("funasr", "funasr"),):
-        if importlib.util.find_spec(module_name):
-            return backend
-    if qwen_available():
-        return "qwen3-asr"
-    return "openai-whisper"
-
-
-def asr_default_model(backend: str, asr_model: str | None, whisper_model: str | None) -> str:
-    if asr_model:
-        return asr_model
-    if backend == "qwen3-asr":
-        return DEFAULT_QWEN_MODEL
-    if backend == "funasr":
-        return "iic/SenseVoiceSmall"
-    return whisper_model or "base"
-
-
-def detect_device(device: str) -> str:
-    if device != "auto":
-        return device
-    try:
-        import torch  # type: ignore
-
-        return "cuda" if torch.cuda.is_available() else "cpu"
-    except Exception:
-        return "cpu"
-
-
-def add_site_packages(paths: list[str] | None) -> None:
-    for value in paths or []:
-        for raw_path in value.split(os.pathsep):
-            path = raw_path.strip()
-            if path and path not in sys.path:
-                sys.path.append(path)
-
-
 def write_source_md(view: dict, out_dir: Path) -> None:
     data = view["data"]
     lines = [
@@ -300,364 +204,269 @@ def download_file(url: str, path: Path, bvid: str) -> None:
             fh.write(chunk)
 
 
-def download_audio_with_bilibili_api(bvid: str, page: dict, audio_path: Path, force: bool = False) -> Path:
-    if audio_path.exists() and not force:
-        return audio_path
-    cid = str(page["cid"])
-    play = api_get(
-        "/x/player/playurl",
-        {"bvid": bvid, "cid": cid, "qn": 16, "fnval": 16, "fourk": 1},
-        bvid,
-    )
-    audios = (((play.get("data") or {}).get("dash") or {}).get("audio") or [])
-    if not audios:
-        raise RuntimeError(f"No public audio in playurl for cid={cid}")
-    audio = sorted(audios, key=lambda x: x.get("bandwidth", 0), reverse=True)[0]
-    url = audio.get("baseUrl") or audio.get("base_url")
-    download_file(url, audio_path, bvid)
-    return audio_path
+def gateway_key() -> str:
+    key = os.environ.get("MY_API_KEY", "").strip()
+    if not key:
+        raise RuntimeError("MY_API_KEY is not set; load it from .env before downloading or transcribing")
+    return key
 
 
-def download_audio_with_ytdlp(
-    bvid: str,
-    page: dict,
-    out_dir: Path,
-    stem: str,
-    cookies_from_browser: str | None = None,
-    force: bool = False,
-) -> Path:
-    executable = shutil.which("yt-dlp") or shutil.which("yt-dlp.exe")
-    if importlib.util.find_spec("yt_dlp"):
-        base_cmd = [sys.executable, "-m", "yt_dlp"]
-    elif executable:
-        base_cmd = [executable]
-    else:
-        raise RuntimeError("yt-dlp is not installed or not on PATH")
-    existing = sorted(
-        p for p in out_dir.glob(f"{stem}.*")
-        if p.suffix.lower() not in {".wav", ".json", ".txt", ".srt"}
-    )
-    if existing and not force:
-        return existing[0]
-    template = str(out_dir / f"{stem}.%(ext)s")
+def gateway_request(url: str, body: dict | None = None, timeout: int = 90) -> dict:
+    req_headers = {"Authorization": f"Bearer {gateway_key()}"}
+    data = None
+    if body is not None:
+        req_headers["Content-Type"] = "application/json"
+        data = json.dumps(body).encode("utf-8")
+    req = urllib.request.Request(url, data=data, headers=req_headers)
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")[:500]
+        raise RuntimeError(f"HTTP {exc.code} from {url.split('?')[0]}: {detail}") from exc
+
+
+def part_url(bvid: str, page: dict) -> str:
     url = f"https://www.bilibili.com/video/{bvid}/"
     if int(page.get("page") or 1) > 1:
         url += f"?p={int(page['page'])}"
-    cmd = [
-        *base_cmd,
-        "--no-playlist",
-        "--add-header",
-        f"Referer: https://www.bilibili.com/video/{bvid}/",
-        "--add-header",
-        f"User-Agent: {headers(bvid)['User-Agent']}",
-        "-f",
-        "ba/bestaudio",
-        "-o",
-        template,
-    ]
-    if cookies_from_browser:
-        cmd.extend(["--cookies-from-browser", cookies_from_browser])
-    cmd.append(url)
+    return url
+
+
+def resolve_video_url(bvid: str, page: dict, attempts: int = 3) -> str:
+    """Resolve one part to a direct mp4 (video + audio) through the share-link gateway."""
+    query = urllib.parse.urlencode({"url": part_url(bvid, page)})
+    last_error = ""
+    for attempt in range(attempts):
+        if attempt:
+            time.sleep(3)
+        try:
+            obj = gateway_request(SHARE_LINK_GATEWAY + "?" + query)
+        except (RuntimeError, OSError, json.JSONDecodeError) as exc:
+            last_error = str(exc)
+            continue
+        data = obj.get("data") or {}
+        url = data.get("videoUrls")
+        if isinstance(url, list):
+            url = url[0] if url else ""
+        if obj.get("status") == 200 and data.get("isVideo") and url:
+            if str(page.get("cid")) not in url:
+                print(
+                    f"warning: direct URL for P{page.get('page')} does not contain cid={page.get('cid')}",
+                    file=sys.stderr,
+                )
+            return normalize_media_url(url)
+        last_error = f"status={obj.get('status')} message={obj.get('message')}"
+    raise RuntimeError(f"Share-link gateway failed for P{page.get('page')} after {attempts} attempts: {last_error}")
+
+
+def download_video(bvid: str, page: dict, video_dir: Path, force: bool = False) -> Path:
+    video_dir.mkdir(parents=True, exist_ok=True)
+    output = video_dir / f"p{int(page['page']):02d}_{page['cid']}.mp4"
+    if output.exists() and not force:
+        return output
+    partial = output.with_name(output.name + ".part")
+    try:
+        partial.unlink(missing_ok=True)
+        download_file(resolve_video_url(bvid, page), partial, bvid)
+        partial.replace(output)
+    except Exception:
+        partial.unlink(missing_ok=True)
+        raise
+    return output
+
+
+def extract_audio_chunks(video: Path, audio_dir: Path, stem: str, chunk_seconds: float, force: bool = False) -> list[Path]:
+    """16 kHz mono 32 kbps mp3, cut into chunks so one request never carries a whole long lecture."""
+    audio_dir.mkdir(parents=True, exist_ok=True)
+    existing = sorted(audio_dir.glob(f"{stem}_*.mp3"))
+    if existing and not force:
+        return existing
+    for stale in existing:
+        stale.unlink()
+    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", str(video), "-vn", "-ac", "1", "-ar", "16000", "-b:a", "32k"]
+    if chunk_seconds > 0:
+        cmd += ["-f", "segment", "-segment_time", str(chunk_seconds), "-reset_timestamps", "1", str(audio_dir / f"{stem}_%03d.mp3")]
+    else:
+        cmd.append(str(audio_dir / f"{stem}_000.mp3"))
     try:
         subprocess.run(cmd, check=True)
-    except subprocess.CalledProcessError as exc:
-        raise RuntimeError(
-            "yt-dlp failed for Bilibili audio. Bilibili may return HTTP 412 without browser cookies; "
-            "retry with --cookies-from-browser chrome/edge or use --audio-source auto."
-        ) from exc
-    candidates = sorted(
-        p for p in out_dir.glob(f"{stem}.*")
-        if p.suffix.lower() not in {".wav", ".json", ".txt", ".srt"}
-    )
-    if not candidates:
-        raise RuntimeError(f"yt-dlp did not create an audio file for {bvid} page {page.get('page')}")
-    return candidates[0]
+    except (OSError, subprocess.CalledProcessError) as exc:
+        for partial in audio_dir.glob(f"{stem}_*.mp3"):
+            partial.unlink()
+        raise RuntimeError("Audio extraction needs ffmpeg") from exc
+    return sorted(audio_dir.glob(f"{stem}_*.mp3"))
 
 
-def ensure_wav_for_pages(
+def transcribe_chunk(audio: Path, language: str | None, attempts: int = 2) -> dict:
+    body: dict = {
+        "model": TRANSCRIBE_MODEL,
+        "input_audio": {"data": base64.b64encode(audio.read_bytes()).decode("ascii"), "format": "mp3"},
+        "response_format": "verbose_json",
+        "timestamp_granularities": ["word"],
+        # Segment boundaries only follow real speech when diarization is on.
+        "provider": {"options": {"azure": {"diarization": {"enabled": True}}}},
+    }
+    if language:
+        body["language"] = language
+    last_error: Exception | None = None
+    for attempt in range(attempts):
+        if attempt:
+            time.sleep(3)
+        try:
+            return gateway_request(TRANSCRIBE_GATEWAY, body, timeout=600)
+        except (RuntimeError, OSError, json.JSONDecodeError) as exc:
+            last_error = exc
+    raise RuntimeError(f"Transcription failed for {audio.name}: {last_error}")
+
+
+def join_tokens(tokens: list[str]) -> str:
+    text = ""
+    for token in tokens:
+        if text and text[-1].isascii() and text[-1].isalnum() and token[:1].isascii() and token[:1].isalnum():
+            text += " "
+        text += token
+    return text
+
+
+def lines_from_words(words: list[dict], offset: float, max_chars: int = 40, max_gap: float = 1.5) -> list[dict]:
+    """Single-speaker audio comes back as one segment per chunk; rebuild subtitle-sized lines from word timestamps."""
+    lines: list[dict] = []
+    current: list[dict] = []
+
+    def flush() -> None:
+        if current:
+            text = join_tokens([str(w.get("word") or "") for w in current]).strip()
+            if text:
+                lines.append(
+                    {
+                        "start": round(float(current[0].get("start") or 0) + offset, 3),
+                        "end": round(float(current[-1].get("end") or 0) + offset, 3),
+                        "text": text,
+                        "speaker": current[0].get("speaker"),
+                    }
+                )
+            current.clear()
+
+    for word in words:
+        token = str(word.get("word") or "").strip()
+        if not token:
+            continue
+        is_punct = token in SOFT_BREAKS or token in SENTENCE_ENDS
+        if current and not is_punct:
+            gap = float(word.get("start") or 0) - float(current[-1].get("end") or 0)
+            if gap > max_gap or word.get("speaker") != current[0].get("speaker"):
+                flush()
+        current.append({**word, "word": token})
+        length = len(join_tokens([str(w.get("word") or "") for w in current]))
+        if token[-1] in SENTENCE_ENDS or (token[-1] in SOFT_BREAKS and length >= max_chars) or length >= max_chars * 2:
+            flush()
+    flush()
+    return lines
+
+
+def transcript_lines(result: dict, offset: float, chunk_duration: float) -> list[dict]:
+    words = result.get("words") or []
+    if words:
+        return lines_from_words(words, offset)
+    lines = []
+    for seg in result.get("segments") or []:
+        text = str(seg.get("text") or "").strip()
+        if text:
+            lines.append(
+                {
+                    "start": round(float(seg.get("start") or 0) + offset, 3),
+                    "end": round(float(seg.get("end") or 0) + offset, 3),
+                    "text": text,
+                    "speaker": seg.get("speaker"),
+                }
+            )
+    text = str(result.get("text") or "").strip()
+    if not lines and text:
+        lines.append({"start": round(offset, 3), "end": round(offset + chunk_duration, 3), "text": text, "speaker": None})
+    return lines
+
+
+def write_transcript_outputs(payload: dict, json_path: Path, txt_path: Path, srt_path: Path) -> None:
+    segments = payload.get("segments") or []
+    json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    txt_path.write_text("\n".join(seg["text"] for seg in segments).rstrip() + "\n", encoding="utf-8")
+    srt_lines = []
+    for i, seg in enumerate(segments, 1):
+        srt_lines.extend([str(i), f"{srt_ts(seg['start'])} --> {srt_ts(seg['end'])}", seg["text"], ""])
+    srt_path.write_text("\n".join(srt_lines).rstrip() + "\n", encoding="utf-8")
+
+
+def transcribe_pages(
     bvid: str,
     pages: list[dict],
     out_dir: Path,
+    language: str | None = None,
+    chunk_seconds: float = 600.0,
     force: bool = False,
-    audio_source: str = "auto",
-    cookies_from_browser: str | None = None,
 ) -> list[dict]:
-    manifest = []
+    transcript_dir = out_dir / "transcripts"
+    transcript_dir.mkdir(parents=True, exist_ok=True)
+    results = []
     for page in pages:
         cid = str(page["cid"])
         stem = f"p{int(page['page']):02d}_{cid}"
-        m4s = out_dir / f"{stem}.m4s"
-        wav = out_dir / f"{stem}.wav"
-        audio_file = m4s
-        if force or not audio_file.exists():
-            if audio_source == "yt-dlp":
-                audio_file = download_audio_with_ytdlp(bvid, page, out_dir, stem, cookies_from_browser, force)
-            else:
-                try:
-                    audio_file = download_audio_with_bilibili_api(bvid, page, m4s, force)
-                except Exception:
-                    if audio_source != "auto":
-                        raise
-                    audio_file = download_audio_with_ytdlp(bvid, page, out_dir, stem, cookies_from_browser, force)
-        if force or not wav.exists():
-            subprocess.run(
-                ["ffmpeg", "-hide_banner", "-y", "-i", str(audio_file), "-ar", "16000", "-ac", "1", str(wav)],
-                check=True,
-            )
-        manifest.append(
+        json_path = transcript_dir / f"{stem}.json"
+        txt_path = transcript_dir / f"{stem}.txt"
+        srt_path = transcript_dir / f"{stem}.srt"
+        if force or not (json_path.exists() and txt_path.exists() and srt_path.exists()):
+            video = download_video(bvid, page, out_dir / "video", force)
+            chunks = extract_audio_chunks(video, out_dir / "audio", stem, chunk_seconds, force)
+            segments: list[dict] = []
+            texts: list[str] = []
+            detected = None
+            duration = float(page.get("duration") or 0)
+            for index, chunk in enumerate(chunks):
+                offset = index * chunk_seconds if chunk_seconds > 0 else 0.0
+                chunk_duration = min(chunk_seconds, duration - offset) if chunk_seconds > 0 else duration
+                result = transcribe_chunk(chunk, language)
+                detected = detected or result.get("language")
+                texts.append(str(result.get("text") or "").strip())
+                segments.extend(transcript_lines(result, offset, max(chunk_duration, 0)))
+            payload = {
+                "backend": "mai-transcribe-2",
+                "model": TRANSCRIBE_MODEL,
+                "language": language or detected,
+                "chunks": len(chunks),
+                "chunk_seconds": chunk_seconds,
+                "text": "\n".join(text for text in texts if text),
+                "segments": segments,
+            }
+            write_transcript_outputs(payload, json_path, txt_path, srt_path)
+        results.append(
             {
                 "page": page.get("page"),
                 "cid": cid,
                 "part": page.get("part", ""),
                 "duration": page.get("duration"),
-                "audio": str(audio_file),
-                "wav": str(wav),
+                "transcript_txt": str(txt_path),
+                "transcript_json": str(json_path),
+                "transcript_srt": str(srt_path),
             }
         )
-    (out_dir / "audio_manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
-    return manifest
-
-
-def transcribe_wavs_openai_whisper(
-    manifest: list[dict],
-    out_dir: Path,
-    model_name: str,
-    language: str,
-    force: bool = False,
-) -> list[dict]:
-    import torch  # type: ignore
-    import whisper  # type: ignore
-
-    model = whisper.load_model(model_name, download_root=str(Path.home() / ".cache" / "whisper"))
-    results = []
-    for item in manifest:
-        stem = f"p{int(item['page']):02d}_{item['cid']}"
-        txt_path = out_dir / f"{stem}.txt"
-        json_path = out_dir / f"{stem}.json"
-        if txt_path.exists() and not force:
-            results.append({**item, "transcript_txt": str(txt_path), "transcript_json": str(json_path)})
-            continue
-        result = model.transcribe(
-            item["wav"],
-            language=language,
-            task="transcribe",
-            fp16=bool(torch.cuda.is_available()),
-            verbose=False,
-        )
-        result["backend"] = "openai-whisper"
-        result["model"] = model_name
-        txt_path.write_text(result.get("text", ""), encoding="utf-8")
-        json_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-        results.append({**item, "transcript_txt": str(txt_path), "transcript_json": str(json_path)})
+    manifest = {
+        "source": "asr_transcript",
+        "backend": "mai-transcribe-2",
+        "bvid": bvid,
+        "outputs": [
+            {
+                "page": item["page"],
+                "cid": item["cid"],
+                "part": item["part"],
+                "duration": item["duration"],
+                "files": {"json": item["transcript_json"], "txt": item["transcript_txt"], "srt": item["transcript_srt"]},
+                "source": "asr_transcript",
+            }
+            for item in results
+        ],
+    }
+    (out_dir / "transcript_manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     return results
-
-
-def transcribe_wavs_faster_whisper(
-    manifest: list[dict],
-    out_dir: Path,
-    model_name: str,
-    language: str,
-    device: str,
-    compute_type: str,
-    force: bool = False,
-) -> list[dict]:
-    from faster_whisper import WhisperModel  # type: ignore
-
-    resolved_device = detect_device(device)
-    resolved_compute = compute_type
-    if resolved_compute == "auto":
-        resolved_compute = "float16" if resolved_device == "cuda" else "int8"
-    model = WhisperModel(
-        model_name,
-        device=resolved_device,
-        compute_type=resolved_compute,
-        download_root=str(Path.home() / ".cache" / "faster-whisper"),
-    )
-    results = []
-    for item in manifest:
-        stem = f"p{int(item['page']):02d}_{item['cid']}"
-        txt_path = out_dir / f"{stem}.txt"
-        json_path = out_dir / f"{stem}.json"
-        if txt_path.exists() and not force:
-            results.append({**item, "transcript_txt": str(txt_path), "transcript_json": str(json_path)})
-            continue
-        segments_iter, info = model.transcribe(item["wav"], language=language, task="transcribe", vad_filter=True)
-        segments = []
-        for segment in segments_iter:
-            segments.append(
-                {
-                    "id": getattr(segment, "id", None),
-                    "start": getattr(segment, "start", None),
-                    "end": getattr(segment, "end", None),
-                    "text": getattr(segment, "text", ""),
-                    "avg_logprob": getattr(segment, "avg_logprob", None),
-                    "no_speech_prob": getattr(segment, "no_speech_prob", None),
-                }
-            )
-        text = "".join(segment["text"] for segment in segments).strip()
-        result = {
-            "backend": "faster-whisper",
-            "model": model_name,
-            "device": resolved_device,
-            "compute_type": resolved_compute,
-            "language": getattr(info, "language", language),
-            "duration": getattr(info, "duration", None),
-            "text": text,
-            "segments": segments,
-        }
-        txt_path.write_text(text, encoding="utf-8")
-        json_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-        results.append({**item, "transcript_txt": str(txt_path), "transcript_json": str(json_path)})
-    return results
-
-
-def funasr_text(result: object) -> str:
-    if isinstance(result, list):
-        parts = []
-        for item in result:
-            if isinstance(item, dict):
-                parts.append(str(item.get("text") or ""))
-        return "\n".join(part for part in parts if part).strip()
-    if isinstance(result, dict):
-        return str(result.get("text") or "").strip()
-    return str(result or "").strip()
-
-
-def transcribe_wavs_funasr(
-    manifest: list[dict],
-    out_dir: Path,
-    model_name: str,
-    language: str,
-    device: str,
-    force: bool = False,
-) -> list[dict]:
-    from funasr import AutoModel  # type: ignore
-
-    resolved_device = detect_device(device)
-    model = AutoModel(model=model_name, vad_model="fsmn-vad", device=resolved_device)
-    results = []
-    for item in manifest:
-        stem = f"p{int(item['page']):02d}_{item['cid']}"
-        txt_path = out_dir / f"{stem}.txt"
-        json_path = out_dir / f"{stem}.json"
-        if txt_path.exists() and not force:
-            results.append({**item, "transcript_txt": str(txt_path), "transcript_json": str(json_path)})
-            continue
-        raw = model.generate(input=item["wav"], language=language)
-        text = funasr_text(raw)
-        result = {
-            "backend": "funasr",
-            "model": model_name,
-            "device": resolved_device,
-            "language": language,
-            "text": text,
-            "raw": raw,
-        }
-        txt_path.write_text(text, encoding="utf-8")
-        json_path.write_text(json.dumps(result, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
-        results.append({**item, "transcript_txt": str(txt_path), "transcript_json": str(json_path)})
-    return results
-
-
-def qwen_language(value: str) -> str:
-    return "Chinese" if is_chinese_language(value) else value
-
-
-def transcribe_wavs_qwen(
-    manifest: list[dict],
-    out_dir: Path,
-    model_name: str,
-    language: str,
-    qwen_python: str | None,
-    device_map: str,
-    dtype: str,
-    max_new_tokens: int,
-    chunk_seconds: float,
-    force: bool = False,
-) -> list[dict]:
-    helper = Path(__file__).with_name("run_qwen_asr.py")
-    if not helper.exists():
-        raise RuntimeError(f"Qwen helper script not found: {helper}")
-
-    python = find_qwen_python(qwen_python)
-    results = []
-    for item in manifest:
-        stem = f"p{int(item['page']):02d}_{item['cid']}"
-        txt_path = out_dir / f"{stem}.txt"
-        json_path = out_dir / f"{stem}.json"
-        if txt_path.exists() and json_path.exists() and not force:
-            results.append({**item, "transcript_txt": str(txt_path), "transcript_json": str(json_path)})
-            continue
-
-        cmd = [
-            python,
-            str(helper),
-            "--audio",
-            str(item["wav"]),
-            "--out",
-            str(json_path),
-            "--model",
-            model_name,
-            "--language",
-            qwen_language(language),
-            "--device-map",
-            device_map,
-            "--dtype",
-            dtype,
-            "--max-new-tokens",
-            str(max_new_tokens),
-            "--chunk-seconds",
-            str(chunk_seconds),
-        ]
-        env = os.environ.copy()
-        env.setdefault("PYTHONUTF8", "1")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace", env=env)
-        if result.returncode != 0:
-            detail = result.stderr[-1600:] or result.stdout[-1600:]
-            raise RuntimeError(f"Qwen3-ASR failed using {python}: {detail}")
-        data = json.loads(json_path.read_text(encoding="utf-8"))
-        text = str(data.get("text") or "").strip()
-        txt_path.write_text(text, encoding="utf-8")
-        results.append({**item, "transcript_txt": str(txt_path), "transcript_json": str(json_path)})
-    return results
-
-
-def transcribe_wavs(
-    manifest: list[dict],
-    out_dir: Path,
-    backend: str,
-    model_name: str,
-    site_packages: list[str] | None,
-    force: bool = False,
-    device: str = "auto",
-    compute_type: str = "auto",
-    language: str = "zh",
-    qwen_python: str | None = None,
-    qwen_device_map: str = "auto",
-    qwen_dtype: str = "auto",
-    qwen_max_new_tokens: int = 8192,
-    qwen_chunk_seconds: float = 60.0,
-) -> list[dict]:
-    add_site_packages(site_packages)
-    resolved_backend = resolve_asr_backend(backend, language)
-    if resolved_backend == "qwen3-asr":
-        return transcribe_wavs_qwen(
-            manifest,
-            out_dir,
-            model_name,
-            language,
-            qwen_python,
-            qwen_device_map,
-            qwen_dtype,
-            qwen_max_new_tokens,
-            qwen_chunk_seconds,
-            force,
-        )
-    if resolved_backend == "faster-whisper":
-        return transcribe_wavs_faster_whisper(manifest, out_dir, model_name, language, device, compute_type, force)
-    if resolved_backend == "funasr":
-        return transcribe_wavs_funasr(manifest, out_dir, model_name, language, device, force)
-    return transcribe_wavs_openai_whisper(manifest, out_dir, model_name, language, force)
 
 
 def get_mixin_key(bvid: str | None) -> str:
@@ -967,24 +776,14 @@ def main() -> int:
     parser.add_argument("source", help="Bilibili URL or BVID")
     parser.add_argument("--out", required=True, help="Output directory")
     parser.add_argument("--parts", default="key", help="'key', 'all', or comma-separated page numbers such as 2,20,22")
-    parser.add_argument("--download-audio", action="store_true", help="Download selected part audio and convert to WAV")
     parser.add_argument("--download-subtitles", action="store_true", help="Download Bilibili subtitle tracks when available")
-    parser.add_argument("--audio-source", choices=["auto", "bilibili-api", "yt-dlp"], default="auto", help="Audio downloader to use")
-    parser.add_argument("--cookies-from-browser", help="Browser name for yt-dlp cookies, e.g. chrome or edge")
-    parser.add_argument("--transcribe", action="store_true", help="Run local ASR on selected WAV files")
-    parser.add_argument("--asr-backend", default="auto", help="'auto', 'qwen3-asr', 'faster-whisper', 'funasr', or 'openai-whisper'")
-    parser.add_argument("--asr-model", help="ASR model name; defaults depend on backend")
-    parser.add_argument("--asr-device", default="auto", help="'auto', 'cpu', 'cuda', or backend-specific device")
-    parser.add_argument("--asr-compute-type", default="auto", help="faster-whisper compute type, e.g. float16, int8")
-    parser.add_argument("--asr-language", default="zh", help="ASR language code")
-    parser.add_argument("--asr-site-packages", action="append", default=[], help="Extra site-packages path for ASR imports; can repeat")
-    parser.add_argument("--qwen-python", help="Python executable for the shared qwen-asr environment")
-    parser.add_argument("--qwen-device-map", default="auto", help="Qwen device_map: auto, cuda:0, cpu, etc.")
-    parser.add_argument("--qwen-dtype", default="auto", help="Qwen dtype: auto, bfloat16, float16, float32.")
-    parser.add_argument("--qwen-max-new-tokens", type=int, default=8192, help="Maximum generated tokens for Qwen3-ASR long audio.")
-    parser.add_argument("--qwen-chunk-seconds", type=float, default=60.0, help="Chunk length for Qwen3-ASR to avoid GPU OOM; use 0 to disable.")
-    parser.add_argument("--whisper-model", help="Legacy OpenAI Whisper model name")
-    parser.add_argument("--whisper-site-packages", help="Legacy extra site-packages path for importing whisper")
+    parser.add_argument(
+        "--transcribe",
+        action="store_true",
+        help="Download selected parts via the share-link gateway and transcribe them with MAI-Transcribe-2",
+    )
+    parser.add_argument("--asr-language", help="Language code such as zh or en; omit to auto-detect")
+    parser.add_argument("--asr-chunk-seconds", type=float, default=600.0, help="Audio chunk length per request; 0 sends each part whole")
     parser.add_argument("--comments", action="store_true", help="Fetch WBI comments and child replies")
     parser.add_argument("--force", action="store_true", help="Re-download/re-run existing outputs")
     args = parser.parse_args()
@@ -1007,39 +806,15 @@ def main() -> int:
     if args.download_subtitles:
         subtitle_outputs = download_available_subtitles(subtitles, out_dir, bvid, args.force)
 
-    manifest = []
     transcript_results = []
-    if args.download_audio or args.transcribe:
-        manifest = ensure_wav_for_pages(
+    if args.transcribe:
+        transcript_results = transcribe_pages(
             bvid,
             selected,
             out_dir,
-            args.force,
-            args.audio_source,
-            args.cookies_from_browser,
-        )
-    if args.transcribe:
-        site_packages = list(args.asr_site_packages or [])
-        if args.whisper_site_packages:
-            site_packages.append(args.whisper_site_packages)
-        add_site_packages(site_packages)
-        backend = resolve_asr_backend(args.asr_backend, args.asr_language)
-        model_name = asr_default_model(backend, args.asr_model, args.whisper_model)
-        transcript_results = transcribe_wavs(
-            manifest,
-            out_dir,
-            backend,
-            model_name,
-            site_packages,
-            args.force,
-            args.asr_device,
-            args.asr_compute_type,
             args.asr_language,
-            args.qwen_python,
-            args.qwen_device_map,
-            args.qwen_dtype,
-            args.qwen_max_new_tokens,
-            args.qwen_chunk_seconds,
+            args.asr_chunk_seconds,
+            args.force,
         )
 
     comments = None
@@ -1059,7 +834,7 @@ def main() -> int:
         "subtitle_probe": str(out_dir / "subtitle_probe.json"),
         "subtitle_manifest": str(out_dir / "subtitle_manifest.json") if subtitle_outputs else None,
         "subtitles": subtitle_outputs,
-        "audio_manifest": str(out_dir / "audio_manifest.json") if manifest else None,
+        "transcript_manifest": str(out_dir / "transcript_manifest.json") if transcript_results else None,
         "transcripts": transcript_results,
         "comments": str(out_dir / "comments.md") if comments else None,
     }

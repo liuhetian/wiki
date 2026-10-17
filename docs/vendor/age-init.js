@@ -1,5 +1,5 @@
 // 全站打码：源文件里写的就是 age 密文，浏览器里显示成马赛克，解锁后就地还原。
-// 两种写法（规矩见 skills/wiki-guide/mkdocs-wiki/index.md 的「打码」一节）：
+// 两种写法（规矩见 skills/wiki-guide/reference/components.md 的「打码」一节）：
 //   - 小字：反引号里写 `age:<整个 age 文件的 base64>`，行内代码和代码块里都认（scripts/age-seal.sh 生成）
 //   - 大段：```age 代码块里放 age -a 的 armor 文本，superfences 输出为 <pre class="age"><code>…</code></pre>
 // 密文都是用 wiki 专用公钥加密的（age -r）。解锁框认两种输入：

@@ -4,7 +4,7 @@ description: "HeyGen 开源的 HyperFrames 视频 skill 全套中译：写 HTML 
 
 # HyperFrames：用 HTML 做视频
 
-HyperFrames 是 HeyGen 开源的视频渲染框架：一个 composition 就是一个 HTML 文件，用 `data-*` 属性声明时间，动画运行时可以逐帧 seek，由框架截屏编码成 MP4。这里是它随仓库发布的 21 个 AI skill 的完整中译，目录结构、脚本、模板、字体和音效原样随附，AI 顺链接读进来就能照着做视频。
+HyperFrames 是 HeyGen 开源的视频渲染框架：一个 composition 就是一个 HTML 文件，用 `data-*` 属性声明时间，动画运行时可以逐帧 seek，由框架截屏编码成 MP4。这里是它随仓库发布的 21 个 AI skill 的完整中译，目录结构、脚本、模板、字体和音效原样随附，AI 顺链接读进来就能照着做视频。如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](hyperframes.tar.gz)下载到本地。工作流里的脚本基本都成串跑，互相按相对路径 import，`build-frame.mjs` 还跨目录读 `hyperframes-creative/frame-presets/`。
 
 **入口只有一个：[hyperframes](hyperframes/index.md)。** 任何"做个视频"的请求都先读它。它先看项目处在什么状态，新项目就跑一轮意图访谈、写出 `BRIEF.md`，再按路由表把活交给一个创作工作流；工作流按步骤推进、每步过闸门，需要什么技术细节再加载对应的领域 skill。
 
@@ -24,7 +24,7 @@ flowchart LR
     - **本目录就是完整的 21 个 skill。** skill 之间的引用都解析到这里的同名子目录：`/hyperframes-core` 就是 [hyperframes-core/index.md](hyperframes-core/index.md)，`../hyperframes/references/brief-contract.md` 这类相对路径原样有效。上游的 `SKILL.md` 在这里叫 `index.md`
     - **跳过一切 skill 安装和刷新命令**：`npx hyperframes skills update …`、`npx hyperframes skills`、`npx skills add …`、`skills check`。它们会从 GitHub 装英文原版，跟这里的中译版两套并存、互相打架。工作流开头"先确认 skill 是最新的"那一步直接跳过，读这里的译文即可。`npx hyperframes init` 也会顺手刷新全局 skill，执行时带上环境变量 `HYPERFRAMES_SKIP_SKILLS=1`
     - **CLI 照常用。** `npx hyperframes <命令>` 才是真正干活的工具（init、lint、check、preview、render、capture、tts……），需要 Node.js 22+、FFmpeg 和一个无头 Chrome，缺什么由 `npx hyperframes doctor` 指出
-    - **带脚本的步骤要在本地执行。** 形如 `node <SKILL_DIR>/scripts/xxx.mjs` 的命令，要先把用到的 skill 目录整个下载到本地（脚本之间按相对路径互相 import，`build-frame.mjs` 还会跨目录读 `hyperframes-creative/frame-presets/`），再把 `<SKILL_DIR>`、`<MEDIA_DIR>` 换成下载到的路径。整包下载的办法见 [MIRROR](MIRROR.md#download)。只能抓网页的调用方跑不了脚本，只能用纯文字的部分。这是在执行第三方代码，执行前要让用户知情
+    - **带脚本的步骤要在本地执行。** 只能抓网页的调用方跑不了脚本，只能用纯文字的部分。这是在执行第三方代码，执行前要让用户知情
     - **项目产物文件按英文格式写。** `BRIEF.md`、`STORYBOARD.md`、`SCRIPT.md`、`frame.md` 里的字段名、取值和标题关键字，照各格式文档代码块里的英文原样写，脚本按英文关键字解析；字段里填的内容可以用中文
     - **代码块、模板、脚本都是上游原样**，里面的英文注释和示例没有翻译
 
@@ -60,4 +60,4 @@ flowchart LR
 - [figma](figma/index.md) —— 从 Figma 导入素材、设计 token、组件和分镜画板，重建成动效（画板当状态读，不当幻灯片），外加 Motion 动画和 shader
 - [hyperframes-studio](hyperframes-studio/index.md) —— 在 Studio 里陪人做项目：先判断这句话要不要改东西；新片子的计划、分镜和搭建顺序；时间线怎么排才好读（一条字幕轨、一类元素一条轨、每个场景一个 sub-composition）、安全区在哪
 
-来源、版本、翻译做了哪些改动、整包下载办法和全部 330 篇的归档清单见 [MIRROR](MIRROR.md)。
+来源、版本、翻译做了哪些改动和全部 330 篇的归档清单见 [MIRROR](MIRROR.md)。

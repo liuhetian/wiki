@@ -4,9 +4,9 @@ description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘�
 
 # 图片
 
-一张图配一段生成它的 prompt，看中哪张就把 prompt 拿走改一改。页面里只有图和 prompt；来源与授权记在各自的 MIRROR 里：[GPT Image 2 图库](gpt-image2/MIRROR.md)（收录自 wuyoscar/GPT-Image2-Skill，MIT，共 163 条，已译成中文）、[手绘风格库](handdraw-style/MIRROR.md)（收录自 yang0/handraw-style，MIT，280 种画风；配套的版式和主题色在[排版](../layouts/index.md)、[色彩](../colors/index.md)两区）、[二次元平面设计风格](linux-do-style/assets/MIRROR.md)（整理自 linux.do @sallyn 的帖子，12 组）和 [提示词卡牌](../../skills/collab/prompt-cards/MIRROR.md)（照录自 prompt-cards.cyanfish.site，10 条，英文的已译成中文，分散在角色设计、摄影、插画、复古与赛博朋克、字体与海报、品牌系统六页的末尾）；另有单条收进来的零散 prompt，来源记在 [零散收集](collected/MIRROR.md)。
+一张图配一段生成它的 prompt，看中哪张就把 prompt 拿走改一改。页面里只有图和 prompt；来源与授权记在各自的 MIRROR 里：[GPT Image 2 图库](gpt-image2/MIRROR.md)（收录自 wuyoscar/GPT-Image2-Skill，MIT，共 163 条，已译成中文）、[手绘风格库](handdraw-style/MIRROR.md)（收录自 yang0/handraw-style，MIT，280 种画风；配套的版式和主题色在[排版](../layouts/index.md)、[色彩](../colors/index.md)两区）、[二次元平面设计风格](linux-do-style/assets/MIRROR.md)（整理自 linux.do @sallyn 的帖子，12 组）和 [prompt-cards 生图条目](prompt-cards/MIRROR.md)（照录自 prompt-cards.cyanfish.site，10 条，英文的已译成中文，分散在角色设计、摄影、插画、复古与赛博朋克、字体与海报、品牌系统六页的末尾）；另有单条收进来的零散 prompt，来源记在 [零散收集](collected/MIRROR.md)。
 
-怎么从一张图反推出 prompt，看 skills 里的两个反推 skill：[图片提示词反推](../../skills/collab/analysis_image/index.md)（七维拆解）和 [get-prompt-from-image](../../skills/collab/get-prompt-from-image/index.md)。
+怎么从一张图反推出 prompt，看 skills 里的[图片提示词反推](../../skills/collab/image-prompt-reverse/index.md)：简化版[七维拆解](../../skills/collab/image-prompt-reverse/seven-dimensions/index.md)和完整版[从图反推 prompt](../../skills/collab/image-prompt-reverse/get-prompt-from-image/index.md)。
 
 ## 手绘风格库
 

@@ -18,4 +18,4 @@ curl -sS https://autodl-proxy.liuhetian.work/api/v1/comfyui/comfyui_workflow/min
 | 高清 | `minimax_h3_z0901` | 标签带像素，比如 `768p横(1344*768)`、`1440p横(2560*1440)`，要照 `input_rules` 原样写 | 480p 0.04，768p 和 1088p 0.07，1440p 0.08 |
 
 - 必填只有 `prompt`。`duration` 是 1–15 秒，默认 5 秒。默认档没有 `seed`，高清档有
-- **没实测**：参数取自 2026-10-02 的元数据。第一次用完，把耗时和结果补进[维护记录](../../../../posts/ai-assistant/maintenance/video.md)
+- **没实测**：参数取自 2026-10-02 的元数据。第一次用完，把耗时和结果补进[维护记录](../../../../maintenance/video.md)

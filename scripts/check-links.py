@@ -8,12 +8,14 @@
 五项检查：
 
 1. 父级链接 —— 每篇 .md 必须被**某个祖先目录**的索引页用 markdown 链接直接指向。
-   索引页指 index.md / MIRROR.md / SKILL.md 三种：后两者是吸收型 skill 里唯一
-   自己写的文件和上游主文件，它们照样承担链接责任（活例：xi-wen 的 9 份归档由
-   MIRROR.md 挂链，因为 index.md 是上游原文照录、不许改）。
+   索引页指 index.md / MIRROR.md / SKILL.md 三种：MIRROR.md 是原样收录目录里
+   自己写的来源说明，SKILL.md 是上游主文件，它们照样承担链接责任（活例：xi-wen 的
+   9 份归档由 MIRROR.md 挂链，因为它的 index.md 是上游原文，没往里加链接）。
    「祖先」而非「最近父级」是必要的：MIRROR.md 的链接责任归分类索引，隔了一层。
 
-2. 死链 —— 指向不存在 .md 的链接。
+2. 死链 —— 指向不存在 .md 的链接。代码块和行内 code 里的不算，理由同检查 5：
+   那是示范不是引用（活例：领域建模的 GLOSSARY.md 格式模板举例
+   `[Ordering](./src/ordering/GLOSSARY.md)`，是写进别人项目的路径）。
 
 3. nav 注册 —— 写作规范要求新增页面必须进 mkdocs.yml 的 nav。
 
@@ -49,7 +51,7 @@ LINK = re.compile(r"\[[^\]]*\]\(\s*<?([^)\s>]+)>?[^)]*\)")
 EXEMPT = re.compile(r"<!--\s*link-check-ok:")
 # 课程提问块的起始标记（与 scripts/course.py、vendor/conflict-init.js 同规则）
 CONFLICT = re.compile(r"^<{7} ", re.M)
-# 检查 5 用：围栏代码块（``` 或 ~~~，允许缩进，按开围栏的缩进配对）与行内 code
+# 检查 2、5 用：围栏代码块（``` 或 ~~~，允许缩进，按开围栏的缩进配对）与行内 code
 FENCE = re.compile(r"^(?P<i>\s*)(?P<f>`{3,}|~{3,}).*?^(?P=i)(?P=f)\s*$", re.M | re.S)
 INLINE_CODE = re.compile(r"`[^`\n]+`")
 # 图片 ![](x)、以及 src=/href= 指到的东西
@@ -63,13 +65,15 @@ def rel(p: Path) -> Path:
 
 
 def md_links(md: Path) -> set:
-    """该文件指向的、docs 内存在的 .md（相对 docs），顺带返回死链。"""
+    """该文件指向的、docs 内存在的 .md（相对 docs），顺带返回代码块之外的死链。"""
     text = md.read_text(encoding="utf-8")
+    prose = {m.group(1) for m in LINK.finditer(INLINE_CODE.sub("", FENCE.sub("", text)))}
     hits, dead = set(), []
     for m in LINK.finditer(text):
         target = m.group(1)
         if target.startswith(("http://", "https://", "mailto:", "#")):
             continue
+        in_prose = target in prose
         target = target.split("#")[0].strip()
         if not target.endswith(".md"):
             continue
@@ -79,7 +83,7 @@ def md_links(md: Path) -> set:
             continue  # 指到 docs 之外（如项目根的 mkdocs.yml），不算页面链接
         if (DOCS / resolved).exists():
             hits.add(resolved)
-        else:
+        elif in_prose:
             dead.append(target)
     return hits, dead
 
@@ -113,11 +117,10 @@ def asset_refs(md: Path) -> list:
 
 
 def is_absorbed(md: Path) -> bool:
-    """是否为吸收来的上游原文 —— 同级或祖先目录有 MIRROR.md 即是。
+    """是否为原样收录的上游原文 —— 同级或祖先目录有 MIRROR.md 即是。
 
-    这类文件一律原文照录、不许改，所以不能往里加豁免注释；而原文里的路径常是
-    举例（活例：domain-modeling/CONTEXT-FORMAT.md 举例 `./src/ordering/CONTEXT.md`
-    该放哪），本地不可能存在。它们的死链降级为警告，不阻断部署 —— 但仍然打印，
+    这类文件是原文，往里加豁免注释它就不是原文了；而原文正文里的路径常是
+    举例，本地不可能存在（代码块里的举例检查 2 已经跳过）。它们的死链降级为警告，不阻断部署 —— 但仍然打印，
     因为归档真漏了一份依赖也会在这里现形。MIRROR.md 是自己写的，不算原文。
     """
     if md.name == "MIRROR.md":

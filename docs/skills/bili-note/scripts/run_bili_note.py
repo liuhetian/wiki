@@ -1,9 +1,9 @@
 """One-command Bili Note extraction runner.
 
 This script orchestrates the stable, non-LLM parts of the workflow:
-metadata, subtitles, comments, archive, and evidence indexes. It intentionally
-does not write the final analytical summary; Codex should read the archive and
-write the user-facing Markdown note.
+metadata, subtitles, gateway transcripts, comments, archive, and evidence
+indexes. It intentionally does not write the final analytical summary; the
+agent should read the archive and write the user-facing Markdown note.
 """
 
 from __future__ import annotations
@@ -21,7 +21,6 @@ from typing import Any
 SCRIPT_DIR = Path(__file__).resolve().parent
 EXTRACT_SCRIPT = SCRIPT_DIR / "extract_bilibili.py"
 EXTRACT_OPUS_SCRIPT = SCRIPT_DIR / "extract_bilibili_opus.py"
-BROWSER_AI_SCRIPT = SCRIPT_DIR / "fetch_browser_ai_subtitles.py"
 KEYFRAME_SCRIPT = SCRIPT_DIR / "extract_video_keyframes.py"
 ARCHIVE_SCRIPT = SCRIPT_DIR / "archive_bili_materials.py"
 
@@ -99,13 +98,15 @@ def public_subtitle_count(work_dir: Path) -> int:
     return len(data) if isinstance(data, list) else 0
 
 
-def browser_subtitle_status(work_dir: Path) -> tuple[int, int]:
-    for name in ("browser_ai_subtitle_manifest.json", "browser_subtitle_manifest.json"):
-        path = work_dir / name
-        if path.exists():
-            data = read_json(path)
-            return int(data.get("count") or 0), int(data.get("downloaded") or 0)
-    return 0, 0
+def transcript_parts(work_dir: Path) -> int:
+    path = work_dir / "transcript_manifest.json"
+    if not path.exists():
+        return 0
+    try:
+        data = read_json(path)
+    except json.JSONDecodeError:
+        return 0
+    return len(data.get("outputs") or []) if isinstance(data, dict) else 0
 
 
 def comments_available(work_dir: Path) -> bool:
@@ -145,11 +146,7 @@ def _subtitle_file_chars(path: Path) -> int:
 
 
 def _subtitle_records(work_dir: Path) -> tuple[str | None, list[dict[str, Any]]]:
-    for name in (
-        "browser_ai_subtitle_manifest.json",
-        "browser_subtitle_manifest.json",
-        "subtitle_manifest.json",
-    ):
+    for name in ("subtitle_manifest.json", "transcript_manifest.json"):
         path = work_dir / name
         if not path.exists() or path.stat().st_size <= 2:
             continue
@@ -391,7 +388,6 @@ def keyframes_available(
     source: str | None = None,
     parts: str | None = None,
     count: int | None = None,
-    video_source: str | None = None,
 ) -> bool:
     manifest_path = work_dir / "keyframes_manifest.json"
     sheet_path = work_dir / "keyframes" / "contact_sheet.png"
@@ -411,8 +407,6 @@ def keyframes_available(
     if parts is not None and manifest.get("parts") != parts:
         return False
     if count is not None and manifest.get("frame_count") != count:
-        return False
-    if video_source and manifest.get("requested_video_source") != video_source:
         return False
     for item in frames:
         if not isinstance(item, dict):
@@ -434,14 +428,12 @@ def summarize_outputs(
     visual_review: str | None = None,
 ) -> dict[str, Any]:
     public_subtitles = public_subtitle_count(work_dir)
-    browser_count, browser_downloaded = browser_subtitle_status(work_dir)
     keyframes_enabled = visual_review != "off" and keyframes_available(work_dir)
     summary: dict[str, Any] = {
         "work_dir": str(work_dir),
         "metadata": metadata_available(work_dir),
         "public_subtitle_tracks": public_subtitles,
-        "browser_ai_subtitle_parts": browser_count,
-        "browser_ai_subtitle_downloaded": browser_downloaded,
+        "transcript_parts": transcript_parts(work_dir),
         "article_content": article_available(work_dir),
         "images_manifest": (work_dir / "images_manifest.json").exists(),
         "comments": comments_available(work_dir),
@@ -550,19 +542,13 @@ def main() -> int:
         default=True,
         help="Download opus/article images when source is a Bilibili opus page",
     )
-    parser.add_argument("--browser-target", help="web-access CDP target id for browser AI subtitles")
+    parser.add_argument("--subtitle-mode", choices=["auto", "public", "none"], default="auto")
     parser.add_argument(
-        "--browser",
-        choices=["chrome", "edge"],
-        default="chrome",
-        help="Browser for AI subtitles: Chrome via web-access or Edge via direct CDP",
+        "--transcribe",
+        action="store_true",
+        help="When no public subtitle track exists, download via the share-link gateway and transcribe with MAI-Transcribe-2",
     )
-    parser.add_argument(
-        "--edge-cdp-url",
-        default="http://127.0.0.1:9222",
-        help="Edge remote-debugging HTTP endpoint when --browser edge is selected",
-    )
-    parser.add_argument("--subtitle-mode", choices=["auto", "public", "browser", "none"], default="auto")
+    parser.add_argument("--asr-language", help="Language code for transcription such as zh or en; omit to auto-detect")
     parser.add_argument(
         "--visual-review",
         choices=["ask", "on", "off"],
@@ -570,13 +556,6 @@ def main() -> int:
         help="Video keyframe visual review; ask is the mandatory default",
     )
     parser.add_argument("--keyframe-count", type=int, default=12, help="Representative frames when visual review is on (1-12)")
-    parser.add_argument(
-        "--keyframe-video-source",
-        choices=["auto", "bilibili-api", "yt-dlp"],
-        default="auto",
-        help="Video source for keyframes",
-    )
-    parser.add_argument("--cookies-from-browser", help="Browser name for yt-dlp cookies, e.g. chrome or edge")
     parser.add_argument("--archive", action=argparse.BooleanOptionalAction, default=True, help="Archive materials when archive-dir is set")
     parser.add_argument("--force", action="store_true", help="Re-run stages even if outputs exist")
     parser.add_argument("--dry-run", action="store_true", help="Print planned stages without running them")
@@ -657,48 +636,31 @@ def main() -> int:
         )
 
     public_tracks = public_subtitle_count(work_dir)
-    browser_count, browser_downloaded = browser_subtitle_status(work_dir)
-    need_browser = args.subtitle_mode == "browser" or (
-        args.subtitle_mode == "auto" and public_tracks == 0 and browser_downloaded == 0
-    )
-    if need_browser:
-        if args.browser_target or args.browser == "edge":
-            cmd = [
-                sys.executable,
-                str(BROWSER_AI_SCRIPT),
-                "--out",
-                str(work_dir),
-                "--parts",
-                args.parts,
-            ]
-            if args.browser_target:
-                cmd.extend(["--target", args.browser_target])
-            if args.browser == "edge":
-                cmd.extend(["--browser", "edge", "--edge-cdp-url", args.edge_cdp_url])
-            if args.force:
-                # The browser subtitle script overwrites manifest outputs naturally.
-                pass
-            append_step(steps, "browser_ai_subtitles", run_cmd(cmd, dry_run=args.dry_run))
-        else:
-            append_step(
-                steps,
-                "browser_ai_subtitles",
-                {
-                    "skipped": True,
-                    "reason": "public subtitles unavailable and no browser target or Edge direct-CDP route provided",
-                    "returncode": 0,
-                },
-            )
-    else:
+    if not args.transcribe:
         append_step(
             steps,
-            "browser_ai_subtitles",
-            {
-                "skipped": True,
-                "reason": f"not needed; public_tracks={public_tracks}, browser_downloaded={browser_downloaded}",
-                "returncode": 0,
-            },
+            "audio_transcription",
+            {"skipped": True, "reason": f"--transcribe not given; public_tracks={public_tracks}", "returncode": 0},
         )
+    elif public_tracks > 0 and args.subtitle_mode != "none":
+        append_step(
+            steps,
+            "audio_transcription",
+            {"skipped": True, "reason": f"public subtitles available; public_tracks={public_tracks}", "returncode": 0},
+        )
+    elif not args.force and transcript_parts(work_dir) > 0:
+        append_step(
+            steps,
+            "audio_transcription",
+            {"skipped": True, "reason": "transcripts already available", "returncode": 0},
+        )
+    else:
+        cmd = [sys.executable, str(EXTRACT_SCRIPT), args.source, "--out", str(work_dir), "--parts", args.parts, "--transcribe"]
+        if args.asr_language:
+            cmd.extend(["--asr-language", args.asr_language])
+        if args.force:
+            cmd.append("--force")
+        append_step(steps, "audio_transcription", run_cmd(cmd, dry_run=args.dry_run))
 
     preflight = visual_preflight(work_dir, args.parts)
     write_json(work_dir / "visual_preflight.json", preflight)
@@ -733,7 +695,6 @@ def main() -> int:
             source=args.source,
             parts=args.parts,
             count=args.keyframe_count,
-            video_source=args.keyframe_video_source,
         ):
             cmd = [
                 sys.executable,
@@ -745,11 +706,7 @@ def main() -> int:
                 args.parts,
                 "--count",
                 str(args.keyframe_count),
-                "--video-source",
-                args.keyframe_video_source,
             ]
-            if args.cookies_from_browser:
-                cmd.extend(["--cookies-from-browser", args.cookies_from_browser])
             if args.force:
                 cmd.append("--force")
             append_step(steps, "keyframe_extraction", run_cmd(cmd, dry_run=args.dry_run))

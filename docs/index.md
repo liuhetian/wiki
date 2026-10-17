@@ -3,7 +3,7 @@ template: home.html
 hide:
   - navigation
   - toc
-description: "AI 友好的个人知识库：每个页面在同域提供 .md 源，把 URL 结尾的 / 换成 .md 即可，LLM 可顺相对链接一层层读进去。收录项目复盘、学科笔记、教材伴读课程、可挂载的 AI skills 与图配 prompt 的图库。"
+description: "AI 友好的个人知识库：每个页面在同域提供 .md 源，把 URL 结尾的 / 换成 .md 即可，LLM 可顺相对链接一层层读进去。收录项目复盘、学科笔记、教材伴读课程、可挂载的 AI skills、图配 prompt 的图库，以及 skill 背后的维护记录。"
 ---
 
 <!-- 浏览器里首页由 overrides/home.html（SaaS 开屏）渲染，下面的正文不上屏，
@@ -43,16 +43,23 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 给 AI 挂载执行的成套资产，按 Claude skill 标准目录组织，每套都可以直接当远程 skill 用，全部在 [Skills 索引](skills/index.md)：
 
-- [本 wiki 写作规范](skills/wiki-guide/index.md) —— 往这个 wiki 写东西前先读：格式怎么写、课程页怎么写、skill 怎么收纳、怎么打码
+- [本 wiki 写作规范](skills/wiki-guide/index.md) —— 往这个 wiki 写东西前先读：页面怎么写、放哪个板块、什么场景用什么语法；课程页、收纳 skill、精简检查是子 skill
 - [FastAPI 后端](skills/fastapi/index.md) —— 依赖注入、SQLModel 分层建模、按需参考的一整套后端约定
 - [Dashboard 后台](skills/dashboard/index.md) —— 形状目录 + 每形状一个可玩的活 demo
 - [写作口味](skills/writing/index.md) —— 报纸版 HTML、滚动 deck、去 AI 味、檄文
-- [和 AI 协作](skills/collab/index.md) —— CLAUDE.md 模板 + 盘问式协作 + 两个图片提示词反推 skill
+- [和 AI 协作](skills/collab/index.md) —— 初始化项目、盘问式协作、对话提示词、图片提示词反推
 
 ## Gallery
 
-原样收录的成品参考，按媒介分图片 / 视频 / 音频 / 网页四区，全部在 [Gallery 索引](gallery/index.md)：
+原样收录的成品参考，按媒介分图片、排版、色彩、视频、音频、网页六区，全部在 [Gallery 索引](gallery/index.md)：
 
 - [图片](gallery/images/index.md) —— 一张图配一段生成它的 prompt，7 大类共 175 条：GPT Image 2 的 163 条（译成中文）+ [二次元平面设计风格](gallery/images/linux-do-style/gallery-anime-graphic-design.md) 12 组
 - [网页](gallery/web/index.md) —— [前端风格收集](gallery/web/frontend-styles/index.md)：有特色的前端美学，一种风格一个可抄的活 demo
 - 视频、音频两区还没有收录
+
+## 维护
+
+skill 和 Agent 能力背后的事：为什么这样选、从哪来、改过什么、实测过什么、还有什么没做。AI 正常使用不用看，出问题或要改做法时再看，全部在[维护索引](maintenance/index.md)：
+
+- [Agent 能力](maintenance/index.md#agent-io) —— 读 PDF、网络搜索、语音合成、图片、视频、音乐、转录、解析分享链接、结构化判断，一个能力一篇选型实测
+- [Skill 吸纳](maintenance/index.md#skills) —— 吸纳来的 skill 一个一篇：上游、commit、跳过了什么、翻译之外的改动

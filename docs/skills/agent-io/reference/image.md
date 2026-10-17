@@ -27,4 +27,4 @@ curl -sS https://codeproxy.reverse-pro.xyz/v1/images/edits \
 - **本地图片**：写成 `data:image/png;base64,…`，放进 `image_url`
 - **更高分辨率**：2.5 没有 2k、4k 版本，要的话只能退回旧版 `gpt-image-2-2k` 或 `gpt-image-2-4k`
 
-维护记录：[接口从哪来、实测结果](../../../posts/ai-assistant/maintenance/image.md)。正常使用不用看，出问题再看。
+维护记录：[接口从哪来、实测结果](../../../maintenance/image.md)。正常使用不用看，出问题再看。

@@ -15,4 +15,4 @@ curl -sS https://autodl-proxy.liuhetian.work/api/v1/comfyui/comfyui_workflow/min
 
 - **必填**：`first_frame`、`last_frame`、`prompt`。图片收 JPG、PNG、WebP
 - **分辨率**：跟文生视频的默认档一样，480p、768p 各有横、竖、1:1 三种，默认 `768p竖`。480p 每秒 0.03 元，768p 0.04 元
-- **没实测**：参数取自 2026-10-02 的元数据。第一次用完，把耗时和结果补进[维护记录](../../../../posts/ai-assistant/maintenance/video.md)
+- **没实测**：参数取自 2026-10-02 的元数据。第一次用完，把耗时和结果补进[维护记录](../../../../maintenance/video.md)

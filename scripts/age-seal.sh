@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 给 wiki 打码生成密文：用 wiki 专用公钥加密（age -r），加密不碰任何秘密，所以公钥可以写在这里。
 # 浏览器里由 docs/vendor/age-init.js 显示成马赛克，解锁后还原；规矩见
-# docs/skills/wiki-guide/mkdocs-wiki/index.md 的「打码」一节。
+# docs/skills/wiki-guide/reference/components.md 的「打码」一节。
 # 私钥在 ~/.config/age/wiki.key（不进仓库），用口令锁住的副本内嵌在 age-init.js 的 WIKI_KEY_AGE；
 # 换钥匙对时两处一起改。
 #

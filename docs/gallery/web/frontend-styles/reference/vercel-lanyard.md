@@ -45,7 +45,7 @@ description: "Rapier 物理绳链 + meshline 绳带 + 反投影拖拽的挂绳�
 
 - [运行入口](../assets/vercel-lanyard-demo/index.html) —— 自包含单页，逻辑未压缩
 - [vendor 打包脚本存档](../assets/vercel-lanyard-demo/build-vendor.mjs) —— esbuild 把 fiber/drei/rapier/meshline 打成 external 化 ESM 的配方；drei 需要新导出时在 stdin 入口加名字重跑
-- 运行时库真身在全站共享 [`/vendor/react-esm/`](../../../../skills/wiki-guide/mkdocs-wiki/index.md#iframe-demo)（react 19 ESM 五件套）与 `/vendor/r3f/`（fiber / drei-slim / rapier / meshline）
+- 运行时库真身在全站共享 [`/vendor/react-esm/`](../../../../skills/wiki-guide/reference/components.md#iframe-demo)（react 19 ESM 五件套）与 `/vendor/r3f/`（fiber / drei-slim / rapier / meshline）
 
 ??? abstract "`assets/vercel-lanyard-demo/index.html` —— 演示单页源码（自包含、未压缩）"
 

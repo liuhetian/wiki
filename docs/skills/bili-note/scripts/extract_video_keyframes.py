@@ -4,9 +4,7 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
-import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -20,10 +18,8 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from extract_bilibili import (  # noqa: E402
     api_get,
-    download_file,
+    download_video,
     extract_bvid,
-    headers,
-    normalize_media_url,
     select_pages,
 )
 
@@ -61,25 +57,6 @@ def video_stem(page: dict[str, Any]) -> str:
     return f"p{page_number:02d}_{cid}"
 
 
-def choose_video_url(play: dict[str, Any]) -> str:
-    data = play.get("data") or {}
-    dash = data.get("dash") or {}
-    videos = [item for item in dash.get("video") or [] if item.get("baseUrl") or item.get("base_url")]
-    if videos:
-        low_resolution = [item for item in videos if int(item.get("height") or 0) <= 480]
-        candidates = low_resolution or videos
-        selected = max(
-            candidates,
-            key=lambda item: (int(item.get("height") or 0), int(item.get("bandwidth") or 0)),
-        )
-        return normalize_media_url(selected.get("baseUrl") or selected.get("base_url") or "")
-
-    durl = [item for item in data.get("durl") or [] if item.get("url")]
-    if durl:
-        return normalize_media_url(durl[0]["url"])
-    raise RuntimeError("Bilibili 播放接口没有返回可用的视频流")
-
-
 def existing_video(video_dir: Path, page: dict[str, Any]) -> Path | None:
     stem = video_stem(page)
     candidates = sorted(
@@ -90,114 +67,6 @@ def existing_video(video_dir: Path, page: dict[str, Any]) -> Path | None:
         and path.suffix.lower() not in {".json", ".txt", ".srt", ".wav", ".png"}
     )
     return candidates[0] if candidates else None
-
-
-def download_video_with_bilibili_api(
-    bvid: str,
-    page: dict[str, Any],
-    video_dir: Path,
-    force: bool = False,
-) -> Path:
-    video_dir.mkdir(parents=True, exist_ok=True)
-    if not force:
-        cached = existing_video(video_dir, page)
-        if cached:
-            return cached
-
-    play = api_get(
-        "/x/player/playurl",
-        {"bvid": bvid, "cid": str(page["cid"]), "qn": 32, "fnval": 16, "fourk": 1},
-        bvid,
-    )
-    url = choose_video_url(play)
-    if not url:
-        raise RuntimeError(f"没有拿到 P{page.get('page')} 的视频 URL")
-    output = video_dir / f"{video_stem(page)}.video.m4s"
-    partial = output.with_name(output.name + ".part")
-    try:
-        partial.unlink(missing_ok=True)
-        download_file(url, partial, bvid)
-        partial.replace(output)
-    except Exception:
-        partial.unlink(missing_ok=True)
-        raise
-    return output
-
-
-def ytdlp_command() -> list[str]:
-    executable = shutil.which("yt-dlp") or shutil.which("yt-dlp.exe")
-    if importlib.util.find_spec("yt_dlp"):
-        return [sys.executable, "-m", "yt_dlp"]
-    if executable:
-        return [executable]
-    raise RuntimeError("未找到 yt-dlp；可以安装 yt-dlp，或改用可访问 B 站播放接口的环境")
-
-
-def download_video_with_ytdlp(
-    bvid: str,
-    page: dict[str, Any],
-    video_dir: Path,
-    cookies_from_browser: str | None = None,
-    force: bool = False,
-) -> Path:
-    video_dir.mkdir(parents=True, exist_ok=True)
-    if not force:
-        cached = existing_video(video_dir, page)
-        if cached:
-            return cached
-
-    template = str(video_dir / f"{video_stem(page)}.%(ext)s")
-    url = f"https://www.bilibili.com/video/{bvid}/"
-    if int(page.get("page") or 1) > 1:
-        url += f"?p={int(page['page'])}"
-    cmd = [
-        *ytdlp_command(),
-        "--no-playlist",
-        "--add-header",
-        f"Referer: https://www.bilibili.com/video/{bvid}/",
-        "--add-header",
-        f"User-Agent: {headers(bvid)['User-Agent']}",
-        "-f",
-        "bv*[height<=480]/b[height<=480]/bv/b",
-        "-o",
-        template,
-    ]
-    if cookies_from_browser:
-        cmd.extend(["--cookies-from-browser", cookies_from_browser])
-    cmd.append(url)
-    try:
-        subprocess.run(cmd, check=True)
-    except subprocess.CalledProcessError as exc:
-        raise RuntimeError(f"yt-dlp 下载 P{page.get('page')} 视频失败") from exc
-    cached = existing_video(video_dir, page)
-    if not cached:
-        raise RuntimeError(f"yt-dlp 没有生成 P{page.get('page')} 视频文件")
-    return cached
-
-
-def resolve_video(
-    bvid: str,
-    page: dict[str, Any],
-    video_dir: Path,
-    source: str,
-    cookies_from_browser: str | None = None,
-    force: bool = False,
-) -> tuple[Path, str]:
-    errors: list[str] = []
-    if source in {"auto", "bilibili-api"}:
-        try:
-            return download_video_with_bilibili_api(bvid, page, video_dir, force), "bilibili-api"
-        except Exception as exc:
-            errors.append(f"bilibili-api: {exc}")
-    if source in {"auto", "yt-dlp"}:
-        try:
-            return (
-                download_video_with_ytdlp(bvid, page, video_dir, cookies_from_browser, force),
-                "yt-dlp",
-            )
-        except Exception as exc:
-            errors.append(f"yt-dlp: {exc}")
-    raise RuntimeError("；".join(errors) or "没有可用的视频来源")
 
 
 def local_video(video_dir: Path, page: dict[str, Any]) -> Path:
@@ -263,10 +132,12 @@ def extract_frame(video: Path, timestamp: float, output: Path) -> None:
         "-loglevel",
         "error",
         "-y",
-        "-i",
-        str(video),
+        # Seek before -i: the share-link mp4 is 1080p, and decoding from 00:00 to every
+        # timestamp made 12 frames of a 50-minute lecture take 21 minutes.
         "-ss",
         str(max(0.0, timestamp)),
+        "-i",
+        str(video),
         "-frames:v",
         "1",
         "-vf",
@@ -376,14 +247,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         if args.video_dir:
             videos[key] = (local_video(Path(args.video_dir), page), "local")
         else:
-            videos[key] = resolve_video(
-                bvid,
-                page,
-                video_dir,
-                args.video_source,
-                args.cookies_from_browser,
-                args.force,
-            )
+            # Same cache as extract_bilibili.py --transcribe, so one part is downloaded once.
+            videos[key] = (download_video(bvid, page, video_dir, args.force), "share-link")
 
     frames: list[dict[str, Any]] = []
     frames_changed = False
@@ -418,7 +283,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "bvid": bvid,
         "parts": args.parts,
         "selected_parts": [{"page": page.get("page"), "cid": page.get("cid"), "part": page.get("part") or ""} for page in pages],
-        "requested_video_source": "local" if args.video_dir else args.video_source,
+        "requested_video_source": "local" if args.video_dir else "share-link",
         "frame_count": len(frames),
         "grid": {"columns": GRID_COLUMNS, "rows": GRID_ROWS},
         "sheet": "keyframes/contact_sheet.png",
@@ -439,14 +304,7 @@ def main() -> int:
     parser.add_argument("--out", required=True, help="Extraction output directory")
     parser.add_argument("--parts", default="all", help="'all', 'key', or comma-separated page numbers")
     parser.add_argument("--count", type=int, default=12, help="Number of representative frames (1-12)")
-    parser.add_argument(
-        "--video-source",
-        choices=["auto", "bilibili-api", "yt-dlp"],
-        default="auto",
-        help="Video source; auto tries the public Bilibili stream before yt-dlp",
-    )
     parser.add_argument("--video-dir", help="Use existing per-part videos from this directory")
-    parser.add_argument("--cookies-from-browser", help="Browser name for yt-dlp cookies, e.g. chrome or edge")
     parser.add_argument("--force", action="store_true", help="Re-download and re-extract existing keyframes")
     args = parser.parse_args()
 

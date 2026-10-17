@@ -10,7 +10,7 @@ description: "API key、服务器地址这类不想公开的东西，用 age 公
 
 上面的页面能解开 age 加密的文本，口令（`age -p`）和私钥（`age -r`）两种都认，全在浏览器本地算，不往外发数据。它怎么实现，见文末[那一节](#demo)。
 
-不想公开的东西——厂商 API key、网关 token、服务器地址和密码——写进 markdown 时就已经是 age 密文。浏览器里显示成马赛克，点开输口令或粘贴私钥，就地还原。活例是[开发环境第 0 步](../ai-assistant/dev-env.md#proxy)：命令里的服务器地址，和下面一行的登录密码；网关的 key 搭好后打码写在 [API 中转](../ai-assistant/api-gateway.md#keys)里。写法和解锁方式是写作规矩，在[写作规范的打码一节](../../skills/wiki-guide/mkdocs-wiki/index.md#age-mosaic)。
+不想公开的东西——厂商 API key、网关 token、服务器地址和密码——写进 markdown 时就已经是 age 密文。浏览器里显示成马赛克，点开输口令或粘贴私钥，就地还原。活例是[开发环境第 0 步](../ai-assistant/dev-env.md#proxy)：命令里的服务器地址，和下面一行的登录密码；网关的 key 搭好后打码写在 [API 中转](../ai-assistant/api-gateway.md#keys)里。写法和解锁方式是写作规矩，在[写作规范的打码一节](../../skills/wiki-guide/reference/components.md#age-mosaic)。
 
 ## 六种存法比一比 { #compare }
 

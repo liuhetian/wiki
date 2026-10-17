@@ -2,7 +2,7 @@
 
 本目录收录 [wuyoscar/GPT-Image2-Skill](https://github.com/wuyoscar/GPT-Image2-Skill) 的**图库部分**：31 个分类页和它们引用的 169 张原图。页面整理成「一张图 + 一段 prompt」的纯净形态，按 7 个大类挂在 [图片分区索引](../index.md) 下。仓库里的其他内容不在这里：
 
-- **反推 skill `get-prompt-from-image`**：作为独立的吸收型 skill 归档在 [skills/collab/get-prompt-from-image](../../../skills/collab/get-prompt-from-image/index.md)，有它自己的 MIRROR
+- **反推 skill `get-prompt-from-image`**：收成[图片提示词反推](../../../skills/collab/image-prompt-reverse/index.md)的完整版 [skills/collab/image-prompt-reverse/get-prompt-from-image](../../../skills/collab/image-prompt-reverse/get-prompt-from-image/index.md)，有它自己的[维护记录](../../../maintenance/skills/get-prompt-from-image.md)
 - **生图 skill `gpt-image`**（操作手册、写作要点、2.5 接口文档与模板）、CLI 源码、测试、README 和仓库治理文件：不收，要看原貌走钉 commit 的永链 [tree @ 05cb113](https://github.com/wuyoscar/GPT-Image2-Skill/tree/05cb1130bba29e0fc028220376280a2e934a8041)
 
 ## 上游版本跟踪
@@ -51,7 +51,7 @@
 
 这个目录按分类组织，所以别的来源的条目也按分类放进了这里的页面，一律追加在该页原有条目之后。它们不属于上游仓库，漂移同步时不要当成上游条目去比对：
 
-- [提示词卡牌](../../../skills/collab/prompt-cards/MIRROR.md) 的 10 条生图卡（2026-09-29 加入）：角色设计 2 条、摄影 4 条、插画 1 条、复古与赛博朋克 1 条、字体与海报 1 条、品牌系统与视觉识别 1 条。图片放在 `../prompt-cards/assets/`，不混进本目录的 `assets/`
+- [prompt-cards.cyanfish.site](../prompt-cards/MIRROR.md) 的 10 条生图卡（2026-09-29 加入）：角色设计 2 条、摄影 4 条、插画 1 条、复古与赛博朋克 1 条、字体与海报 1 条、品牌系统与视觉识别 1 条。图片放在 `../prompt-cards/assets/`，不混进本目录的 `assets/`
 
 ## 没收的
 

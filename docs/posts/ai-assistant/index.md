@@ -22,7 +22,7 @@ AI助手经常迁移服务器，折腾来折腾去，所以目标是根据这个
     | 网络 | [网络搜索](../../skills/agent-io/reference/web-search.md) | — |
     | 调用大模型 | - | [调用 DeepSeek](../../skills/agent-io/reference/deepseek.md)、[结构化判断（默认 Jev，另接微软、OpenAI、Mercury）](../../skills/agent-io/reference/jev.md) |
 
-    维护记录（AI 正常使用不用看）：[维护目录](maintenance/index.md) —— 两部分：Agent 能力背后的选型实测和上游来源，外部 skill 的吸纳记录
+    维护记录（AI 正常使用不用看）：[维护板块](../../maintenance/index.md) —— 两部分：Agent 能力背后的选型实测和上游来源，外部 skill 的吸纳记录
     
 4. 信息收集：[接收邮件](mail-intake.md)
 5. 知识输出：维护文档

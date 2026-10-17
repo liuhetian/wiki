@@ -33,4 +33,4 @@ EOF
 - **Azure 选项**都放在 `provider.options.azure` 里：`phraseList.phrases` 填专有名词，提高识别率；`enhancedMode.modelOptions.transcribeStyle` 写 `"clean"` 去掉口头禅和说错重来，默认的 `"verbatim"` 照录
 - **大文件**：有 ffmpeg 就先转成 16 kHz 单声道 mp3（`ffmpeg -i in.wav -ac 1 -ar 16000 -b:a 32k out.mp3`）。大米这段 2.7 MB 转完只剩 57 KB，转出来的文字一样
 
-维护记录：[接口从哪来、实测结果](../../../posts/ai-assistant/maintenance/transcribe.md)。正常使用不用看，出问题再看。
+维护记录：[接口从哪来、实测结果](../../../maintenance/transcribe.md)。正常使用不用看，出问题再看。
