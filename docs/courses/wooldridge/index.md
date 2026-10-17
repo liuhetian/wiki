@@ -6,7 +6,7 @@ description: "Wooldridge 伴读导读：计量的主干，重心在面板与政�
 
 > 状态：排队中，队列第 6 门。版本：Jeffrey M. Wooldridge《Introductory Econometrics: A Modern Approach》第 8 版，Cengage 2025
 
-前置是[线性模型与 GLM](../agresti-glm/index.md)（OLS 的投影视角）和[曼昆微观](../mankiw-micro/index.md)（例子背后的经济问题）。这门课把回归用到经济问题的识别上：截面回归与稳健标准误、面板与政策评估、IV、受限因变量，8e 再加一章因果推断。roadmap「计量经济学」整张清单都落在这里或从这里出发。后面 [What If](../what-if/index.md) 从统计与流行病学一侧重讲潜在结果；时序那几章和 [FPP3](../fpp3/index.md) 分工，这里管推断，FPP3 管预测。排在第 6 门的理由见[课程队列](../../posts/wiki-roadmap.md#课程队列)：重心在面板与政策评估。
+前置是[线性模型与 GLM](../agresti-glm/index.md)（OLS 的投影视角）和[曼昆微观](../mankiw-micro/index.md)（例子背后的经济问题）。这门课把回归用到经济问题的识别上：截面回归与稳健标准误、面板与政策评估、IV、受限因变量，8e 再加一章因果推断。roadmap「计量经济学」整张清单都落在这里或从这里出发。后面 [What If](../what-if/index.md) 从统计与流行病学一侧重讲潜在结果；时序那几章和 [FPP3](../fpp3/index.md) 分工，这里管推断，FPP3 管预测。排在第 6 门的理由见[课程队列](../../posts/wiki/roadmap.md#课程队列)：重心在面板与政策评估。
 
 ## 读法
 

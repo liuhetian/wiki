@@ -31,7 +31,7 @@ curl -sS https://autodl-proxy.liuhetian.work/api/v1/comfyui/comfyui_workflow/res
 
 ## 其他用途
 
-各写了一篇，需要再打开。四篇都没实测，参数取自元数据。
+各写了一篇，需要再打开。首尾帧实测过一次，其余三篇没实测，参数取自元数据。
 
 | 用途 | 工作流 | 什么时候用 |
 |---|---|---|

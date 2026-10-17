@@ -6,7 +6,7 @@ description: "Kohavi 伴读导读：A/B 测试的工业实践，SRM、方差缩�
 
 > 状态：排队中，队列第 15 门。版本：Kohavi、Tang、Xu《Trustworthy Online Controlled Experiments: A Practical Guide to A/B Testing》，Cambridge University Press 2020
 
-前置是 [What If](../what-if/index.md)（潜在结果，随机化为什么能识别因果）和 [Lohr](../lohr/index.md)（分配单位、比率与回归估计、设计效应），站内笔记[实验设计](../../notes/statistics/experimental-design/index.md)、[功效与样本量](../../notes/statistics/power-sample-size/index.md)、[假设检验](../../notes/statistics/hypothesis-testing/index.md)是底子。这门课管 roadmap 统计进阶「设计与实务进阶」的「A/B 工业实践（CUPED、SRM、序贯、网络效应）」。队列最后一门，读完回流成那一页笔记。排序见[课程队列](../../posts/wiki-roadmap.md#课程队列)。
+前置是 [What If](../what-if/index.md)（潜在结果，随机化为什么能识别因果）和 [Lohr](../lohr/index.md)（分配单位、比率与回归估计、设计效应），站内笔记[实验设计](../../notes/statistics/experimental-design/index.md)、[功效与样本量](../../notes/statistics/power-sample-size/index.md)、[假设检验](../../notes/statistics/hypothesis-testing/index.md)是底子。这门课管 roadmap 统计进阶「设计与实务进阶」的「A/B 工业实践（CUPED、SRM、序贯、网络效应）」。队列最后一门，读完回流成那一页笔记。排序见[课程队列](../../posts/wiki/roadmap.md#课程队列)。
 
 ## 读法
 

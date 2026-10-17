@@ -10,7 +10,7 @@ AI助手经常迁移服务器，折腾来折腾去，所以目标是根据这个
 
 0. 开发环境：[新机器配开发环境：zsh、uv、Node.js](dev-env.md) —— 新 Ubuntu 机器按顺序复制粘贴五步；装完 zsh 必须手动改 `$SHELL`，否则 nvm 会写进 `~/.bashrc`，zsh 里找不到 node
 1. 先用 caddy 进行反向代理完全覆盖 header 为localhost访问，进行域名绑定
-2. API 中转：[Caddy 换 key 转发](api-gateway.md)，Agent 只拿一个网关 token，不存厂商 key；DeepSeek、AutoDL、下载狗已在国内机上线，CodeProxy、OpenRouter 在海外机，记录我们的决策和踩过的坑；厂商 key 打码写在文中（[为什么能公开放密文](../wiki-tech/age-mosaic.md)）
+2. API 中转：[Caddy 换 key 转发](api-gateway.md)，Agent 只拿一个网关 token，不存厂商 key；DeepSeek、AutoDL、下载狗、TikHub 已在国内机上线，CodeProxy、OpenRouter 在海外机，记录我们的决策和踩过的坑；厂商 key 打码写在文中（[为什么能公开放密文](../wiki/age-mosaic.md)）
 3. 基础能力（接入说明见 [Agent 基础能力](../../skills/agent-io/index.md)）：
 
     | 能力 | 读取 | 生成 |
@@ -18,8 +18,8 @@ AI助手经常迁移服务器，折腾来折腾去，所以目标是根据这个
     | PDF | [阅读 PDF](../../skills/agent-io/reference/pdf.md) | — |
     | 音频 | [转录（语音转文本）](../../skills/agent-io/reference/transcribe.md) | [生成语音（默认自己的音色，或微软 MAI-Voice 的 Mei）](../../skills/agent-io/reference/tts.md)、[生成音乐](../../skills/agent-io/reference/music.md) |
     | 图片 | - | [生成图片、编辑图片](../../skills/agent-io/reference/image.md) |
-    | 视频 | 阅读视频 | [生成视频](../../skills/agent-io/reference/video/index.md) |
-    | 网络 | [网络搜索](../../skills/agent-io/reference/web-search.md) | — |
+    | 视频 | [阅读视频（关键帧联系图、转写）](../../skills/agent-io/reference/read-video.md) | [生成视频](../../skills/agent-io/reference/video/index.md) |
+    | 网络 | [网络搜索](../../skills/agent-io/reference/web-search.md)、[解析分享链接（小红书、抖音、B 站）](../../skills/agent-io/reference/share-link/index.md) | — |
     | 调用大模型 | - | [调用 DeepSeek](../../skills/agent-io/reference/deepseek.md)、[结构化判断（默认 Jev，另接微软、OpenAI、Mercury）](../../skills/agent-io/reference/jev.md) |
 
     维护记录（AI 正常使用不用看）：[维护板块](../../maintenance/index.md) —— 两部分：Agent 能力背后的选型实测和上游来源，外部 skill 的吸纳记录

@@ -6,7 +6,7 @@ description: "What If 伴读导读：从统计与流行病学一侧讲潜在结�
 
 > 状态：排队中，队列第 7 门。版本：Miguel A. Hernán、James M. Robins《Causal Inference: What If》，Chapman & Hall/CRC 2020（作者给的引用年份；印刷版尚未上市，在线 PDF 持续修订，本页按 2026-08-19 版）
 
-前置是 [Wooldridge](../wooldridge/index.md)，尤其第 19 章；站内对应笔记是[因果推断](../../notes/statistics/causal-inference/index.md)、[实验设计](../../notes/statistics/experimental-design/index.md)、[缺失数据](../../notes/statistics/missing-data/index.md)。这门课从统计与流行病学一侧讲潜在结果：先不用模型把识别讲清，再用模型估计，最后处理时变处理。后面接 roadmap 计量「ML × 计量」的 Double ML 与异质效应，以及深度学习必修档的「因果 + DL」，DL 那半等 [d2l 伴读](../d2l/index.md)之后再接。排在第 7 门的理由见[课程队列](../../posts/wiki-roadmap.md#课程队列)：从统计角度讲潜在结果，补计量的经济学视角。
+前置是 [Wooldridge](../wooldridge/index.md)，尤其第 19 章；站内对应笔记是[因果推断](../../notes/statistics/causal-inference/index.md)、[实验设计](../../notes/statistics/experimental-design/index.md)、[缺失数据](../../notes/statistics/missing-data/index.md)。这门课从统计与流行病学一侧讲潜在结果：先不用模型把识别讲清，再用模型估计，最后处理时变处理。后面接 roadmap 计量「ML × 计量」的 Double ML 与异质效应，以及深度学习必修档的「因果 + DL」，DL 那半等 [d2l 伴读](../d2l/index.md)之后再接。排在第 7 门的理由见[课程队列](../../posts/wiki/roadmap.md#课程队列)：从统计角度讲潜在结果，补计量的经济学视角。
 
 ## 读法
 

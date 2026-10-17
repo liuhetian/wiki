@@ -6,7 +6,7 @@ description: "曼昆微观分册伴读导读：给计量垫经济学底子，供
 
 > 状态：排队中，队列第 5 门。版本：N. 格里高利·曼昆著，梁小民、梁砾译《经济学原理（第 10 版）：微观经济学分册》，北京大学出版社 2025；英文原版 Mankiw《Principles of Economics》10e，Cengage 2024
 
-没有前置。这门课给计量垫经济学底子：供需、弹性、激励、市场结构、要素市场。后面 [Wooldridge](../wooldridge/index.md) 的例子几乎都是经济问题（工资方程、需求弹性、最低工资、供需联立），[曼昆宏观](../mankiw-macro/index.md)接着这本的章号往下编。初级经济学在本站还没有任何对应页，所以下表「接本站哪里」多半落在 Wooldridge 和 roadmap 计量清单上。排在第 5 门的理由见[课程队列](../../posts/wiki-roadmap.md#课程队列)：Wooldridge 的例子都是经济问题，先补供需与激励。
+没有前置。这门课给计量垫经济学底子：供需、弹性、激励、市场结构、要素市场。后面 [Wooldridge](../wooldridge/index.md) 的例子几乎都是经济问题（工资方程、需求弹性、最低工资、供需联立），[曼昆宏观](../mankiw-macro/index.md)接着这本的章号往下编。初级经济学在本站还没有任何对应页，所以下表「接本站哪里」多半落在 Wooldridge 和 roadmap 计量清单上。排在第 5 门的理由见[课程队列](../../posts/wiki/roadmap.md#课程队列)：Wooldridge 的例子都是经济问题，先补供需与激励。
 
 ## 读法
 

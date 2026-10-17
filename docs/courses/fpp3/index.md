@@ -6,7 +6,7 @@ description: "FPP3 伴读导读：预测实务的主干，分解、ETS、ARIMA �
 
 > 状态：排队中，队列第 13 门。版本：Rob J Hyndman、George Athanasopoulos《Forecasting: Principles and Practice》第 3 版，OTexts 2021；本站以 Python 版为准：Hyndman、Athanasopoulos、Garza、Challu、Mergenthaler、Olivares《Forecasting: Principles and Practice, the Pythonic Way》，OTexts 2026
 
-前置是[统计学伴读第 4 章](../statistics-book/ch04-time-series.md)（水平、速度与季节分解）和[曼昆宏观](../mankiw-macro/index.md)（序列背后的经济量）；站内对应笔记是[时间序列](../../notes/statistics/time-series/index.md)。这门课管预测实务：分解、基线、ETS、ARIMA、动态回归和按时间滚动的评估，对应 roadmap 统计进阶「设计与实务进阶」的时序进阶。Python 版另加神经网络和基础模型两章，正好接深度学习必修档的「时序深度模型与基础模型」，网络结构的底子由排在前面的 [d2l 伴读](../d2l/index.md)打。时序回归的推断（序列相关、HAC 标准误）归 [Wooldridge](../wooldridge/index.md)，这里不重复。排在第 13 门的理由见[课程队列](../../posts/wiki-roadmap.md#课程队列)：预测实务与 ETS / ARIMA 基线，接深度学习的时序那块。
+前置是[统计学伴读第 4 章](../statistics-book/ch04-time-series.md)（水平、速度与季节分解）和[曼昆宏观](../mankiw-macro/index.md)（序列背后的经济量）；站内对应笔记是[时间序列](../../notes/statistics/time-series/index.md)。这门课管预测实务：分解、基线、ETS、ARIMA、动态回归和按时间滚动的评估，对应 roadmap 统计进阶「设计与实务进阶」的时序进阶。Python 版另加神经网络和基础模型两章，正好接深度学习必修档的「时序深度模型与基础模型」，网络结构的底子由排在前面的 [d2l 伴读](../d2l/index.md)打。时序回归的推断（序列相关、HAC 标准误）归 [Wooldridge](../wooldridge/index.md)，这里不重复。排在第 13 门的理由见[课程队列](../../posts/wiki/roadmap.md#课程队列)：预测实务与 ETS / ARIMA 基线，接深度学习的时序那块。
 
 ## 读法
 

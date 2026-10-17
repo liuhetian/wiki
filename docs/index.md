@@ -11,17 +11,16 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 # 牛合天's wiki
 
-> AI 友好的个人知识库：每个页面在同域提供 `.md` 源（把 URL 结尾的 `/` 换成 `.md` 即可），LLM 可顺相对链接一层层读进去 —— 整份 wiki 可当远程 skill 用。设计与落地详见 [用对象存储部署 AI 友好的个人知识库](posts/wiki-tech/cos-deploy/index.md)。
+> AI 友好的个人知识库：每个页面在同域提供 `.md` 源（把 URL 结尾的 `/` 换成 `.md` 即可），LLM 可顺相对链接一层层读进去 —— 整份 wiki 可当远程 skill 用。设计与落地详见 [用对象存储部署 AI 友好的个人知识库](posts/wiki/cos-deploy/index.md)。
 
 ## 文章
 
 完整可独立阅读的复盘、观点与方法整理，全部在[文章索引](posts/index.md)。几篇代表：
 
 - [工作方法](posts/methods/index.md) —— 精力管理、推进执行和做出决策
-- [用对象存储部署 AI 友好的个人知识库](posts/wiki-tech/cos-deploy/index.md) —— 讲这个站点本身的定位设计与部署过程
+- [用对象存储部署 AI 友好的个人知识库](posts/wiki/cos-deploy/index.md) —— 讲这个站点本身的定位设计与部署过程
 - [预测项目闭环](posts/prediction-loop.md) —— 把「写完就扔」的脚本养成能被 AI 运维的系统
-- [本 wiki 用到的技术](posts/wiki-tech/index.md) —— 一项技术一页：对象存储部署、自建 git-lfs、打码
-- [本 wiki 的目标与计划](posts/wiki-roadmap.md) —— 专业主干要补到应用统计研究生的水平：缺口审核、板块布局、内容清单与进度表
+- [wiki 介绍](posts/wiki/index.md) —— 这个 wiki 自己的事：[目标与计划](posts/wiki/roadmap.md)（专业主干补到应用统计研究生的水平）、怎么当远程 skill 用、用到的技术一项一页（对象存储部署、自建 git-lfs、打码）
 
 ## 笔记
 
@@ -51,11 +50,12 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 ## Gallery
 
-原样收录的成品参考，按媒介分图片、排版、色彩、视频、音频、网页六区，全部在 [Gallery 索引](gallery/index.md)：
+成品参考，别人的原样收录、本站自己做的链到做法 skill，按媒介分图片、排版、色彩、视频、音频、网页六区，全部在 [Gallery 索引](gallery/index.md)：
 
 - [图片](gallery/images/index.md) —— 一张图配一段生成它的 prompt，7 大类共 175 条：GPT Image 2 的 163 条（译成中文）+ [二次元平面设计风格](gallery/images/linux-do-style/gallery-anime-graphic-design.md) 12 组
 - [网页](gallery/web/index.md) —— [前端风格收集](gallery/web/frontend-styles/index.md)：有特色的前端美学，一种风格一个可抄的活 demo
-- 视频、音频两区还没有收录
+- [视频](gallery/video/index.md) —— 视频成品配制作方法：本站自己做的[花卉动态生长海报](gallery/video/flower-growth-poster.md)，做法在 [视频制作](skills/video-production/index.md) skill
+- 音频区还没有收录
 
 ## 维护
 

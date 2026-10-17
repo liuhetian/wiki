@@ -6,7 +6,7 @@ description: "Givens & Hoeting 伴读导读：统计计算主干，数值优化�
 
 > 状态：排队中，队列第 9 门。版本：Givens、Hoeting《Computational Statistics》第 2 版，Wiley 2013（Wiley Series in Computational Statistics）
 
-前置是[数理统计](../casella-berger/index.md)的似然、Fisher 信息和渐近。roadmap「统计进阶 · 统计计算」整组落在这里：数值优化、EM、Monte Carlo 与方差缩减、MCMC；bootstrap 那一章接本站[重抽样](../../notes/statistics/resampling/index.md)。[线性模型与 GLM](../agresti-glm/index.md) 的 IRLS 在这里落成算法。后面[贝叶斯](../bda3/index.md)要先会 MCMC，所以排在这门之后。排在第 9 门的理由见[课程队列](../../posts/wiki-roadmap.md#课程队列)：正对清单「统计计算」组。
+前置是[数理统计](../casella-berger/index.md)的似然、Fisher 信息和渐近。roadmap「统计进阶 · 统计计算」整组落在这里：数值优化、EM、Monte Carlo 与方差缩减、MCMC；bootstrap 那一章接本站[重抽样](../../notes/statistics/resampling/index.md)。[线性模型与 GLM](../agresti-glm/index.md) 的 IRLS 在这里落成算法。后面[贝叶斯](../bda3/index.md)要先会 MCMC，所以排在这门之后。排在第 9 门的理由见[课程队列](../../posts/wiki/roadmap.md#课程队列)：正对清单「统计计算」组。
 
 ## 读法
 

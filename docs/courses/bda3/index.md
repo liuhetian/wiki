@@ -6,7 +6,7 @@ description: "BDA3 伴读导读：贝叶斯的方法主干，先验、层级模�
 
 > 状态：排队中，队列第 10 门。版本：Gelman、Carlin、Stern、Dunson、Vehtari、Rubin《Bayesian Data Analysis》第 3 版，Chapman & Hall/CRC 2013
 
-前置是[统计计算](../givens-hoeting/index.md)的 MCMC，和[线性模型与 GLM](../agresti-glm/index.md)的 GLM 与混合效应。本站[贝叶斯统计](../../notes/statistics/bayesian/index.md)笔记停在「会用」，这门课把它补成完整的方法：先验、层级模型、模型检查、计算、回归。roadmap「设计与实务进阶」的贝叶斯多层模型与工作流落在这里。第 8 章讲数据收集机制，和[抽样调查](../lohr/index.md)、[因果推断](../what-if/index.md)两门对照读。排在第 10 门的理由见[课程队列](../../posts/wiki-roadmap.md#课程队列)：要先会 MCMC，所以排在统计计算后面。
+前置是[统计计算](../givens-hoeting/index.md)的 MCMC，和[线性模型与 GLM](../agresti-glm/index.md)的 GLM 与混合效应。本站[贝叶斯统计](../../notes/statistics/bayesian/index.md)笔记停在「会用」，这门课把它补成完整的方法：先验、层级模型、模型检查、计算、回归。roadmap「设计与实务进阶」的贝叶斯多层模型与工作流落在这里。第 8 章讲数据收集机制，和[抽样调查](../lohr/index.md)、[因果推断](../what-if/index.md)两门对照读。排在第 10 门的理由见[课程队列](../../posts/wiki/roadmap.md#课程队列)：要先会 MCMC，所以排在统计计算后面。
 
 ## 读法
 

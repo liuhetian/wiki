@@ -31,6 +31,7 @@ EOF
 - **语言**：不填 `language` 就自动识别，返回里带 `language`；确定是哪种语言再填，比如 `"zh"`
 - **时间戳**：`verbose_json` 返回 `segments`，再加 `timestamp_granularities: ["word"]` 返回 `words`，中文一个字一条。**段落起止要准，就得开 `diarization`**：不开的话 `segments` 只有一条，从 0 到音频结尾；开了以后起止才对上真正说话的位置，每段、每个字都带 `speaker`
 - **Azure 选项**都放在 `provider.options.azure` 里：`phraseList.phrases` 填专有名词，提高识别率；`enhancedMode.modelOptions.transcribeStyle` 写 `"clean"` 去掉口头禅和说错重来，默认的 `"verbatim"` 照录
+- **花费**：约 0.1 美元一小时，返回的 `usage.cost` 是这次实际花的。没声音的音轨照样计费，转回来是空的，先测音量，见[阅读视频](read-video.md#raw)
 - **大文件**：有 ffmpeg 就先转成 16 kHz 单声道 mp3（`ffmpeg -i in.wav -ac 1 -ar 16000 -b:a 32k out.mp3`）。大米这段 2.7 MB 转完只剩 57 KB，转出来的文字一样
 
 维护记录：[接口从哪来、实测结果](../../../maintenance/transcribe.md)。正常使用不用看，出问题再看。

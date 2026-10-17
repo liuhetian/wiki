@@ -6,7 +6,7 @@ description: "Lohr 伴读导读：有限总体抽样的设计与分析，复杂�
 
 > 状态：排队中，队列第 14 门。版本：Lohr《Sampling: Design and Analysis》第 3 版，CRC Press（Chapman & Hall/CRC）2022
 
-前置是 [Casella & Berger](../casella-berger/index.md)（期望、方差、无偏性），以及站内的[统计学伴读第 6 章](../statistics-book/ch06-sampling-distribution.md)、笔记[抽样](../../notes/statistics/sampling/index.md)和[抽样分布](../../notes/statistics/sampling-distributions/index.md)。笔记只讲到四种设计和 Kish 有效样本量，这门课把设计、权重、方差估计做全，管 roadmap 统计进阶「设计与实务进阶」的「复杂抽样与权重校准」。后续是[在线实验](../kohavi/index.md)：A/B 测试里的比率型指标和 CUPED 式回归调整，在这本书里就是第 4 章的比率估计和回归估计。排序见[课程队列](../../posts/wiki-roadmap.md#课程队列)。
+前置是 [Casella & Berger](../casella-berger/index.md)（期望、方差、无偏性），以及站内的[统计学伴读第 6 章](../statistics-book/ch06-sampling-distribution.md)、笔记[抽样](../../notes/statistics/sampling/index.md)和[抽样分布](../../notes/statistics/sampling-distributions/index.md)。笔记只讲到四种设计和 Kish 有效样本量，这门课把设计、权重、方差估计做全，管 roadmap 统计进阶「设计与实务进阶」的「复杂抽样与权重校准」。后续是[在线实验](../kohavi/index.md)：A/B 测试里的比率型指标和 CUPED 式回归调整，在这本书里就是第 4 章的比率估计和回归估计。排序见[课程队列](../../posts/wiki/roadmap.md#课程队列)。
 
 ## 读法
 

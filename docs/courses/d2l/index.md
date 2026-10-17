@@ -6,7 +6,7 @@ description: "d2l 伴读导读：深度学习只走基础与 Transformer 两段�
 
 > 状态：排队中，队列第 8 门。版本：Zhang、Lipton、Li、Smola《Dive into Deep Learning》，Cambridge University Press 2023；线上版 d2l.ai 1.0.3
 
-前置是 [ISLP 伴读](../islp/index.md)，它的第 10 章 Deep Learning 由这门课接手；线性回归与 softmax 回归的统计底子在 ISLP 第 3、4 章和笔记[多元回归](../../notes/statistics/multiple-regression/index.md)。这门课只走 roadmap 深度学习必修档的「基础」与「Transformer」两段，读完直奔必修档里的时序、表格、不确定性三块：这三块是[预测项目](../../posts/prediction-loop.md)直接用得上的，时序那块拿 [FPP3](../fpp3/index.md) 的 ETS / ARIMA 当基线。排序见[课程队列](../../posts/wiki-roadmap.md#课程队列)。
+前置是 [ISLP 伴读](../islp/index.md)，它的第 10 章 Deep Learning 由这门课接手；线性回归与 softmax 回归的统计底子在 ISLP 第 3、4 章和笔记[多元回归](../../notes/statistics/multiple-regression/index.md)。这门课只走 roadmap 深度学习必修档的「基础」与「Transformer」两段，读完直奔必修档里的时序、表格、不确定性三块：这三块是[预测项目](../../posts/prediction-loop.md)直接用得上的，时序那块拿 [FPP3](../fpp3/index.md) 的 ETS / ARIMA 当基线。排序见[课程队列](../../posts/wiki/roadmap.md#课程队列)。
 
 ## 读法
 

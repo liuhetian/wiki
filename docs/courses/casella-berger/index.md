@@ -6,7 +6,7 @@ description: "Casella & Berger 伴读导读：数理统计主干，抽样分布�
 
 > 状态：排队中，队列第 3 门。版本：Casella、Berger《Statistical Inference》第 2 版，Duxbury（Thomson Learning）2002；2024 年由 CRC Press 重印，归入 Chapman & Hall/CRC Texts in Statistical Science
 
-前置是[概率论伴读](../blitzstein-hwang/index.md)。roadmap「统计进阶 · 数理统计」整组落在这里：本站[点估计](../../notes/statistics/estimation/index.md)、[假设检验](../../notes/statistics/hypothesis-testing/index.md)、[置信区间](../../notes/statistics/confidence-intervals/index.md)几篇笔记停在「会用」，这门课补它们下面的理论层。后面三门课都用它：[线性模型与 GLM](../agresti-glm/index.md) 拿它的似然与渐近搭 GLM 推断，[统计计算](../givens-hoeting/index.md)把它的 MLE 落到数值优化，[贝叶斯](../bda3/index.md)接它第 7 章的贝叶斯估计。排在第 3 门的理由见[课程队列](../../posts/wiki-roadmap.md#课程队列)：研究生的分界线。
+前置是[概率论伴读](../blitzstein-hwang/index.md)。roadmap「统计进阶 · 数理统计」整组落在这里：本站[点估计](../../notes/statistics/estimation/index.md)、[假设检验](../../notes/statistics/hypothesis-testing/index.md)、[置信区间](../../notes/statistics/confidence-intervals/index.md)几篇笔记停在「会用」，这门课补它们下面的理论层。后面三门课都用它：[线性模型与 GLM](../agresti-glm/index.md) 拿它的似然与渐近搭 GLM 推断，[统计计算](../givens-hoeting/index.md)把它的 MLE 落到数值优化，[贝叶斯](../bda3/index.md)接它第 7 章的贝叶斯估计。排在第 3 门的理由见[课程队列](../../posts/wiki/roadmap.md#课程队列)：研究生的分界线。
 
 ## 读法
 

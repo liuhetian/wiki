@@ -106,16 +106,26 @@ plugins:
         gallery/images/handdraw-style/colors.md: gallery/colors/index.md
         # 例：posts/old-name.md: posts/new-name.md
         # 2026-10-01 本 wiki 的技术归成一个系列 posts/wiki-tech/，建站手记删掉
-        posts/cos-wiki-deploy/index.md: posts/wiki-tech/cos-deploy/index.md
-        posts/cos-wiki-deploy/reference/deploy.md: posts/wiki-tech/cos-deploy/reference/deploy.md
-        posts/cos-wiki-deploy/reference/wiki-build-log.md: posts/wiki-tech/index.md#timeline   # 2026-10-14 改指能力时间线
+        posts/cos-wiki-deploy/index.md: posts/wiki/cos-deploy/index.md
+        posts/cos-wiki-deploy/reference/deploy.md: posts/wiki/cos-deploy/reference/deploy.md
+        posts/cos-wiki-deploy/reference/wiki-build-log.md: posts/wiki/index.md#timeline   # 2026-10-14 改指能力时间线
         # 2026-10-14 能力时间线并进 wiki-tech 索引页，单独那页只活了一天
-        posts/wiki-tech/timeline.md: posts/wiki-tech/index.md#timeline
-        posts/git-lfs-cos.md: posts/wiki-tech/git-lfs.md
+        posts/wiki-tech/timeline.md: posts/wiki/index.md#timeline
+        posts/git-lfs-cos.md: posts/wiki/git-lfs.md
         # 2026-10-01 新机器配开发环境挪进「搭建 AI 助手」当第一篇
         posts/dev-env.md: posts/ai-assistant/dev-env.md
         # 2026-10-01 存 key 那篇和打码合成一篇，key 本身改成打码写进 API 中转
-        posts/ai-assistant/key-storage.md: posts/wiki-tech/age-mosaic.md
+        posts/ai-assistant/key-storage.md: posts/wiki/age-mosaic.md
+        # 2026-10-17 wiki-tech、目标与计划、远程 skill 三篇合成一个目录 posts/wiki/（wiki 介绍）
+        posts/wiki-tech/index.md: posts/wiki/index.md
+        posts/wiki-tech/cos-deploy/index.md: posts/wiki/cos-deploy/index.md
+        posts/wiki-tech/cos-deploy/reference/deploy.md: posts/wiki/cos-deploy/reference/deploy.md
+        posts/wiki-tech/git-lfs.md: posts/wiki/git-lfs.md
+        posts/wiki-tech/age-mosaic.md: posts/wiki/age-mosaic.md
+        posts/wiki-tech/md-copy.md: posts/wiki/md-copy.md
+        posts/wiki-tech/zensical-upgrade/index.md: posts/wiki/zensical-upgrade/index.md
+        posts/wiki-roadmap.md: posts/wiki/roadmap.md
+        posts/everything-skill.md: posts/wiki/everything-skill.md
         # 2026-10-15 吸纳记录从 skill 目录里的 MIRROR.md 挪进维护目录
         skills/collab/grilling/MIRROR.md: maintenance/skills/grilling.md
         #     posts/guide.md#installation: posts/guide.md#getting-started
@@ -176,7 +186,13 @@ plugins:
         skills/collab/prompt-cards/reference/guard.md#trap-plain: skills/collab/chat-prompts/plain-talk.md
         skills/collab/prompt-cards/reference/guard.md#trap-facts: skills/collab/chat-prompts/seek-truth.md
         # 2026-10-16 B站视频笔记按新规范重新吸纳：来源进维护目录，下载和转写改走 agent-io
-        skills/bili-note/MIRROR.md: maintenance/skills/bili-note.md
+        skills/bili-note/MIRROR.md: maintenance/skills/video-note.md
+        # 2026-10-17 B站视频笔记改成通用的视频笔记，目录 bili-note 改 video-note
+        skills/bili-note/index.md: skills/video-note/index.md
+        skills/bili-note/references/bilibili-api-notes.md: skills/agent-io/reference/share-link/bilibili.md
+        maintenance/skills/bili-note.md: maintenance/skills/video-note.md
+        # 2026-10-17 视频笔记改名整理视频为笔记、拆成下载分析输出三段，B站接口笔记并进 agent-io
+        skills/video-note/references/bilibili-api-notes.md: skills/agent-io/reference/share-link/bilibili.md
         # 2026-10-17 测试skill是实测流水线用的 mock，从 Skills 挪进维护
         skills/mock-bundle/index.md: maintenance/mock-bundle/index.md
         skills/mock-bundle/greet/index.md: maintenance/mock-bundle/greet/index.md
@@ -297,16 +313,16 @@ nav:
       - index.md
   - 文章:
       - posts/index.md
-      - 本 wiki 用到的技术:
-          - posts/wiki-tech/index.md
-          - 对象存储部署: posts/wiki-tech/cos-deploy/index.md
-          - 部署实操手册: posts/wiki-tech/cos-deploy/reference/deploy.md
-          - 自建 git-lfs 后端: posts/wiki-tech/git-lfs.md
-          - 打码：key 和小字: posts/wiki-tech/age-mosaic.md
-          - 复制本页 Markdown 源: posts/wiki-tech/md-copy.md
-          - Zensical 升级评估: posts/wiki-tech/zensical-upgrade/index.md
-      - 本 wiki 的目标与计划: posts/wiki-roadmap.md
-      - 把 wiki 当远程 skill: posts/everything-skill.md
+      - wiki 介绍:
+          - posts/wiki/index.md
+          - 本 wiki 的目标与计划: posts/wiki/roadmap.md
+          - 把 wiki 当远程 skill: posts/wiki/everything-skill.md
+          - 对象存储部署: posts/wiki/cos-deploy/index.md
+          - 部署实操手册: posts/wiki/cos-deploy/reference/deploy.md
+          - 自建 git-lfs 后端: posts/wiki/git-lfs.md
+          - 打码：key 和小字: posts/wiki/age-mosaic.md
+          - 复制本页 Markdown 源: posts/wiki/md-copy.md
+          - Zensical 升级评估: posts/wiki/zensical-upgrade/index.md
       - 预测项目闭环: posts/prediction-loop.md
       - AI 时代的产品经理: posts/ai-pm.md
       - 动画网页 PPT: posts/animated-ppt/index.md
@@ -340,6 +356,9 @@ nav:
               - posts/methods/decisions/index.md
               - 单向门与双向门: posts/methods/decisions/two-way-door-decisions.md
               - 事前验尸: posts/methods/decisions/premortem.md
+      - 视频笔记:
+          - posts/video-notes/index.md
+          - 花卉动态生长海报: posts/video-notes/flower-growth-poster.md
   - 笔记:
       - notes/index.md
       - 概率与算法:
@@ -582,8 +601,13 @@ nav:
           - skills/agent-io/index.md
           - 阅读 PDF: skills/agent-io/reference/pdf.md
           - 转录音频: skills/agent-io/reference/transcribe.md
+          - 阅读视频: skills/agent-io/reference/read-video.md
           - 网络搜索: skills/agent-io/reference/web-search.md
-          - 解析分享链接: skills/agent-io/reference/share-link.md
+          - 解析分享链接:
+              - skills/agent-io/reference/share-link/index.md
+              - 小红书: skills/agent-io/reference/share-link/xiaohongshu.md
+              - 抖音: skills/agent-io/reference/share-link/douyin.md
+              - B 站: skills/agent-io/reference/share-link/bilibili.md
           - 生成语音: skills/agent-io/reference/tts.md
           - 生成音乐: skills/agent-io/reference/music.md
           - 生成、编辑图片: skills/agent-io/reference/image.md
@@ -595,9 +619,7 @@ nav:
               - 动作迁移: skills/agent-io/reference/video/motion-transfer.md
           - 调用 DeepSeek: skills/agent-io/reference/deepseek.md
           - 结构化判断: skills/agent-io/reference/jev.md
-      - B站视频笔记:
-          - skills/bili-note/index.md
-          - 接口笔记: skills/bili-note/references/bilibili-api-notes.md
+      - 整理视频为笔记: skills/video-note/index.md
       - HyperFrames 视频:
           - skills/hyperframes/index.md
           - "hyperframes（入口路由）":
@@ -965,6 +987,9 @@ nav:
               - "接入 component": skills/hyperframes/hyperframes-registry/references/wiring-components.md
           - "figma": skills/hyperframes/figma/index.md
           - "hyperframes-studio": skills/hyperframes/hyperframes-studio/index.md
+      - 视频制作:
+          - skills/video-production/index.md
+          - 花卉动态生长海报: skills/video-production/flower-growth-poster/index.md
       - FastAPI 后端:
           - skills/fastapi/index.md
           - 项目布局: skills/fastapi/reference/项目布局.md
@@ -1143,6 +1168,7 @@ nav:
                   - 毒舌审稿: skills/collab/chat-prompts/critic.md
                   - 架构先知: skills/collab/chat-prompts/architect.md
                   - 范围铁闸: skills/collab/chat-prompts/scope-lock.md
+                  - 说人话（80% STE）: skills/collab/chat-prompts/ste-plain.md
               - 职业与人生:
                   - 深度天赋挖掘机: skills/collab/chat-prompts/talent-miner.md
                   - 人生设计师: skills/collab/chat-prompts/life-designer.md
@@ -1217,7 +1243,9 @@ nav:
           - gallery/layouts/infographics.md
           - gallery/layouts/comic-storyboards.md
       - 色彩: gallery/colors/index.md
-      - 视频: gallery/video/index.md
+      - 视频:
+          - gallery/video/index.md
+          - 花卉动态生长海报: gallery/video/flower-growth-poster.md
       - 音频: gallery/audio/index.md
       - 网页:
           - gallery/web/index.md
@@ -1272,6 +1300,7 @@ nav:
           - 视频生成: maintenance/video.md
           - 音乐生成: maintenance/music.md
           - 音频转录: maintenance/transcribe.md
+          - 阅读视频: maintenance/read-video.md
           - 解析分享链接: maintenance/share-link.md
           - 结构化判断: maintenance/jev.md
       - Skill 吸纳:
@@ -1281,7 +1310,8 @@ nav:
           - 从图反推 prompt: maintenance/skills/get-prompt-from-image.md
           - 七维拆解: maintenance/skills/seven-dimensions.md
           - 对话提示词: maintenance/skills/chat-prompts.md
-          - B站视频笔记: maintenance/skills/bili-note.md
+          - 整理视频为笔记: maintenance/skills/video-note.md
+          - 花卉动态生长海报: maintenance/skills/flower-growth-poster.md
       - 实测用的示例:
           - 测试skill:
               - maintenance/mock-bundle/index.md

@@ -6,7 +6,7 @@ description: "Johnson & Wichern 伴读导读：多元统计的主干，PCA、因
 
 > 状态：排队中，队列第 11 门。版本：Johnson、Wichern《Applied Multivariate Statistical Analysis》第 6 版，Pearson Prentice Hall 2007
 
-前置是 [Casella & Berger](../casella-berger/index.md)（多元正态、极大似然、充分统计量的记号）、[Agresti](../agresti-glm/index.md)（线性模型的矩阵写法）和 [ISLP](../islp/index.md) 第 12 章（PCA 与聚类先在机器学习的语境里见过一遍）。这门课管 roadmap 统计进阶「多元与高维」整组里的 PCA、因子分析、判别分析、典型相关与 MANOVA，读完回流成那组的前四页笔记；同组的 lasso 与后选择推断不在本书。站内最近的笔记是[方差分析](../../notes/statistics/anova/index.md)：MANOVA 是它的多响应版本。排序见[课程队列](../../posts/wiki-roadmap.md#课程队列)。
+前置是 [Casella & Berger](../casella-berger/index.md)（多元正态、极大似然、充分统计量的记号）、[Agresti](../agresti-glm/index.md)（线性模型的矩阵写法）和 [ISLP](../islp/index.md) 第 12 章（PCA 与聚类先在机器学习的语境里见过一遍）。这门课管 roadmap 统计进阶「多元与高维」整组里的 PCA、因子分析、判别分析、典型相关与 MANOVA，读完回流成那组的前四页笔记；同组的 lasso 与后选择推断不在本书。站内最近的笔记是[方差分析](../../notes/statistics/anova/index.md)：MANOVA 是它的多响应版本。排序见[课程队列](../../posts/wiki/roadmap.md#课程队列)。
 
 ## 读法
 

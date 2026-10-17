@@ -6,7 +6,7 @@ description: "Blitzstein & Hwang 伴读导读：概率论主干，从计数到�
 
 > 状态：排队中，队列第 2 门。版本：Blitzstein、Hwang《Introduction to Probability》第 2 版，Chapman & Hall/CRC 2019
 
-前置是[统计学伴读](../statistics-book/index.md)。本站现有的概率只有[量化面试题解](../../notes/probability/index.md)，这门课补的是题解底下那套语法：计数、条件概率、随机变量、期望、联合分布、变换、条件期望、极限定理。后面[数理统计](../casella-berger/index.md)直接站在它上面，Casella & Berger 第 1–4 章的概率部分由这门课覆盖；第 11–12 章的 Markov 链与 MCMC 接[统计计算](../givens-hoeting/index.md)。排在第 2 门的理由见[课程队列](../../posts/wiki-roadmap.md#课程队列)：数理统计的前置。
+前置是[统计学伴读](../statistics-book/index.md)。本站现有的概率只有[量化面试题解](../../notes/probability/index.md)，这门课补的是题解底下那套语法：计数、条件概率、随机变量、期望、联合分布、变换、条件期望、极限定理。后面[数理统计](../casella-berger/index.md)直接站在它上面，Casella & Berger 第 1–4 章的概率部分由这门课覆盖；第 11–12 章的 Markov 链与 MCMC 接[统计计算](../givens-hoeting/index.md)。排在第 2 门的理由见[课程队列](../../posts/wiki/roadmap.md#课程队列)：数理统计的前置。
 
 ## 读法
 

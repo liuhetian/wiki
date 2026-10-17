@@ -6,7 +6,7 @@ description: "ISLP 伴读导读：统计学习的入门主干，每章 lab 就�
 
 > 状态：排队中，队列第 1 门。版本：James、Witten、Hastie、Tibshirani、Taylor《An Introduction to Statistical Learning with Applications in Python》，Springer 2023
 
-前置是[统计学伴读](../statistics-book/index.md)的回归一章和笔记[多元回归](../../notes/statistics/multiple-regression/index.md)。这门课把机器学习的框架、正则化、树和无监督搭起来；后面[线性模型与 GLM](../agresti-glm/index.md) 接它的逻辑回归、[深度学习](../d2l/index.md)接它的第 10 章、[多元统计](../johnson-wichern/index.md)接它的 PCA。排在第 1 门的理由见[课程队列](../../posts/wiki-roadmap.md#课程队列)：最快见效，和算法岗最近。
+前置是[统计学伴读](../statistics-book/index.md)的回归一章和笔记[多元回归](../../notes/statistics/multiple-regression/index.md)。这门课把机器学习的框架、正则化、树和无监督搭起来；后面[线性模型与 GLM](../agresti-glm/index.md) 接它的逻辑回归、[深度学习](../d2l/index.md)接它的第 10 章、[多元统计](../johnson-wichern/index.md)接它的 PCA。排在第 1 门的理由见[课程队列](../../posts/wiki/roadmap.md#课程队列)：最快见效，和算法岗最近。
 
 ## 读法
 

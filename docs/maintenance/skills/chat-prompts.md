@@ -1,10 +1,14 @@
 ---
-description: "对话提示词（chat-prompts）的维护记录：取自 prompt-cards.cyanfish.site 的 17 段对话 prompt，去掉卡牌包装按场景重组，钉在 JS 包 index-IivKxZ0S.js"
+description: "对话提示词（chat-prompts）的维护记录：17 段取自 prompt-cards.cyanfish.site，去掉卡牌包装按场景重组，钉在 JS 包 index-IivKxZ0S.js；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录的 assets/"
 ---
 
 # 对话提示词（chat-prompts）
 
-[对话提示词](../../skills/collab/chat-prompts/index.md)的维护记录。
+[对话提示词](../../skills/collab/chat-prompts/index.md)的维护记录。18 段 prompt 来自两处。
+
+## prompt-cards.cyanfish.site { #prompt-cards }
+
+17 段取自这里。
 
 - **上游**：prompt-cards.cyanfish.site「神级 AI 提示词卡牌图鉴」[^site]，未署名作者，站内没声明许可证。站点内置 27 张卡，对话类 17 张收在这里，生图类 10 张进了 Gallery，来源见 [Gallery 那边的 MIRROR](../../gallery/images/prompt-cards/MIRROR.md)。这 17 段写法不统一（三种占位写法，两段是 LangGPT 式人设），像是从多处收集来的，别当成站长原创
 - **commit**：站点没有公开仓库，钉构建产物：`assets/index-IivKxZ0S.js`，sha256 `84f6f63f7b027ac9eda3e72701d775ce499d9605ea2504a18287978b7dc72727`，last-modified 2026-08-22；2026-09-28 首次抓取，2026-10-16 复核哈希没变
@@ -32,4 +36,16 @@ description: "对话提示词（chat-prompts）的维护记录：取自 prompt-c
 | `flow-debug` | `root-cause.md` | `role-life-designer` | `life-designer.md` |
 | `trap-facts` | `seek-truth.md` | | |
 
+## 小红书《让AI说人话》 { #xhs-ste }
+
+[说人话（80% STE）](../../skills/collab/chat-prompts/ste-plain.md)取自这里。
+
+- **上游**：小红书笔记《让AI说人话，1.3万人收藏了这招》[^xhs]，作者 Krypto说AI｜AI Builder，2026-10-02 发布，没写许可证。笔记转述 Karpathy 的一条长推：照飞机维修手册的写作规范 ASD-STE100 让 AI 写。笔记里三段中文 prompt 是作者把规范译成中文要求写的，不是 Karpathy 的原话
+- **存档**：正文和 9 张图原样存在 [`assets/xhs-6abf6887/`](../../skills/collab/chat-prompts/assets/xhs-6abf6887/MIRROR.md)，2026-10-17 用 agent-io 的 `share_link.py` 抓的
+- **跳过**：只收第一段写作 prompt；画图、单文件网页两段 prompt 和「你想要的 → 用什么」那张表不收。作者自己的看法也不进 skill：视频治不了啰嗦、配 agent team 的经历、「AI 不会取代人」。Karpathy 的原推没有追
+- **翻译之外的改动**：
+    - prompt 一字没改；开头加一句「这一场对话都按下面这条规矩来」，照实事求是、范围铁闸的写法：作者说的用法是「存进常用提示词」，就是整场生效
+- **没做的**：没有实测；作者自己也说中文句子该卡多少字还没想好，原 prompt 没写句长上限
+
 [^site]: [prompt-cards.cyanfish.site](https://prompt-cards.cyanfish.site/)，2026-10-16 读。
+[^xhs]: [让AI说人话，1.3万人收藏了这招](https://www.xiaohongshu.com/discovery/item/6abf6887000000000d02979c)，2026-10-17 读。

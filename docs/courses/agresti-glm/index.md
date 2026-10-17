@@ -6,7 +6,7 @@ description: "Agresti 伴读导读：线性模型的投影视角、GLM 的拟合
 
 > 状态：排队中，队列第 4 门。版本：Agresti《Foundations of Linear and Generalized Linear Models》，Wiley 2015（Wiley Series in Probability and Statistics）
 
-前置是[数理统计](../casella-berger/index.md)的似然与渐近，和 [ISLP](../islp/index.md) 第 3、4 章的回归与逻辑回归。roadmap「统计进阶 · 线性模型与 GLM」整组落在这里，生存分析除外（见读法）。后面[计量经济学](../wooldridge/index.md)接它的线性模型和相关数据，[贝叶斯](../bda3/index.md)第 15、16 章把它第 9、10 章的混合效应和贝叶斯 GLM 做成多层模型。排在第 4 门的理由见[课程队列](../../posts/wiki-roadmap.md#课程队列)：投影视角的 Gauss-Markov、GLM 与 IRLS，混合效应接得上。
+前置是[数理统计](../casella-berger/index.md)的似然与渐近，和 [ISLP](../islp/index.md) 第 3、4 章的回归与逻辑回归。roadmap「统计进阶 · 线性模型与 GLM」整组落在这里，生存分析除外（见读法）。后面[计量经济学](../wooldridge/index.md)接它的线性模型和相关数据，[贝叶斯](../bda3/index.md)第 15、16 章把它第 9、10 章的混合效应和贝叶斯 GLM 做成多层模型。排在第 4 门的理由见[课程队列](../../posts/wiki/roadmap.md#课程队列)：投影视角的 Gauss-Markov、GLM 与 IRLS，混合效应接得上。
 
 ## 读法
 
