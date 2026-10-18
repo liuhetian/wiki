@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared by the per-platform download scripts (xiaohongshu.py, douyin.py, bilibili.py, xiazaitool.py).
+"""Shared by the per-platform download scripts (xiaohongshu.py, douyin.py, bilibili.py, wechat_mp.py, xiazaitool.py).
 
 Not run on its own. It holds what every platform does the same way:
 
@@ -51,6 +51,10 @@ TIKHUB_PRICE = {
     "/api/v1/xiaohongshu/app_v2/get_image_note_detail": 0.01,
     "/api/v1/douyin/app/v3/fetch_user_post_videos": 0.001,
     "/api/v1/xiaohongshu/app_v2/get_user_posted_notes": 0.01,
+    "/api/v1/wechat_search/v2/fetch_search": 0.01,
+    "/api/v1/wechat_mp/v2/fetch_account_articles": 0.01,
+    "/api/v1/wechat_mp/v2/fetch_article_stats": 0.01,
+    "/api/v1/wechat_mp/v2/fetch_article_detail_h5": 0.01,
 }
 CONFIRM_USD = 1.0  # a profile whose posts would cost more stops after listing until --yes or --limit
 XIAZAITOOL_CNY = 0.005
@@ -98,13 +102,13 @@ class Post:
         raw.mkdir(parents=True, exist_ok=True)
         (raw / f"{name}.json").write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    def tikhub(self, path: str, params: dict, raw_name: str | None = None) -> dict:
-        """TikHub now and then answers 400 "please retry", unbilled, so try three times."""
+    def tikhub(self, path: str, params: dict, raw_name: str | None = None, body: dict | None = None) -> dict:
+        """TikHub now and then answers 400 "please retry", unbilled, so try three times. A body means POST JSON."""
         for attempt in range(3):
             if attempt:
                 time.sleep(3)
             try:
-                obj = gateway_json(f"{TIKHUB}{path}?{urllib.parse.urlencode(params)}")
+                obj = gateway_json(f"{TIKHUB}{path}" + (f"?{urllib.parse.urlencode(params)}" if params else ""), body)
             except RuntimeError:
                 if attempt == 2:
                     raise
@@ -222,15 +226,17 @@ def video_url(data: dict) -> str:
     return (video[0] if video else "") if isinstance(video, list) else video
 
 
-def gateway_json(url: str) -> dict:
+def gateway_json(url: str, body: dict | None = None) -> dict:
     key = os.environ.get("MY_API_KEY", "").strip()
     if not key:
         raise SystemExit("MY_API_KEY is not set: run `set -a; . ./.env; set +a` where .env lives")
-    return http_json(url, {"Authorization": f"Bearer {key}"}, timeout=90)
+    return http_json(url, {"Authorization": f"Bearer {key}"}, timeout=90, body=body)
 
 
-def http_json(url: str, headers: dict | None = None, timeout: int = 30) -> dict:
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, **(headers or {})})
+def http_json(url: str, headers: dict | None = None, timeout: int = 30, body: dict | None = None) -> dict:
+    data = json.dumps(body).encode() if body is not None else None
+    extra = {"Content-Type": "application/json"} if data else {}
+    req = urllib.request.Request(url, data=data, headers={"User-Agent": USER_AGENT, **extra, **(headers or {})})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return json.loads(resp.read().decode("utf-8"))
@@ -493,6 +499,11 @@ def cli(doc: str, platform: str, matches: Callable[[str], bool], key_of: Callabl
             results.append(run_profile(*found, out, args, platform, matches, key_of, profile))
         else:
             results.append(run(link, out, args, platform, matches, key_of, fetch))
+    return finish(results)
+
+
+def finish(results: list[dict]) -> int:
+    """One JSON line per result, the total cost last; exit code 1 if any failed."""
     for item in results:
         print(json.dumps(item, ensure_ascii=False))
     total_usd = round(sum((r.get("cost") or {}).get("usd", 0) for r in results), 4)

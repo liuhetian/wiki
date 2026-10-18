@@ -1,10 +1,10 @@
 ---
-description: "Agent 把小红书、抖音、B 站链接换成一条一个文件夹：正文、作者、点赞收藏、原图、视频，B 站另有字幕和评论；抖音、小红书传作者主页链接就翻完这个人发的全部；一个平台一个脚本（xiaohongshu.py、douyin.py、bilibili.py，其他平台 xiazaitool.py），文件夹格式各平台一样；每个平台一页，上面是脚本、下面是底层接口和请求参数"
+description: "Agent 把小红书、抖音、B 站、微信公众号链接换成一条一个文件夹：正文、作者、点赞收藏、原图、视频，B 站另有字幕和评论；抖音、小红书传作者主页链接就翻完这个人发的全部，公众号用 --account 取一个号最新的文章；一个平台一个脚本（xiaohongshu.py、douyin.py、bilibili.py、wechat_mp.py，其他平台 xiazaitool.py），文件夹格式各平台一样；每个平台一页，上面是脚本、下面是底层接口和请求参数"
 ---
 
 # 解析分享链接
 
-把小红书、抖音、B 站的链接换成一条一个文件夹：正文、作者、点赞收藏、原图、视频，B 站另有字幕和评论；抖音、小红书传[作者主页](#profile)就翻完这个人发的全部。一个平台一个脚本，各平台一页：页面上面写脚本怎么跑，下面写底层接口和请求参数，脚本出错、要改脚本或者只要其中一样时看底层。
+把小红书、抖音、B 站、微信公众号的链接换成一条一个文件夹：正文、作者、点赞收藏、原图、视频，B 站另有字幕和评论；抖音、小红书传[作者主页](#profile)就翻完这个人发的全部，公众号用 `--account` 取一个号最新的文章。一个平台一个脚本，各平台一页：页面上面写脚本怎么跑，下面写底层接口和请求参数，脚本出错、要改脚本或者只要其中一样时看底层。
 
 | 平台 | 脚本 | 正文、作者、点赞收藏 | 图 | 视频 | 字幕、评论 | 作者主页 | 背后调谁 |
 |---|---|---|---|---|---|---|---|
@@ -12,6 +12,7 @@ description: "Agent 把小红书、抖音、B 站链接换成一条一个文件�
 | [抖音](douyin.md) | `douyin.py` | ✅ | 图文给无水印 JPEG | ✅ | — | ✅ 20 条 0.001 美元 | TikHub 取元数据，下载狗取视频 |
 | [B 站](bilibili.md)视频 | `bilibili.py` | ✅，另有播放、投币、弹幕数 | 封面 | 每P一个 | 字幕多半要登录才给；评论加 `--comments` | — | B 站公开接口，下载狗取视频 |
 | [B 站](bilibili.md)图文动态 | `bilibili.py` | ✅ | 文中全部图 | — | 评论加 `--comments` | — | 公开页面 |
+| [微信公众号](wechat-mp.md) | `wechat_mp.py` | ✅；阅读、点赞、在看加 `--stats`，每篇 0.01 美元 | 文中全部原图 | — | — | `--account`，约 25 篇一页 0.01 美元 | 文章页直取，TikHub 翻列表 |
 | 其他平台 | `xiazaitool.py` | 只有标题 | 有就给 | 有就给 | — | — | [下载狗](#xiazaitool) |
 
 ## 跑脚本 { #script }
@@ -23,10 +24,10 @@ python3 scripts/<平台>.py <链接或整段分享文案>... --out <目录>
 - **先载入 `MY_API_KEY`**，见 [Agent 基础能力 · 用法](../../index.md#usage)。只用 Python 标准库，不用装包，也不用 ffmpeg
 - **平台脚本都 import 同目录的 [`share_common.py`](../../scripts/share_common.py)**，所以调用一次也要整包：直接将[Agent 基础能力](../../agent-io.tar.gz)下载到本地。本地有本 wiki 的仓库就直接跑 `docs/skills/agent-io/scripts/` 下的
 - **每个脚本只认自己平台的链接**：传错了那一条报错、提示换哪个脚本，其余照常取完。几个平台混在一起，就按平台分几次跑，`--out` 用同一个目录
-- **输出**：每条一个子文件夹 `<平台>_<键>/`，键是链接里直接认得出的 ID，短链就是短链码，真正的 ID 在 `meta.json` 的 `id`。里面是 `meta.json`、`images/01.jpg`…、`cover.jpg`、`video/p01.mp4`…（图片扩展名按文件实际格式，B 站图文多是 `.png`，抖音封面是 `.webp`），B 站图文另有 `article.md`，B 站视频另有 `subtitles/p01_<语言>.srt`，加 `--comments` 有 `comments.json`；`raw/` 存各家的原样返回
-- **`meta.json`**：`kind` 是 `image`（图文）、`carousel`（小红书拿一组图拼的轮播视频，原图都在 `images/`）、`video` 或 `article`（B 站图文）；另有 `title`、`desc`、`author`、`stats`、`published`、`duration`、`topics`、`files`、`cost`、`warnings`、`error`。`parts` 每P一条：`page`、`cid`、`title`、`duration`、`video`、`subtitles`，不分P的也是一条
+- **输出**：每条一个子文件夹 `<平台>_<键>/`，键是链接里直接认得出的 ID，短链就是短链码，真正的 ID 在 `meta.json` 的 `id`。里面是 `meta.json`、`images/01.jpg`…、`cover.jpg`、`video/p01.mp4`…（图片扩展名按文件实际格式，B 站图文多是 `.png`，抖音封面是 `.webp`），B 站图文、公众号文章另有 `article.md`，B 站视频另有 `subtitles/p01_<语言>.srt`，加 `--comments` 有 `comments.json`；`raw/` 存各家的原样返回
+- **`meta.json`**：`kind` 是 `image`（图文）、`carousel`（小红书拿一组图拼的轮播视频，原图都在 `images/`）、`video` 或 `article`（B 站图文、公众号文章）；另有 `title`、`desc`、`author`、`stats`、`published`、`duration`、`topics`、`files`、`cost`、`warnings`、`error`。`parts` 每P一条：`page`、`cid`、`title`、`duration`、`video`、`subtitles`，不分P的也是一条
 - **stdout**：每条一行 JSON 摘要，最后一行是总花费；有一条失败，退出码就是 1
-- **共用参数**：`--no-video` 不下视频，也省下下载狗；`--force` 重新取，重新扣钱。B 站另有 `--parts` 和 `--comments`，见 [B 站](bilibili.md#script)
+- **共用参数**：`--no-video` 不下视频，也省下下载狗；`--force` 重新取，重新扣钱。B 站另有 `--parts` 和 `--comments`，见 [B 站](bilibili.md#script)；公众号的参数不一样，见[微信公众号](wechat-mp.md#script)
 - **重跑不扣钱**：文件夹里已有不带 `error` 的 `meta.json` 就跳过
 - **下载中断了就原样重跑**：断网、磁盘满这类下载失败只记进 `warnings`，`meta.json` 照样写；重跑时先用 `raw/` 里的直链免费补下，直链过期了才重新解析那一P
 - **`--out` 放在空间够的盘上**：一篇 B 站长图文的原图就上百 MB
@@ -46,6 +47,7 @@ python3 scripts/douyin.py <作者主页链接或分享文案> --out <目录>   #
 - **花费**：抖音 20 条一页，每页 0.001 美元，列表已经带齐全部字段，不用再一条条取；小红书 20 条一页，每页 0.01 美元，但列表里的正文截到 100 字、没有原图，每条还要另调一次详情，0.01 美元
 - **超过 1 美元先停**：详情合计超过 1 美元时，脚本翻完列表就停，`error` 里写着条数和预估花费。先报给用户，同意了加 `--yes` 重跑，或者用 `--limit N` 只取一部分
 - **重跑只补新发的**：上次翻到底的，这次翻到见过的那条就停；`--force` 从头翻，每条重新取
+- **公众号没有主页链接**：用 `--account` 传号名、`gh_` 号或这个号的一篇文章链接，默认只取最新 20 篇，文件夹和 `list.json` 照上面的格式，见[微信公众号](wechat-mp.md#script)
 - **stdout**：一个主页只出一行摘要：`listed` 是列表条数，`posts`、`cached` 是这次处理了几条、其中几条之前取过，失败的列在 `failed`
 
 ## 底层：下载狗 { #xiazaitool }

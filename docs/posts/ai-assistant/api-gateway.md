@@ -4,7 +4,7 @@ description: "只给自己用的 AI 接口中转：Caddy 验网关 token、换�
 
 # 调 AI 接口不需要 new-api：Caddy 换个 header 就够了
 
-**Agent 只拿一个网关 token，真实 key 只存在中转机上。** 2026-10-01 在国内机上接好了 DeepSeek 和 AutoDL，2026-10-02 在海外机上接好了 CodeProxy（图片生成）和 OpenRouter（网络搜索、音频转录、音乐生成、Jev 结构化判断，2026-10-08 又用它接了微软 MAI-Voice 语音合成，2026-10-10 接了微软、OpenAI、Mercury 三家结构化判断，中转都没改），2026-10-10 国内机又接了下载狗，2026-10-17 接了 TikHub，其余厂商还没接。Agent 端用法见[调用 DeepSeek](../../skills/agent-io/reference/deepseek.md)、[解析分享链接](../../skills/agent-io/reference/share-link/index.md)、[网络搜索](../../skills/agent-io/reference/web-search.md)、[生成语音](../../skills/agent-io/reference/tts.md)、[生成视频](../../skills/agent-io/reference/video/index.md)、[生成、编辑图片](../../skills/agent-io/reference/image.md)、[转录音频](../../skills/agent-io/reference/transcribe.md)、[生成音乐](../../skills/agent-io/reference/music.md)和[结构化判断](../../skills/agent-io/reference/jev.md)。
+**Agent 只拿一个网关 token，真实 key 只存在中转机上。** 2026-10-01 在国内机上接好了 DeepSeek 和 AutoDL，2026-10-02 在海外机上接好了 CodeProxy（图片生成）和 OpenRouter（网络搜索、音频转录、音乐生成、Jev 结构化判断，2026-10-08 又用它接了微软 MAI-Voice 语音合成，2026-10-10 接了微软、OpenAI、Mercury 三家结构化判断，中转都没改），2026-10-10 国内机又接了下载狗，2026-10-17 接了 TikHub，2026-10-18 DeepSeek 开放的搜索、抓取接口也走原来的 DeepSeek 中转（中转没改），其余厂商还没接。Agent 端用法见[调用 DeepSeek](../../skills/agent-io/reference/deepseek.md)、[解析分享链接](../../skills/agent-io/reference/share-link/index.md)、[网络搜索](../../skills/agent-io/reference/web-search.md)、[读取网页](../../skills/agent-io/reference/web-fetch.md)、[生成语音](../../skills/agent-io/reference/tts.md)、[生成视频](../../skills/agent-io/reference/video/index.md)、[生成、编辑图片](../../skills/agent-io/reference/image.md)、[转录音频](../../skills/agent-io/reference/transcribe.md)、[生成音乐](../../skills/agent-io/reference/music.md)和[结构化判断](../../skills/agent-io/reference/jev.md)。
 
 ## 决策 { #decisions }
 

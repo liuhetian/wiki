@@ -11,14 +11,14 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 [Agent 基础能力](../skills/agent-io/index.md)的维护记录，一个能力一篇。
 
 - [读 PDF 脚本](pdf-reading.md) —— pdfium 和 pdf-inspector 的实测对比，吸收的两个 DSH 社区插件
-- [网络搜索](web-search.md) —— 默认的 Sonar Pro Search 经海外中转实测耗时、价格和引用格式；备选 DeepSeek 原生搜索的做法取自 DSH 的搜索插件
+- [网络搜索和读取网页](web-search.md) —— 默认的 Sonar Pro Search 经海外中转实测耗时、价格和引用格式；2026-10-18 换上 DeepSeek 官方 Search、Fetch 接口，官方指南存档，实测摘要长度、搜索语法和抓取会丢什么
 - [语音合成](tts.md) —— AutoDL 上 IndexTTS2 的接口是怎么找到的，冷启动和 data URI 参考音频的实测；方案二为什么从 Gemini 换成微软 MAI-Voice：9 个直接出 mp3 的模型同文对比，Gemini 只出 pcm 的坑；OpenRouter 上能克隆的 Fish Audio、Seed Audio 实测
 - [图片生成](image.md) —— CodeProxy 的 gpt-image-2.5 经海外中转实测生成和编辑，返回格式和模型列表
 - [音频转录](transcribe.md) —— OpenRouter 的 MAI-Transcribe-2 经海外中转实测两种传法、时间戳和说话人分离，段落起止要开 diarization 才准
 - [视频生成](video.md) —— AutoDL 工作流列表怎么找到、价格怎么换算，16 个视频工作流只收 8 个的理由，文字加图生成和首尾帧各实测一次
 - [音乐生成](music.md) —— 为什么选 OpenRouter 上的 Lyria 3、不选 Suno，请求格式从哪两份文档推出来，没实测
 - [阅读视频](read-video.md) —— 从视频笔记的关键帧和转写脚本里拆出来；静音检测、拼图按格子缩放、短拼图少几行是这次补的；2026-10-17 实测 B 站、小红书、抖音和单个视频文件
-- [解析分享链接](share-link.md) —— 为什么媒体走下载狗、正文作者走 TikHub，为什么写成脚本、B 站为什么并进来；下载狗对小红书各字段稳不稳，正文、作者、点赞收藏都拿不到，轮播视频没有原图；TikHub 补齐这些的实测和单价；作者主页翻页为什么收进来、实测
+- [解析分享链接](share-link.md) —— 为什么媒体走下载狗、正文作者走 TikHub，为什么写成脚本、B 站为什么并进来；下载狗对小红书各字段稳不稳，正文、作者、点赞收藏都拿不到，轮播视频没有原图；TikHub 补齐这些的实测和单价；作者主页翻页为什么收进来、实测；公众号为什么直接取文章页，视频号为什么没接
 - [结构化判断](jev.md) —— OpenRouter 的 Jev 1.13 的请求格式从哪查来，经海外中转实测两个端点、三种题，含糊材料概率落在中间；2026-10-10 照调研接入微软、OpenAI、Mercury 三家，调研原文存档，四家同题实测：单价一样计费 token 差 3.5 倍，图片只有 OpenAI 和 Mercury 看得了
 
 ## Skill 吸纳 { #skills }

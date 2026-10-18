@@ -606,11 +606,13 @@ nav:
           - 转录音频: skills/agent-io/reference/transcribe.md
           - 阅读视频: skills/agent-io/reference/read-video.md
           - 网络搜索: skills/agent-io/reference/web-search.md
+          - 读取网页: skills/agent-io/reference/web-fetch.md
           - 解析分享链接:
               - skills/agent-io/reference/share-link/index.md
               - 小红书: skills/agent-io/reference/share-link/xiaohongshu.md
               - 抖音: skills/agent-io/reference/share-link/douyin.md
               - B 站: skills/agent-io/reference/share-link/bilibili.md
+              - 微信公众号: skills/agent-io/reference/share-link/wechat-mp.md
           - 生成语音: skills/agent-io/reference/tts.md
           - 生成音乐: skills/agent-io/reference/music.md
           - 生成、编辑图片: skills/agent-io/reference/image.md
@@ -1381,7 +1383,7 @@ nav:
       - maintenance/index.md
       - Agent 能力:
           - 读 PDF 脚本: maintenance/pdf-reading.md
-          - 网络搜索: maintenance/web-search.md
+          - 网络搜索和读取网页: maintenance/web-search.md
           - 语音合成: maintenance/tts.md
           - 图片生成: maintenance/image.md
           - 视频生成: maintenance/video.md

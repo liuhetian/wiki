@@ -1,8 +1,8 @@
 ---
-description: "解析分享链接的维护记录：为什么媒体走下载狗、正文作者走 TikHub，为什么写成脚本、B 站为什么并进来；下载狗对小红书各字段稳不稳，正文、作者、点赞收藏都拿不到，轮播视频没有原图；TikHub 补齐这些的实测和单价；作者主页翻页为什么收进来而不单独成 skill、实测；用接口不用看，出问题或想换接口再看"
+description: "解析分享链接的维护记录：为什么媒体走下载狗、正文作者走 TikHub，为什么写成脚本、B 站为什么并进来；下载狗对小红书各字段稳不稳，正文、作者、点赞收藏都拿不到，轮播视频没有原图；TikHub 补齐这些的实测和单价；作者主页翻页为什么收进来而不单独成 skill、实测；公众号为什么直接取文章页、找号和翻列表走 TikHub，视频号为什么没接；用接口不用看，出问题或想换接口再看"
 ---
 
-# 解析分享链接的维护记录：下载狗、TikHub 与 B 站
+# 解析分享链接的维护记录：下载狗、TikHub、B 站与公众号
 
 这是[解析分享链接](../skills/agent-io/reference/share-link/index.md)背后的维护记录。用接口时不用看，解析出问题或者要换服务时再看。
 
@@ -24,6 +24,16 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 - **主页模式的几个取舍**：抖音列表的字段和单条一样，直接拿来写 `meta.json`，不再调详情；小红书列表正文截到 100 字，每条还得调详情。上百个视频占盘也花下载狗的钱，所以默认不下视频。详情超过 1 美元先停，是照「大额批量先报预估」的规矩
 - **短链跟一次跳转**：只读跳转返回的 Location，不取页面，和上面「不直连小红书网页」不冲突。代价是单条的短链也多这一次请求
 - **统一的文件夹**：各平台都写成同一个形状，视频一律 `video/pNN.mp4`，每P的字幕、视频记在 `meta.json` 的 `parts` 里，后面阅读视频、整理笔记不用分平台；评论、图文转 Markdown 这些各平台独有的，放进文件夹里固定的文件名
+
+## 公众号为什么直接取文章页 { #wechat-mp }
+
+- **收进来，照小红书的作者主页做**：2026-10-18 用户先问「看本仓库的 agent-io 帮我看看能不能获取微信公众号的信息？」，又说「把获取特定账号的内容作为一个 reference，（现在小红书是不是也有这个类似的reference）」。照一个平台一页一个脚本，翻列表沿用 `share_common.py` 的作者主页那套，文件夹、`list.json`、重跑跳过都一样
+- **正文直接取文章页，不走 TikHub**：文章页本来就是公开给人转发的，免费，1 秒左右；TikHub 的 `fetch_article_detail_h5` 一次 0.01 美元、8.5 秒，正文一样，多出来的只有头像、几种比例的封面和合集。和小红书「不直连网页」不同，实测连着取了二十来次，没碰到过验证页。页面没有正文才退回 TikHub
+- **阅读量要另加 `--stats`**：只有 TikHub 给，每篇多 0.01 美元，读正文用不上
+- **没有主页链接，所以用 `--account`**：公众号主页只能在微信里打开，没有能转发的链接。号名要搜一次才知道 `gh_` 号，所以记进 `accounts.json`；只认名字一字不差的 —— 搜「机器之心」会同时搜出「机器之心SOTA」「机器之心PRO会员」和同名的视频号
+- **默认只取最新 20 篇**：大号历史动辄上万篇，翻完要上百页，所以 `--limit 0` 要加 `--yes`。小红书、抖音默认翻完，因为一个人一般发几百条
+- **一个号的文章隔一秒取一篇**：连着取多快会碰到验证页没测，先留个间隔
+- **代码块不带语言**：页面上的 `data-lang` 是编辑器猜的，同一篇里 shell 命令标成 `apache`、`css`、`makefile`
 
 ## 接口从哪来 { #upstream }
 
@@ -54,10 +64,16 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
     | `xiaohongshu/app_v2/get_user_posted_notes`（作者主页，20 条一页） | 0.01 美元 |
     | `xiaohongshu/app_v2/get_user_info` | 0.01 美元 |
     | `tikhub/user/get_user_info`（查余额） | 免费 |
+    | `wechat_search/v2/fetch_search`（找公众号、搜文章） | 0.01 美元 |
+    | `wechat_mp/v2/fetch_account_articles`（公众号文章列表，约 25 篇一页） | 0.01 美元 |
+    | `wechat_mp/v2/fetch_article_stats` | 0.01 美元 |
+    | `wechat_mp/v2/fetch_article_detail_h5` | 0.01 美元 |
+    | `wechat_channels/v2/fetch_video_detail`（视频号） | 0.01 美元 |
 
-    作者主页那三行是调 `tikhub/user/get_endpoint_info?endpoint=<接口路径>` 查的，免费，还能看限流（都是每秒 10 次）
+    作者主页那三行和公众号、视频号那几行是调 `tikhub/user/get_endpoint_info?endpoint=<接口路径>` 查的，免费，还能看限流（都是每秒 10 次）；公众号、视频号这几个不能用免费额度。文档里公众号 11 个接口、视频号 12 个、搜一搜 2 个，标价都是 0.01 美元
 
 - 小红书选 `app_v2/get_image_note_detail`，因为文档推荐它，只要 note_id，不用 xsec_token
+- 公众号、视频号、搜一搜这几组是 POST JSON，`share_common.py` 的 `tikhub()` 传 `body` 就走 POST
 - `api.tikhub.io` 和 `api.tikhub.dev` 从本机都能直连，都在 Cloudflare 后面。中转接的是 `.io`，国内机连它 0.7 秒
 
 ## 下载狗各字段稳不稳 { #fields }
@@ -139,6 +155,39 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 | 闸门：阈值临时调到 0.05 美元再跑 | 翻完 2 页停下，退出码 1，提示约 0.3 美元。第一版把已取过的 3 条也算进条数，`list.json` 里那 3 条丢了 `dir`，改掉；再跑只翻 1 页 |
 | 抖音图文 `/note/<ID>`，10 张图的配色帖 | 0.001 美元。原来取 `url_list[0]`，下下来是 HEIC，文件名却是 `.jpg`，浏览器打不开；`url_list` 最后一个是同尺寸 1080×1815 的 JPEG，改成跳过 `.heic` 后正常。同一条第一次重取 TikHub 返回 400「请重试」，不扣钱，再跑就好了 |
 
+### 微信公众号
+
+2026-10-18 测，从本机，TikHub 经中转：
+
+| 请求 | 结果 |
+|---|---|
+| 直接取量子位一篇文章的短链 | 200，1.2 秒，3.5 MB；正文、号名、`gh_` 号、署名、发布时间都在页面里 |
+| 同一篇调 `fetch_article_detail_h5` | 200，8.5 秒；正文 2997 字，和直接取的一样 |
+| 同一篇调 `fetch_article_stats` | 3.7 秒；阅读 28528、点赞 22、在看 111、分享 978、收藏 34、评论 26 |
+| `fetch_account_articles` 量子位、机器之心第一页 | 3.7、4.3 秒；28 篇、25 篇，量子位约两天的量；有标题、摘要、链接、封面、时间，没有阅读量 |
+| `fetch_search` 搜文章「国庆 高速免费」 | 4.4 秒，总数 309，一页 36 条，带链接和「阅读 3万+」；同一个词 DeepSeek 搜索是 0 条 |
+| `fetch_search` 找号「机器之心」 | 3.4 秒；同名的公众号一个、同名的视频号一个，另有「机器之心SOTA」「机器之心PRO会员」 |
+| 同一张图 `/640` 和 `/0` | 1080×845 和 1610×1260，都不用 Referer |
+| 截掉 `chksm` 等参数的长链 | 页面只回 2 KB 的「未知错误，请稍后再试」；整条链接再取正常 |
+| 脚本 `--account 机器之心 --limit 5` | 0.02 美元（搜一次、列表一页），32 秒；5 篇正文、44 张原图，代码块保留了换行 |
+| 原样加 `--force` 重跑 | 号名走缓存，只花列表 0.01 美元 |
+| `--account gh_114e76fd6e5d --limit 2` | 0.01 美元；`list.json` 的号名从第一篇补上 |
+| 量子位那篇短链加 `--stats` | 0.01 美元，数字和单调接口一致；重跑跳过，0 |
+| 截掉参数的长链加 `--force` | 页面没正文，退回 TikHub，0.01 美元，`warnings` 写着「未知错误」，正文和直接取的一样 |
+| 用一篇文章链接找号，`--limit 1` | 找号不花钱，列表 0.01 美元，那篇之前取过，跳过 |
+| `--account 机器之`（名字对不上） | 搜一次 0.01 美元，`error` 列出 5 个候选 |
+| `--limit 0` 不带 `--yes` | 不调接口，直接报错 |
+| 改完 `share_common.py` 回归：抖音、B 站各一条，`--no-video` | 都成功 |
+
+### 视频号
+
+| 请求 | 结果 |
+|---|---|
+| `wechat_search/v2/fetch_search_videos` 搜「RTX 5070 评测」 | 3.0 秒，总数 209；每条只有 `exportId`，没有视频地址 |
+| `wechat_channels/v2/fetch_video_detail` 传 `export_id` | 3.3 秒；点赞、收藏、转发、评论都有，播放数是 0；`media` 给直链、`url_token` 和 `decode_key` |
+| 下载直链 | 7.7 MB，接口写的 `file_size` 是 79.7 MB，没查下到的是不是低码率那档；文件头不是 MP4 |
+| 解密文件头 | 文档说只加密了前 128 KB，和一段密钥流异或。纯 Python 写的 ISAAC64 拿 `decode_key` 当种子，每个输出按大端取 8 字节，文件头解出 `ftyp isom` |
+
 ### 新 agent 只照用法页跑
 
 开一个没有上下文的 agent，只给最初那句「这是我的一些收藏，看看如何收纳到本wiki……读取方式看本wiki的 agent-io 部分」和 6 条小红书链接，看文档够不够用。
@@ -165,6 +214,12 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 - 别的平台的作者主页接口只查了价没接：B 站 `bilibili/web/fetch_user_post_videos` 0.001 美元，快手 `kuaishou/app/fetch_user_post_v2` 0.01 美元，微博 `weibo/web_v2/fetch_user_posts` 0.001 美元，另有视频号、知乎、TikTok、X、Instagram。
 - 抖音图文的 `download_url_list` 带水印、模板写的是 3000:3000，没下下来比过是不是比 `url_list` 的大。
 - TikHub 小红书视频笔记的 `native_voice_info.url` 是音轨直链（m4a 或 wav），按理能跳过下视频直接转写，没测。
+- 视频号没接：整段解密在本机被 Claude Code 的权限检查拦下，没解完，也就没验证能不能播。
+- 公众号的评论、二级回复、资料页、菜单、广告、关联文章接口没测；`fetch_article_detail`（非 H5）没测，文档说更快但不稳。
+- 公众号的贴图、音频、视频类文章没碰到，`kind` 照 `item_show_type` 分，正文能不能取到没测；`fetch_account_articles` 按 `item_show_type` 取视频、音频、贴图栏也没测。
+- 被删、违规的文章没碰到，脚本按页面上「已被发布者删除」这几句话判断；付费文章没测，脚本看到 `appmsg_needpay` 只加一条 `warnings`。
+- 连着直接取多少篇会碰到验证页没测，一次最多连取过 5 篇。
+- 同一篇公众号文章传短链和长链会落进两个文件夹：短链只认得出短码，`meta.json` 的 `id` 是一样的。
 
 [^xiazaitool]: [下载狗 API 接口文档](https://www.xiazaitool.com/jiekou)，2026-10-10 读，2026-10-17 复核字段表和响应示例。
-[^tikhub]: [TikHub 文档](https://docs.tikhub.io/)，2026-10-17 读；单价取自同日 TikHub 后台的账单明细，作者主页那几个接口取自 `get_endpoint_info`。
+[^tikhub]: [TikHub 文档](https://docs.tikhub.io/)，2026-10-17 读，公众号、视频号部分 2026-10-18 从 `https://api.tikhub.io/openapi.json` 读；单价取自同日 TikHub 后台的账单明细，作者主页那几个接口取自 `get_endpoint_info`。
