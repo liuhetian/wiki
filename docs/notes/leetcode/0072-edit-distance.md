@@ -4,7 +4,7 @@ description: "双前缀 DP：末字符相等就免费走对角线，否则在增
 
 # 72. 编辑距离
 
-[LeetCode 72](https://leetcode.cn/problems/edit-distance/) · 中等 · 多维动态规划
+LeetCode 72[^leetcode] · 中等 · 多维动态规划
 
 ## 题
 
@@ -69,3 +69,5 @@ class Solution:
     assert s.minDistance("abc", "") == 3
     assert s.minDistance("same", "same") == 0
     ```
+
+[^leetcode]: [LeetCode 72](https://leetcode.cn/problems/edit-distance/)，2026-09-29 读。

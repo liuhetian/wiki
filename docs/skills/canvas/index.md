@@ -73,7 +73,12 @@ graph TD
 
 | 项目 | 等级 | 栈 |
 |---|---|---|
-| [jsoncrack](https://github.com/AykutSarac/jsoncrack.com) | L3 | reaflow 5.4 + react-zoomable-ui + jsonc-parser，ELK 自动布局 |
-| [tldraw](https://github.com/tldraw/tldraw) | L4 本体 | 自定义形状走 ShapeUtil / BaseBoxShapeUtil |
-| [Excalidraw](https://github.com/excalidraw/excalidraw) | L4（MIT 替代） | 手绘风白板，Canvas 渲染 |
-| [React Flow](https://reactflow.dev) | L3 | DOM 节点 + SVG 连线，节点可塞任意组件 |
+| jsoncrack[^jsoncrack-com] | L3 | reaflow 5.4 + react-zoomable-ui + jsonc-parser，ELK 自动布局 |
+| tldraw[^tldraw] | L4 本体 | 自定义形状走 ShapeUtil / BaseBoxShapeUtil |
+| Excalidraw[^excalidraw] | L4（MIT 替代） | 手绘风白板，Canvas 渲染 |
+| React Flow[^reactflow] | L3 | DOM 节点 + SVG 连线，节点可塞任意组件 |
+
+[^jsoncrack-com]: [jsoncrack](https://github.com/AykutSarac/jsoncrack.com)，2026-07-28 读。
+[^tldraw]: [tldraw](https://github.com/tldraw/tldraw)，2026-07-28 读。
+[^excalidraw]: [Excalidraw](https://github.com/excalidraw/excalidraw)，2026-07-28 读。
+[^reactflow]: [React Flow](https://reactflow.dev)，2026-07-28 读。

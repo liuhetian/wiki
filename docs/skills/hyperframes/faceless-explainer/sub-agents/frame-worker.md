@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/faceless-explainer/sub-agents/frame-worker.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/faceless-explainer/sub-agents/frame-worker.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Frame worker —— faceless-explainer 增量部分
 

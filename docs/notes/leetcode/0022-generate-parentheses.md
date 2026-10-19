@@ -4,7 +4,7 @@ description: "只生成合法前缀：左括号没用完就能放左，右括号
 
 # 22. 括号生成
 
-[LeetCode 22](https://leetcode.cn/problems/generate-parentheses/) · 中等 · 回溯
+LeetCode 22[^leetcode] · 中等 · 回溯
 
 ## 题
 
@@ -67,3 +67,5 @@ class Solution:
     assert s.generateParenthesis(1) == ["()"]
     assert len(s.generateParenthesis(8)) == 1430  # C_8
     ```
+
+[^leetcode]: [LeetCode 22](https://leetcode.cn/problems/generate-parentheses/)，2026-09-29 读。

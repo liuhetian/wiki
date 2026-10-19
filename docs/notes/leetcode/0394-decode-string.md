@@ -4,7 +4,7 @@ description: "嵌套的 k[...] 用栈保存「外层上下文」：遇 [ 把当�
 
 # 394. 字符串解码
 
-[LeetCode 394](https://leetcode.cn/problems/decode-string/) · 中等 · 栈
+LeetCode 394[^leetcode] · 中等 · 栈
 
 ## 题
 
@@ -71,3 +71,5 @@ class Solution:
     assert s.decodeString("10[a]") == "a" * 10
     assert s.decodeString("abc") == "abc"
     ```
+
+[^leetcode]: [LeetCode 394](https://leetcode.cn/problems/decode-string/)，2026-09-29 读。

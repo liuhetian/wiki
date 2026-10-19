@@ -4,7 +4,7 @@ description: "负数会让最小变最大，所以以 i 结尾同时维护最大
 
 # 152. 乘积最大子数组
 
-[LeetCode 152](https://leetcode.cn/problems/maximum-product-subarray/) · 中等 · 动态规划
+LeetCode 152[^leetcode] · 中等 · 动态规划
 
 ## 题
 
@@ -60,3 +60,5 @@ class Solution:
     assert s.maxProduct([-2]) == -2
     assert s.maxProduct([0, 2]) == 2
     ```
+
+[^leetcode]: [LeetCode 152](https://leetcode.cn/problems/maximum-product-subarray/)，2026-09-29 读。

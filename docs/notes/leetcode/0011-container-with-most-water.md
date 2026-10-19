@@ -4,7 +4,7 @@ description: "双指针从两端收缩，每次挪矮的那边——矮边在当
 
 # 11. 盛最多水的容器
 
-[LeetCode 11](https://leetcode.cn/problems/container-with-most-water/) · 中等 · 双指针
+LeetCode 11[^leetcode] · 中等 · 双指针
 
 ## 题
 
@@ -64,3 +64,5 @@ class Solution:
     assert s.maxArea([4, 3, 2, 1, 4]) == 16
     assert s.maxArea([0, 0]) == 0
     ```
+
+[^leetcode]: [LeetCode 11](https://leetcode.cn/problems/container-with-most-water/)，2026-09-29 读。

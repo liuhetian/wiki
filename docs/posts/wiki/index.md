@@ -102,7 +102,7 @@ demo 写成自包含的静态单页，放进各自的 `assets/`，正文用 ifra
 
 > 现在用cos来备份图像资源和重建，所以我的问题是能不能自己实现一个mini的lfs 服务？
 
-`scripts/lfs-cos-agent.py`（git-lfs 的 standalone custom transfer agent，约 140 行）把 blob 按 sha256 存进备份桶的 `lfs/` 前缀；`.gitattributes` 把图、视频、字体和 vendor 真身交给 LFS；`scripts/setup-lfs.sh` 给新 clone 接入。vendor 也进 LFS：「这种产物因为不是我们自己维护的代码，也应该一起丢lfs」，`fetch-vendor.sh` 降级成升级工具。git 历史再次重置，就是现在的第一个 commit。[edb03a6](https://github.com/liuhetian/wiki/commit/edb03a6)
+`scripts/lfs-cos-agent.py`（git-lfs 的 standalone custom transfer agent，约 140 行）把 blob 按 sha256 存进备份桶的 `lfs/` 前缀；`.gitattributes` 把图、视频、字体和 vendor 真身交给 LFS；`scripts/setup-lfs.sh` 给新 clone 接入。vendor 也进 LFS：「这种产物因为不是我们自己维护的代码，也应该一起丢lfs」，`fetch-vendor.sh` 降级成升级工具。git 历史再次重置，就是现在的第一个 commit。edb03a6[^commit]
 
 详见[用自己的对象存储做 git-lfs 后端](git-lfs.md)。
 
@@ -110,7 +110,7 @@ demo 写成自包含的静态单页，放进各自的 `assets/`，正文用 ifra
 
 > （这条没留下对话记录，提交说明是 "Enforce AI link-path integrity at deploy time"）
 
-`scripts/check-links.py` 查三项：每篇都被某个祖先索引页直接链到、没有死链、注册进了 nav。`deploy.sh` 在读凭证和构建之前先跑它，非零退出就中止部署。09-04 又加两项：笔记里不许有未答的课程题、图片和 demo 等非 `.md` 资源不许死链。[b0a5d3e](https://github.com/liuhetian/wiki/commit/b0a5d3e)
+`scripts/check-links.py` 查三项：每篇都被某个祖先索引页直接链到、没有死链、注册进了 nav。`deploy.sh` 在读凭证和构建之前先跑它，非零退出就中止部署。09-04 又加两项：笔记里不许有未答的课程题、图片和 demo 等非 `.md` 资源不许死链。b0a5d3e[^commit-2]
 
 详见[对象存储部署 · 闸门](cos-deploy/index.md#link-check)。
 
@@ -118,61 +118,61 @@ demo 写成自包含的静态单页，放进各自的 `assets/`，正文用 ifra
 
 > 你 deploy 之后，派一个一个subagent 去读取，看看能不能读取到原始代码？（08-05）
 
-COS 按扩展名猜类型，`.ts` 猜成 video/mp2t，`.tsx/.jsx/.mjs/.py` 猜成 octet-stream，AI 抓取工具直接拒收。`deploy.sh` 加一条带 `Content-Type: text/plain` 的上传。08-12 桶里错类型的旧对象修正完，这条改带 `-s`，没变的不再重传。清单后来陆续扩充：`.csv`（09-18，课程数据表）、`LICENSE`（09-29）、`.caddy` 和 `.conf`（10-01）、`.cjs`（10 月，HyperFrames 脚本）。[807e762](https://github.com/liuhetian/wiki/commit/807e762)
+COS 按扩展名猜类型，`.ts` 猜成 video/mp2t，`.tsx/.jsx/.mjs/.py` 猜成 octet-stream，AI 抓取工具直接拒收。`deploy.sh` 加一条带 `Content-Type: text/plain` 的上传。08-12 桶里错类型的旧对象修正完，这条改带 `-s`，没变的不再重传。清单后来陆续扩充：`.csv`（09-18，课程数据表）、`LICENSE`（09-29）、`.caddy` 和 `.conf`（10-01）、`.cjs`（10 月，HyperFrames 脚本）。807e762[^commit-3]
 
 ### 2026-08-12 · 开屏首页 {: data-kind="前端" }
 
 > 可以帮我做一个saas风格的开屏吗，内容多一点，介绍一下本wiki和能给读者带来什么……而且首页要铺满屏幕！（08-08）
 
-`custom_dir: overrides` 加 `overrides/home.html` 和 `stylesheets/home.css`，`docs/index.md` 用 frontmatter `template: home.html` 换成开屏。正文不上屏，照样发布成 `/index.md` 和 `/llms.txt` 给 AI 读。[521b0b1](https://github.com/liuhetian/wiki/commit/521b0b1)
+`custom_dir: overrides` 加 `overrides/home.html` 和 `stylesheets/home.css`，`docs/index.md` 用 frontmatter `template: home.html` 换成开屏。正文不上屏，照样发布成 `/index.md` 和 `/llms.txt` 给 AI 读。521b0b1[^commit-4]
 
 ### 2026-08-14 · 字体本地化 {: data-kind="配置 + 前端" }
 
 > 开屏的时候我发现加载很慢……这个是google字体导致的我这个打开慢吗？改为本地化吧，我看字体也就 1.8mb（08-13）
 
-`theme.font: false` 关掉官方的 Google Fonts 引用；Inter 和 JetBrains Mono 的 woff2 放进 `vendor/fonts/`，`fonts.css` 挂进 `extra_css`。[c39a3cf](https://github.com/liuhetian/wiki/commit/c39a3cf)
+`theme.font: false` 关掉官方的 Google Fonts 引用；Inter 和 JetBrains Mono 的 woff2 放进 `vendor/fonts/`，`fonts.css` 挂进 `extra_css`。c39a3cf[^commit-5]
 
 ### 2026-08-17 · 3D demo 运行时 {: data-kind="前端" }
 
 > （这条没留下对话记录，是随 Vercel Lanyard 可拖拽 3D 工牌的拆解一起加的）
 
-`vendor/` 增加 React 的 ES module 版、react-three-fiber、drei、rapier、meshline 和 `htm.module.js`，给 ES module 写法的 3D demo 用，同样走 LFS。[3eb7118](https://github.com/liuhetian/wiki/commit/3eb7118)
+`vendor/` 增加 React 的 ES module 版、react-three-fiber、drei、rapier、meshline 和 `htm.module.js`，给 ES module 写法的 3D demo 用，同样走 LFS。3eb7118[^commit-6]
 
 ### 2026-08-25 · 全站皮肤对齐首页 {: data-kind="前端" }
 
 > 参考本wiki的首页风格，对整个仓库都改成相符合的风格如何？修改方法见文档：https://zensical.org/docs/customization/
 
-两层 CSS 挂进 `extra_css`：`zx-tokens.css` 是令牌层，放 Atelier Zero 的颜色和字体变量并映射到 `--md-*`；`zx-theme.css` 是皮肤层，只写选择器，管直角、导航、标题、链接、列表、代码块。[d8f6124](https://github.com/liuhetian/wiki/commit/d8f6124)
+两层 CSS 挂进 `extra_css`：`zx-tokens.css` 是令牌层，放 Atelier Zero 的颜色和字体变量并映射到 `--md-*`；`zx-theme.css` 是皮肤层，只写选择器，管直角、导航、标题、链接、列表、代码块。d8f6124[^commit-7]
 
 ### 2026-08-25 · mermaid 真身本地化 {: data-kind="前端" }
 
 > 要不也帮我自包含进去？这个mermaid的三方库
 
-Zensical 内置的加载器在 `mermaid` 未定义时会去 unpkg 拉。`overrides/main.html` 只给含 mermaid 块的页面同步引入 `vendor/mermaid/`，内置加载器就不再出网；`fetch-vendor.sh` 记上它的版本。[d8f6124](https://github.com/liuhetian/wiki/commit/d8f6124)
+Zensical 内置的加载器在 `mermaid` 未定义时会去 unpkg 拉。`overrides/main.html` 只给含 mermaid 块的页面同步引入 `vendor/mermaid/`，内置加载器就不再出网；`fetch-vendor.sh` 记上它的版本。d8f6124[^commit-7]
 
 ### 2026-08-25 · 提示框、折叠块、选项卡一套语言 {: data-kind="前端" }
 
 > 对于折叠卡，现在太丑了……颜色的话放在左边的竖线和 > 里。选项卡也实现左边竖线功能吧，这样左右切换选项卡可以知道哪些部分的内容是属于这个选项里才有的内容
 
-`zx-theme.css` 重写 admonition、details、tabbed：去底去框，type 色只落在左侧短竖线、图标和箭头上；hover 时竖线拉长到全文底部；选项卡左侧加竖线和 1px 引导线。[ac9daa4](https://github.com/liuhetian/wiki/commit/ac9daa4) [63bd3a6](https://github.com/liuhetian/wiki/commit/63bd3a6)
+`zx-theme.css` 重写 admonition、details、tabbed：去底去框，type 色只落在左侧短竖线、图标和箭头上；hover 时竖线拉长到全文底部；选项卡左侧加竖线和 1px 引导线。ac9daa4[^commit-9] 63bd3a6[^commit-8]
 
 ### 2026-09-01 · 三线表与 mermaid 手绘卡片 {: data-kind="前端" }
 
 > 帮我看一下zensical中，能不能修改mermaid图的css样式……现在本wiki的表格不好看，能也参考其他css优化一下吗（08-31）
 
-`zx-theme.css`：表格改 booktabs 三线表，窄表整体居中。mermaid 的 SVG 在 closed shadow root 里，外部 CSS 进不去，只能把宿主容器裹成手绘卡片。[8394579](https://github.com/liuhetian/wiki/commit/8394579)
+`zx-theme.css`：表格改 booktabs 三线表，窄表整体居中。mermaid 的 SVG 在 closed shadow root 里，外部 CSS 进不去，只能把宿主容器裹成手绘卡片。8394579[^commit-8394579]
 
 ### 2026-09-01 · 全站换 Maple Mono，中文自建子集 {: data-kind="前端 + 流水线" }
 
 > 我发现vscode里的字体更圆润，读起来更舒服，我这里是否也能惰性加载一个字体呢？（08-25）帮我把本wiki的字体改成 maple-font
 
-正文和代码用同一个等宽字族。拉丁字形用官方 woff2，中文由 `scripts/build-fonts.py` 按 GB2312 加本站用字子集化。同日补了三处漏网（中文字重描述符、`--zx-serif` 求值失败、ECharts 内联字体），汉字字身框从 1200 压回 1000。[4d58ba3](https://github.com/liuhetian/wiki/commit/4d58ba3) [58a8b8c](https://github.com/liuhetian/wiki/commit/58a8b8c) [8556c17](https://github.com/liuhetian/wiki/commit/8556c17)
+正文和代码用同一个等宽字族。拉丁字形用官方 woff2，中文由 `scripts/build-fonts.py` 按 GB2312 加本站用字子集化。同日补了三处漏网（中文字重描述符、`--zx-serif` 求值失败、ECharts 内联字体），汉字字身框从 1200 压回 1000。4d58ba3[^commit-12] 58a8b8c[^commit-11] 8556c17[^commit-10]
 
 ### 2026-09-04 · 网页上直接运行 JS 代码块 {: data-kind="前端" }
 
 > 能不能实现代码写入在前端展示之后，可以直接在网页上运行？……没必要提供代码编辑功能，能直接运行即可……运行按钮只有hover上去才显示（09-03）
 
-代码块写成 ```` ```{.js .run} ````，`vendor/js-runner.js` 找到这类块，在 Worker 沙箱里执行并接一个输出面板；运行按钮放进代码框右上角，hover 才出现。[b93e43c](https://github.com/liuhetian/wiki/commit/b93e43c)
+代码块写成 ```` ```{.js .run} ````，`vendor/js-runner.js` 找到这类块，在 Worker 沙箱里执行并接一个输出面板；运行按钮放进代码框右上角，hover 才出现。b93e43c[^commit-13]
 
 详见[写作规范 · 可运行 JS 代码块](../../skills/wiki-guide/reference/components.md#js-run)。
 
@@ -180,7 +180,7 @@ Zensical 内置的加载器在 `mermaid` 未定义时会去 unpkg 拉。`overrid
 
 > 新建一个和 skills notes 并排的顶级层级，叫做「课程」……要用和git一样的冲突标记提问，只有我手动回答了一个又一个的问题，证明我是真的去运行了代码，然后才能add到 notes 的同名目录
 
-`superfences` 加 `conflict` fence，`vendor/conflict-init.js` 把它染成上问下答两半；`scripts/course.py` 管领题、看进度、归档，题没答完不让归档；`check-links.py` 加一项：`notes/` 里不许出现冲突标记。[b93e43c](https://github.com/liuhetian/wiki/commit/b93e43c) [70abb8b](https://github.com/liuhetian/wiki/commit/70abb8b)
+`superfences` 加 `conflict` fence，`vendor/conflict-init.js` 把它染成上问下答两半；`scripts/course.py` 管领题、看进度、归档，题没答完不让归档；`check-links.py` 加一项：`notes/` 里不许出现冲突标记。b93e43c[^commit-13] 70abb8b[^commit-14]
 
 详见[课程是怎么设计的](../../courses/index.md)。
 
@@ -188,13 +188,13 @@ Zensical 内置的加载器在 `mermaid` 未定义时会去 unpkg 拉。`overrid
 
 > 帮我检查我当前的wiki仓库，寻找有没有问题或者优化空间（可能是zensical配置本身的问题，也可能是写作的问题，也可能是架构层等等等）
 
-vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载。`deploy.sh` 的 md 镜像加 `--exclude='.*/'`，堵住 assets 里残留的 `.venv` 跟着上桶。`check-links.py` 加资源死链检查。新增 `robots.txt`，全站开放抓取并指向 sitemap。[1019e19](https://github.com/liuhetian/wiki/commit/1019e19) [1cca22e](https://github.com/liuhetian/wiki/commit/1cca22e)
+vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载。`deploy.sh` 的 md 镜像加 `--exclude='.*/'`，堵住 assets 里残留的 `.venv` 跟着上桶。`check-links.py` 加资源死链检查。新增 `robots.txt`，全站开放抓取并指向 sitemap。1019e19[^commit-16] 1cca22e[^commit-15]
 
 ### 2026-09-18 · 升到 zensical 0.0.62：meta 与 redirects {: data-kind="配置" }
 
 > 看本仓库用的 zensical 版本，然后比较一下 zensical的最近更新……看有没有什么新功能可以用？（09-14）
 
-`plugins` 接上 `meta`：目录里放 `.meta.yml`，给上游原文、snippet 真身这类不能加 frontmatter 的文件补 description。接上 `redirects`：挪文件不留存根页，写一行旧路径到新路径。08-12 因为并行竞态误报而关掉的 `invalid_links` 校验改回 `warn`。[d73ce14](https://github.com/liuhetian/wiki/commit/d73ce14)
+`plugins` 接上 `meta`：目录里放 `.meta.yml`，给上游原文、snippet 真身这类不能加 frontmatter 的文件补 description。接上 `redirects`：挪文件不留存根页，写一行旧路径到新路径。08-12 因为并行竞态误报而关掉的 `invalid_links` 校验改回 `warn`。d73ce14[^commit-17]
 
 详见[写作规范 · 不能动的文件：目录级 .meta.yml](../../skills/wiki-guide/index.md#meta-yml)。
 
@@ -202,13 +202,13 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 > 这种引用"生成一张……"为什么是一行，我需要手动拖左右滚轮。能够不被折叠吗？（09-28）
 
-图文左右并排用官方 `md_in_html` 写 `<div class="gallery-pair" markdown>`，样式在 `zx-theme.css`。长 prompt 换行：`overrides/main.html` 按 URL 前缀只给 `gallery/images/` 的 text 块开自动换行，别处 text 块里的目录树、ASCII 图不受影响；其他页面需要时手写 `{.text .wrap}`。[478436c](https://github.com/liuhetian/wiki/commit/478436c)
+图文左右并排用官方 `md_in_html` 写 `<div class="gallery-pair" markdown>`，样式在 `zx-theme.css`。长 prompt 换行：`overrides/main.html` 按 URL 前缀只给 `gallery/images/` 的 text 块开自动换行，别处 text 块里的目录树、ASCII 图不受影响；其他页面需要时手写 `{.text .wrap}`。478436c[^commit-18]
 
 ### 2026-10-01 · age 打码 {: data-kind="配置 + 前端 + 流水线" }
 
 > 本wiki中有很多小文字需要加密，比如我的服务器id，能在前端中做简单的马赛克吗？……自动被转换成一段马赛克，解锁后才恢复。zensical有类似的插件吗？或者 mkdocs有吗
 
-`scripts/age-seal.sh` 用 wiki 公钥加密，源文件里写 `` `age:…` `` 小字或 ```` ```age ```` 块（superfences 新增 `age` fence）。`vendor/age-init.js` 在浏览器里打码、解锁后还原，按需加载 `vendor/age-core.js`（口令和 X25519 私钥两种模式）。encryptcontent 这类插件只加密 HTML，`.md` 镜像照样是明文，所以不用。[0885e62](https://github.com/liuhetian/wiki/commit/0885e62)
+`scripts/age-seal.sh` 用 wiki 公钥加密，源文件里写 `` `age:…` `` 小字或 ```` ```age ```` 块（superfences 新增 `age` fence）。`vendor/age-init.js` 在浏览器里打码、解锁后还原，按需加载 `vendor/age-core.js`（口令和 X25519 私钥两种模式）。encryptcontent 这类插件只加密 HTML，`.md` 镜像照样是明文，所以不用。0885e62[^commit-19]
 
 详见[打码：key 和小字都以密文写进 wiki](age-mosaic.md)。
 
@@ -298,13 +298,13 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 > 应该是仍然允许全部用远程的方式（用于简单调用），也支持压缩包（里面全部都是原始的相对路径）用于大型任务，远程客户端可以自己选择。
 
-> 如果要调用2次以上本skill中的脚本，直接将[本skill](xxx.tar.gz)下载到本地。 相当于不光是tar.gz 而是要一句有指引，有链接才行，这样更准确
+> 如果要调用2次以上本skill中的脚本，直接将`[本skill](xxx.tar.gz)`下载到本地。 相当于不光是tar.gz 而是要一句有指引，有链接才行，这样更准确
 
 > 这种命令也不需要，别人ai自己会写，所以只会留下一句话
 
 > 这句话不要放在用法里，显得就是引导别人下载一样，感觉放在开头第一段介绍里，而且默认是保持走网络请求
 
-新增 `scripts/build-skill-bundles.py`，`deploy.sh` 在 md 源镜像之后调用：入口 `index.md` 写了标准那一行「如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录名>.tar.gz)下载到本地。」，就把整个目录原样打成这个包（跳过点开头的文件、`__pycache__` 和 `.pyc`），放进 `site/` 的同一位置，上传时钉 `application/gzip`；链接了包却不是这一行，部署停住。包按路径排序、时间戳和属主固定，内容不变字节就不变，`-s` 跳过重传；只在 `site/` 和桶里，不进 git。远程和整包共用一套文档，只写相对路径，不讲根目录：先前入口页写过「根目录是…，相对路径拼上它」，subagent 实测照着把子 skill 的脚本拼到父目录下拿到 404，已删。命令不用 shell 变量，因为 Agent 每次执行命令都是新环境。入口页只在开头介绍段末尾写这一句，默认走网络请求，不单独成节；不附下载命令，客户端 AI 自己会写。HyperFrames 的 `MANIFEST.txt` 清单删掉，换成整包；B站视频笔记逐个下载脚本的循环删掉，换成首段那一句；新增 mock 抽象 skill [测试skill](../../maintenance/mock-bundle/index.md)对照。
+新增 `scripts/build-skill-bundles.py`，`deploy.sh` 在 md 源镜像之后调用：入口 `index.md` 写了标准那一行`如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录名>.tar.gz)下载到本地。`，就把整个目录原样打成这个包（跳过点开头的文件、`__pycache__` 和 `.pyc`），放进 `site/` 的同一位置，上传时钉 `application/gzip`；链接了包却不是这一行，部署停住。包按路径排序、时间戳和属主固定，内容不变字节就不变，`-s` 跳过重传；只在 `site/` 和桶里，不进 git。远程和整包共用一套文档，只写相对路径，不讲根目录：先前入口页写过「根目录是…，相对路径拼上它」，subagent 实测照着把子 skill 的脚本拼到父目录下拿到 404，已删。命令不用 shell 变量，因为 Agent 每次执行命令都是新环境。入口页只在开头介绍段末尾写这一句，默认走网络请求，不单独成节；不附下载命令，客户端 AI 自己会写。HyperFrames 的 `MANIFEST.txt` 清单删掉，换成整包；B站视频笔记逐个下载脚本的循环删掉，换成首段那一句；新增 mock 抽象 skill [测试skill](../../maintenance/mock-bundle/index.md)对照。
 
 详见[收纳 skill · 带脚本的 skill](../../skills/wiki-guide/skill.md#scripts)。
 
@@ -328,4 +328,55 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 详见[收纳 skill · 带脚本的 skill](../../skills/wiki-guide/skill.md#scripts)。
 
+### 2026-10-19 · 链路闸门补三处漏判 {: data-kind="流水线" }
+
+> 帮我审核本仓库，现在是否有冲突或者优化，可能是wiki搭建方面，也可能是wiki内部的文档
+
+> 先修复前12吧
+
+`scripts/check-links.py` 跳过代码块改成逐行配对围栏，按 CommonMark 闭围栏不带 info string。原来的正则开头是 `\s*`，能吃掉换行，代码块前有空行时会一路吞过闭围栏，把后面的正文也当代码剥掉：31 个文件受影响，8 篇的正文链接没被检查。nav 注册只认 nav 段里的条目，原来拿路径在整个 `mkdocs.yml` 里找子串，redirects 和注释里出现过也算注册，142 页从 nav 删掉照样通过。资源死链检查纳入指向非 `.md` 本地文件的 markdown 链接（`[文字](x.py)`），此前没有任何一道检查管，当场查出本页两处举例写成了真链接，改成行内代码；skill 整包部署时才生成，目录在就算存在，有没有声明仍归 `build-skill-bundles.py` 拦。笔记未答题检查也跳过代码块，git 笔记里贴冲突示例不会误拦部署。
+
+详见[对象存储部署 · 闸门](cos-deploy/index.md#link-check)。
+
+### 2026-10-19 · 复制按钮：只引几行的 snippet 地址指对 {: data-kind="前端" }
+
+> 先修复前12吧
+
+`vendor/md-copy.js` 改写 `--8<-- "x.py:31:36"` 这类只引几行或一段的 snippet：先剥掉 `:31:36`、`:name` 再去站上探，地址只留文件，范围写成「（第 31–36 行）」跟在后面。原来整串拿去探，站上必然没有，落到 GitHub 一个既缺 `docs/` 又带 `:31:36` 的地址。
+
+详见[复制本页 Markdown 源](md-copy.md)。
+
+### 2026-10-19 · 复制按钮支持分支：读者的选择决定哪段进对话框 {: data-kind="前端" }
+
+> 能否实现根据选择，是否隐藏掉不需要的内容？现在一大段内容都是只有需要探索才看的。
+
+> 如果选到了否，隐藏内容不要真的隐藏，只是加一个css效果，表现出不会被复制按钮复制进去即可
+
+> 如果全部用 zx-no-copy 来控制呢，这样可以直接看出哪些部分对AI隐藏。 data-when 也通过 zx-no-copy 间接控制可见性
+
+`<div data-when="名=值" markdown>` 包起来的内容，名为「名」的控件选了「值」才复制；只写「名」就是那个框填了才复制。`vendor/md-copy.js` 打开页面和每次填写时算一遍条件，不成立的块挂上 `zx-no-copy`，网页上和写死的那种一个样子；复制时拿源文件里的条件用同一个函数再算一遍，不成立的整块去掉，成立的只去掉外壳 div，不复制的块里的 `required` 不拦。起初复制时是按顺序去网页上查哪个块挂了 class，多一种「对不上就报错」的失败，换成直接算，结果逐字节一样，少 12 行。`zx-theme.css` 新增第 12 节：`zx-no-copy` 块左边一道虚线、上方一个「不复制」小字，没选中的分支另外变淡。不藏起来，是为了让读者看了分支内容再选，脚本出错时内容也照常可读。原有 17 个页尾维护记录块跟着有了这个样子。什么时候才值得分支、模板能力的上限，单开一篇写作规范的引用，只有写 prompt 分支时才读；[粗讲项目](../../skills/collab/chat-prompts/project-gist.md)改成新写法当活例。
+
+详见[分支](../../skills/wiki-guide/reference/branch.md)。
+
 </div>
+
+[^commit]: [edb03a6](https://github.com/liuhetian/wiki/commit/edb03a6)，2026-10-15 读。
+[^commit-2]: [b0a5d3e](https://github.com/liuhetian/wiki/commit/b0a5d3e)，2026-10-15 读。
+[^commit-3]: [807e762](https://github.com/liuhetian/wiki/commit/807e762)，2026-10-15 读。
+[^commit-4]: [521b0b1](https://github.com/liuhetian/wiki/commit/521b0b1)，2026-10-15 读。
+[^commit-5]: [c39a3cf](https://github.com/liuhetian/wiki/commit/c39a3cf)，2026-10-15 读。
+[^commit-6]: [3eb7118](https://github.com/liuhetian/wiki/commit/3eb7118)，2026-10-15 读。
+[^commit-7]: [d8f6124](https://github.com/liuhetian/wiki/commit/d8f6124)，2026-10-15 读。
+[^commit-9]: [ac9daa4](https://github.com/liuhetian/wiki/commit/ac9daa4)，2026-10-15 读。
+[^commit-8]: [63bd3a6](https://github.com/liuhetian/wiki/commit/63bd3a6)，2026-10-15 读。
+[^commit-8394579]: [8394579](https://github.com/liuhetian/wiki/commit/8394579)，2026-10-15 读。
+[^commit-12]: [4d58ba3](https://github.com/liuhetian/wiki/commit/4d58ba3)，2026-10-15 读。
+[^commit-11]: [58a8b8c](https://github.com/liuhetian/wiki/commit/58a8b8c)，2026-10-15 读。
+[^commit-10]: [8556c17](https://github.com/liuhetian/wiki/commit/8556c17)，2026-10-15 读。
+[^commit-13]: [b93e43c](https://github.com/liuhetian/wiki/commit/b93e43c)，2026-10-15 读。
+[^commit-14]: [70abb8b](https://github.com/liuhetian/wiki/commit/70abb8b)，2026-10-15 读。
+[^commit-16]: [1019e19](https://github.com/liuhetian/wiki/commit/1019e19)，2026-10-15 读。
+[^commit-15]: [1cca22e](https://github.com/liuhetian/wiki/commit/1cca22e)，2026-10-15 读。
+[^commit-17]: [d73ce14](https://github.com/liuhetian/wiki/commit/d73ce14)，2026-10-15 读。
+[^commit-18]: [478436c](https://github.com/liuhetian/wiki/commit/478436c)，2026-10-15 读。
+[^commit-19]: [0885e62](https://github.com/liuhetian/wiki/commit/0885e62)，2026-10-15 读。

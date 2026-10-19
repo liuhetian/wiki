@@ -78,7 +78,7 @@ description: "本篇是《让 Kindle 常显一块 Token 看板》的实操手册
     3. 用可传数据的 USB 线连接电脑；
     4. 备份整个可见 USB 存储区；
     5. 保证电量充足；
-    6. 阅读当前维护的 [Kindle Modding Wiki](https://kindlemodding.org/) 和对应方法页面；
+    6. 阅读当前维护的 Kindle Modding Wiki[^kindlemodding] 和对应方法页面；
     7. **若机型或固件与本文不同，立即停止并重新选方法。**
 
     不要假设"固件更高只是数字不同"。越狱利用的是特定漏洞，错误版本通常不会成功，严重时可能导致设备无法正常启动。原厂固件通常也不能在未越狱状态下自行降级。
@@ -279,12 +279,20 @@ Windows 原型已经验证过完整的最短链路：生成模拟 PNG → 旋转
 
 越狱方法和兼容范围会变化，操作前应以当前维护页面为准：
 
-- [Kindle Modding Wiki](https://kindlemodding.org/)
-- [KindleBreak 旧版方法说明（5.10.3–5.13.3，含例外）](https://kindlemodding.gitbook.io/kindlemodding/jailbreak-software/kindlebreak-5.10.3-5.13.3)
-- [安装与运行 Hotfix](https://kindlemodding.org/jailbreaking/post-jailbreak/setting-up-a-hotfix/)
-- [安装 KUAL 与 MRPI](https://kindlemodding.org/jailbreaking/post-jailbreak/installing-kual-mrpi/)
-- [屏蔽 OTA 更新](https://kindlemodding.org/jailbreaking/post-jailbreak/disable-ota.html)
-- [MobileRead：USBNetwork](https://wiki.mobileread.com/wiki/USBNetwork)
-- [MobileRead：MRPI](https://wiki.mobileread.com/wiki/MobileRead_Package_Installer)
+- Kindle Modding Wiki[^kindlemodding]
+- KindleBreak 旧版方法说明（5.10.3–5.13.3，含例外）[^kindlebreak-5-10-3-5-13-3]
+- 安装与运行 Hotfix[^setting-up-a-hotfix]
+- 安装 KUAL 与 MRPI[^installing-kual-mrpi]
+- 屏蔽 OTA 更新[^disable-ota]
+- MobileRead：USBNetwork[^usbnetwork]
+- MobileRead：MRPI[^mobileread-package-installer]
 
 本机验证依据来自同级工作目录中的备份、KindleBreak、Hotfix、KUAL/MRPI、Rename OTA、USBNetwork、RNDIS 驱动、渲染与推送脚本。二进制安装包、个人电子书和 SSH 私钥都不提交到 wiki 仓库。
+
+[^kindlemodding]: [Kindle Modding Wiki](https://kindlemodding.org/)，2026-07-28 读。
+[^kindlebreak-5-10-3-5-13-3]: [KindleBreak 旧版方法说明（5.10.3–5.13.3，含例外）](https://kindlemodding.gitbook.io/kindlemodding/jailbreak-software/kindlebreak-5.10.3-5.13.3)，2026-07-28 读。
+[^setting-up-a-hotfix]: [安装与运行 Hotfix](https://kindlemodding.org/jailbreaking/post-jailbreak/setting-up-a-hotfix/)，2026-07-28 读。
+[^installing-kual-mrpi]: [安装 KUAL 与 MRPI](https://kindlemodding.org/jailbreaking/post-jailbreak/installing-kual-mrpi/)，2026-07-28 读。
+[^disable-ota]: [屏蔽 OTA 更新](https://kindlemodding.org/jailbreaking/post-jailbreak/disable-ota.html)，2026-07-28 读。
+[^usbnetwork]: [MobileRead：USBNetwork](https://wiki.mobileread.com/wiki/USBNetwork)，2026-07-28 读。
+[^mobileread-package-installer]: [MobileRead：MRPI](https://wiki.mobileread.com/wiki/MobileRead_Package_Installer)，2026-07-28 读。

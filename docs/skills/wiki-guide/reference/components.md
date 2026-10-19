@@ -61,11 +61,11 @@ console.log(xs.sort((a, b) => a - b))
 console.log({ 对象也会格式化: true, 嵌套: [1, { k: "v" }] })
 ```
 
-[`vendor/js-runner.js`](../../../vendor/js-runner.js) 只在代码块下方追加工具条和输出面板，Pygments 高亮和复制按钮原样保留；脚本没加载就退化成普通代码块。
+[`vendor/js-runner.js`](../../../vendor/js-runner.js) 在代码框右下角浮一个「运行」按钮、下方接输出面板，Pygments 高亮和复制按钮原样保留；脚本没加载就退化成普通代码块。
 
 - **在 Web Worker 里跑，没有 `document` / `window`**：要摸 DOM 走[嵌入交互单页](#iframe-demo)。不用 iframe 是因为它和父页共用主线程，死循环会卡死整页；Worker 能被硬杀，死循环 5 秒后砍掉
 - **值要 `console.log` 出来才看得见**，不是 REPL；对象、`Map`、`Set`、循环引用都有格式化
-- **顶层 `await` 直接写**；跑完后还在排队的 `setTimeout` 会被终止，要看延迟输出就 `await` 等住
+- **顶层 `await` 直接写**；主体跑完后会等排队的 `setTimeout` 执行完再收尾，不用 `await` 等住；从点「运行」起总共 5 秒，超时整个砍掉 —— 没 `clearInterval` 的 `setInterval` 一定撞上这条线
 - **故意写坏是正当用法**：报错带行号，坏例子和好例子一样值得放
 - **只能运行，不能在页面上改**（编辑态会丢掉 Pygments 高亮），所以例子要自带对照组：把「换成 X 会怎样」写成注释或第二个块
 
@@ -130,9 +130,11 @@ bash scripts/age-seal.sh -a   # 粘贴多行、Ctrl-D 结束 → 打印 armor，
 </div>
 ```
 
-网页上照常显示，读 `.md` 源的 AI 也看得到，只有复制按钮整块跳过；块放在页面任何位置都行。写法同时间线：开头结尾前后各空一行，里面不缩进。复制按钮另外还会去掉 frontmatter 和代码以外的 HTML 注释，见[复制本页 Markdown 源](../../../posts/wiki/md-copy.md)。
+网页上照常显示，左边一道虚线、上方一个「不复制」小字；读 `.md` 源的 AI 也看得到，只有复制按钮整块跳过；块放在页面任何位置都行。写法同时间线：开头结尾前后各空一行，里面不缩进。复制按钮另外还会去掉 frontmatter 和代码以外的 HTML 注释，见[复制本页 Markdown 源](../../../posts/wiki/md-copy.md)。样式在 `zx-theme.css` 第 12 节。
 
 活例：[盘问我](../../collab/grilling.md)页尾的维护记录，写法见[收纳 skill · 维护记录](../skill.md#maintenance-record)。
+
+要按读者的选择决定哪段复制，见[分支](branch.md)。
 
 ## 填空 `<input>` { #fill }
 
@@ -144,7 +146,7 @@ prompt 里要读者先填的空，直接写 HTML 输入框：网页上就地填�
 
 - **单行 `<input>`、多行 `<textarea>`、选项 `<select>`**，写进句子里，一个标签写在一行内；`<textarea>` 单独占一行会把段落切成两段
 - **必须写 `placeholder`**：空着复制出去是【placeholder】；`<select>` 想留空，第一项写 `<option value="">提示</option>`
-- **同一个变量用几次就写几次，`name` 相同**：在一个框里填，别的同名框跟着变；只用一次的不写 `name`
+- **同一个变量用几次就写几次，`name` 相同**：在一个框里填，别的同名框跟着变；只用一次、也没被[分支](branch.md)用到的不写 `name`
 - **`required`**：没填就不让复制，浏览器气泡指过去
 - **不另写「占位没填先问」这类说明**：输入框本身就说明了哪里要填 —— 复制出去空着的是【placeholder】，直接读 `.md` 源的 AI 看到的是带 placeholder 的标签
 - 单选、复选框不算填空；代码块里写的只是文字。样式在 `zx-theme.css` 第 11 节

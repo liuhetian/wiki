@@ -4,7 +4,7 @@ description: "一棵树的性质改写成两棵树的关系：双指针同时下
 
 # 101. 对称二叉树
 
-[LeetCode 101](https://leetcode.cn/problems/symmetric-tree/) · 简单 · 二叉树
+LeetCode 101[^leetcode] · 简单 · 二叉树
 
 ## 题
 
@@ -76,3 +76,5 @@ $$\text{mirror}(a, b) \iff a.val = b.val \land \text{mirror}(a.l, b.r) \land \te
     assert s.isSymmetric(build_tree([1])) is True
     assert s.isSymmetric(build_tree([1, 2, 2, 2, None, 2])) is False
     ```
+
+[^leetcode]: [LeetCode 101](https://leetcode.cn/problems/symmetric-tree/)，2026-09-29 读。

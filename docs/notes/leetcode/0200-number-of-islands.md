@@ -4,7 +4,7 @@ description: "数连通块 = 外层扫到一个没访问的陆地就计数 +1，
 
 # 200. 岛屿数量
 
-[LeetCode 200](https://leetcode.cn/problems/number-of-islands/) · 中等 · 图论
+LeetCode 200[^leetcode] · 中等 · 图论
 
 ## 题
 
@@ -64,8 +64,8 @@ class Solution:
 
 ## 延伸
 
-- **并查集**也能做：每块陆地和右、下邻居 union，最后数根的个数。数量不变时不如 BFS 直白，但岛屿动态增加时（[305. 岛屿数量 II](https://leetcode.cn/problems/number-of-islands-ii/)）只能用它。
-- 同一个 flood fill 模板的变体：[695. 岛屿的最大面积](https://leetcode.cn/problems/max-area-of-island/)（遍历时计数）、[130. 被围绕的区域](https://leetcode.cn/problems/surrounded-regions/)（从边界反向淹）。
+- **并查集**也能做：每块陆地和右、下邻居 union，最后数根的个数。数量不变时不如 BFS 直白，但岛屿动态增加时（305. 岛屿数量 II[^leetcode-2]）只能用它。
+- 同一个 flood fill 模板的变体：695. 岛屿的最大面积[^leetcode-4]（遍历时计数）、130. 被围绕的区域[^leetcode-3]（从边界反向淹）。
 - 从多个起点**同时**扩散、按层计时：[994. 腐烂的橘子](0994-rotting-oranges.md)。
 - 网格上的回溯搜索（要撤销标记）：[79. 单词搜索](0079-word-search.md)——那里标记是路径级的，这里是全局的，不撤销。
 
@@ -83,3 +83,8 @@ class Solution:
     # 大片陆地，递归 DFS 会爆栈
     assert s.numIslands([["1"] * 300 for _ in range(300)]) == 1
     ```
+
+[^leetcode]: [LeetCode 200](https://leetcode.cn/problems/number-of-islands/)，2026-09-29 读。
+[^leetcode-2]: [305. 岛屿数量 II](https://leetcode.cn/problems/number-of-islands-ii/)，2026-09-29 读。
+[^leetcode-4]: [695. 岛屿的最大面积](https://leetcode.cn/problems/max-area-of-island/)，2026-09-29 读。
+[^leetcode-3]: [130. 被围绕的区域](https://leetcode.cn/problems/surrounded-regions/)，2026-09-29 读。

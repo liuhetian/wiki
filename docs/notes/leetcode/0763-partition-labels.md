@@ -4,7 +4,7 @@ description: "先记每个字母最后出现的位置，扫描时把当前段的
 
 # 763. 划分字母区间
 
-[LeetCode 763](https://leetcode.cn/problems/partition-labels/) · 中等 · 贪心算法
+LeetCode 763[^leetcode] · 中等 · 贪心算法
 
 ## 题
 
@@ -55,3 +55,5 @@ class Solution:
     assert s.partitionLabels("a") == [1]
     assert s.partitionLabels("abc") == [1, 1, 1]
     ```
+
+[^leetcode]: [LeetCode 763](https://leetcode.cn/problems/partition-labels/)，2026-09-29 读。

@@ -57,4 +57,12 @@ description: "形状目录 + 每形状一个可玩的活 demo"
 !!! note "demo 与真实版的差距，是刻意的"
     本目录的 demo 全部**内存状态、免构建**（React 18 UMD + `htm`，运行时在全站共享的 `/vendor/`，样式共用 [`assets/demo.css`](assets/demo.css)），把形状的交互契约演示到位；真实项目里，数据换成 `Repository` 适配器、列表状态进 URL、鉴权走服务端 —— 各篇「规矩」一节都标了替换点。
 
-[^src]: 蓝本：[ahpxex/open-dashboard](https://github.com/ahpxex/open-dashboard)（MIT，作者 ahpx，技术栈 TanStack Start（React 19）+ Drizzle + better-auth + shadcn-on-base-ui + Tailwind v4），已吸收 commit `aa9815f`（2026-06-29，首次吸收 2026-07-07）。吸收方式：各形状的 Invariants 提炼进对应文章的「规矩」节，实现由自研可玩 demo 承担；原文与模板代码不本地存档（对象存储不适合扛 750+ 文件），钉 commit 的 GitHub 永链在各篇文末指路 —— 详见 [`MIRROR.md`](assets/open-dashboard/MIRROR.md)。要一比一的成品模板，去原仓库装它的 skill 目录。
+<div class="zx-no-copy" markdown>
+
+---
+
+维护记录：[从哪来、改了什么](../../maintenance/skills/dashboard.md)。正常使用不用看，出问题再看。
+
+</div>
+
+[^src]: 蓝本：[ahpxex/open-dashboard @ aa9815f](https://github.com/ahpxex/open-dashboard/tree/aa9815f426e9520841c4aa15a341bfd9f866091f)（MIT，作者 ahpx），2026-07-07 读。

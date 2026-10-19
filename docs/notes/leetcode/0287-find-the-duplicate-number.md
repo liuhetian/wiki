@@ -4,7 +4,7 @@ description: "把 i → nums[i] 看成链表的 next 指针，重复值就是环
 
 # 287. 寻找重复数
 
-[LeetCode 287](https://leetcode.cn/problems/find-the-duplicate-number/) · 中等 · 技巧
+LeetCode 287[^leetcode] · 中等 · 技巧
 
 ## 题
 
@@ -101,3 +101,5 @@ description: "把 i → nums[i] 看成链表的 next 指针，重复值就是环
             _r.shuffle(arr)
             assert s.findDuplicate(arr) == dup
     ```
+
+[^leetcode]: [LeetCode 287](https://leetcode.cn/problems/find-the-duplicate-number/)，2026-09-29 读。

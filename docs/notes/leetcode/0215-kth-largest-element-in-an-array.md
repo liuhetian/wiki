@@ -4,7 +4,7 @@ description: "Top-k 两把刀：大小为 k 的小顶堆 O(n log k)，快速选�
 
 # 215. 数组中的第K个最大元素
 
-[LeetCode 215](https://leetcode.cn/problems/kth-largest-element-in-an-array/) · 中等 · 堆
+LeetCode 215[^leetcode] · 中等 · 堆
 
 ## 题
 
@@ -79,3 +79,5 @@ description: "Top-k 两把刀：大小为 k 的小顶堆 O(n log k)，快速选�
     assert s.findKthLargest([7] * 1000, 500) == 7          # 全重复
     assert s.findKthLargest(list(range(10000)), 1) == 9999  # 有序输入
     ```
+
+[^leetcode]: [LeetCode 215](https://leetcode.cn/problems/kth-largest-element-in-an-array/)，2026-09-29 读。

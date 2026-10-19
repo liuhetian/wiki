@@ -4,7 +4,7 @@ description: "多源 BFS：把所有起点一起放进队列当第 0 层，按�
 
 # 994. 腐烂的橘子
 
-[LeetCode 994](https://leetcode.cn/problems/rotting-oranges/) · 中等 · 图论
+LeetCode 994[^leetcode] · 中等 · 图论
 
 ## 题
 
@@ -57,7 +57,7 @@ class Solution:
 ## 延伸
 
 - 单纯数连通块、不关心时间：[200. 岛屿数量](0200-number-of-islands.md)。
-- 同样是多源 BFS 求「到最近源点的距离」：[542. 01 矩阵](https://leetcode.cn/problems/01-matrix/)、[286. 墙与门](https://leetcode.cn/problems/walls-and-gates/)。
+- 同样是多源 BFS 求「到最近源点的距离」：542. 01 矩阵[^leetcode-3]、286. 墙与门[^leetcode-2]。
 - BFS 按层推进的另一个典型：[102. 二叉树的层序遍历](0102-binary-tree-level-order-traversal.md)；图上的按层剥离还有 [207. 课程表](0207-course-schedule.md) 的拓扑排序。
 - **坑**：边界情况「没有新鲜橘子」答案是 0，即使也没有烂橘子；「有新鲜但没有烂的」是 -1。
 
@@ -72,3 +72,7 @@ class Solution:
     assert s.orangesRotting([[1]]) == -1
     assert s.orangesRotting([[2, 1, 1, 1, 2]]) == 2  # 两头同时烂
     ```
+
+[^leetcode]: [LeetCode 994](https://leetcode.cn/problems/rotting-oranges/)，2026-09-29 读。
+[^leetcode-3]: [542. 01 矩阵](https://leetcode.cn/problems/01-matrix/)，2026-09-29 读。
+[^leetcode-2]: [286. 墙与门](https://leetcode.cn/problems/walls-and-gates/)，2026-09-29 读。

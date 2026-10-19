@@ -1,10 +1,10 @@
-// ```{.js .run} 代码块的运行器：把 Pygments 高亮好的静态代码块升级成能改、能跑的 playground。
+// ```{.js .run} 代码块的运行器：把 Pygments 高亮好的静态代码块升级成能跑的 playground。
 //
 // 抓手是 superfences 的属性语法 —— ```{.js .run} 让 zensical 产出
 // <div class="language-js run highlight">，Pygments 高亮和右上角的复制按钮（modern 里是
-// .md-code__nav，不是 Material 的 .md-clipboard）全都原样保留。这里只在代码块**下方**挂工具条
-// 和输出面板，不改代码块自身的 DOM —— 所以「可运行」是纯增量的：脚本挂掉或被拦，页面退化成
-// 普通高亮代码块，内容一行不丢。
+// .md-code__nav，不是 Material 的 .md-clipboard）全都原样保留。这里只往 .highlight 里浮一个「运行」
+// 按钮、在代码块下方接输出面板，不碰 pre 和代码本身 —— 所以「可运行」是纯增量的：脚本挂掉或被拦，
+// 页面退化成普通高亮代码块，内容一行不丢。
 //
 // 为什么执行放 Web Worker 而不是 iframe：
 // iframe（srcdoc）在 Chrome 通常与父页共用渲染主线程，读者手抖写个 while(true) 会把整个 wiki

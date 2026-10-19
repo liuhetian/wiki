@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/intent-interview.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/intent-interview.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 意图层 —— 在任何工作流运行之前的一次对话
 

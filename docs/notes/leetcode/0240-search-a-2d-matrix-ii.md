@@ -4,7 +4,7 @@ description: "从右上角出发：它是行最大、列最小，每比一次就
 
 # 240. 搜索二维矩阵 II
 
-[LeetCode 240](https://leetcode.cn/problems/search-a-2d-matrix-ii/) · 中等 · 矩阵
+LeetCode 240[^leetcode] · 中等 · 矩阵
 
 ## 题
 
@@ -63,7 +63,7 @@ class Solution:
 
 - 对比 [74. 搜索二维矩阵](0074-search-a-2d-matrix.md)：那题整体有序（下一行开头大于上一行结尾），直接当一维数组二分，$O(\log mn)$。这题只有行列各自有序，不能整体二分。
 - 每行二分一次是 $O(m \log n)$，行少列多时反而更快。
-- 同样的「杨氏矩阵阶梯走法」可以数「矩阵中 $\le x$ 的元素个数」，是「有序矩阵中第 K 小的元素」（[LeetCode 378](https://leetcode.cn/problems/kth-smallest-element-in-a-sorted-matrix/)）的二分判定函数。
+- 同样的「杨氏矩阵阶梯走法」可以数「矩阵中 $\le x$ 的元素个数」，是「有序矩阵中第 K 小的元素」（LeetCode 378[^leetcode-2]）的二分判定函数。
 
 ??? note "自测"
 
@@ -84,3 +84,6 @@ class Solution:
     assert s.searchMatrix([[-5]], -5) is True
     assert s.searchMatrix([[1, 3]], 2) is False
     ```
+
+[^leetcode]: [LeetCode 240](https://leetcode.cn/problems/search-a-2d-matrix-ii/)，2026-09-29 读。
+[^leetcode-2]: [LeetCode 378](https://leetcode.cn/problems/kth-smallest-element-in-a-sorted-matrix/)，2026-09-29 读。

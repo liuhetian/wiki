@@ -13,7 +13,7 @@ description: "Agent 生成语音：默认用我们自己的音色——AutoDL �
 
 ## 方案一：我们自己的音色（默认） { #own-voice }
 
-给一段参考人声和一段文字，生成同一个音色说这段话的语音，用的是 AutoDL 上的 IndexTTS2 工作流。照 [AutoDL ComfyUI API 文档](https://autodl.art/docs/comfyui_api/)调，只改两处：
+给一段参考人声和一段文字，生成同一个音色说这段话的语音，用的是 AutoDL 上的 IndexTTS2 工作流。照 AutoDL ComfyUI API 文档[^comfyui-api]调，只改两处：
 
 - **base URL**：`https://autodl.art` 换成 `https://autodl-proxy.liuhetian.work`
 - **API key**：官方文档里令牌前面不带 `Bearer`，经中转要带
@@ -37,7 +37,7 @@ curl -sS https://autodl-proxy.liuhetian.work/api/v1/comfyui/comfyui_workflow/res
 
 ## 方案二：微软 MAI-Voice 的 Mei（用户说不用自己的音色时） { #preset-voice }
 
-用 OpenRouter 上微软的 `microsoft/mai-voice-2.1-flash`，同步返回 mp3，几秒出结果，拿到就能播。照 [OpenRouter TTS 文档](https://openrouter.ai/docs/guides/overview/multimodal/tts)调，只改 base URL：`https://openrouter.ai` 换成 `https://openrouter.reverse-pro.xyz`。
+用 OpenRouter 上微软的 `microsoft/mai-voice-2.1-flash`，同步返回 mp3，几秒出结果，拿到就能播。照 OpenRouter TTS 文档[^tts]调，只改 base URL：`https://openrouter.ai` 换成 `https://openrouter.reverse-pro.xyz`。
 
 ```bash
 curl -sS -o out.mp3 -w '%{http_code}\n' https://openrouter.reverse-pro.xyz/api/v1/audio/speech \
@@ -56,3 +56,6 @@ curl -sS -o out.mp3 -w '%{http_code}\n' https://openrouter.reverse-pro.xyz/api/v
 - **不能克隆、不能多人对话**：要特定人声用方案一
 
 维护记录：[接口从哪来、实测结果、为什么从 Gemini 换成 MAI-Voice](../../../maintenance/tts.md)。正常使用不用看，出问题再看。
+
+[^comfyui-api]: [AutoDL ComfyUI API 文档](https://autodl.art/docs/comfyui_api/)，2026-10-15 读。
+[^tts]: [OpenRouter TTS 文档](https://openrouter.ai/docs/guides/overview/multimodal/tts)，2026-10-15 读。

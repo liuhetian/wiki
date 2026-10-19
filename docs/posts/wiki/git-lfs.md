@@ -54,7 +54,7 @@ sequenceDiagram
 
 ## 协议：四种事件，JSON-lines
 
-一行一个 JSON，stdin 进 stdout 出。全部协议就这四种事件（定义见 git-lfs 仓库的 [`docs/custom-transfers.md`](https://github.com/git-lfs/git-lfs/blob/main/docs/custom-transfers.md)）：
+一行一个 JSON，stdin 进 stdout 出。全部协议就这四种事件（定义见 git-lfs 仓库的 `docs/custom-transfers.md`[^custom-transfers]）：
 
 | 事件 | git-lfs → agent | agent → git-lfs |
 |---|---|---|
@@ -178,3 +178,5 @@ git lfs pull                  # 还原全部真身
 ---
 
 活例是本站自己：全部图片、视频、字体和第三方 vendor 真身都走这条链路，GitHub 上只有文本和指针。演进过程（塞 git → 手动镜像 → 现在这套）和它带来的写作链路变化，见[部署实操手册 · 资源备份](cos-deploy/reference/deploy.md#媒体备份)。
+
+[^custom-transfers]: [`docs/custom-transfers.md`](https://github.com/git-lfs/git-lfs/blob/main/docs/custom-transfers.md)，2026-08-15 读。

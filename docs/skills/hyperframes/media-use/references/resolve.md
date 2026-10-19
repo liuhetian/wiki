@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/resolve.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/resolve.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Resolve —— 命令、参数、复用、收编（adopt）、清单
 

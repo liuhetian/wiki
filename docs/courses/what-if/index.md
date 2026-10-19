@@ -10,9 +10,9 @@ description: "What If 伴读导读：从统计与流行病学一侧讲潜在结�
 
 ## 读法
 
-- **免费 PDF**：作者页 [miguelhernan.org/whatifbook](https://miguelhernan.org/whatifbook) 提供下载。PDF 隔一阵就修订，章节和页码会动，摘句时注明 PDF 日期
+- **免费 PDF**：作者页 miguelhernan.org/whatifbook[^whatifbook] 提供下载。PDF 隔一阵就修订，章节和页码会动，摘句时注明 PDF 日期
 - **Part I 全读**（第 1–10 章，Causal inference without models）：不用模型讲识别，后两部分都建在它上面
-- **Part II 是现场**（第 11–18 章，Causal inference with models）：第 12–17 章用 NHEFS 数据，作者页给 CSV；Python 代码是 James Fiedler 的 [causal_inference_python_code](https://github.com/jrfiedler/causal_inference_python_code)，覆盖第 11–17 章。题换一个处理变量或结局自己出，不照抄书里的数
+- **Part II 是现场**（第 11–18 章，Causal inference with models）：第 12–17 章用 NHEFS 数据，作者页给 CSV；Python 代码是 James Fiedler 的 causal_inference_python_code[^causal-inference-python-code]，覆盖第 11–17 章。题换一个处理变量或结局自己出，不照抄书里的数
 - **Part III 选读**（第 19–23 章，Causal inference for time-varying treatments）：时变处理和 g-methods 离应用统计的日常远；要只读一章就读第 22 章 target trial emulation，它和 3.6 节呼应
 - 正文旁的 Fine Point 面向所有读者，Technical Point 要中级统计，后者选读
 
@@ -54,3 +54,6 @@ description: "What If 伴读导读：从统计与流行病学一侧讲潜在结�
 ## 课程
 
 还没开课。排到时 Part I 先读完，第一课从第 12 章开：NHEFS 是现成的数据现场。
+
+[^whatifbook]: [miguelhernan.org/whatifbook](https://miguelhernan.org/whatifbook)，2026-10-02 读。
+[^causal-inference-python-code]: [causal_inference_python_code](https://github.com/jrfiedler/causal_inference_python_code)，2026-10-02 读。

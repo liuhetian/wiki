@@ -5,7 +5,7 @@ description: >
 metadata:
   tags: 3d, page, scroll, webpage, tilt, product-demo, perspective
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/3d-page-scroll.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/3d-page-scroll.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 3D Page Scroll（3D 页面滚动）
 

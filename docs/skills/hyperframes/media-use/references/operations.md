@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/operations.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/operations.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 媒体操作：agent 指南
 
@@ -215,8 +215,10 @@ heygen video create --headers "X-HeyGen-Client-Source: media-use" --wait -d '{
 }'
 ```
 
-常用的可选字段：`title`、`resolution`（`4k`/`1080p`/`720p`）、`aspect_ratio`、`remove_background`、`background`、`voice_settings`、`motion_prompt` + `expressiveness`（照片数字人动画），以及用于 webhook 的 `callback_url`/`callback_id`。不要凭记忆把这些写死：CLI 会通过 `heygen video create --request-schema` 自描述完整的、当前的请求体（一个以 `type` 为判别键的联合类型），所以要读 schema，而不是相信一份过时的字段列表。对于要在很多脚本里复用的静态图，改为一次性创建一个可复用的 **Photo Avatar**（`heygen avatar create`）。用 `resolve --from <downloaded.mp4> --type video` 把结果记入台账。文档：<https://developers.heygen.com/image-to-video>。
+常用的可选字段：`title`、`resolution`（`4k`/`1080p`/`720p`）、`aspect_ratio`、`remove_background`、`background`、`voice_settings`、`motion_prompt` + `expressiveness`（照片数字人动画），以及用于 webhook 的 `callback_url`/`callback_id`。不要凭记忆把这些写死：CLI 会通过 `heygen video create --request-schema` 自描述完整的、当前的请求体（一个以 `type` 为判别键的联合类型），所以要读 schema，而不是相信一份过时的字段列表。对于要在很多脚本里复用的静态图，改为一次性创建一个可复用的 **Photo Avatar**（`heygen avatar create`）。用 `resolve --from <downloaded.mp4> --type video` 把结果记入台账。文档：developers.heygen.com/image-to-video[^image-to-video]。
 
 ## HEVC / H.265 源素材
 
 HEVC/H.265 源素材无论是**渲染**（FFmpeg 会预先解码所有输入视频）还是**预览**（auto-proxy 会在首次使用时转码并缓存一份 H.264 副本，可用 `--no-proxy` 或在 hyperframes.json 里设 `media.autoProxy: false` 关闭）都不需要转换。通过 `ffmpeg -i in.mp4 -c:v libx264 -crf 18 proxy.mp4` 手动生成 H.264 代理、再用 `resolve --from` 登记，这种方式在边缘情况下（例如关闭了 auto-proxy，或预览时 ffmpeg 不可用）仍然可用。
+
+[^image-to-video]: [developers.heygen.com/image-to-video](https://developers.heygen.com/image-to-video)，2026-10-15 读。

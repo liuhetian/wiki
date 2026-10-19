@@ -4,7 +4,7 @@ description: "树形递归的最小模板：信任子问题的返回值，只写
 
 # 104. 二叉树的最大深度
 
-[LeetCode 104](https://leetcode.cn/problems/maximum-depth-of-binary-tree/) · 简单 · 二叉树
+LeetCode 104[^leetcode] · 简单 · 二叉树
 
 ## 题
 
@@ -70,3 +70,5 @@ description: "树形递归的最小模板：信任子问题的返回值，只写
     assert s.maxDepth(build_tree([])) == 0
     assert s.maxDepth(build_tree([1, 2, None, 3, None, 4])) == 4
     ```
+
+[^leetcode]: [LeetCode 104](https://leetcode.cn/problems/maximum-depth-of-binary-tree/)，2026-09-29 读。

@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/api-map.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/api-map.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Remotion → HyperFrames API 映射
 
@@ -8,7 +8,7 @@
 
 - **`drop`** = 从输出中整个去掉。由 HF runtime 处理。
 - **`see references/X.md`** = 映射并不简单；阅读链接到的文件。
-- **`refuse + interop`** = 本 skill 退出不做，转而推荐 [PR #214](https://github.com/heygen-com/hyperframes/pull/214) 中的 runtime adapter 模式。
+- **`refuse + interop`** = 本 skill 退出不做，转而推荐 PR #214[^pull-214] 中的 runtime adapter 模式。
 
 ## Composition 根
 
@@ -70,7 +70,7 @@
 | Remotion | HyperFrames |
 | --- | --- |
 | `<TransitionSeries>` + `<TransitionSeries.Transition presentation={fade()} />` | 在边界处手动用 `gsap.to(scene, {opacity: 0/1, duration})` 做交叉淡化 |
-| `slide()`、`wipe()`、`clockWipe()`、`fade()` | HF [shader-transitions](https://hyperframes.heygen.com/catalog/blocks) 包的 preset —— 选最接近的那个 |
+| `slide()`、`wipe()`、`clockWipe()`、`fade()` | HF shader-transitions[^blocks] 包的 preset —— 选最接近的那个 |
 | `linearTiming({durationInFrames})` | 以秒为单位的时长（`/fps`） |
 | `springTiming({config})` | 以秒为单位的时长，ease 用 `back.out` —— 见 [timing.md](timing.md) |
 
@@ -130,6 +130,9 @@
 
 ## 何时彻底退出
 
-只要存在任何阻断模式，就推荐 [PR #214](https://github.com/heygen-com/hyperframes/pull/214) 中的 runtime 互操作模式，而不是尝试翻译。见 [escape-hatch.md](escape-hatch.md)。
+只要存在任何阻断模式，就推荐 PR #214[^pull-214] 中的 runtime 互操作模式，而不是尝试翻译。见 [escape-hatch.md](escape-hatch.md)。
 
 阻断项记录在 [`scripts/lint_source.py`](../scripts/lint_source.py) 中，并由 [tier-4-escape-hatch](../assets/test-corpus/tier-4-escape-hatch/) 测试。
+
+[^pull-214]: [PR #214](https://github.com/heygen-com/hyperframes/pull/214)，2026-10-15 读。
+[^blocks]: [shader-transitions](https://hyperframes.heygen.com/catalog/blocks)，2026-10-15 读。

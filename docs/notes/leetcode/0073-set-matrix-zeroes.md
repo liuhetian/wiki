@@ -4,7 +4,7 @@ description: "拿第一行第一列当标记数组省掉 O(m+n) 空间；先单�
 
 # 73. 矩阵置零
 
-[LeetCode 73](https://leetcode.cn/problems/set-matrix-zeroes/) · 中等 · 矩阵
+LeetCode 73[^leetcode] · 中等 · 矩阵
 
 ## 题
 
@@ -54,7 +54,7 @@ class Solution:
 
 ## 延伸
 
-- 「借输入本身存状态」的同类招：[41. 缺失的第一个正数](0041-first-missing-positive.md) 用数组下标当哈希表；「生命游戏」（[LeetCode 289](https://leetcode.cn/problems/game-of-life/)）用高位比特存下一状态。
+- 「借输入本身存状态」的同类招：[41. 缺失的第一个正数](0041-first-missing-positive.md) 用数组下标当哈希表；「生命游戏」（LeetCode 289[^leetcode-2]）用高位比特存下一状态。
 - 可以只用一个 `col0` 变量（`M[0][0]` 兼任第一行标记），但顺序更绕，两个变量更不容易错。
 - 坑：别用「把要清的元素先改成一个特殊值（如 `None`）」——元素取值范围是整个 int，挑不出安全的哨兵，而且还得多扫一遍。
 
@@ -73,3 +73,6 @@ class Solution:
         s.setZeroes(mat)
         assert mat == want
     ```
+
+[^leetcode]: [LeetCode 73](https://leetcode.cn/problems/set-matrix-zeroes/)，2026-09-29 读。
+[^leetcode-2]: [LeetCode 289](https://leetcode.cn/problems/game-of-life/)，2026-09-29 读。

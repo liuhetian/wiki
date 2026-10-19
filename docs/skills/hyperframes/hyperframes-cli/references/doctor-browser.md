@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/doctor-browser.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/doctor-browser.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # doctor、browser
 
@@ -37,7 +37,7 @@ npx hyperframes doctor --json     # CI / agent output (always exit 0; gate on pa
 
 ### 不用包管理器配置 FFmpeg { #configure-ffmpeg-without-a-package-manager }
 
-从 [FFmpeg 下载页](https://ffmpeg.org/download.html)获取适合你操作系统和架构的 FFmpeg 与 FFprobe 二进制文件。两者都必须可执行。不需要 Homebrew 或系统级安装就能使用它们：
+从 FFmpeg 下载页[^download]获取适合你操作系统和架构的 FFmpeg 与 FFprobe 二进制文件。两者都必须可执行。不需要 Homebrew 或系统级安装就能使用它们：
 
 ```bash
 export HYPERFRAMES_FFMPEG_PATH="/absolute/path/to/ffmpeg"
@@ -69,3 +69,5 @@ npx hyperframes browser clear     # remove the cached Chrome download
 管理 HyperFrames 渲染所用的 Chrome 构建。之所以固定版本，是因为不同 Chrome 版本之间的像素输出会漂移——使用随附的构建能让渲染输出在不同机器之间保持可复现。
 
 用 `path` 把二进制路径嵌入脚本：`$(npx hyperframes browser path)`。
+
+[^download]: [FFmpeg 下载页](https://ffmpeg.org/download.html)，2026-10-15 读。

@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/cloud.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/cloud.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # cloud —— HeyGen 托管渲染（零基础设施）
 
@@ -18,7 +18,7 @@ npx hyperframes cloud render          # zip, upload, render, download
 
 ## 认证
 
-云渲染需要一个 HeyGen 凭据，存放在 `~/.heygen/credentials`（`0600`），并与 [`heygen` CLI](https://github.com/heygen-com/heygen-cli) 共用：用其中一个登录，另一个就会沿用这个会话。
+云渲染需要一个 HeyGen 凭据，存放在 `~/.heygen/credentials`（`0600`），并与 `heygen` CLI[^heygen-cli] 共用：用其中一个登录，另一个就会沿用这个会话。
 
 ```bash
 npx hyperframes auth login              # OAuth 2.0 + PKCE, opens the browser
@@ -163,3 +163,5 @@ npx hyperframes cloud render . --idempotency-key "$(uuidgen)"
 这个 key 会同时转发给上传和提交（服务器按端点划分幂等范围，所以复用同一个值是安全的）。可以用 `[A-Za-z0-9_:.-]` 范围内的任意不透明字符串，长度 1–255 个字符。
 
 完整的参数参考：文档 `/deploy/cloud` 和 `/packages/cli#hyperframes-cloud`。
+
+[^heygen-cli]: [`heygen` CLI](https://github.com/heygen-com/heygen-cli)，2026-10-15 读。

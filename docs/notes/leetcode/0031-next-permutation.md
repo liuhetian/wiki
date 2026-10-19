@@ -4,7 +4,7 @@ description: "从右找第一个下降点 i，再从右找第一个比它大的�
 
 # 31. 下一个排列
 
-[LeetCode 31](https://leetcode.cn/problems/next-permutation/) · 中等 · 技巧
+LeetCode 31[^leetcode] · 中等 · 技巧
 
 ## 题
 
@@ -72,3 +72,5 @@ class Solution:
         s.nextPermutation(arr)
         assert arr == want
     ```
+
+[^leetcode]: [LeetCode 31](https://leetcode.cn/problems/next-permutation/)，2026-09-29 读。

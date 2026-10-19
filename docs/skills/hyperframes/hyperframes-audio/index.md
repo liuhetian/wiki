@@ -4,7 +4,7 @@ description: >
   在 HyperFrames composition 里已经放好的音频需要混音时使用：淡入/淡出、交叉淡化、track 增益或音量、音量自动化、闪避（ducking）、与旁白打架的音乐垫乐（旁白挖空，voiceover carve）、track 上的效果（EQ、压缩器、限幅器、噪声门、饱和、延迟、混响、合唱、移相、比特粉碎），画在 track 音量或任意效果参数上的自动化包络，或者用一条子混音总线同时为多条 track 承载一条效果链、一个推子和一个自动化时钟（`<hf-audio-group>`）。
   不要用于获取或生成音频——找 BGM、音效（SFX）或制作旁白归 `/media-use`。不要用于 clip 时间或 track 布局，那归 `/hyperframes-core`。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-audio/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-audio/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新类命令之前，先遵守[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装的情况沿用下面的更新说明。
 
@@ -257,3 +257,12 @@ level  273-point envelope, floor -19.2 dB
 带尾音的效果（`reverb`、`delay`）会让渲染出来的 track 比它的源**更长**，而混音会从效果链那里得知长多少。所以带混响的垫乐不再恰好在它的 `data-duration` 处结束；这是预期行为，不是 bug。
 
 除此之外，混音要靠渲染出来再去听来验证。对于挖空：人声应该清晰可辨，同时垫乐听起来不会被掏空；垫乐应该在乐句之间重新升起来，而不是一直平着。如果垫乐在人声下面听起来是被挖出了凹口，而不只是变小声了，那就是强度太高——这是唯一一种有明显声音特征的失败模式。
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [references/attributes.md](references/attributes.md) —— 三个音频属性
+- [references/diagnosis.md](references/diagnosis.md) —— 诊断你听不到的音频
+- [references/fx-registry.md](references/fx-registry.md) —— 效果 registry
+- [references/presets.md](references/presets.md) —— Preset、具名任务（job）和单旋钮 profile

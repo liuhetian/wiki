@@ -60,4 +60,12 @@ flowchart LR
 - [figma](figma/index.md) —— 从 Figma 导入素材、设计 token、组件和分镜画板，重建成动效（画板当状态读，不当幻灯片），外加 Motion 动画和 shader
 - [hyperframes-studio](hyperframes-studio/index.md) —— 在 Studio 里陪人做项目：先判断这句话要不要改东西；新片子的计划、分镜和搭建顺序；时间线怎么排才好读（一条字幕轨、一类元素一条轨、每个场景一个 sub-composition）、安全区在哪
 
-来源、版本、翻译做了哪些改动和全部 330 篇的归档清单见 [MIRROR](MIRROR.md)。
+每个子 skill 入口末尾的「本 skill 的文件」列出了它目录下的全部文档。
+
+<div class="zx-no-copy" markdown>
+
+---
+
+维护记录：[从哪来、改了什么](../../maintenance/skills/hyperframes.md)。正常使用不用看，出问题再看。
+
+</div>

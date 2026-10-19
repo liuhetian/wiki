@@ -4,7 +4,7 @@ description: "拿末尾元素当标尺，「nums[i] <= nums[-1]」在旋转数�
 
 # 153. 寻找旋转排序数组中的最小值
 
-[LeetCode 153](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/) · 中等 · 二分查找
+LeetCode 153[^leetcode] · 中等 · 二分查找
 
 ## 题
 
@@ -65,3 +65,5 @@ class Solution:
     base = list(range(10))
     assert all(s.findMin(base[k:] + base[:k]) == 0 for k in range(10))
     ```
+
+[^leetcode]: [LeetCode 153](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/)，2026-09-29 读。

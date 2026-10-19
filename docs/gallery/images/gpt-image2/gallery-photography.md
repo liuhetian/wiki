@@ -2,7 +2,7 @@
 
 ### RAW 直出 iPhone：42 街地铁站
 
-<img src="assets/photography/photoreal-subway.png" alt="photoreal subway" width="420"/>
+<img src="assets/photography/photoreal-subway.png" alt="photoreal subway" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张完全 RAW 画质、未经处理、未经编辑的图片，具备完整的 iPhone 相机画质。美国的一座地铁站，一瞬间的动态模糊。地铁正在行驶。地铁前面有一位老妇人和一位老先生。
@@ -10,7 +10,7 @@
 
 ### 手写笔记本俯拍
 
-<img src="assets/photography/handwritten-notebook.png" alt="handwritten notebook" width="420"/>
+<img src="assets/photography/handwritten-notebook.png" alt="handwritten notebook" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张业余随手拍：一本摊平打开的笔记本，写满了黑色圆珠笔的手写笔记。字迹随意、略显潦草，像私人笔记，带有自然的瑕疵、划掉的词和加了下划线的小标题。从略高处俯拍，窗外进来的自然日光，不开闪光灯。随意的书桌环境，用 iPhone 拍摄
@@ -18,7 +18,7 @@
 
 ### 锦标赛中盘棋局
 
-<img src="assets/photography/chess-midgame.png" alt="chess midgame" width="420"/>
+<img src="assets/photography/chess-midgame.png" alt="chess midgame" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张照片级写实的照片：一场严肃锦标赛对局进行到中盘时的棋盘。俯视四分之三视角，浅景深。所有棋子清晰可辨、形状正确：兵、车、马（带马头剪影）、象（主教冠顶）、后、王（顶端带十字）。局面处于中盘：几枚棋子已被吃掉，放在棋盘右侧，一些兵已经挺进，棋子聚集在 d4-e5-f4 中心线周围。
@@ -28,7 +28,7 @@
 
 ### 360° 等距柱状投影丛林全景
 
-<img src="assets/photography/panorama-jungle.png" alt="panorama jungle" width="420"/>
+<img src="assets/photography/panorama-jungle.png" alt="panorama jungle" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张 360 度等距柱状投影（equirectangular）全景图，表现茂密的史前丛林。电影级细节。严格 2:1 画幅（例如 4096×2048）。接缝处不能有畸变，左右边缘必须无缝衔接。
@@ -40,45 +40,9 @@
 
 ### 自然感社交平台人像
 
-<img src="assets/photography/natural-sns-portrait.png" alt="Natural upper-body mirror selfie" width="420"/>
+<img src="assets/photography/natural-sns-portrait.png" alt="Natural upper-body mirror selfie" width="420" loading="lazy" decoding="async"/>
 
 ```text
-
-### 清冷窗边写真
-
-<img src="../prompt-cards/assets/img-portrait-cold.webp" alt="清冷窗边写真" width="420"/>
-
-```text
-杂志人像摄影：一位二十出头的东亚年轻女性，神情清冷克制，柔和的自然窗光从左侧照来，皮肤白皙，黑色长直发，穿一件宽大的象牙白针织毛衣，坐在一扇大窗边，窗外是虚化成光斑的低饱和冬日城市。留白通透，色调近似 Kodak Portra 但降低饱和、整体偏冷，85mm 镜头质感，浅景深，构图干净极简。无文字，无水印。
-```
-
-### 灰调立姿写真
-
-<img src="../prompt-cards/assets/img-portrait-grey-casual.webp" alt="灰调立姿写真" width="420"/>
-
-```text
-生成图片，人物形象:一位年轻的东亚女性，约20岁，深棕色长波浪卷发，沙漏型身材，纤细的腰，丰满的胸部，修长的双腿，白皙光滑的皮肤。
-服饰造型:穿着灰色紧身露脐短袖T恤，搭配同色系灰色高腰褶皱超短裙(两侧有抽绳)，高腰设计,脚穿透明带高跟鞋。
-动作:全身照，从上到下整个人站立在中间，面对镜头，一只手轻轻抓着发梢，另一只手自然垂落,动作舒展又有镜头感,既展现了身材曲线，又不会显得刻意。
-风格画质:电影级质感画质,8K超高分辨率,超写实真人摄影风格,细腻纹理,柔和的中性光，减少强烈阴影，使皮肤看起来更柔和，极简纯白色背景，比例3:4。无文字，无水印。
-```
-
-### 暖灰针织窗边写真
-
-<img src="../prompt-cards/assets/img-portrait-warmgrey-knit.webp" alt="暖灰针织窗边写真" width="420"/>
-
-```text
-竖版 3:4，真实写实韩系室内人像写真，暖灰低饱和电影感色调，一位24至27岁的成年亚洲女生，东亚面孔，五官清秀耐看，脸型柔和，皮肤白皙自然但保留真实细腻纹理，黑棕色中长发，松散自然大波浪卷，发丝略凌乱，有轻微空气感和毛躁感。她穿一件燕麦米色宽松粗针织毛衣，长袖遮住部分手掌，领口自然松垮但不过度暴露。人物站在浅灰米色墙面前，靠近窗边，侧前方柔和自然窗光洒在脸部和肩颈上，背景有模糊的窗影和柔和光斑。她微微抬起一只手靠近镜头，手掌形成大面积前景虚化，头轻轻侧向一边，眼神从手臂后方安静望向远处，嘴唇自然微张，神情慵懒、克制、安静。构图为近景半身，人物偏右，保留适量留白，50mm 或 85mm 人像镜头质感，f1.8 浅景深，焦点清晰落在眼睛和嘴唇，前景柔和虚化，低对比暖灰胶片调色，细腻颗粒，轻微暗角，真实摄影，时尚杂志感，无文字，无水印，无logo。
-```
-
-### 伦勃朗光（光线词条，拼进人像 prompt 用）
-
-<img src="../prompt-cards/assets/img-light-rembrandt.webp" alt="伦勃朗光（光线词条，拼进人像 prompt 用）" width="420"/>
-
-```text
-伦勃朗光布光：单一暖色主光从侧上方 45 度打来，处在阴影里的那侧脸颊上留出一块柔和的三角形光斑，阴影深而柔，强烈的明暗对比（chiaroscuro），棚拍人像布光参考。不描述拍摄对象，只做光线研究。无文字，无水印。
-```
-
 # 写实准则
 
 把以下内容作为默认的审美目标。
@@ -120,4 +84,39 @@
 ## 常用负面约束
 
 避免：CGI、3D 渲染、玩偶皮肤、瓷娃娃皮肤、过度磨皮、美颜 App 式脸型重塑、超大眼睛、完全对称的脸、过度锐化的睫毛、蜡质高光、华丽的影棚布光、商业时尚广告、人造轮廓光、极端焦外虚化、细节过度的毛孔纹理、过度 HDR、不真实的解剖结构、多余的手指、粘连的手指、悬浮的配饰、变形的眼镜、重复的首饰、假文字、畸形的背景物体。
+```
+
+### 清冷窗边写真
+
+<img src="../prompt-cards/assets/img-portrait-cold.webp" alt="清冷窗边写真" width="420" loading="lazy" decoding="async"/>
+
+```text
+杂志人像摄影：一位二十出头的东亚年轻女性，神情清冷克制，柔和的自然窗光从左侧照来，皮肤白皙，黑色长直发，穿一件宽大的象牙白针织毛衣，坐在一扇大窗边，窗外是虚化成光斑的低饱和冬日城市。留白通透，色调近似 Kodak Portra 但降低饱和、整体偏冷，85mm 镜头质感，浅景深，构图干净极简。无文字，无水印。
+```
+
+### 灰调立姿写真
+
+<img src="../prompt-cards/assets/img-portrait-grey-casual.webp" alt="灰调立姿写真" width="420" loading="lazy" decoding="async"/>
+
+```text
+生成图片，人物形象:一位年轻的东亚女性，约20岁，深棕色长波浪卷发，沙漏型身材，纤细的腰，丰满的胸部，修长的双腿，白皙光滑的皮肤。
+服饰造型:穿着灰色紧身露脐短袖T恤，搭配同色系灰色高腰褶皱超短裙(两侧有抽绳)，高腰设计,脚穿透明带高跟鞋。
+动作:全身照，从上到下整个人站立在中间，面对镜头，一只手轻轻抓着发梢，另一只手自然垂落,动作舒展又有镜头感,既展现了身材曲线，又不会显得刻意。
+风格画质:电影级质感画质,8K超高分辨率,超写实真人摄影风格,细腻纹理,柔和的中性光，减少强烈阴影，使皮肤看起来更柔和，极简纯白色背景，比例3:4。无文字，无水印。
+```
+
+### 暖灰针织窗边写真
+
+<img src="../prompt-cards/assets/img-portrait-warmgrey-knit.webp" alt="暖灰针织窗边写真" width="420" loading="lazy" decoding="async"/>
+
+```text
+竖版 3:4，真实写实韩系室内人像写真，暖灰低饱和电影感色调，一位24至27岁的成年亚洲女生，东亚面孔，五官清秀耐看，脸型柔和，皮肤白皙自然但保留真实细腻纹理，黑棕色中长发，松散自然大波浪卷，发丝略凌乱，有轻微空气感和毛躁感。她穿一件燕麦米色宽松粗针织毛衣，长袖遮住部分手掌，领口自然松垮但不过度暴露。人物站在浅灰米色墙面前，靠近窗边，侧前方柔和自然窗光洒在脸部和肩颈上，背景有模糊的窗影和柔和光斑。她微微抬起一只手靠近镜头，手掌形成大面积前景虚化，头轻轻侧向一边，眼神从手臂后方安静望向远处，嘴唇自然微张，神情慵懒、克制、安静。构图为近景半身，人物偏右，保留适量留白，50mm 或 85mm 人像镜头质感，f1.8 浅景深，焦点清晰落在眼睛和嘴唇，前景柔和虚化，低对比暖灰胶片调色，细腻颗粒，轻微暗角，真实摄影，时尚杂志感，无文字，无水印，无logo。
+```
+
+### 伦勃朗光（光线词条，拼进人像 prompt 用）
+
+<img src="../prompt-cards/assets/img-light-rembrandt.webp" alt="伦勃朗光（光线词条，拼进人像 prompt 用）" width="420" loading="lazy" decoding="async"/>
+
+```text
+伦勃朗光布光：单一暖色主光从侧上方 45 度打来，处在阴影里的那侧脸颊上留出一块柔和的三角形光斑，阴影深而柔，强烈的明暗对比（chiaroscuro），棚拍人像布光参考。不描述拍摄对象，只做光线研究。无文字，无水印。
 ```

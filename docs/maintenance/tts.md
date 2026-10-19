@@ -8,8 +8,8 @@ description: "语音合成的维护记录：方案一 AutoDL 上 IndexTTS2 的�
 
 ## 接口从哪来 { #upstream }
 
-- 工作流页面：[autodl.art/large-model/comfyui/indextts2-v1](https://www.autodl.art/large-model/comfyui/indextts2-v1)。页面是单页应用，curl 拿不到正文，接口是从前端 JS 和下面这个元数据接口里找到的。
-- 元数据接口：`GET /api/v1/comfyui/workflows/indextts2-v1`，不用鉴权。里面有参数定义 `input_rules`、两个端点 `endpoint_info`、计费 `billing_config`、示例输入输出，以及官方文档地址 [`/docs/comfyui_api/`](https://autodl.art/docs/comfyui_api/)。
+- 工作流页面：autodl.art/large-model/comfyui/indextts2-v1[^indextts2-v1]。页面是单页应用，curl 拿不到正文，接口是从前端 JS 和下面这个元数据接口里找到的。
+- 元数据接口：`GET /api/v1/comfyui/workflows/indextts2-v1`，不用鉴权。里面有参数定义 `input_rules`、两个端点 `endpoint_info`、计费 `billing_config`、示例输入输出，以及官方文档地址 `/docs/comfyui_api/`[^comfyui-api]。
 - 鉴权：令牌要在「令牌管理」里建，分组选 ComfyUI。官方的 `Authorization` 头里直接放令牌本身，不带 `Bearer`。中转把它包了一层：Agent 发 `Bearer <网关 token>`，中转换成真实令牌再转发。
 
 `input_rules` 里值得记的几点（2026-10-01 抓取）：
@@ -72,7 +72,7 @@ description: "语音合成的维护记录：方案一 AutoDL 上 IndexTTS2 的�
 
 ### 接口从哪来
 
-- 用法和 Gemini 一样是 [OpenRouter TTS 文档](https://openrouter.ai/docs/guides/overview/multimodal/tts)的 `POST /api/v1/audio/speech`；模型页 [openrouter.ai/microsoft/mai-voice-2.1-flash](https://openrouter.ai/microsoft/mai-voice-2.1-flash) 只写了 `model`、`input`、`voice`、`response_format` 四个字段。
+- 用法和 Gemini 一样是 OpenRouter TTS 文档[^tts]的 `POST /api/v1/audio/speech`；模型页 openrouter.ai/microsoft/mai-voice-2.1-flash[^mai-voice-2-1-flash] 只写了 `model`、`input`、`voice`、`response_format` 四个字段。
 - 模型元数据：`supported_voices` 有 97 个，按 `<语言>-<名字>:MAI-Voice-2.1-Flash` 命名，中文 6 个（Bo、Grant、Harper、Lan、Mei、Wei）；描述写的是 23 种语言。`/endpoints` 显示上游是 Azure，`context_length` 是 0，也就是没标长度上限，`supports_voice_cloning` 是 false。
 - 价格：每百万字 15 美元，只按输入字数收。
 
@@ -105,14 +105,14 @@ description: "语音合成的维护记录：方案一 AutoDL 上 IndexTTS2 的�
 ### 当初为什么选它
 
 - 走现成的 OpenRouter 海外中转，中转配置不用动——`/api/v1/audio/speech` 原样转发就能用。
-- Google 2026-09-23 发布，101 种语言，列了简体中文、繁体中文和粤语，见 [Google 模型文档](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-lite-tts)。Google 公布的盲测语言里没有中文，中文好不好只能靠自己听。
-- 价格：输入每百万 token 0.5 美元，输出（音频）每百万 token 6 美元；音频每秒 25 token，折合**每分钟约 0.009 美元**。[Google 价格页](https://ai.google.dev/gemini-api/docs/pricing)写明这是 2026-12-31 前的价格，2027-01-01 起输入输出都翻倍。OpenRouter 标价和 Google 一样。
+- Google 2026-09-23 发布，101 种语言，列了简体中文、繁体中文和粤语，见 Google 模型文档[^gemini-3-8-flash-lite-tts]。Google 公布的盲测语言里没有中文，中文好不好只能靠自己听。
+- 价格：输入每百万 token 0.5 美元，输出（音频）每百万 token 6 美元；音频每秒 25 token，折合**每分钟约 0.009 美元**。Google 价格页[^pricing]写明这是 2026-12-31 前的价格，2027-01-01 起输入输出都翻倍。OpenRouter 标价和 Google 一样。
 - 同系列的 `google/gemini-3.8-flash-tts` 输出贵 50%，130 种语言，表演更细，请求格式完全一样，只换模型名。没拿来比。
 - 音色和指令是用户听出来的：2026-10-08 生成了一段 40 秒的 Kore，`instructions` 写「像电台主播一样，亲切自然，语速适中」；又生成了 6 个音色、6 种情绪各一段短句对比。用户听完觉得 Kore 那段最好，定为默认。
 
 ### 接口从哪来
 
-- 用法：[OpenRouter TTS 文档](https://openrouter.ai/docs/guides/overview/multimodal/tts)。OpenAI 兼容的 `POST /api/v1/audio/speech`，返回体是音频字节，不是 JSON。
+- 用法：OpenRouter TTS 文档[^tts]。OpenAI 兼容的 `POST /api/v1/audio/speech`，返回体是音频字节，不是 JSON。
 - 模型元数据：`GET https://openrouter.ai/api/v1/models?output_modalities=speech`，不用鉴权，里面有 `supported_voices`（30 个）和价格；`GET /api/v1/models/google/gemini-3.8-flash-lite-tts/endpoints` 能看到上游是 Google AI Studio 和 Vertex 两家，上下文 32768，`max_prompt_tokens` 8192，`max_completion_tokens` 16384，`supports_voice_cloning` 是 false。
 - 文档里写的 Gemini 专属规矩：风格写进顶层 `instructions`，OpenRouter 把它转成上游的 style 字段，写进 `input` 的指令会被念出来；`input` 可以是分段列表，做多人对话。
 
@@ -159,3 +159,10 @@ description: "语音合成的维护记录：方案一 AutoDL 上 IndexTTS2 的�
 
 - 哪个最像原声还没比，默认仍是 IndexTTS2。
 - Fish 免费版的次数上限和数据政策没查。
+
+[^indextts2-v1]: [autodl.art/large-model/comfyui/indextts2-v1](https://www.autodl.art/large-model/comfyui/indextts2-v1)，2026-10-02 读。
+[^comfyui-api]: [`/docs/comfyui_api/`](https://autodl.art/docs/comfyui_api/)，2026-10-02 读。
+[^tts]: [OpenRouter TTS 文档](https://openrouter.ai/docs/guides/overview/multimodal/tts)，2026-10-15 读。
+[^mai-voice-2-1-flash]: [openrouter.ai/microsoft/mai-voice-2.1-flash](https://openrouter.ai/microsoft/mai-voice-2.1-flash)，2026-10-15 读。
+[^gemini-3-8-flash-lite-tts]: [Google 模型文档](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-lite-tts)，2026-10-15 读。
+[^pricing]: [Google 价格页](https://ai.google.dev/gemini-api/docs/pricing)，2026-10-15 读。

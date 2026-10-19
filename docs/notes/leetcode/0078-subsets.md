@@ -4,7 +4,7 @@ description: "子集 = 每个元素选或不选；回溯时每个节点都收答
 
 # 78. 子集
 
-[LeetCode 78](https://leetcode.cn/problems/subsets/) · 中等 · 回溯
+LeetCode 78[^leetcode] · 中等 · 回溯
 
 ## 题
 
@@ -82,3 +82,5 @@ graph TD
     assert norm(s.subsets([0])) == [[], [0]]
     assert len(s.subsets(list(range(10)))) == 1024
     ```
+
+[^leetcode]: [LeetCode 78](https://leetcode.cn/problems/subsets/)，2026-09-29 读。

@@ -1,8 +1,8 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/escape-hatch.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/escape-hatch.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 何时退出：runtime 互操作模式
 
-有些 Remotion composition 无法被干净地翻译。本 skill 应当提前识别出它们，并推荐 [PR #214](https://github.com/heygen-com/hyperframes/pull/214) 中的 **runtime 互操作模式**，而不是产出坏掉的 HTML。
+有些 Remotion composition 无法被干净地翻译。本 skill 应当提前识别出它们，并推荐 PR #214[^pull-214] 中的 **runtime 互操作模式**，而不是产出坏掉的 HTML。
 
 ## 何时推荐互操作
 
@@ -20,7 +20,7 @@
 
 ## 互操作模式实际做了什么
 
-根据 [PR #214](https://github.com/heygen-com/hyperframes/pull/214)，这个 runtime adapter 会：
+根据 PR #214[^pull-214]，这个 runtime adapter 会：
 
 1. 通过 esbuild 把用户的 Remotion 代码与 React + `@remotion/player` 打包在一起。
 2. 在一个 HF composition 的 HTML 里挂载一个 Remotion `<Player>`。
@@ -90,3 +90,5 @@
 ## 源码同时有阻断项和警告时
 
 退出。只要存在一个阻断项，就意味着本 skill 不应尝试翻译 —— 即使 composition 的其余部分是干净的。用户应当对整个东西使用互操作，或者先把阻断模式从他们的 Remotion 源码中重构掉。
+
+[^pull-214]: [PR #214](https://github.com/heygen-com/hyperframes/pull/214)，2026-10-15 读。

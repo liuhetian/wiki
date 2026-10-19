@@ -4,7 +4,7 @@ description: "给「等价类」造一个规范形当哈希键——排序串或
 
 # 49. 字母异位词分组
 
-[LeetCode 49](https://leetcode.cn/problems/group-anagrams/) · 中等 · 哈希
+LeetCode 49[^leetcode] · 中等 · 哈希
 
 ## 题
 
@@ -79,3 +79,5 @@ description: "给「等价类」造一个规范形当哈希键——排序串或
         assert s.groupAnagrams(["a"]) == [["a"]]
         assert norm(s.groupAnagrams(["ab", "ba", "abc"])) == [["ab", "ba"], ["abc"]]
     ```
+
+[^leetcode]: [LeetCode 49](https://leetcode.cn/problems/group-anagrams/)，2026-09-29 读。

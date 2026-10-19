@@ -4,7 +4,7 @@ description: "「除自己以外」= 左前缀积 × 右后缀积；输出数组
 
 # 238. 除了自身以外数组的乘积
 
-[LeetCode 238](https://leetcode.cn/problems/product-of-array-except-self/) · 中等 · 普通数组
+LeetCode 238[^leetcode] · 中等 · 普通数组
 
 ## 题
 
@@ -59,3 +59,5 @@ class Solution:
     assert s.productExceptSelf([0, 0]) == [0, 0]
     assert s.productExceptSelf([2, 3]) == [3, 2]
     ```
+
+[^leetcode]: [LeetCode 238](https://leetcode.cn/problems/product-of-array-except-self/)，2026-09-29 读。

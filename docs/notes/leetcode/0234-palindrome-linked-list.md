@@ -4,7 +4,7 @@ description: "快慢指针找中点 + 反转后半段 + 双指针对比，三个
 
 # 234. 回文链表
 
-[LeetCode 234](https://leetcode.cn/problems/palindrome-linked-list/) · 简单 · 链表
+LeetCode 234[^leetcode] · 简单 · 链表
 
 ## 题
 
@@ -68,3 +68,5 @@ class Solution:
     assert s.isPalindrome(build_list([1, 2, 3, 1])) is False
     assert s.isPalindrome(build_list([1])) is True
     ```
+
+[^leetcode]: [LeetCode 234](https://leetcode.cn/problems/palindrome-linked-list/)，2026-09-29 读。

@@ -4,7 +4,7 @@ description: "枚举「谁是最矮的那根」：每根柱子向两侧延伸到
 
 # 84. 柱状图中最大的矩形
 
-[LeetCode 84](https://leetcode.cn/problems/largest-rectangle-in-histogram/) · 困难 · 栈
+LeetCode 84[^leetcode] · 困难 · 栈
 
 ## 题
 
@@ -71,3 +71,5 @@ class Solution:
     assert s.largestRectangleArea([1, 2, 3, 4, 5]) == 9
     assert s.largestRectangleArea([5, 4, 1, 2]) == 8
     ```
+
+[^leetcode]: [LeetCode 84](https://leetcode.cn/problems/largest-rectangle-in-histogram/)，2026-09-29 读。

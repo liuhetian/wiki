@@ -3,7 +3,7 @@ name: hyperframes-core
 description: >
   HyperFrames 的 composition 契约 —— 构建一个可渲染的项目。用于 composition 结构、`data-*` 计时属性、`class="clip"`、track、sub-composition、变量、由框架掌管的媒体播放、确定性渲染规则以及校验。编写 composition HTML 之前先读它。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新类命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装的则沿用下面的更新说明。
 
@@ -100,3 +100,18 @@ lint 的 **error** 还会关掉布局和对比度审查：此时 `check` 报告 
 - [ ] 含 sub-composition 的项目：`npx hyperframes snapshot --at <midpoints>`，并逐帧目测
 - [ ] 用 `npx hyperframes preview --background` 做评审（用户可以在 Studio 的 timeline 里编辑任何东西，而且服务器在调用它的命令结束后仍会继续运行）
 - [ ] 只有在用户批准后才 `npx hyperframes render`
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [references/composition-patterns.md](references/composition-patterns.md) —— Composition 模式
+- [references/creator-editing-recipes.md](references/creator-editing-recipes.md) —— 创作者剪辑配方
+- [references/data-attributes.md](references/data-attributes.md) —— Data 属性参考
+- [references/determinism-rules.md](references/determinism-rules.md) —— 确定性、动画 Runtime 与布局
+- [references/full-screen-motion.md](references/full-screen-motion.md) —— 全屏运动模式
+- [references/minimal-composition.md](references/minimal-composition.md) —— 最小 Composition
+- [references/sub-compositions.md](references/sub-compositions.md) —— Sub-Composition
+- [references/tailwind.md](references/tailwind.md) —— HyperFrames Tailwind
+- [references/tracks-and-clips.md](references/tracks-and-clips.md) —— Track 与 Clip
+- [references/variables-and-media.md](references/variables-and-media.md) —— 变量与媒体

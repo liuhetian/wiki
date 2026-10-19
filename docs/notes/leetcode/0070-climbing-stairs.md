@@ -4,7 +4,7 @@ description: "按最后一步分类计数：到第 n 阶的走法 = 到 n-1 阶 
 
 # 70. 爬楼梯
 
-[LeetCode 70](https://leetcode.cn/problems/climbing-stairs/) · 简单 · 动态规划
+LeetCode 70[^leetcode] · 简单 · 动态规划
 
 ## 题
 
@@ -55,3 +55,5 @@ class Solution:
     assert s.climbStairs(1) == 1
     assert s.climbStairs(45) == 1836311903
     ```
+
+[^leetcode]: [LeetCode 70](https://leetcode.cn/problems/climbing-stairs/)，2026-09-29 读。

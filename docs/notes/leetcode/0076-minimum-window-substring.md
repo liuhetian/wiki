@@ -4,7 +4,7 @@ description: "求最短合法窗口：右端扩到刚好覆盖，再尽量收左
 
 # 76. 最小覆盖子串
 
-[LeetCode 76](https://leetcode.cn/problems/minimum-window-substring/) · 困难 · 子串
+LeetCode 76[^leetcode] · 困难 · 子串
 
 ## 题
 
@@ -58,7 +58,7 @@ class Solution:
 ## 延伸
 
 - 定长窗口 + 计数差的版本：[438. 找到字符串中所有字母异位词](0438-find-all-anagrams-in-a-string.md)。
-- 「长度最小的子数组」（[LeetCode 209](https://leetcode.cn/problems/minimum-size-subarray-sum/)）是数值版：和 `>= target` 就收左端，前提是全为正数。
+- 「长度最小的子数组」（LeetCode 209[^leetcode-2]）是数值版：和 `>= target` 就收左端，前提是全为正数。
 - 坑：`best` 的初值要能区分「没找到」；这里用空区间 `(0, 0)` 做哨兵，因为合法窗口长度至少为 `len(t) >= 1`。
 
 ??? note "自测"
@@ -71,3 +71,6 @@ class Solution:
     assert s.minWindow("ab", "b") == "b"
     assert s.minWindow("aaflslflsldkalskaaa", "aaa") == "aaa"
     ```
+
+[^leetcode]: [LeetCode 76](https://leetcode.cn/problems/minimum-window-substring/)，2026-09-29 读。
+[^leetcode-2]: [LeetCode 209](https://leetcode.cn/problems/minimum-size-subarray-sum/)，2026-09-29 读。

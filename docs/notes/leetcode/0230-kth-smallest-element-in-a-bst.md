@@ -4,7 +4,7 @@ description: "BST 中序即升序，迭代中序数到第 k 个就停；频繁�
 
 # 230. 二叉搜索树中第 K 小的元素
 
-[LeetCode 230](https://leetcode.cn/problems/kth-smallest-element-in-a-bst/) · 中等 · 二叉树
+LeetCode 230[^leetcode] · 中等 · 二叉树
 
 ## 题
 
@@ -65,3 +65,5 @@ class Solution:
     t = build_tree([4, 2, 6, 1, 3, 5, 7])
     assert [s.kthSmallest(t, k) for k in range(1, 8)] == [1, 2, 3, 4, 5, 6, 7]
     ```
+
+[^leetcode]: [LeetCode 230](https://leetcode.cn/problems/kth-smallest-element-in-a-bst/)，2026-09-29 读。

@@ -4,7 +4,7 @@ description: "open-design.ai 首页 11 个动效逐个复刻：磁性 Dock、物
 
 # Open Design 官网效果拆解
 
-[open-design.ai](https://open-design.ai/) 首页是一套很完整的"纸白 + 黑墨 + 荧光绿 `#63fe13`"编辑部气质（他们自己管这套令牌叫 **Atelier Zero**），动效密度很高却全程轻快 —— 秘密在架构上：Astro 静态输出、浏览器端**零 React runtime**，每个动效都是"服务端渲染好的静态 HTML + 一小段内联增强脚本"的渐进增强，观察器不触发、reduced-motion、脚本挂掉，页面照样完整可读。
+open-design.ai[^open-design] 首页是一套很完整的"纸白 + 黑墨 + 荧光绿 `#63fe13`"编辑部气质（他们自己管这套令牌叫 **Atelier Zero**），动效密度很高却全程轻快 —— 秘密在架构上：Astro 静态输出、浏览器端**零 React runtime**，每个动效都是"服务端渲染好的静态 HTML + 一小段内联增强脚本"的渐进增强，观察器不触发、reduced-motion、脚本挂掉，页面照样完整可读。
 
 这里把首页的 11 个效果逐个拆开，每个复刻成一个自包含单页 demo（无外链依赖，参数照抄官网源码），按首页从上往下的顺序排列：
 
@@ -22,7 +22,17 @@ description: "open-design.ai 首页 11 个动效逐个复刻：磁性 Dock、物
 
 ## 蓝本
 
-- 仓库：[nexu-io/open-design](https://github.com/nexu-io/open-design)，本次拆解钉在 [`4567a0d5`](https://github.com/nexu-io/open-design/tree/4567a0d57557b29eb79ef1f7a40826f2b801d982/apps/landing-page)
-- 结构在 [`app/page.tsx`](https://github.com/nexu-io/open-design/blob/4567a0d57557b29eb79ef1f7a40826f2b801d982/apps/landing-page/app/page.tsx)（构建期 `renderToStaticMarkup`），样式在 [`app/globals.css`](https://github.com/nexu-io/open-design/blob/4567a0d57557b29eb79ef1f7a40826f2b801d982/apps/landing-page/app/globals.css)，全部增强脚本内联在 [`app/pages/index.astro`](https://github.com/nexu-io/open-design/blob/4567a0d57557b29eb79ef1f7a40826f2b801d982/apps/landing-page/app/pages/index.astro)
-- 设计令牌规范：[`design-systems/atelier-zero/DESIGN.md`](https://github.com/nexu-io/open-design/blob/4567a0d57557b29eb79ef1f7a40826f2b801d982/design-systems/atelier-zero/DESIGN.md)；官网首页还有一份自包含的 known-good 渲染 [`design-templates/open-design-landing/example.html`](https://github.com/nexu-io/open-design/blob/4567a0d57557b29eb79ef1f7a40826f2b801d982/design-templates/open-design-landing/example.html)，想整页仿照从它起步最快
-- 动效上游多为 [React Bits](https://reactbits.dev/)（BlurText / Dock / FallingText / Gradual Blur）和 Magic UI（Text Reveal），官网做的是去 React 化的 vanilla 移植 —— 重库（matter-js、cobe）vendored 后由 IntersectionObserver 提前 1.5 屏按需注入
+- 仓库：nexu-io/open-design[^open-design-2]，本次拆解钉在 `4567a0d5`[^landing-page]
+- 结构在 `app/page.tsx`[^page-tsx]（构建期 `renderToStaticMarkup`），样式在 `app/globals.css`[^globals-css]，全部增强脚本内联在 `app/pages/index.astro`[^index-astro]
+- 设计令牌规范：`design-systems/atelier-zero/DESIGN.md`[^design]；官网首页还有一份自包含的 known-good 渲染 `design-templates/open-design-landing/example.html`[^example]，想整页仿照从它起步最快
+- 动效上游多为 React Bits[^reactbits]（BlurText / Dock / FallingText / Gradual Blur）和 Magic UI（Text Reveal），官网做的是去 React 化的 vanilla 移植 —— 重库（matter-js、cobe）vendored 后由 IntersectionObserver 提前 1.5 屏按需注入
+
+[^open-design]: [open-design.ai](https://open-design.ai/)，2026-07-28 读。
+[^open-design-2]: [nexu-io/open-design](https://github.com/nexu-io/open-design)，2026-07-28 读。
+[^landing-page]: [`4567a0d5`](https://github.com/nexu-io/open-design/tree/4567a0d57557b29eb79ef1f7a40826f2b801d982/apps/landing-page)，2026-07-28 读。
+[^page-tsx]: [`app/page.tsx`](https://github.com/nexu-io/open-design/blob/4567a0d57557b29eb79ef1f7a40826f2b801d982/apps/landing-page/app/page.tsx)，2026-07-28 读。
+[^globals-css]: [`app/globals.css`](https://github.com/nexu-io/open-design/blob/4567a0d57557b29eb79ef1f7a40826f2b801d982/apps/landing-page/app/globals.css)，2026-07-28 读。
+[^index-astro]: [`app/pages/index.astro`](https://github.com/nexu-io/open-design/blob/4567a0d57557b29eb79ef1f7a40826f2b801d982/apps/landing-page/app/pages/index.astro)，2026-07-28 读。
+[^design]: [`design-systems/atelier-zero/DESIGN.md`](https://github.com/nexu-io/open-design/blob/4567a0d57557b29eb79ef1f7a40826f2b801d982/design-systems/atelier-zero/DESIGN.md)，2026-07-28 读。
+[^example]: [`design-templates/open-design-landing/example.html`](https://github.com/nexu-io/open-design/blob/4567a0d57557b29eb79ef1f7a40826f2b801d982/design-templates/open-design-landing/example.html)，2026-07-28 读。
+[^reactbits]: [React Bits](https://reactbits.dev/)，2026-07-28 读。

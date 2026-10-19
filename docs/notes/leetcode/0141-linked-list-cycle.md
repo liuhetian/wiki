@@ -4,7 +4,7 @@ description: "Floyd 判圈：快指针每步比慢指针多走 1，进了环就�
 
 # 141. 环形链表
 
-[LeetCode 141](https://leetcode.cn/problems/linked-list-cycle/) · 简单 · 链表
+LeetCode 141[^leetcode] · 简单 · 链表
 
 ## 题
 
@@ -44,7 +44,7 @@ class Solution:
 ## 延伸
 
 - 找出**环从哪里开始**：[142. 环形链表 II](0142-linked-list-cycle-ii.md)，相遇后再放一个指针从头走。
-- **Floyd 不限于链表**：只要是 $x_{k+1} = f(x_k)$ 的序列就能判圈。[287. 寻找重复数](0287-find-the-duplicate-number.md) 把下标当节点、`nums[i]` 当 `next`；[202. 快乐数](https://leetcode.cn/problems/happy-number/) 把「各位平方和」当 `next`。
+- **Floyd 不限于链表**：只要是 $x_{k+1} = f(x_k)$ 的序列就能判圈。[287. 寻找重复数](0287-find-the-duplicate-number.md) 把下标当节点、`nums[i]` 当 `next`；202. 快乐数[^leetcode-2] 把「各位平方和」当 `next`。
 - **坑**：判相遇要放在移动之后；若先判 `slow is fast` 再移动，起点就相等，直接误报。
 
 ??? note "自测"
@@ -64,3 +64,6 @@ class Solution:
     one = ListNode(1); one.next = one  # 自环
     assert s.hasCycle(one) is True
     ```
+
+[^leetcode]: [LeetCode 141](https://leetcode.cn/problems/linked-list-cycle/)，2026-09-29 读。
+[^leetcode-2]: [202. 快乐数](https://leetcode.cn/problems/happy-number/)，2026-09-29 读。

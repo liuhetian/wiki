@@ -4,7 +4,7 @@ description: "Agent 读取网页：DeepSeek 官方 Fetch 接口，走国内中�
 
 # 读取网页
 
-给一个 URL，返回网页标题和 Markdown 正文。用 DeepSeek 官方的 Fetch 接口，走[中转](../../../posts/ai-assistant/api-gateway.md)的国内机，照 [DeepSeek 官方 API 文档](https://api-docs.deepseek.com/zh-cn/api/fetch)调，只改两处：
+给一个 URL，返回网页标题和 Markdown 正文。用 DeepSeek 官方的 Fetch 接口，走[中转](../../../posts/ai-assistant/api-gateway.md)的国内机，照 DeepSeek 官方 API 文档[^fetch]调，只改两处：
 
 - **base URL**：`https://api.deepseek.com` 换成 `https://deepseek-proxy.liuhetian.work`
 - **API key**：用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来
@@ -23,3 +23,5 @@ curl -sS https://deepseek-proxy.liuhetian.work/v1/tools/fetch \
 - **价钱**：取到正文的一次 0.005 元。账号限速每秒 5 次，同一个网站另有限速，超了返回 429，等一会儿再重试
 
 维护记录：[接口从哪来、实测结果](../../../maintenance/web-search.md#deepseek)。正常使用不用看，抓取出问题再看。
+
+[^fetch]: [DeepSeek 官方 API 文档](https://api-docs.deepseek.com/zh-cn/api/fetch)，2026-10-18 读。

@@ -943,3 +943,30 @@
   .md-typeset input:not([type=radio]):not([type=checkbox]) { field-sizing: content; width: auto; }
   .md-typeset textarea { field-sizing: content; }
 }
+
+/* ================================================================
+   12. 复制时不要的块 .zx-no-copy（活例：skills/collab/chat-prompts/project-gist.md）
+   复制按钮跳过的块：写死的 zx-no-copy（页尾维护记录、只给人看的开关），和条件不成立的分支
+   div[data-when]（vendor/md-copy.js 按选择挂上 / 摘掉 zx-no-copy）。都是左边一道虚线、右上方
+   「不复制」小字；没选中的分支另外变淡，鼠标移上去恢复。只是提示，不藏、不禁用：块里的控件照常能填。
+   小字放在块的上沿外面（bottom: 100%），落在上一段的下边距里，不压正文。
+   ================================================================ */
+.md-typeset .zx-no-copy {
+  position: relative;
+  padding-left: .9em;
+  border-left: 1px dashed var(--ink-faint);
+  transition: opacity .15s;
+}
+.md-typeset .zx-no-copy::before {
+  content: "不复制";
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  color: var(--ink-faint);
+  font-size: .6rem;
+  line-height: 1.6;
+  letter-spacing: .1em;
+}
+.md-typeset [data-when].zx-no-copy { opacity: .5; }
+.md-typeset [data-when].zx-no-copy:hover,
+.md-typeset [data-when].zx-no-copy:focus-within { opacity: 1; }

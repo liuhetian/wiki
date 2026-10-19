@@ -4,7 +4,7 @@ description: "错落的入场（ARRIVAL）级联——单词/元素从下方甩�
 metadata:
   tags: entrance, cascade, stagger, kinetic-text, title-card, segment-opener, arrival, waterfall, whip
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/waterfall-entry.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/waterfall-entry.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 瀑布入场（Waterfall Entry）
 

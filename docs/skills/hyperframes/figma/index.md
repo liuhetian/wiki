@@ -2,7 +2,7 @@
 name: figma
 description: "把 Figma 内容导入 HyperFrames composition —— 渲染出的素材、品牌 token、组件、分镜 section → 重建的运动（frame 被当作状态来读，而不是幻灯片）（REST/CLI）、有连接器时借助连接器获取的运动，以及来自连接器或原生导出的 shader。当用户粘贴一个 figma.com 链接，或要求把某个 Figma 设计、frame、logo、品牌或动画放进视频 / composition 时使用。"
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/figma/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/figma/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 

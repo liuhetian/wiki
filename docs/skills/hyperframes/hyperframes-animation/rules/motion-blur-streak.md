@@ -5,7 +5,7 @@ description: >
 metadata:
   tags: motion-blur, velocity, streak, entrance, fly-in, ghost, echo, svg-filter, kinetic, camera, snap, driven, tracked, baked-track
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/motion-blur-streak.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/motion-blur-streak.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Motion-Blur Streak
 

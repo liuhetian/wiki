@@ -4,7 +4,7 @@ description: "回文由中心向外对称生长：枚举 2n-1 个中心各扩一
 
 # 5. 最长回文子串
 
-[LeetCode 5](https://leetcode.cn/problems/longest-palindromic-substring/) · 中等 · 多维动态规划
+LeetCode 5[^leetcode] · 中等 · 多维动态规划
 
 ## 题
 
@@ -90,3 +90,5 @@ description: "回文由中心向外对称生长：枚举 2n-1 个中心各扩一
         assert s.longestPalindrome("ac") in ("a", "c")
         assert s.longestPalindrome("forgeeksskeegfor") == "geeksskeeg"
     ```
+
+[^leetcode]: [LeetCode 5](https://leetcode.cn/problems/longest-palindromic-substring/)，2026-09-29 读。

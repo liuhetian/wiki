@@ -4,7 +4,7 @@ description: "区间题先按左端点排序，之后只需和「结果里最后
 
 # 56. 合并区间
 
-[LeetCode 56](https://leetcode.cn/problems/merge-intervals/) · 中等 · 普通数组
+LeetCode 56[^leetcode] · 中等 · 普通数组
 
 ## 题
 
@@ -43,8 +43,8 @@ class Solution:
 
 ## 延伸
 
-- 「插入区间」（[LeetCode 57](https://leetcode.cn/problems/insert-interval/)）：已有序，一遍扫分三段——左边不重叠、中间合并、右边不重叠，$O(n)$。
-- 「无重叠区间」（[LeetCode 435](https://leetcode.cn/problems/non-overlapping-intervals/)）：换成按**终点**排序做贪心，删最少的区间。
+- 「插入区间」（LeetCode 57[^leetcode-2]）：已有序，一遍扫分三段——左边不重叠、中间合并、右边不重叠，$O(n)$。
+- 「无重叠区间」（LeetCode 435[^leetcode-3]）：换成按**终点**排序做贪心，删最少的区间。
 - [763. 划分字母区间](0763-partition-labels.md) 本质是隐式的区间合并：每个字母的首末位置就是一个区间。
 - 另一路是差分/扫描线：端点 +1、-1 排序后扫，计数归零处就是一段结束，适合问「同一时刻最多多少重叠」。
 
@@ -58,3 +58,7 @@ class Solution:
     assert s.merge([[1, 10], [2, 3]]) == [[1, 10]]
     assert s.merge([[1, 1]]) == [[1, 1]]
     ```
+
+[^leetcode]: [LeetCode 56](https://leetcode.cn/problems/merge-intervals/)，2026-09-29 读。
+[^leetcode-2]: [LeetCode 57](https://leetcode.cn/problems/insert-interval/)，2026-09-29 读。
+[^leetcode-3]: [LeetCode 435](https://leetcode.cn/problems/non-overlapping-intervals/)，2026-09-29 读。

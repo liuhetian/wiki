@@ -4,7 +4,7 @@ description: "可重复选的组合：递归传 i 而不是 i+1 就允许重用�
 
 # 39. 组合总和
 
-[LeetCode 39](https://leetcode.cn/problems/combination-sum/) · 中等 · 回溯
+LeetCode 39[^leetcode] · 中等 · 回溯
 
 ## 题
 
@@ -79,3 +79,5 @@ class Solution:
     assert s.combinationSum([2], 1) == []
     assert norm(s.combinationSum([7, 3, 2], 7)) == [[2, 2, 3], [7]]
     ```
+
+[^leetcode]: [LeetCode 39](https://leetcode.cn/problems/combination-sum/)，2026-09-29 读。

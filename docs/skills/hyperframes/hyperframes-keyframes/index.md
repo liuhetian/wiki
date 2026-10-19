@@ -4,7 +4,7 @@ description: >
   当 HyperFrames composition 需要推近（punch-in）、拉远（punch-out）、变焦、重新取景、Ken Burns 处理、镜头运动、视觉匹配切 / 甩镜交接，或其他 seek 安全的 2D/3D 关键帧时使用；也用于 GSAP、CSS keyframes、Anime.js、WAAPI、FLIP、路径、遮罩、SVG 变形 / 描画、文字拖尾、3D 纵深，或 `hyperframes keyframes` 诊断。
   不要用于宏观的场景策略、品牌设计、媒体获取、字幕或一般性的视频规划。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-keyframes/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-keyframes/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新类命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 
@@ -248,3 +248,9 @@ npx hyperframes snapshot . --at <times>
 ## 完成
 
 运行 `hyperframes check`（它会运行 lint）、`hyperframes keyframes`、一次聚焦的 `--shot`，以及 snapshot。确认第一帧、各个证明姿态、最终减去停留时长的时刻、精确的最终时刻、由主体自身承担的运动，并且没有调试 overlay。
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [references/keyframe-patterns.md](references/keyframe-patterns.md) —— 关键帧机制参考

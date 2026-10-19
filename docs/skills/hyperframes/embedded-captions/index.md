@@ -3,7 +3,7 @@ name: embedded-captions
 description: >
   给现有的单人口播视频加字幕，不剪辑原片。用于普通的逐字字幕、嵌在主体身后的电影感字幕、VFX 字幕、「炸/特效/酷炫字幕」，或者 35 种风格目录里点名的某个风格（identity）。按视觉风格路由，而不是按后端引擎路由。默认是安静的 `anchor` rail；只有用户明确想要全程电影感处理时，才把每个词都嵌入。整个工作流从头到尾在本地运行，包括转录和主体抠像；多镜头素材要先拆分再使用。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 
@@ -268,3 +268,32 @@ ffmpeg -ss <t> -i <video.mp4> -vframes 1 sample.png   # at 20/50/80%
 - 抠像权重不随附：`matte.cjs` 调用 hyperframes CLI 的 `remove-background`，后者会把 u2net_human_seg（约 168 MB，Apache-2.0）一次性下载到 `~/.cache/hyperframes/background-removal/models/`。在一台全新的机器上第一次 prepare 时，需要联网完成这一次下载。
 
 如果缺少某个硬依赖，就停下来问用户 —— 不要悄悄跳过步骤。
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [CATALOG.md](CATALOG.md) —— 目录（THE CATALOG）—— 一个前端，背后三个引擎
+- [dna/README.md](dna/README.md) —— DNA registry —— 挑一种视觉语言，而不是挑一个 preset
+- [modes/cinematic/README.md](modes/cinematic/README.md) —— Cinematic 模式（纯嵌入）—— 一个引擎，六套 DNA
+- [modes/cinematic/_archive/champion/spec.md](modes/cinematic/_archive/champion/spec.md) —— 模板：champion
+- [modes/cinematic/_archive/memory-wall/spec.md](modes/cinematic/_archive/memory-wall/spec.md) —— 模板：memory-wall
+- [modes/cinematic/_archive/portrait-header/spec.md](modes/cinematic/_archive/portrait-header/spec.md) —— 模板：portrait-header
+- [modes/cinematic/cinematic-cream/spec.md](modes/cinematic/cinematic-cream/spec.md) —— cinematic-cream —— 规范
+- [modes/standard/_anatomy.md](modes/standard/_anatomy.md) —— 字幕模板 —— 解剖（共享引擎）
+- [modes/standard/_motion.md](modes/standard/_motion.md) —— 字幕模板 —— 动效语言
+- [references/aesthetic-principles.md](references/aesthetic-principles.md) —— 电影感字幕的美学原则
+- [references/anti-patterns.md](references/anti-patterns.md) —— 反模式
+- [references/bespoke-vs-presets.md](references/bespoke-vs-presets.md) —— 定制设计 vs. preset —— 何时覆盖，何时克隆
+- [references/caption-grouping.md](references/caption-grouping.md) —— 字幕分组
+- [references/composition-craft.md](references/composition-craft.md) —— 构图工艺 —— 仅适用于嵌入轨
+- [references/direction-catalog.md](references/direction-catalog.md) —— 方向目录
+- [references/failure-modes.md](references/failure-modes.md) —— 失败模式 —— 吃过苦头才学到的
+- [references/layout-heuristics.md](references/layout-heuristics.md) —— 布局启发式
+- [references/motion-vocabulary.md](references/motion-vocabulary.md) —— 动效词汇 —— 有名字的词入场手法
+- [references/rail.md](references/rail.md) —— Rail 轨 —— 标准的 lower-third 字幕
+- [references/reference-bar.md](references/reference-bar.md) —— 参照标杆 —— 世界级是什么样子
+- [references/scene-types.md](references/scene-types.md) —— 场景类型 —— 选对模板
+- [references/typographic-moves.md](references/typographic-moves.md) —— 字体排印手法 —— 是色板，不是牢笼
+- [references/typography-presets.md](references/typography-presets.md) —— 字体排印 preset
+- [themes/README.md](themes/README.md) —— THEME 模式 —— 组合而成的视觉宪章

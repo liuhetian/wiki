@@ -4,7 +4,7 @@ description: "三指针原地掉头：prev 是已反转部分的头，cur 是待
 
 # 206. 反转链表
 
-[LeetCode 206](https://leetcode.cn/problems/reverse-linked-list/) · 简单 · 链表
+LeetCode 206[^leetcode] · 简单 · 链表
 
 ## 题
 
@@ -59,7 +59,7 @@ description: "三指针原地掉头：prev 是已反转部分的头，cur 是待
 ## 延伸
 
 - **这是模块，不是终点**：[25. K 个一组翻转链表](0025-reverse-nodes-in-k-group.md) 是分段调用它；[234. 回文链表](0234-palindrome-linked-list.md) 反转后半段再比较；[24. 两两交换链表中的节点](0024-swap-nodes-in-pairs.md) 是 $k=2$ 的特例。
-- 只反转 `[left, right]` 一段：[92. 反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii/)，要多记住段前一个节点和段尾，反转完再缝回去。
+- 只反转 `[left, right]` 一段：92. 反转链表 II[^leetcode-2]，要多记住段前一个节点和段尾，反转完再缝回去。
 - **坑**：Python 一行写 `cur.next, prev, cur = prev, cur, cur.next` 能过，但左边赋值顺序一换（比如先赋 `cur`）就错了，不如拆开写。
 
 ??? note "自测"
@@ -71,3 +71,6 @@ description: "三指针原地掉头：prev 是已反转部分的头，cur 是待
     assert s.reverseList(None) is None
     assert list_vals(s.reverseList(build_list([7]))) == [7]
     ```
+
+[^leetcode]: [LeetCode 206](https://leetcode.cn/problems/reverse-linked-list/)，2026-09-29 读。
+[^leetcode-2]: [92. 反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii/)，2026-09-29 读。

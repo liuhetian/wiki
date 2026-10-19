@@ -4,7 +4,7 @@ description: "哑节点 + 尾指针：每次摘两条链里较小的头接到尾
 
 # 21. 合并两个有序链表
 
-[LeetCode 21](https://leetcode.cn/problems/merge-two-sorted-lists/) · 简单 · 链表
+LeetCode 21[^leetcode] · 简单 · 链表
 
 ## 题
 
@@ -46,7 +46,7 @@ class Solution:
 
 - **它是归并的「合并」一步**：[148. 排序链表](0148-sort-list.md) 自底向上反复调用它；[23. 合并 K 个升序链表](0023-merge-k-sorted-lists.md) 两两调用它，或把「比两个头」推广成用堆比 $k$ 个头。
 - 递归写法 `l1.next = merge(l1.next, l2)` 更短，但深度 $O(m+n)$，长链有爆栈风险。
-- 数组版 [88. 合并两个有序数组](https://leetcode.cn/problems/merge-sorted-array/) 没法「整段接上」，要从尾部往前填才能原地。
+- 数组版 88. 合并两个有序数组[^leetcode-2] 没法「整段接上」，要从尾部往前填才能原地。
 
 ??? note "自测"
 
@@ -57,3 +57,6 @@ class Solution:
     assert list_vals(s.mergeTwoLists(None, build_list([0]))) == [0]
     assert list_vals(s.mergeTwoLists(build_list([5, 6]), build_list([1, 2, 3]))) == [1, 2, 3, 5, 6]
     ```
+
+[^leetcode]: [LeetCode 21](https://leetcode.cn/problems/merge-two-sorted-lists/)，2026-09-29 读。
+[^leetcode-2]: [88. 合并两个有序数组](https://leetcode.cn/problems/merge-sorted-array/)，2026-09-29 读。

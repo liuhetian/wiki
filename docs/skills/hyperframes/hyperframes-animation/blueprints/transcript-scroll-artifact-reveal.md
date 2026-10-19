@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/transcript-scroll-artifact-reveal.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/transcript-scroll-artifact-reveal.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # transcript-scroll-artifact-reveal —— 对话记录滚动 + 产物揭示
 

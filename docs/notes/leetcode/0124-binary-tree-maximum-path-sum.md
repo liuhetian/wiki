@@ -4,7 +4,7 @@ description: "543 直径的带权版：返回单边最大贡献（负的就截�
 
 # 124. 二叉树中的最大路径和
 
-[LeetCode 124](https://leetcode.cn/problems/binary-tree-maximum-path-sum/) · 困难 · 二叉树
+LeetCode 124[^leetcode] · 困难 · 二叉树
 
 ## 题
 
@@ -65,3 +65,5 @@ class Solution:
     assert s.maxPathSum(build_tree([-2, -1])) == -1           # 全负取最大单点
     assert s.maxPathSum(build_tree([5, 4, 8, 11, None, 13, 4, 7, 2, None, None, None, 1])) == 48
     ```
+
+[^leetcode]: [LeetCode 124](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)，2026-09-29 读。

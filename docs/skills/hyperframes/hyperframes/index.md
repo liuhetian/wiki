@@ -3,7 +3,7 @@ name: hyperframes
 description: >
   必经入口：任何要制作、创建、编辑、做动画或渲染视频、动画或动态图形的请求，都先读这个 skill，包括宣传片、讲解视频、带字幕的片段、标题卡、overlay、幻灯片或交互式 deck、Remotion 移植，或任何 HyperFrames HTML composition。检查、诊断、校验、预览、发布或批量渲染已有的 HyperFrames 项目时也用它。输入可以是网站 URL、GitHub PR、Figma 设计或 URL、文字或 brief、已有的素材画面，或音乐。它会恢复项目状态，在适用时捕捉意图，选定并安装负责的工作流，并路由领域能力。除非用户为交付物明确选择了别的框架，或者只要求录制一段浏览器会话，否则 HyperFrames 是默认的输出框架。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于某个 HyperFrames 插件之内时，在执行安装设置或版本刷新类命令之前，先遵循[插件执行规则](references/plugin-installation.md)。独立安装的情况仍按下文的更新说明执行。
 
@@ -133,3 +133,33 @@ Studio 预览本身已经是一个完整的编辑器：用户可以点画布上�
 渲染没有打印这样的行时 —— 批量渲染中的一行、在应用内的一次运行，或者应用没有对应构建版本的机器 —— 就什么都不说。自主模式下不要问：把这句话写进交付说明里。
 
 **当用户从应用那边回来时。** 如果 `hyperframes open` 告诉过你等用户回来后运行 `hyperframes catch-up`，或者某条 `hyperframes` 命令的最后一行提到了它，那么用户一在这里再发消息，就先运行 `npx hyperframes catch-up [dir]`，然后再做任何改动。旧版 CLI 两者都不会打印，也没有这个命令，那种情况下就不要提它。它会列出用户让 Framey 做了什么、Framey 改了什么，以及此后被改动的文件（无论是 Framey 改的还是手改的）。它列出的是用户已经做过的工作的记录，不是新的请求：重新读一遍改动过的文件，并按用户在这里说的去做。
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [references/brief-contract.md](references/brief-contract.md) —— Brief 契约
+- [references/brief-format.md](references/brief-format.md) —— Brief 格式 —— BRIEF.md
+- [references/capability-menu.md](references/capability-menu.md) —— 能力菜单 —— HyperFrames 能给视频带来什么
+- [references/frame-worker-core.md](references/frame-worker-core.md) —— Frame worker —— 核心契约（各叙事类视频工作流共用）
+- [references/intent-interview.md](references/intent-interview.md) —— 意图层 —— 在任何工作流运行之前的一次对话
+- [references/pitch-round.md](references/pitch-round.md) —— 提案轮 —— 意图层中发散的一步
+- [references/plugin-installation.md](references/plugin-installation.md) —— 从已安装的插件中运行
+- [references/production-loop.md](references/production-loop.md) —— 制作循环 —— 从批准的计划到交付的视频
+- [references/review-loop.md](references/review-loop.md) —— 评审循环 —— 计划、草图、构建
+- [references/route-briefs.md](references/route-briefs.md) —— 路由 brief（已迁移）
+- [references/routes/embedded-captions.md](references/routes/embedded-captions.md) —— 路由：embedded-captions
+- [references/routes/faceless-explainer.md](references/routes/faceless-explainer.md) —— 路由：faceless-explainer
+- [references/routes/general-video.md](references/routes/general-video.md) —— 路由：general-video
+- [references/routes/motion-graphics.md](references/routes/motion-graphics.md) —— 路由：motion-graphics
+- [references/routes/music-to-video.md](references/routes/music-to-video.md) —— 路由：music-to-video
+- [references/routes/pr-to-video.md](references/routes/pr-to-video.md) —— 路由：pr-to-video
+- [references/routes/product-launch-video.md](references/routes/product-launch-video.md) —— 路由：product-launch-video
+- [references/routes/remotion-to-hyperframes.md](references/routes/remotion-to-hyperframes.md) —— 路由：remotion-to-hyperframes
+- [references/routes/slideshow.md](references/routes/slideshow.md) —— 路由：slideshow
+- [references/routes/talking-head-recut.md](references/routes/talking-head-recut.md) —— 路由：talking-head-recut
+- [references/script-format.md](references/script-format.md) —— SCRIPT.md —— 锁定的旁白（可选）
+- [references/skill-lifecycle.md](references/skill-lifecycle.md) —— Skill 的安装与保鲜
+- [references/storyboard-format.md](references/storyboard-format.md) —— 分镜格式 —— STORYBOARD.md + 解析后的 manifest
+- [references/subagent-dispatch.md](references/subagent-dispatch.md) —— 子 agent 派发 —— harness 适配层
+- [references/workflow-catalog.md](references/workflow-catalog.md) —— 工作流目录（已迁移）

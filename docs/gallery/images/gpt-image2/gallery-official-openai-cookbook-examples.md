@@ -2,7 +2,7 @@
 
 ### 全自动咖啡机信息图
 
-<img src="assets/official-openai-cookbook/coffee-infographic.png" alt="coffee infographic" width="420"/>
+<img src="assets/official-openai-cookbook/coffee-infographic.png" alt="coffee infographic" width="420" loading="lazy" decoding="async"/>
 
 ```text
 制作一张详细的信息图，讲解一台 Jura 这类全自动咖啡机的工作原理和流程。
@@ -12,7 +12,7 @@
 
 ### 写实的老水手
 
-<img src="assets/official-openai-cookbook/sailor.png" alt="sailor" width="420"/>
+<img src="assets/official-openai-cookbook/sailor.png" alt="sailor" width="420" loading="lazy" decoding="async"/>
 
 ```text
 制作一张照片级写实的抓拍照片：一位老水手站在一艘小渔船上。
@@ -24,7 +24,7 @@
 
 ### 极简面包店标志：Field & Flour
 
-<img src="assets/official-openai-cookbook/logo-bakery.png" alt="logo bakery" width="420"/>
+<img src="assets/official-openai-cookbook/logo-bakery.png" alt="logo bakery" width="420" loading="lazy" decoding="async"/>
 
 ```text
 为一家名为 Field & Flour 的本地面包店设计一个原创、不侵权的标志。
@@ -35,7 +35,7 @@
 
 ### 四格宠物漫画
 
-<img src="assets/official-openai-cookbook/comic-pet.png" alt="comic pet" width="420"/>
+<img src="assets/official-openai-cookbook/comic-pet.png" alt="comic pet" width="420" loading="lazy" decoding="async"/>
 
 ```text
 制作一个竖版的短篇漫画风格条漫，包含 4 个等大的格子。

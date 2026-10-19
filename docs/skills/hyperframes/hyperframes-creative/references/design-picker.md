@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/design-picker.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/design-picker.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 设计选择器
 
@@ -122,4 +122,6 @@
 4. 启动文件服务：`cd <project-dir> && python3 -m http.server 8723 &`（用 8723 端口，或 8000 以上任何未被占用的端口；如果 curl 检查失败，就换下一个端口）。验证：`curl -s -o /dev/null -w "%{http_code}" http://localhost:8723/.hyperframes/pick-design.html` —— 只有返回 200 才把链接给用户。选择器**不要**用 `npx hyperframes preview` —— 它会阻塞。只在主对话线程里启动 HTTP 服务器。如果你是作为被派发的任务或子 agent 在运行，就返回文件路径，让调用方去启动服务。
 5. 用户选定之后，告诉他们：「从选择器里复制 design.md，粘贴到这里。」用户把 markdown 粘贴回对话里。把它原样保存为项目根目录下的 `design.md` —— 它已经是规范格式（YAML frontmatter + 散文段落）。用户粘贴完之后，关掉后台服务器：`kill %1` 或 `kill $(lsof -ti:8723)`。然后开始搭建。
 
-选择器输出的是一个符合 [google-labs-code/design.md](https://github.com/google-labs-code/design.md) 规范的文件：YAML frontmatter 里含 `colors`、`typography`、`rounded` 和 `spacing` token，后面接 `## Overview`、`## Colors`、`## Typography`、`## Layout`、`## Elevation`、`## Components` 和 `## Do's and Don'ts` 几个散文段落。
+选择器输出的是一个符合 google-labs-code/design.md[^design] 规范的文件：YAML frontmatter 里含 `colors`、`typography`、`rounded` 和 `spacing` token，后面接 `## Overview`、`## Colors`、`## Typography`、`## Layout`、`## Elevation`、`## Components` 和 `## Do's and Don'ts` 几个散文段落。
+
+[^design]: [google-labs-code/design.md](https://github.com/google-labs-code/design.md)，2026-10-15 读。

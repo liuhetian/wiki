@@ -5,7 +5,7 @@ description: >
 metadata:
   tags: control, scrub, live-sync, mirror, panel, editor, couple, readout, ui
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/control-target-sync.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/control-target-sync.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 控件-目标同步
 

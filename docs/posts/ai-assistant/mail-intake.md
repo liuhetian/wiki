@@ -49,7 +49,7 @@ mail.example.com.   A      203.0.113.7
 
 ## 收件端：两个回调就够
 
-协议状态机交给 [`aiosmtpd`](https://aiosmtpd.aio-libs.org/)（Python 3.12 起标准库的 `smtpd` 已被删除，服务端就它了，本文用 1.4.6）。我只写两个回调。
+协议状态机交给 `aiosmtpd`[^aio-libs]（Python 3.12 起标准库的 `smtpd` 已被删除，服务端就它了，本文用 1.4.6）。我只写两个回调。
 
 先是 `handle_RCPT`，收件地址的闸门：
 
@@ -186,3 +186,5 @@ stored 20260917T085339Z-f5b8fc406331.eml from=sender@example.org to=['data-7f3a@
 - **没做 SPF / DKIM 校验**，所以发件人地址可伪造，别名保密是唯一的门。真要校验，靠 rspamd 这类专门的东西，不是自己在 handler 里手搓。
 - **没做容量回收**，`.eml` 只增不减，攒到手疼再说。
 - **不发信**。出站 25 在云上基本封死，助手要往外发结果走第三方 API，跟这条采集通道无关。
+
+[^aio-libs]: [`aiosmtpd`](https://aiosmtpd.aio-libs.org/)，2026-09-18 读。

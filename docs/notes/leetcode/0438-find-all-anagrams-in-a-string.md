@@ -4,7 +4,7 @@ description: "定长滑动窗口 + 计数差：进一个出一个只改两格，
 
 # 438. 找到字符串中所有字母异位词
 
-[LeetCode 438](https://leetcode.cn/problems/find-all-anagrams-in-a-string/) · 中等 · 滑动窗口
+LeetCode 438[^leetcode] · 中等 · 滑动窗口
 
 ## 题
 
@@ -59,7 +59,7 @@ class Solution:
 
 ## 延伸
 
-- 判定版「字符串的排列」（[LeetCode 567](https://leetcode.cn/problems/permutation-in-string/)）一模一样，找到第一个就返回 True。
+- 判定版「字符串的排列」（LeetCode 567[^leetcode-2]）一模一样，找到第一个就返回 True。
 - 可变长窗口 + 覆盖计数见 [76. 最小覆盖子串](0076-minimum-window-substring.md)，那里的 `need` 计数器就是这里 `bad` 的变体。
 - 坑：窗口先进后出、判定放在「窗口长度恰好为 $m$」之后；顺序写乱会少判第一个窗口或多判一个长度 $m+1$ 的窗口。
 
@@ -73,3 +73,6 @@ class Solution:
     assert s.findAnagrams("aaa", "a") == [0, 1, 2]
     assert s.findAnagrams("abc", "d") == []
     ```
+
+[^leetcode]: [LeetCode 438](https://leetcode.cn/problems/find-all-anagrams-in-a-string/)，2026-09-29 读。
+[^leetcode-2]: [LeetCode 567](https://leetcode.cn/problems/permutation-in-string/)，2026-09-29 读。

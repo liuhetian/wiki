@@ -4,7 +4,7 @@ description: "先探路数够 k 个再动手，组内用三指针反转、prev �
 
 # 25. K 个一组翻转链表
 
-[LeetCode 25](https://leetcode.cn/problems/reverse-nodes-in-k-group/) · 困难 · 链表
+LeetCode 25[^leetcode] · 困难 · 链表
 
 ## 题
 
@@ -70,3 +70,5 @@ class Solution:
     assert list_vals(s.reverseKGroup(build_list([1, 2, 3, 4]), 4)) == [4, 3, 2, 1]
     assert list_vals(s.reverseKGroup(build_list([1, 2, 3, 4, 5, 6]), 3)) == [3, 2, 1, 6, 5, 4]
     ```
+
+[^leetcode]: [LeetCode 25](https://leetcode.cn/problems/reverse-nodes-in-k-group/)，2026-09-29 读。

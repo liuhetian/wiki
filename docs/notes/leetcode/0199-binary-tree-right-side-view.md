@@ -4,7 +4,7 @@ description: "每层取最后一个：BFS 分层取队尾；DFS 先右后左，�
 
 # 199. 二叉树的右视图
 
-[LeetCode 199](https://leetcode.cn/problems/binary-tree-right-side-view/) · 中等 · 二叉树
+LeetCode 199[^leetcode] · 中等 · 二叉树
 
 ## 题
 
@@ -78,3 +78,5 @@ description: "每层取最后一个：BFS 分层取队尾；DFS 先右后左，�
     assert s.rightSideView(build_tree([])) == []
     assert s.rightSideView(build_tree([1, 2, 3, 4])) == [1, 3, 4]  # 左子树更深
     ```
+
+[^leetcode]: [LeetCode 199](https://leetcode.cn/problems/binary-tree-right-side-view/)，2026-09-29 读。

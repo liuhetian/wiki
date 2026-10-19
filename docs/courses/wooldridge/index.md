@@ -11,11 +11,11 @@ description: "Wooldridge 伴读导读：计量的主干，重心在面板与政�
 ## 读法
 
 - **在版教材：只摘句、标页码**
-- **数据用 Python 包**：PyPI 包名 [`wooldridge`](https://pypi.org/project/wooldridge/)，`wooldridge.data('wage1')` 直接返回 pandas DataFrame。包的说明写的是第 7 版的数据集，8e 新增例子的数据在不在里面，读到再补
-- **Python 对照**：Heiss、Brunner《Using Python for Introductory Econometrics》在 [upfie.net](http://www.upfie.net/) 免费在线，复现书中例子，按第 7 版的章节编排；8e 新增的第 19 章不在里面
+- **数据用 Python 包**：PyPI 包名 `wooldridge`[^wooldridge]，`wooldridge.data('wage1')` 直接返回 pandas DataFrame。包的说明写的是第 7 版的数据集，8e 新增例子的数据在不在里面，读到再补
+- **Python 对照**：Heiss、Brunner《Using Python for Introductory Econometrics》在 upfie.net[^upfie] 免费在线，复现书中例子，按第 7 版的章节编排；8e 新增的第 19 章不在里面
 - **交错 DID 去补充读物**：8e 第 13、14 章讲两期 DID 与面板上的政策分析，18-6 节讲带对照组的事件研究，但 Goodman-Bacon、Callaway-Sant'Anna、Sun-Abraham 这些 2020 年后的方法不在目录里（14-4a 节讲到多少读到再补）。补两本免费在线书：
-    - Huntington-Klein《The Effect》，[theeffectbook.net](https://theeffectbook.net/)，第 18 章 Difference-in-Differences 的 18.2.6、18.3.1 讲多期铺开与 Callaway-Sant'Anna
-    - Cunningham《Causal Inference: The Mixtape》，第 2 版《The Remix》在线施工中，[mixtape.scunning.com](https://mixtape.scunning.com/)，第 10 章 Complex Diff-in-Diff Designs 逐节讲 Bacon 分解、Callaway-Sant'Anna、Sun-Abraham 和 Honest Diff-in-Diff；第 1 版在 [mixtape-1ed.netlify.app](https://mixtape-1ed.netlify.app/)
+    - Huntington-Klein《The Effect》，theeffectbook.net[^theeffectbook]，第 18 章 Difference-in-Differences 的 18.2.6、18.3.1 讲多期铺开与 Callaway-Sant'Anna
+    - Cunningham《Causal Inference: The Mixtape》，第 2 版《The Remix》在线施工中，mixtape.scunning.com[^scunning]，第 10 章 Complex Diff-in-Diff Designs 逐节讲 Bacon 分解、Callaway-Sant'Anna、Sun-Abraham 和 Honest Diff-in-Diff；第 1 版在 mixtape-1ed.netlify.app[^netlify]
 - 第 1 部分（2–9 章）截面回归全读；第 2 部分时序（10–12 章）和第 18 章选读；第 3 部分挑面板、IV、受限因变量和因果推断
 - 书后 Math Refresher A–C 跳，统计学伴读和笔记已经覆盖；Advanced Treatment D–E 的矩阵形式选读
 
@@ -57,3 +57,9 @@ description: "Wooldridge 伴读导读：计量的主干，重心在面板与政�
 ## 课程
 
 还没开课。排到时先写第 8 章异方差，roadmap 首批第 8 件事的「异方差与稳健标准误」笔记跟着它长。
+
+[^wooldridge]: [`wooldridge`](https://pypi.org/project/wooldridge/)，2026-10-02 读。
+[^upfie]: [upfie.net](http://www.upfie.net/)，2026-10-02 读。
+[^theeffectbook]: [theeffectbook.net](https://theeffectbook.net/)，2026-10-02 读。
+[^scunning]: [mixtape.scunning.com](https://mixtape.scunning.com/)，2026-10-02 读。
+[^netlify]: [mixtape-1ed.netlify.app](https://mixtape-1ed.netlify.app/)，2026-10-02 读。

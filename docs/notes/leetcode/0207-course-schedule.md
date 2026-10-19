@@ -4,7 +4,7 @@ description: "能否修完 = 有向图有没有环；Kahn 拓扑排序反复剥�
 
 # 207. 课程表
 
-[LeetCode 207](https://leetcode.cn/problems/course-schedule/) · 中等 · 图论
+LeetCode 207[^leetcode] · 中等 · 图论
 
 ## 题
 
@@ -77,7 +77,7 @@ description: "能否修完 = 有向图有没有环；Kahn 拓扑排序反复剥�
 
 ## 延伸
 
-- **要输出一个修课顺序**：[210. 课程表 II](https://leetcode.cn/problems/course-schedule-ii/)，Kahn 里出队顺序就是答案；DFS 版是后序（状态变 2 的顺序）反转。
+- **要输出一个修课顺序**：210. 课程表 II[^leetcode-2]，Kahn 里出队顺序就是答案；DFS 版是后序（状态变 2 的顺序）反转。
 - 无向图判环不能用入度，改用并查集或 DFS 时跳过父节点。
 - 同样按层推进的 BFS：[994. 腐烂的橘子](0994-rotting-oranges.md)；网格图的连通分量：[200. 岛屿数量](0200-number-of-islands.md)。
 - **坑**：边的方向。`[a, b]` 是「b 是 a 的前置」，边从 `b` 指向 `a`；反过来建图，判环结论不变，但到 210 要输出顺序时就反了。
@@ -94,3 +94,6 @@ description: "能否修完 = 有向图有没有环；Kahn 拓扑排序反复剥�
     assert s.canFinish(5, [[1, 0], [2, 0], [3, 1], [3, 2], [4, 3]]) is True
     assert s.canFinish(2000, [[i + 1, i] for i in range(1999)]) is True  # 长链
     ```
+
+[^leetcode]: [LeetCode 207](https://leetcode.cn/problems/course-schedule/)，2026-09-29 读。
+[^leetcode-2]: [210. 课程表 II](https://leetcode.cn/problems/course-schedule-ii/)，2026-09-29 读。

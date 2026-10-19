@@ -4,7 +4,7 @@ description: "逐行有序且首尾相接的矩阵就是一条拉平的有序数
 
 # 74. 搜索二维矩阵
 
-[LeetCode 74](https://leetcode.cn/problems/search-a-2d-matrix/) · 中等 · 二分查找
+LeetCode 74[^leetcode] · 中等 · 二分查找
 
 ## 题
 
@@ -62,3 +62,5 @@ class Solution:
     assert s.searchMatrix(M, 0) is False
     assert s.searchMatrix([[1]], 1) is True
     ```
+
+[^leetcode]: [LeetCode 74](https://leetcode.cn/problems/search-a-2d-matrix/)，2026-09-29 读。

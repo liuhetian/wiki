@@ -4,7 +4,7 @@ description: "嵌套结构的匹配靠栈：左括号入栈，右括号必须和
 
 # 20. 有效的括号
 
-[LeetCode 20](https://leetcode.cn/problems/valid-parentheses/) · 简单 · 栈
+LeetCode 20[^leetcode] · 简单 · 栈
 
 ## 题
 
@@ -69,3 +69,5 @@ class Solution:
     assert s.isValid("){") is False
     assert s.isValid("([") is False
     ```
+
+[^leetcode]: [LeetCode 20](https://leetcode.cn/problems/valid-parentheses/)，2026-09-29 读。

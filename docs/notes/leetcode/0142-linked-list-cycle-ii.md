@@ -4,7 +4,7 @@ description: "Floyd 相遇后，一个指针回起点、两个同速走，再相
 
 # 142. 环形链表 II
 
-[LeetCode 142](https://leetcode.cn/problems/linked-list-cycle-ii/) · 中等 · 链表
+LeetCode 142[^leetcode] · 中等 · 链表
 
 ## 题
 
@@ -81,3 +81,5 @@ class Solution:
     node5.next.next = node5
     assert s.detectCycle(head) is node5
     ```
+
+[^leetcode]: [LeetCode 142](https://leetcode.cn/problems/linked-list-cycle-ii/)，2026-09-29 读。

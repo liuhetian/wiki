@@ -8,32 +8,35 @@
 五项检查：
 
 1. 父级链接 —— 每篇 .md 必须被**某个祖先目录**的索引页用 markdown 链接直接指向。
-   索引页指 index.md / MIRROR.md / SKILL.md 三种：MIRROR.md 是原样收录目录里
-   自己写的来源说明，SKILL.md 是上游主文件，它们照样承担链接责任（活例：xi-wen 的
-   9 份归档由 MIRROR.md 挂链，因为它的 index.md 是上游原文，没往里加链接）。
-   「祖先」而非「最近父级」是必要的：MIRROR.md 的链接责任归分类索引，隔了一层。
+   索引页指 index.md / SKILL.md 两种：SKILL.md 是上游主文件，照样承担链接责任。
+   「祖先」而非「最近父级」是必要的：深层文件常由上面几层的入口统一挂链（活例：
+   HyperFrames 各子 skill 入口末尾的文件清单挂住 rules/、transitions/ 下的上百篇）。
 
 2. 死链 —— 指向不存在 .md 的链接。代码块和行内 code 里的不算，理由同检查 5：
    那是示范不是引用（活例：领域建模的 GLOSSARY.md 格式模板举例
    `[Ordering](./src/ordering/GLOSSARY.md)`，是写进别人项目的路径）。
 
-3. nav 注册 —— 写作规范要求新增页面必须进 mkdocs.yml 的 nav。
+3. nav 注册 —— 写作规范要求新增页面必须进 mkdocs.yml 的 nav。只认 nav 段里的条目，
+   redirects 和注释里出现同一路径不算注册 —— 挪文件写了 redirect、忘了改 nav，正是要拦的情形。
 
-4. 笔记里的未解决课程提问 —— docs/notes/ 下不允许出现 <<<<<<< 冲突标记。
+4. 笔记里的未解决课程提问 —— docs/notes/ 下代码块之外不允许出现 <<<<<<< 冲突标记。
    课程页（docs/courses/）的提问本来就是这个形状，那是题；一旦这形状出现在笔记里，
    说明有题还空着没答就想发出去。归档要走 scripts/course.py add，它会逐题检查。
+   代码块里的不算：git 笔记讲冲突时会原样贴冲突示例。
 
-5. 非 .md 资源死链 —— 图片、iframe 的 demo、`<a href>` 指向的本地文件必须存在。
+5. 非 .md 资源死链 —— 图片、iframe 的 demo、`<a href>`、markdown 链接指向的本地文件必须存在。
    检查 1、2 只看 markdown 链接里的 .md，而这个 wiki 的活 demo 全靠 iframe src
    指到 assets/ 下的 .html，配图靠 ![](assets/x.png)：这些挪了或删了，页面照样
    构建通过、线上直接 404。判据是「代码块之外的引用」—— 写作规范和 skill 文档里
    大量在 ``` 块和行内 `code` 里举例写路径（活例：写作规范演示 ![](assets/xxx.png)
    该怎么写），那些是示范不是引用，先剥掉再查，否则全是误报。
+   skill 整包（<目录>/<目录名>.tar.gz）部署时才生成，目录在就算存在；有没有用标准那一行
+   声明，归 build-skill-bundles.py 在部署时拦。
 
 豁免：文件顶部（前 5 行内）写 `<!-- link-check-ok: 理由 -->` 可跳过检查 1 和 3。
 理由写在文件里而不是脚本白名单里 —— 挪文件不会让豁免失效，读到那个文件的人也
-立刻知道为什么。注意：本 wiki 不给旧路径留存根页（要兼容就别挪文件），所以
-「已迁移存根」不是正当豁免理由。
+立刻知道为什么。注意：本 wiki 不给旧路径留存根页，旧网址靠 mkdocs.yml 的 redirects 兜，
+所以「已迁移存根」不是正当豁免理由。
 
 assets/ 下的 .md 整体排除：按规范那里只放资产真身（含 clone 进来的外部存档），
 不是文章，本来就不进 nav、不上链路。
@@ -51,12 +54,14 @@ LINK = re.compile(r"\[[^\]]*\]\(\s*<?([^)\s>]+)>?[^)]*\)")
 EXEMPT = re.compile(r"<!--\s*link-check-ok:")
 # 课程提问块的起始标记（与 scripts/course.py、vendor/conflict-init.js 同规则）
 CONFLICT = re.compile(r"^<{7} ", re.M)
-# 检查 2、5 用：围栏代码块（``` 或 ~~~，允许缩进，按开围栏的缩进配对）与行内 code
-FENCE = re.compile(r"^(?P<i>\s*)(?P<f>`{3,}|~{3,}).*?^(?P=i)(?P=f)\s*$", re.M | re.S)
+# 检查 2、4、5 用：围栏代码块的开围栏（``` 或 ~~~，允许缩进）与行内 code
+FENCE = re.compile(r"^[ \t]*(`{3,}|~{3,})")
 INLINE_CODE = re.compile(r"`[^`\n]+`")
-# 图片 ![](x)、以及 src=/href= 指到的东西
-ASSET_REF = re.compile(r"""!\[[^\]]*\]\(\s*<?([^)\s>]+)|(?:src|href)\s*=\s*["']([^"']+)["']""")
-INDEX_NAMES = ("index.md", "MIRROR.md", "SKILL.md")
+# 图片 ![](x)、普通链接 [](x)、以及 src=/href= 指到的东西
+ASSET_REF = re.compile(r"""!?\[[^\]]*\]\(\s*<?([^)\s>]+)|(?:src|href)\s*=\s*["']([^"']+)["']""")
+# nav 段里一条页面条目：`- 标题: 路径.md` 或 `- 路径.md`
+NAV_ENTRY = re.compile(r"^\s*-\s+(?:[^:\n]*:\s+)?([^\s\"']+\.md)\s*$", re.M)
+INDEX_NAMES = ("index.md", "SKILL.md")
 
 
 def rel(p: Path) -> Path:
@@ -64,16 +69,51 @@ def rel(p: Path) -> Path:
     return p.relative_to(DOCS)
 
 
+def prose(text: str) -> str:
+    """去掉围栏代码块和行内 code，行数不变。
+
+    按 CommonMark 配对：闭围栏与开围栏同字符、不短于它、后面不带 info string ——
+    所以 ```text 不会把上一个 ```text 关掉。没闭合的代码块吞到文件尾，和渲染一致。
+    """
+    out, fence = [], None
+    for line in text.split("\n"):
+        mark = FENCE.match(line)
+        if fence is None:
+            if mark:
+                fence = mark.group(1)
+                out.append("")
+            else:
+                out.append(INLINE_CODE.sub("", line))
+            continue
+        if mark and line.strip() == mark.group(1) and mark.group(1)[0] == fence[0] \
+                and len(mark.group(1)) >= len(fence):
+            fence = None
+        out.append("")
+    return "\n".join(out)
+
+
+def nav_pages() -> set:
+    """mkdocs.yml 的 nav 段里注册过的页面路径。nav 是文件最后一段。"""
+    text = MKDOCS.read_text(encoding="utf-8")
+    nav = text[text.index("\nnav:") :]
+    return set(NAV_ENTRY.findall(nav))
+
+
+def is_bundle(target: Path) -> bool:
+    """<目录>/<目录名>.tar.gz：部署时才由 build-skill-bundles.py 生成，目录在就算存在。"""
+    return target.name == f"{target.parent.name}.tar.gz" and target.parent.is_dir()
+
+
 def md_links(md: Path) -> set:
     """该文件指向的、docs 内存在的 .md（相对 docs），顺带返回代码块之外的死链。"""
     text = md.read_text(encoding="utf-8")
-    prose = {m.group(1) for m in LINK.finditer(INLINE_CODE.sub("", FENCE.sub("", text)))}
+    in_prose = {m.group(1) for m in LINK.finditer(prose(text))}
     hits, dead = set(), []
     for m in LINK.finditer(text):
         target = m.group(1)
         if target.startswith(("http://", "https://", "mailto:", "#")):
             continue
-        in_prose = target in prose
+        visible = target in in_prose
         target = target.split("#")[0].strip()
         if not target.endswith(".md"):
             continue
@@ -83,7 +123,7 @@ def md_links(md: Path) -> set:
             continue  # 指到 docs 之外（如项目根的 mkdocs.yml），不算页面链接
         if (DOCS / resolved).exists():
             hits.add(resolved)
-        elif in_prose:
+        elif visible:
             dead.append(target)
     return hits, dead
 
@@ -91,12 +131,10 @@ def md_links(md: Path) -> set:
 def asset_refs(md: Path) -> list:
     """该文件在代码块之外引用、但本地不存在的非 .md 资源。
 
-    只看渲染后真会去请求的东西：![](x)、iframe/img/script 的 src、a 的 href。
+    只看渲染后真会去请求的东西：![](x)、[](x)、iframe/img/script 的 src、a 的 href。
     绝对路径按站点根（= docs/）解析，因为 demo 的 iframe 按规范写站点根绝对路径。
     """
-    text = md.read_text(encoding="utf-8")
-    text = FENCE.sub("", text)
-    text = INLINE_CODE.sub("", text)
+    text = prose(md.read_text(encoding="utf-8"))
     missing = []
     for m in ASSET_REF.finditer(text):
         target = (m.group(1) or m.group(2) or "").strip()
@@ -111,31 +149,13 @@ def asset_refs(md: Path) -> list:
             resolved = DOCS / target.lstrip("/")
         else:
             resolved = (md.parent / target).resolve()
-        if not resolved.exists():
+        if not resolved.exists() and not is_bundle(resolved):
             missing.append(target)
     return missing
 
 
-def is_absorbed(md: Path) -> bool:
-    """是否为原样收录的上游原文 —— 同级或祖先目录有 MIRROR.md 即是。
-
-    这类文件是原文，往里加豁免注释它就不是原文了；而原文正文里的路径常是
-    举例，本地不可能存在（代码块里的举例检查 2 已经跳过）。它们的死链降级为警告，不阻断部署 —— 但仍然打印，
-    因为归档真漏了一份依赖也会在这里现形。MIRROR.md 是自己写的，不算原文。
-    """
-    if md.name == "MIRROR.md":
-        return False
-    d = md.parent
-    while True:
-        if (d / "MIRROR.md").exists():
-            return True
-        if d == DOCS:
-            return False
-        d = d.parent
-
-
 def responsible_pages(md: Path) -> list:
-    """该文件的责任索引页：自身目录及各级祖先目录下的 index/MIRROR/SKILL。"""
+    """该文件的责任索引页：自身目录及各级祖先目录下的 index/SKILL。"""
     out, d = [], md.parent
     while True:
         for name in INDEX_NAMES:
@@ -150,18 +170,18 @@ def responsible_pages(md: Path) -> list:
 
 def main() -> int:
     all_md = sorted(DOCS.rglob("*.md"))
-    nav_text = MKDOCS.read_text(encoding="utf-8")
+    registered = nav_pages()
     root_index = DOCS / "index.md"
 
     # 预先算好每个文件的出链，供反查
-    outgoing, dead_links, dead_warn = {}, {}, {}
+    outgoing, dead_links = {}, {}
     for md in all_md:
         if "assets" in rel(md).parts:
             continue
         hits, dead = md_links(md)
         outgoing[md] = hits
         if dead:
-            (dead_warn if is_absorbed(md) else dead_links)[md] = dead
+            dead_links[md] = dead
 
     orphans, unregistered, unresolved, dead_assets = [], [], [], {}
     for md in all_md:
@@ -175,7 +195,7 @@ def main() -> int:
         if md == root_index:
             continue
         # 4. 笔记里不许有未解决的课程提问
-        if r.parts[0] == "notes" and CONFLICT.search(md.read_text(encoding="utf-8")):
+        if r.parts[0] == "notes" and CONFLICT.search(prose(md.read_text(encoding="utf-8"))):
             unresolved.append(r)
         head = "".join(md.read_text(encoding="utf-8").splitlines(keepends=True)[:5])
         if EXEMPT.search(head):
@@ -183,8 +203,8 @@ def main() -> int:
         # 1. 父级链接
         if not any(r in outgoing.get(p, set()) for p in responsible_pages(md)):
             orphans.append(r)
-        # 3. nav 注册（MIRROR.md 按规范不进 nav）
-        if md.name != "MIRROR.md" and str(r) not in nav_text:
+        # 3. nav 注册
+        if str(r) not in registered:
             unregistered.append(r)
 
     def report(title, items, hint):
@@ -198,7 +218,7 @@ def main() -> int:
     report(
         "没有被任何祖先索引页链到 —— AI 顺链接走不到它",
         orphans,
-        "在它所在目录（或上级）的 index.md / MIRROR.md 里加一行链接；"
+        "在它所在目录（或上级）的 index.md 里加一行链接；"
         "确实不该上链路就在文件顶部写 <!-- link-check-ok: 理由 -->",
     )
     report(
@@ -221,11 +241,6 @@ def main() -> int:
         print(f"\n✗ 死链，指向不存在的 .md（{len(dead_links)} 个文件）", file=sys.stderr)
         for md, targets in dead_links.items():
             print(f"    {rel(md)}  →  {', '.join(targets)}", file=sys.stderr)
-    if dead_warn:
-        print(f"\n⚠ 吸收来的上游原文里有指不到本地的 .md 路径（{len(dead_warn)} 个文件，"
-              f"不阻断部署；多半是原文举例，若是归档漏了依赖则需补）")
-        for md, targets in dead_warn.items():
-            print(f"    {rel(md)}  →  {', '.join(targets)}")
 
     failed = (len(orphans) + len(unregistered) + len(dead_links)
               + len(unresolved) + len(dead_assets))

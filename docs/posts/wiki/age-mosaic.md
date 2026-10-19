@@ -64,7 +64,7 @@ description: "API key、服务器地址这类不想公开的东西，用 age 公
 
 本站同时发布两份产物：给人看的 HTML，和 `deploy.sh` 从 `docs/` 原样镜像上桶的 `.md` 源（见[总纲](cos-deploy/index.md)）。所以：
 
-- **构建期加密会漏**：MkDocs 的 [encryptcontent](https://github.com/unverbuggt/mkdocs-encryptcontent-plugin) 插件让作者写明文，构建时只加密 HTML。放到本站，`/xxx.md` 里照样是明文，AI 读到的也是明文；明文和口令还都进了 git。它的粒度也是整页，做不到句子里的一个地址
+- **构建期加密会漏**：MkDocs 的 encryptcontent[^mkdocs-encryptcontent-plugin] 插件让作者写明文，构建时只加密 HTML。放到本站，`/xxx.md` 里照样是明文，AI 读到的也是明文；明文和口令还都进了 git。它的粒度也是整页，做不到句子里的一个地址
 - **Zensical 也跑不了它**：Zensical 0.0.62 只认自己重写过的插件（blog、search、meta、redirects 等），不执行第三方 MkDocs 插件，也不支持 `hooks`
 - **所以写进源文件的就得是密文**：HTML、`.md` 镜像、git、搜索索引、AI 拿到的全是密文，只有浏览器里解锁才还原。实现上是一段前端脚本，和 ```` ```echarts ```` 的渲染同一种做法，不依赖插件机制
 
@@ -254,3 +254,5 @@ curl -fsSL https://wiki.liuhetian.work/posts/ai-assistant/dev-env.md \
 - 只认反引号里的密文，正文里裸写的不认；块解开后是素 `<pre><code>`，没有语法高亮
 - 网关已接 DeepSeek，但 [API 中转](../ai-assistant/api-gateway.md#keys)里还没写 key
 - YubiKey 这类硬件钥匙没试
+
+[^mkdocs-encryptcontent-plugin]: [encryptcontent](https://github.com/unverbuggt/mkdocs-encryptcontent-plugin)，2026-10-01 读。

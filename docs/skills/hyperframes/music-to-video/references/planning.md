@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/references/planning.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/references/planning.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 规划（Step 3）—— 挑选品牌，填满每一个 frame
 

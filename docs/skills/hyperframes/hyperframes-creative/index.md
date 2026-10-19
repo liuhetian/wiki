@@ -3,7 +3,7 @@ name: hyperframes-creative
 description: >
   HyperFrames 视频中动画之外的创意指导。用于设计规范（frame.md / design.md）的处理、色板、字体排印、旁白、段落节拍规划、音频响应式视觉、composition 模式，以及品牌 / 风格决策。原子级运动模式和场景蓝图请使用 `hyperframes-animation`。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新类命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装的则沿用下面的更新说明。
 
@@ -73,3 +73,46 @@ python <SKILL_DIR>/scripts/extract-audio-data.py <audio-file>
 - 对于最小的技术性 composition，不要要求设计系统。
 - 不要额外添加场景、旁白、音乐、字幕或转场，除非请求要求这些，或者你先提出了扩展方案。
 - 让配方类参考文档的阅读与任务对应；简单的编辑不要把每份参考文档都读一遍。
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [frame-presets/biennale-yellow/FRAME.md](frame-presets/biennale-yellow/FRAME.md) —— Biennale Yellow — Frame (video / frame layer)
+- [frame-presets/blockframe/FRAME.md](frame-presets/blockframe/FRAME.md) —— BlockFrame — Frame (video / frame layer)
+- [frame-presets/blue-professional/FRAME.md](frame-presets/blue-professional/FRAME.md) —— Blue Professional — Frame (video / frame layer)
+- [frame-presets/bold-poster/FRAME.md](frame-presets/bold-poster/FRAME.md) —— Bold Poster — Frame (video / frame layer)
+- [frame-presets/broadside/FRAME.md](frame-presets/broadside/FRAME.md) —— Broadside — Frame (video / frame layer)
+- [frame-presets/capsule/FRAME.md](frame-presets/capsule/FRAME.md) —— Capsule — Frame (video / frame layer)
+- [frame-presets/cartesian/FRAME.md](frame-presets/cartesian/FRAME.md) —— Cartesian — Frame (video / frame layer)
+- [frame-presets/cobalt-grid/FRAME.md](frame-presets/cobalt-grid/FRAME.md) —— Cobalt Grid — Frame (video / frame layer)
+- [frame-presets/code-editorial/FRAME.md](frame-presets/code-editorial/FRAME.md) —— Code editorial — Frame (video / frame layer)
+- [frame-presets/coral/FRAME.md](frame-presets/coral/FRAME.md) —— Coral — Frame (video / frame layer)
+- [frame-presets/creative-mode/FRAME.md](frame-presets/creative-mode/FRAME.md) —— Creative Mode — Frame (video / frame layer)
+- [frame-presets/daisy-days/FRAME.md](frame-presets/daisy-days/FRAME.md) —— Daisy Days — Frame (video / frame layer)
+- [frame-presets/editorial-forest/FRAME.md](frame-presets/editorial-forest/FRAME.md) —— Editorial Forest — Frame (video / frame layer)
+- [palettes/bold-energetic.md](palettes/bold-energetic.md) —— 大胆 / 活力（Bold / Energetic）
+- [palettes/clean-corporate.md](palettes/clean-corporate.md) —— 简洁 / 企业（Clean / Corporate）
+- [palettes/dark-premium.md](palettes/dark-premium.md) —— 暗色 / 高级（Dark / Premium）
+- [palettes/jewel-rich.md](palettes/jewel-rich.md) —— 宝石 / 浓郁（Jewel / Rich）
+- [palettes/monochrome.md](palettes/monochrome.md) —— 单色（Monochrome）
+- [palettes/nature-earth.md](palettes/nature-earth.md) —— 自然 / 大地（Nature / Earth）
+- [palettes/neon-electric.md](palettes/neon-electric.md) —— 霓虹 / 电光（Neon / Electric）
+- [palettes/pastel-soft.md](palettes/pastel-soft.md) —— 粉彩 / 柔和（Pastel / Soft）
+- [palettes/warm-editorial.md](palettes/warm-editorial.md) —— 暖调 / 编辑感（Warm / Editorial）
+- [references/audio-reactive.md](references/audio-reactive.md) —— 音频响应动画
+- [references/beat-direction.md](references/beat-direction.md) —— 段落节拍导演
+- [references/composition-patterns.md](references/composition-patterns.md) —— Composition 图式
+- [references/data-in-motion.md](references/data-in-motion.md) —— 运动中的数据
+- [references/design-adherence.md](references/design-adherence.md) —— 设计遵循度
+- [references/design-picker.md](references/design-picker.md) —— 设计选择器
+- [references/design-spec.md](references/design-spec.md) —— 设计规范 —— frame.md / design.md
+- [references/house-style.md](references/house-style.md) —— 内部风格（House Style）
+- [references/motion-principles.md](references/motion-principles.md) —— 运动原则
+- [references/narration.md](references/narration.md) —— 旁白与脚本
+- [references/prompt-expansion.md](references/prompt-expansion.md) —— Prompt 扩写
+- [references/story-spine.md](references/story-spine.md) —— 故事主干 —— 价值优先的叙事准则
+- [references/storyboard-recipe.md](references/storyboard-recipe.md) —— 分镜配方 —— 像发布影片那样规划一支视频
+- [references/typography.md](references/typography.md) —— 字体排印
+- [references/video-composition.md](references/video-composition.md) —— 视频构图
+- [references/visual-styles.md](references/visual-styles.md) —— 视觉风格库

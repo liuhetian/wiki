@@ -10,8 +10,8 @@ description: "ISLP 伴读导读：统计学习的入门主干，每章 lab 就�
 
 ## 读法
 
-- **免费 PDF**：作者官网 [statlearning.com](https://www.statlearning.com/) 提供下载，讲解直接链到章节，不摘抄
-- **lab 当任务**：每章末尾的 Python lab 就是现成的现场，代码用官方 [`ISLP` 包](https://islp.readthedocs.io/)。题换一份数据自己出，不照抄 lab 的数
+- **免费 PDF**：作者官网 statlearning.com[^statlearning] 提供下载，讲解直接链到章节，不摘抄
+- **lab 当任务**：每章末尾的 Python lab 就是现成的现场，代码用官方 `ISLP` 包[^readthedocs]。题换一份数据自己出，不照抄 lab 的数
 - **ESL 只做参考**：同一批作者的 *The Elements of Statistical Learning* 推导更全，查证明时翻，不开课
 - 第 1 章导言跳过；第 9、10、11 章选读，各有更合适的接手课
 
@@ -42,3 +42,6 @@ description: "ISLP 伴读导读：统计学习的入门主干，每章 lab 就�
 ## 课程
 
 还没开课。排到时先写第 2 章伴读（roadmap 首批第 4 件事）。
+
+[^statlearning]: [statlearning.com](https://www.statlearning.com/)，2026-10-02 读。
+[^readthedocs]: [`ISLP` 包](https://islp.readthedocs.io/)，2026-10-02 读。

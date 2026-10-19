@@ -60,4 +60,6 @@ description: "固定清空收件箱、校准项目、检查等待项和未来日
 
 ## 来源
 
-- David Allen Company：[The Power of the GTD Weekly Review](https://gettingthingsdone.com/2018/08/episode-43-the-power-of-the-gtd-weekly-review/) —— 官方清单覆盖清空输入、检查行动与日历、等待项、项目和 someday/maybe
+- David Allen Company：The Power of the GTD Weekly Review[^episode-43-the-power-of-the-gtd] —— 官方清单覆盖清空输入、检查行动与日历、等待项、项目和 someday/maybe
+
+[^episode-43-the-power-of-the-gtd]: [The Power of the GTD Weekly Review](https://gettingthingsdone.com/2018/08/episode-43-the-power-of-the-gtd-weekly-review/)，2026-07-28 读。

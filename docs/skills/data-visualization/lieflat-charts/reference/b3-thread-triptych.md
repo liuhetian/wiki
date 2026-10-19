@@ -28,10 +28,12 @@ description: "B3 · 三段丝线图：三段路径 100+ 条丝线的 Interactive
 - 使用时只替换数据与文案，并保持“三段路径 100+ 条丝线”这一数据契约；若数据本体改变，应回到总目录重新选型。
 - 颜色限于 Mono 灰阶，面积编码继续使用平方根换算；柱长、位置与角度编码不得断轴或视觉夸大。
 
-> 模板来源：Lieflat Charts `B3 Thread Triptych`，真实骨架取自 [`templates/big-threads.html`](https://github.com/larashero3-dotcom/lieflat-charts/blob/e5b369de1d0d32637093ee62d60bd556cf2c1af4/templates/big-threads.html) 的 “Where the data actually goes — now answerable” 卡片与对应渲染块。
+> 模板来源：Lieflat Charts `B3 Thread Triptych`，真实骨架取自 `templates/big-threads.html`[^big-threads] 的 “Where the data actually goes — now answerable” 卡片与对应渲染块。
 
 ??? abstract "`b3-thread-triptych.html` —— 自包含单页源码"
 
     ```html
     --8<-- "skills/data-visualization/lieflat-charts/assets/b3-thread-triptych.html"
     ```
+
+[^big-threads]: [`templates/big-threads.html`](https://github.com/larashero3-dotcom/lieflat-charts/blob/e5b369de1d0d32637093ee62d60bd556cf2c1af4/templates/big-threads.html)，2026-07-28 读。

@@ -4,7 +4,7 @@ description: "网格最值 DP：dp[i][j] = grid[i][j] + min(上, 左)，第一�
 
 # 64. 最小路径和
 
-[LeetCode 64](https://leetcode.cn/problems/minimum-path-sum/) · 中等 · 多维动态规划
+LeetCode 64[^leetcode] · 中等 · 多维动态规划
 
 ## 题
 
@@ -61,3 +61,5 @@ class Solution:
     assert s.minPathSum([[5]]) == 5
     assert s.minPathSum([[1], [2], [3]]) == 6
     ```
+
+[^leetcode]: [LeetCode 64](https://leetcode.cn/problems/minimum-path-sum/)，2026-09-29 读。

@@ -109,7 +109,7 @@ components:
     size: "3px tall, bottom edge, width grows with index"
     description: "Persistent progress strip."
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/frame-presets/blue-professional/FRAME.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/frame-presets/blue-professional/FRAME.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Blue Professional — Frame (video / frame layer)
 

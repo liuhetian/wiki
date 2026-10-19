@@ -12,7 +12,7 @@ description: "在 skills/ 下收纳或改 skill 时读（先读写作规范）�
 
 | 形态 | 结构 | 什么时候用 | 活例 |
 |---|---|---|---|
-| 迷你 skill | `<skill>.md` 一个文件 | 一页说得完，没有 reference 和 assets；常常就是一段 prompt，要读者填的空写成[填空](reference/components.md#fill) | [盘问我](../collab/grilling.md)、[对话提示词](../collab/chat-prompts/index.md)下的 18 个 |
+| 迷你 skill | `<skill>.md` 一个文件 | 一页说得完，没有 reference 和 assets；常常就是一段 prompt，要读者填的空写成[填空](reference/components.md#fill) | [盘问我](../collab/grilling.md)、[对话提示词](../collab/chat-prompts/index.md)下的 19 个 |
 | 标准 skill | `<skill>/index.md` + `reference/` + `assets/` | 子页服务同一个主题，按需加载；就是 Anthropic 标准的 skill 目录，`SKILL.md` 改名 `index.md` | [FastAPI](../fastapi/index.md)、[Dashboard](../dashboard/index.md) |
 | 抽象 skill | `<skill>/index.md` + 几个子 skill，可以顺带 `reference/`、`assets/` | 一套能力由几个独立 skill 组成；互不相干的 skill 归一类也是它，只是不解决一个具体问题 | [图片提示词反推](../collab/image-prompt-reverse/index.md)、[写作规范](index.md)（带 reference）、[和 AI 协作](../collab/index.md)（归类） |
 
@@ -46,7 +46,7 @@ description: "在 skills/ 下收纳或改 skill 时读（先读写作规范）�
 
 由于我们服务提供方并不提供，也不希望提供侵入客户端agent的能力，所以对于hooks，agents，commands这几个板块，需要提炼出文本prompt转换成skill，作为软引导。
 
-对于mod(claude code的侵入式插件)和mcp，吸纳的时候需要明确告知吸纳发起人，会丢弃掉哪些内容。所以注意事项2：需要全部转换成skill。
+对于mod(claude code的侵入式插件)和mcp，暂时没法直接转成skill，吸纳时丢弃，并明确告知吸纳发起人丢弃了哪些内容。所以注意事项2：hooks、agents、commands 转成skill，mod 和 MCP 丢弃并告知。
 
 来源自带的形式和框架不跟着进来：卡牌、稀有度、站点自己的分类、几套并存的占位写法这类包装一律丢掉，按本站的 skill 形态重新组织，分组按使用场景来。所以注意事项3：只收能直接拿来用的内容，分析来源本身的话（比如从写法推断出处）不进 skill，确实有用的写进维护记录的「上游」。活例：[对话提示词](../collab/chat-prompts/index.md)，原来是一套提示词卡牌。
 
@@ -115,11 +115,11 @@ prompt 里的占位也要深度收纳：上游的 `{{idea}}`、`[产品名]`、�
 
 - **agents**：常见形态就是一句话，可以直接收纳。
 
-- **commands**：常见形态就是一句话，可以直接收纳。对于变量，使用特殊标记（现在这个功能还没做）。
+- **commands**：常见形态就是一句话，可以直接收纳。里面的变量（`$ARGUMENTS` 这类）改成[填空](reference/components.md#fill)，同上文 prompt 占位的写法。
 
-- **mod**：丢弃，但是在开发文档中写明丢弃了什么
+- **mod**：丢弃，丢了什么写进[维护记录](#maintenance-record)的「跳过了什么」
 
-- **MCP**：丢弃，但是在开发文档中写明丢弃了什么
+- **MCP**：丢弃，丢了什么写进[维护记录](#maintenance-record)的「跳过了什么」
 
 
 ## nav { #nav }

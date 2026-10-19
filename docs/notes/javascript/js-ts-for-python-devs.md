@@ -6,7 +6,7 @@ description: "不是心智模型深挖，是查表：类型系统、解构、异
 
 ## 这仓库是什么
 
-[deepseek-harness](https://github.com/deepseek-ai/deepseek-harness/tree/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e) 是 **TypeScript**，不是纯 JS：`git ls-files '*.ts' | wc -l` 数出 2472 个，`.js` 基本是构建产物/脚本壳。`package.json` 里 `"type": "module"`，即 **ESM**（`import`/`export`），不是 CommonJS（`require`）。跑源码用 `tsx`（TS 版 `ts-node`），编译用 `tsc` + `tsdown`。
+deepseek-harness[^deepseek-harness] 是 **TypeScript**，不是纯 JS：`git ls-files '*.ts' | wc -l` 数出 2472 个，`.js` 基本是构建产物/脚本壳。`package.json` 里 `"type": "module"`，即 **ESM**（`import`/`export`），不是 CommonJS（`require`）。跑源码用 `tsx`（TS 版 `ts-node`），编译用 `tsc` + `tsdown`。
 
 下面所有行号和引用都钉在 `b150a551b8`（2026-08-21）上，上游改了也不影响这篇能不能复核。
 
@@ -139,7 +139,7 @@ function render(body: WebFetchBody) {
 }
 ```
 
-`kind` 是"判别字段"（discriminant tag），`switch` 每加一个新 `kind` 就必须补一个 `case`，不然 `default` 分支的 `assertNever(body)` 类型对不上，`tsc` 直接报错。这是 TS 没有 Python `Enum` + `match` 强制穷尽检查时，用类型系统硬做出来的等价物——仓库 [CLAUDE.md 第 106 行](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/CLAUDE.md#L106) 那条 **Switch on discriminant tags** 说的就是这个：「Closed unions end in `assertNever`」。
+`kind` 是"判别字段"（discriminant tag），`switch` 每加一个新 `kind` 就必须补一个 `case`，不然 `default` 分支的 `assertNever(body)` 类型对不上，`tsc` 直接报错。这是 TS 没有 Python `Enum` + `match` 强制穷尽检查时，用类型系统硬做出来的等价物——仓库 CLAUDE.md 第 106 行[^claude] 那条 **Switch on discriminant tags** 说的就是这个：「Closed unions end in `assertNever`」。
 
 ## 集合操作：推导式 → 数组方法
 
@@ -227,7 +227,7 @@ export type { Session }
 ```
 
 !!! warning "本仓库的特殊约定：相对导入要写 `.ts` 后缀"
-    正常 TS 项目相对导入通常不写扩展名（`import { x } from './foo'`），但这个仓库的源码直接跑（`tsx`）用的是原生 ESM 解析规则，要求写扩展名：`import { x } from './foo.ts'`。包之间的导入走包名（`@deepseek-ai/dsh-xxx`），不写路径。见 [CLAUDE.md 第 102 行](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/CLAUDE.md#L102)：「Use package names across packages and `.ts` in local relative imports」。
+    正常 TS 项目相对导入通常不写扩展名（`import { x } from './foo'`），但这个仓库的源码直接跑（`tsx`）用的是原生 ESM 解析规则，要求写扩展名：`import { x } from './foo.ts'`。包之间的导入走包名（`@deepseek-ai/dsh-xxx`），不写路径。见 CLAUDE.md 第 102 行[^claude-2]：「Use package names across packages and `.ts` in local relative imports」。
 
 Python 的 `if __name__ == "__main__"` 在 ESM 里没有直接对应写法，判断"是不是被直接运行"要用 `import.meta.url` 比对，仓库里入口文件（`packages/*/bin/*.ts` 之类）会看到这种写法。
 
@@ -377,3 +377,7 @@ type SessionId = Branded<'SessionId'>
 2. 一个包先看它的 `src/index.ts`（对应 Python 的 `__init__.py`，是这个包对外暴露的全部东西），再顺着导出的类型/函数往下挖。
 3. 类型定义（`interface`/`type`）比实现函数信息密度更高——TS 里类型基本等价于"这个东西的契约"，Python 项目里同等信息往往要读 docstring + 猜。
 4. 卡在符号看不懂就回这张表查，卡在"这个模式为什么这么设计"就去翻 `docs/architecture.md` 和 `docs/glossary.md`。
+
+[^deepseek-harness]: [deepseek-harness](https://github.com/deepseek-ai/deepseek-harness/tree/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e)，2026-09-04 读。
+[^claude]: [CLAUDE.md 第 106 行](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/CLAUDE.md#L106)，2026-09-04 读。
+[^claude-2]: [CLAUDE.md 第 102 行](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/CLAUDE.md#L102)，2026-09-04 读。

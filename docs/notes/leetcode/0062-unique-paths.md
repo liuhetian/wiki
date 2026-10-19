@@ -4,7 +4,7 @@ description: "网格计数 DP：每格路径数 = 上方 + 左方，一行滚动
 
 # 62. 不同路径
 
-[LeetCode 62](https://leetcode.cn/problems/unique-paths/) · 中等 · 多维动态规划
+LeetCode 62[^leetcode] · 中等 · 多维动态规划
 
 ## 题
 
@@ -71,3 +71,5 @@ description: "网格计数 DP：每格路径数 = 上方 + 左方，一行滚动
         assert s.uniquePaths(1, 1) == 1
         assert s.uniquePaths(1, 5) == 1
     ```
+
+[^leetcode]: [LeetCode 62](https://leetcode.cn/problems/unique-paths/)，2026-09-29 读。

@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/captions/authoring.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/captions/authoring.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 字幕
 
@@ -146,7 +146,7 @@ npx hyperframes add caption-highlight         # install a specific one
 
 相关：`caption-blend-difference`（tag 是 `text` / `blend-mode`，不是 `caption-style`，所以不会出现在上面的筛选结果里）通过 `mix-blend-mode: difference` 让文字相对任意背景自动反色——在背景杂乱或不可预测时很有用。
 
-带预览浏览全部：[hyperframes.heygen.com/catalog](https://hyperframes.heygen.com/catalog)
+带预览浏览全部：hyperframes.heygen.com/catalog[^catalog]
 
 字幕 component 自带透明背景——它们是纯粹的 overlay。如果底下的视频很亮或很杂，就在宿主 composition 中、字幕 sub-composition 的下方加一个对比层（例如一个半透明的深色 div），而不是加在 component 内部。
 
@@ -163,3 +163,5 @@ npx hyperframes add caption-highlight         # install a specific one
 - 同一时间只显示一个字幕组。
 - 每个字幕组都必须在 `group.end` 处有一次硬性的 `tl.set` 清除。
 - 字体：编译器只会自动嵌入它**内置映射集合**中的字体（Inter、Roboto、Montserrat、…）——对这些字体，只需在 CSS 里声明 `font-family`。任何**其他**字体（像 `TT Norms Pro` 这样的品牌 / 自定义字体，或者非拉丁的 CJK/天城文字体家族）**不会**被自动提供：它需要一个指向随项目附带的真实 `.woff2` 的 `@font-face`，否则渲染时文字会悄悄回退到一个通用字体。不要以为你在本地能看到的 `font-family` 就能渲染出来——渲染机器是一个干净的无头 Chrome，没有安装任何字体。
+
+[^catalog]: [hyperframes.heygen.com/catalog](https://hyperframes.heygen.com/catalog)，2026-10-15 读。

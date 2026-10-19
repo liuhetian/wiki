@@ -4,7 +4,7 @@ description: "O(n²) 的 dp[i] 以 i 结尾；O(n log n) 换个状态——tails
 
 # 300. 最长递增子序列
 
-[LeetCode 300](https://leetcode.cn/problems/longest-increasing-subsequence/) · 中等 · 动态规划
+LeetCode 300[^leetcode] · 中等 · 动态规划
 
 ## 题
 
@@ -84,3 +84,5 @@ description: "O(n²) 的 dp[i] 以 i 结尾；O(n log n) 换个状态——tails
         assert s.lengthOfLIS([5]) == 1
         assert s.lengthOfLIS([4, 10, 4, 3, 8, 9]) == 3
     ```
+
+[^leetcode]: [LeetCode 300](https://leetcode.cn/problems/longest-increasing-subsequence/)，2026-09-29 读。

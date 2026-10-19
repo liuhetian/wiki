@@ -56,4 +56,6 @@ Pre-mortem 把通常发生在项目结束后的复盘，搬到资源还没有大
 
 ## 来源
 
-- Gary Klein：[Pre-mortem Method of Risk Assessment](https://www.gary-klein.com/premortem) —— 方法提出者对练习起点、团队参与方式和目标的简要说明
+- Gary Klein：Pre-mortem Method of Risk Assessment[^premortem] —— 方法提出者对练习起点、团队参与方式和目标的简要说明
+
+[^premortem]: [Pre-mortem Method of Risk Assessment](https://www.gary-klein.com/premortem)，2026-07-28 读。

@@ -89,7 +89,7 @@ components:
     glyph: "✱ (U+2731), always {colors.coral}"
     description: "The brand mark. Fades + scales 0.92→1 on a single emphasis beat; never spins."
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/frame-presets/code-editorial/FRAME.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/frame-presets/code-editorial/FRAME.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Code editorial — Frame (video / frame layer)
 

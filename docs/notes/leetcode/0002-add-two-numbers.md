@@ -4,7 +4,7 @@ description: "逆序存储就是竖式加法的天然顺序：逐位相加带进
 
 # 2. 两数相加
 
-[LeetCode 2](https://leetcode.cn/problems/add-two-numbers/) · 中等 · 链表
+LeetCode 2[^leetcode] · 中等 · 链表
 
 ## 题
 
@@ -50,7 +50,7 @@ class Solution:
 
 ## 延伸
 
-- **高位在前**：[445. 两数相加 II](https://leetcode.cn/problems/add-two-numbers-ii/)，要么先 [206. 反转链表](0206-reverse-linked-list.md)，要么两条链各压栈再弹出相加，结果用头插法建。
+- **高位在前**：445. 两数相加 II[^leetcode-2]，要么先 [206. 反转链表](0206-reverse-linked-list.md)，要么两条链各压栈再弹出相加，结果用头插法建。
 - 同样用 dummy + 尾指针建新链：[21. 合并两个有序链表](0021-merge-two-sorted-lists.md)。
 - **坑**：别想着把链表转成整数相加再转回来——Python 能过，但换了语言会溢出，也不是这题要考的。
 
@@ -63,3 +63,6 @@ class Solution:
     assert list_vals(s.addTwoNumbers(build_list([9] * 7), build_list([9] * 4))) == [8, 9, 9, 9, 0, 0, 0, 1]
     assert list_vals(s.addTwoNumbers(build_list([5]), build_list([5]))) == [0, 1]
     ```
+
+[^leetcode]: [LeetCode 2](https://leetcode.cn/problems/add-two-numbers/)，2026-09-29 读。
+[^leetcode-2]: [445. 两数相加 II](https://leetcode.cn/problems/add-two-numbers-ii/)，2026-09-29 读。

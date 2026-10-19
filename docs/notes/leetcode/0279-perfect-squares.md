@@ -4,7 +4,7 @@ description: "完全平方数当硬币、n 当金额，就是「凑出 n 的最�
 
 # 279. 完全平方数
 
-[LeetCode 279](https://leetcode.cn/problems/perfect-squares/) · 中等 · 动态规划
+LeetCode 279[^leetcode] · 中等 · 动态规划
 
 ## 题
 
@@ -61,3 +61,5 @@ class Solution:
     assert s.numSquares(1) == 1
     assert s.numSquares(7) == 4
     ```
+
+[^leetcode]: [LeetCode 279](https://leetcode.cn/problems/perfect-squares/)，2026-09-29 读。

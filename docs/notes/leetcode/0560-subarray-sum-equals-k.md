@@ -4,7 +4,7 @@ description: "子数组和 = 两个前缀和之差；边扫边查「前缀 s−k
 
 # 560. 和为 K 的子数组
 
-[LeetCode 560](https://leetcode.cn/problems/subarray-sum-equals-k/) · 中等 · 子串
+LeetCode 560[^leetcode] · 中等 · 子串
 
 ## 题
 
@@ -50,7 +50,7 @@ class Solution:
 ## 延伸
 
 - 前缀和搬到树上：[437. 路径总和 III](0437-path-sum-iii.md)，DFS 下行时存、回溯时删。
-- 「和能被 k 整除的子数组」（[LeetCode 974](https://leetcode.cn/problems/subarray-sums-divisible-by-k/)）：查的是前缀和**模 k 相同**的个数，注意 Python 的 `%` 对负数已经返回非负。
+- 「和能被 k 整除的子数组」（LeetCode 974[^leetcode-2]）：查的是前缀和**模 k 相同**的个数，注意 Python 的 `%` 对负数已经返回非负。
 - 求「最长」而不是「个数」时，哈希表存每个前缀和**第一次**出现的下标。
 - 全是非负数时才能用滑窗，空间降到 $O(1)$。
 
@@ -64,3 +64,6 @@ class Solution:
     assert s.subarraySum([1, -1, 0], 0) == 3
     assert s.subarraySum([0, 0, 0], 0) == 6
     ```
+
+[^leetcode]: [LeetCode 560](https://leetcode.cn/problems/subarray-sum-equals-k/)，2026-09-29 读。
+[^leetcode-2]: [LeetCode 974](https://leetcode.cn/problems/subarray-sums-divisible-by-k/)，2026-09-29 读。

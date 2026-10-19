@@ -4,7 +4,7 @@ description: "旋转数组从任意 mid 切开，总有一半是有序的——�
 
 # 33. 搜索旋转排序数组
 
-[LeetCode 33](https://leetcode.cn/problems/search-in-rotated-sorted-array/) · 中等 · 二分查找
+LeetCode 33[^leetcode] · 中等 · 二分查找
 
 ## 题
 
@@ -75,3 +75,5 @@ class Solution:
     assert s.search([5, 1, 3], 5) == 0
     assert all(s.search([4, 5, 6, 7, 0, 1, 2], v) == i for i, v in enumerate([4, 5, 6, 7, 0, 1, 2]))
     ```
+
+[^leetcode]: [LeetCode 33](https://leetcode.cn/problems/search-in-rotated-sorted-array/)，2026-09-29 读。

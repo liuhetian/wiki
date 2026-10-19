@@ -17,9 +17,9 @@ description: "Sandboard：WebGPU 写实沙盘，划沟、堆沙、扬沙，Start
 
 ![Sandboard 截图](assets/screenshot.jpeg)
 
-原作者 GitHub 账号 scottstts，线上原版在 <https://sand.scottsun.io>，仓库是
-[scottstts/Sandboard](https://github.com/scottstts/Sandboard)，收录时钉在 commit
-[`489cb01`](https://github.com/scottstts/Sandboard/tree/489cb01e81b11ba575887f7c76760498eb41aaa8)（2026-09-19）。
+原作者 GitHub 账号 scottstts，线上原版在 sand.scottsun.io[^scottsun]，仓库是
+scottstts/Sandboard[^sandboard]，收录时钉在 commit
+`489cb01`[^sandboard-2]（2026-09-19）。
 
 ## 要点
 
@@ -52,3 +52,7 @@ description: "Sandboard：WebGPU 写实沙盘，划沟、堆沙、扬沙，Start
 - [渲染器](assets/sandboard-demo/source/src/render/renderer.ts)
 - [复位海浪效果](assets/sandboard-demo/source/src/reset/effect.ts) / [水面光学](assets/sandboard-demo/source/src/render/water-reset.ts)
 - [工程依赖](assets/sandboard-demo/source/package.json)
+
+[^scottsun]: [sand.scottsun.io](https://sand.scottsun.io)，2026-09-29 读。
+[^sandboard]: [scottstts/Sandboard](https://github.com/scottstts/Sandboard)，2026-09-29 读。
+[^sandboard-2]: [`489cb01`](https://github.com/scottstts/Sandboard/tree/489cb01e81b11ba575887f7c76760498eb41aaa8)，2026-09-29 读。

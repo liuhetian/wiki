@@ -28,10 +28,12 @@ description: "L2 · 点阵级联图：排名比较，可数单位（unit chart�
 - 使用时只替换数据与文案，并保持“排名比较，可数单位（unit chart）”这一数据契约；若数据本体改变，应回到总目录重新选型。
 - 颜色限于 Mono 灰阶，面积编码继续使用平方根换算；柱长、位置与角度编码不得断轴或视觉夸大。
 
-> 模板来源：Lieflat Charts `L2 Dot Cascade`，真实骨架取自 [`templates/lupi-gallery.html`](https://github.com/larashero3-dotcom/lieflat-charts/blob/e5b369de1d0d32637093ee62d60bd556cf2c1af4/templates/lupi-gallery.html) 的 “What breaks, stacked and ranked” 卡片与对应渲染块。
+> 模板来源：Lieflat Charts `L2 Dot Cascade`，真实骨架取自 `templates/lupi-gallery.html`[^lupi-gallery] 的 “What breaks, stacked and ranked” 卡片与对应渲染块。
 
 ??? abstract "`l2-dot-cascade.html` —— 自包含单页源码"
 
     ```html
     --8<-- "skills/data-visualization/lieflat-charts/assets/l2-dot-cascade.html"
     ```
+
+[^lupi-gallery]: [`templates/lupi-gallery.html`](https://github.com/larashero3-dotcom/lieflat-charts/blob/e5b369de1d0d32637093ee62d60bd556cf2c1af4/templates/lupi-gallery.html)，2026-07-28 读。

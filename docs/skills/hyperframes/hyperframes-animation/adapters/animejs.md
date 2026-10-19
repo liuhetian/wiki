@@ -3,7 +3,7 @@ name: hyperframes-animejs
 description: >
   HyperFrames 的 Anime.js adapter 用法模式。在 HyperFrames composition 里编写 Anime.js 动画或 timeline、把动画注册到 window.__hfAnime、让 Anime.js 由 seek 驱动且具有确定性，或者把 Anime.js 示例转换成渲染安全的 HyperFrames HTML 时使用。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/animejs.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/animejs.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 用于 HyperFrames 的 Anime.js
 

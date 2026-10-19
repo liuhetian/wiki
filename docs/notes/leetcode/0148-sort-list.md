@@ -4,7 +4,7 @@ description: "链表排序首选归并：切分只需快慢指针、合并不要
 
 # 148. 排序链表
 
-[LeetCode 148](https://leetcode.cn/problems/sort-list/) · 中等 · 链表
+LeetCode 148[^leetcode] · 中等 · 链表
 
 ## 题
 
@@ -112,7 +112,7 @@ description: "链表排序首选归并：切分只需快慢指针、合并不要
 
 - 两个组件的出处：合并是 [21. 合并两个有序链表](0021-merge-two-sorted-lists.md)，找中点和 [234. 回文链表](0234-palindrome-linked-list.md) 一样。
 - 合并 $k$ 条而不是 2 条：[23. 合并 K 个升序链表](0023-merge-k-sorted-lists.md)，分治写法就是这题自顶向下的后半段。
-- 链表上的插入排序：[147. 对链表进行插入排序](https://leetcode.cn/problems/insertion-sort-list/)，$O(n^2)$，用来对比归并的优势。
+- 链表上的插入排序：147. 对链表进行插入排序[^leetcode-2]，$O(n^2)$，用来对比归并的优势。
 - **坑**：自底向上里 `merge` 返回的尾巴要走到真正的末尾（`tail.next = a or b` 接上的可能是一整段），否则下一对会接在中间。
 
 ??? note "自测"
@@ -128,3 +128,6 @@ description: "链表排序首选归并：切分只需快慢指针、合并不要
         vals = [random.randint(-5, 5) for _ in range(n)]
         assert list_vals(s.sortList(build_list(vals))) == sorted(vals)
     ```
+
+[^leetcode]: [LeetCode 148](https://leetcode.cn/problems/sort-list/)，2026-09-29 读。
+[^leetcode-2]: [147. 对链表进行插入排序](https://leetcode.cn/problems/insertion-sort-list/)，2026-09-29 读。

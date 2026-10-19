@@ -11,7 +11,7 @@ description: "Givens & Hoeting 伴读导读：统计计算主干，数值优化�
 ## 读法
 
 - **在版教材：只摘句、标页码**。没有免费版
-- **数据和代码**：作者站 [stat.colostate.edu/computationalstatistics](https://www.stat.colostate.edu/computationalstatistics/) 有数据集、例子的 R 代码和勘误。本站改写成 Python（`numpy`、`scipy.optimize`、`scipy.stats`），先拿书上一个例子把数对上
+- **数据和代码**：作者站 stat.colostate.edu/computationalstatistics[^computationalstatistics] 有数据集、例子的 R 代码和勘误。本站改写成 Python（`numpy`、`scipy.optimize`、`scipy.stats`），先拿书上一个例子把数对上
 - 第 2、4、6、7、9 章必读：数值优化、EM、Monte Carlo、MCMC、bootstrap
 - 第 1 章是复习，用到再回查
 - 第 3 章组合优化跳；第 5、8、10–12 章选读：数值积分、MCMC 进阶、密度估计与平滑。GAM 和树在 ISLP 已经讲过
@@ -45,3 +45,5 @@ description: "Givens & Hoeting 伴读导读：统计计算主干，数值优化�
 ## 课程
 
 还没开课。排到时先写第 2 章伴读：牛顿法与 Fisher scoring，顺手把 Agresti 的 IRLS 跑一遍。
+
+[^computationalstatistics]: [stat.colostate.edu/computationalstatistics](https://www.stat.colostate.edu/computationalstatistics/)，2026-10-02 读。

@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/script-format.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/script-format.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # `SCRIPT.md` —— 锁定的旁白（可选）
 

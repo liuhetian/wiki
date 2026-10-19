@@ -5,7 +5,7 @@ description: >
 metadata:
   tags: glow, bloom, ambient, radial, sweep, hero, presence, finite, un-triggered
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/ambient-glow-bloom.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/ambient-glow-bloom.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Ambient Glow Bloom（环境辉光绽放）
 

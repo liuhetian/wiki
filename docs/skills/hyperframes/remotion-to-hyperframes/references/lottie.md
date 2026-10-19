@@ -1,8 +1,8 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/lottie.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/lottie.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Lottie 翻译：@remotion/lottie → HF lottie adapter
 
-Lottie 动画是一个可以干净翻译的情形 —— HF 内置了一个 [Lottie adapter](https://github.com/heygen-com/hyperframes/blob/main/packages/core/src/runtime/adapters/lottie.ts)，同时支持 `lottie-web` 和 `@lottiefiles/dotlottie-web`。这个 adapter 会自动发现注册在 `window.__hfLottie` 上的动画，并通过 `goToAndStop` 逐帧 seek 它们。
+Lottie 动画是一个可以干净翻译的情形 —— HF 内置了一个 Lottie adapter[^lottie-ts]，同时支持 `lottie-web` 和 `@lottiefiles/dotlottie-web`。这个 adapter 会自动发现注册在 `window.__hfLottie` 上的动画，并通过 `goToAndStop` 逐帧 seek 它们。
 
 ## 模式
 
@@ -84,7 +84,7 @@ Lottie 动画自己编码了确定性的 timeline。它们是 Remotion compositi
 
 ## After Effects → Lottie 的局限
 
-Lottie 只支持 After Effects 功能的一个子集。表达式、大多数效果（投影、颜色叠加）、除 Normal/Add/Multiply 之外的所有混合模式、亮度遮罩（luma matte），以及大多数 3D 参数都不受支持。如果 Remotion composition 用到的 Lottie 文件依赖这些功能，那么动画在 Remotion 和 HF 中*都*会坏掉 —— 这不是翻译问题，而是 Lottie 的局限。完整的受支持功能列表见 [airbnb/lottie/after-effects.md](https://github.com/airbnb/lottie/blob/master/after-effects.md)。
+Lottie 只支持 After Effects 功能的一个子集。表达式、大多数效果（投影、颜色叠加）、除 Normal/Add/Multiply 之外的所有混合模式、亮度遮罩（luma matte），以及大多数 3D 参数都不受支持。如果 Remotion composition 用到的 Lottie 文件依赖这些功能，那么动画在 Remotion 和 HF 中*都*会坏掉 —— 这不是翻译问题，而是 Lottie 的局限。完整的受支持功能列表见 airbnb/lottie/after-effects.md[^after-effects]。
 
 ## 循环行为
 
@@ -92,4 +92,7 @@ Remotion 的 `loop={true}` 会连续播放动画。把它翻译成播放器上�
 
 ## 性能说明
 
-根据 [Lottie adapter](https://github.com/heygen-com/hyperframes/blob/main/packages/core/src/runtime/adapters/lottie.ts) 的文档：lottie-web 的 `goToAndStop(time, isFrame=false)` 接受以毫秒为单位的时间；为了精度，adapter 传入的是 `time * 1000`。这比传入帧号更准确（尤其是对于内部 fps 与 HF 渲染 fps 不一致的动画）。
+根据 Lottie adapter[^lottie-ts] 的文档：lottie-web 的 `goToAndStop(time, isFrame=false)` 接受以毫秒为单位的时间；为了精度，adapter 传入的是 `time * 1000`。这比传入帧号更准确（尤其是对于内部 fps 与 HF 渲染 fps 不一致的动画）。
+
+[^lottie-ts]: [Lottie adapter](https://github.com/heygen-com/hyperframes/blob/main/packages/core/src/runtime/adapters/lottie.ts)，2026-10-15 读。
+[^after-effects]: [airbnb/lottie/after-effects.md](https://github.com/airbnb/lottie/blob/master/after-effects.md)，2026-10-15 读。

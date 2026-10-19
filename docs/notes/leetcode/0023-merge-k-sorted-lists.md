@@ -4,7 +4,7 @@ description: "k 路归并：堆里只放每条链当前的头，弹最小、补�
 
 # 23. 合并 K 个升序链表
 
-[LeetCode 23](https://leetcode.cn/problems/merge-k-sorted-lists/) · 困难 · 链表
+LeetCode 23[^leetcode] · 困难 · 链表
 
 ## 题
 
@@ -74,7 +74,7 @@ description: "k 路归并：堆里只放每条链当前的头，弹最小、补�
 ## 延伸
 
 - $k = 2$ 的版本：[21. 合并两个有序链表](0021-merge-two-sorted-lists.md)；分治的结构和 [148. 排序链表](0148-sort-list.md) 一样。
-- **「k 路候选里取最值」是堆的招牌用法**：[215. 数组中的第K个最大元素](0215-kth-largest-element-in-an-array.md)、[347. 前 K 个高频元素](0347-top-k-frequent-elements.md)、[295. 数据流的中位数](0295-find-median-from-data-stream.md)。有序矩阵第 k 小 [378](https://leetcode.cn/problems/kth-smallest-element-in-a-sorted-matrix/) 也是把每行当一条链。
+- **「k 路候选里取最值」是堆的招牌用法**：[215. 数组中的第K个最大元素](0215-kth-largest-element-in-an-array.md)、[347. 前 K 个高频元素](0347-top-k-frequent-elements.md)、[295. 数据流的中位数](0295-find-median-from-data-stream.md)。有序矩阵第 k 小 378[^leetcode-2] 也是把每行当一条链。
 - **坑**：`tail.next = tail = node` 是链式赋值，从左到右赋值——先 `tail.next = node`，再 `tail = node`，顺序正好对；写反了（`tail = tail.next = node`）则先把 `tail` 改成 `node`，再让 `node.next = node` 自环。
 
 ??? note "自测"
@@ -87,3 +87,6 @@ description: "k 路归并：堆里只放每条链当前的头，弹最小、补�
     assert s.mergeKLists([None]) is None
     assert list_vals(s.mergeKLists([None, build_list([1]), None, build_list([0, 2])])) == [0, 1, 2]
     ```
+
+[^leetcode]: [LeetCode 23](https://leetcode.cn/problems/merge-k-sorted-lists/)，2026-09-29 读。
+[^leetcode-2]: [378](https://leetcode.cn/problems/kth-smallest-element-in-a-sorted-matrix/)，2026-09-29 读。

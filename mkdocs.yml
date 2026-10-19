@@ -155,7 +155,7 @@ plugins:
         skills/collab/grill-with-docs/domain-modeling/ADR-FORMAT.md: skills/collab/grill-with-docs/domain-modeling/reference/adr-format.md
         # 2026-10-16 两个图片反推 skill 合并成抽象能力「图片提示词反推」：七维拆解是简化版，get-prompt-from-image 是完整版，来源进维护目录
         skills/collab/analysis_image/index.md: skills/collab/image-prompt-reverse/seven-dimensions/index.md
-        skills/collab/analysis_image/assets/linux-do-2729491/MIRROR.md: skills/collab/image-prompt-reverse/seven-dimensions/assets/linux-do-2729491/MIRROR.md
+        skills/collab/analysis_image/assets/linux-do-2729491/MIRROR.md: maintenance/skills/seven-dimensions.md
         skills/collab/analysis_image/assets/linux-do-2729491/post.md: skills/collab/image-prompt-reverse/seven-dimensions/assets/linux-do-2729491/post.md
         skills/collab/get-prompt-from-image/index.md: skills/collab/image-prompt-reverse/get-prompt-from-image/index.md
         skills/collab/get-prompt-from-image/MIRROR.md: maintenance/skills/get-prompt-from-image.md
@@ -266,7 +266,7 @@ plugins:
         gallery/gpt-image2/sunburst-samples.md: gallery/images/index.md
         skills/collab/gpt-image2-skill/README.md: gallery/images/index.md
         skills/collab/gpt-image2-skill/README.zh.md: gallery/images/index.md
-        skills/collab/gpt-image2-skill/MIRROR.md: gallery/images/gpt-image2/MIRROR.md
+        skills/collab/gpt-image2-skill/MIRROR.md: maintenance/gallery/gpt-image2.md
         skills/collab/gpt-image2-skill/skills/gpt-image/references/gallery.md: gallery/images/index.md
         skills/collab/gpt-image2-skill/docs/sunburst-samples.md: gallery/images/index.md
         skills/collab/gpt-image2-skill/skills/get-prompt-from-image/SKILL.md: skills/collab/image-prompt-reverse/get-prompt-from-image/index.md
@@ -304,6 +304,20 @@ plugins:
         skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/analysis-framework.md: skills/collab/image-prompt-reverse/get-prompt-from-image/references/analysis-framework.md
         skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/category-guides.md: skills/collab/image-prompt-reverse/get-prompt-from-image/references/category-guides.md
         skills/collab/gpt-image2-skill/skills/get-prompt-from-image/references/illustration-style.md: skills/collab/image-prompt-reverse/get-prompt-from-image/references/illustration-style.md
+        # 2026-10-19 剩下的吸纳记录也从 skill 目录里的 MIRROR.md 挪进维护目录
+        skills/hyperframes/MIRROR.md: maintenance/skills/hyperframes.md
+        skills/writing/qu-ai-wei/MIRROR.md: maintenance/skills/qu-ai-wei.md
+        skills/writing/xi-wen/MIRROR.md: maintenance/skills/xi-wen.md
+        # 2026-10-19 Gallery 和 skill assets/ 里的 MIRROR.md 也挪进维护目录
+        gallery/images/handdraw-style/MIRROR.md: maintenance/skills/handdraw.md
+        gallery/images/gpt-image2/MIRROR.md: maintenance/gallery/gpt-image2.md
+        gallery/images/prompt-cards/MIRROR.md: maintenance/gallery/prompt-cards.md
+        gallery/images/linux-do-style/assets/MIRROR.md: maintenance/gallery/linux-do-style.md
+        gallery/images/collected/MIRROR.md: maintenance/gallery/images-collected.md
+        gallery/colors/collected/MIRROR.md: maintenance/gallery/colors-collected.md
+        gallery/video/collected/MIRROR.md: maintenance/gallery/video-collected.md
+        skills/collab/chat-prompts/assets/xhs-6abf6887/MIRROR.md: maintenance/skills/chat-prompts.md#xhs-ste
+        skills/collab/image-prompt-reverse/seven-dimensions/assets/linux-do-2729491/MIRROR.md: maintenance/skills/seven-dimensions.md
 
 # 链接校验。0.0.53 及更早版本有并行竞态：同一份内容偶发（约 1/15 次构建）误报大量
 # "page does not exist"，产物 HTML 实测无差异，只能关掉。0.0.62 上复现不出来了 ——
@@ -599,6 +613,7 @@ nav:
       - 本 wiki 写作规范:
           - skills/wiki-guide/index.md
           - 自研组件: skills/wiki-guide/reference/components.md
+          - 分支: skills/wiki-guide/reference/branch.md
           - 配图: skills/wiki-guide/reference/marker-doodle.md
           - 课程页怎么写: skills/wiki-guide/course.md
           - 收纳 skill: skills/wiki-guide/skill.md
@@ -1076,6 +1091,43 @@ nav:
               - skills/anidoodle/example/index.md
               - "影片规格书": skills/anidoodle/example/butterfly-film-spec.md
           - "渲染适配器": skills/anidoodle/engine/tools/adapters/index.md
+      - 手绘风格出图:
+          - skills/handdraw/index.md
+          - 出图提示词: skills/handdraw/prompter.md
+          - 海报: skills/handdraw/poster.md
+          - 文章与视频封面: skills/handdraw/cover.md
+          - 长文配图: skills/handdraw/illustration/index.md
+          - 风格融合: skills/handdraw/fusion.md
+          - IP 形象设计: skills/handdraw/ip.md
+      - 写真拍摄企划:
+          - skills/photo-shoot/index.md
+          - 交互模式: skills/photo-shoot/reference/interaction-modes.md
+          - 质量下限: skills/photo-shoot/reference/quality-contract.md
+          - 地点: skills/photo-shoot/reference/location.md
+          - 真人身份参考: skills/photo-shoot/reference/identity-reference.md
+          - 改一个变量: skills/photo-shoot/reference/remix.md
+          - 出图: skills/photo-shoot/reference/image-generation.md
+          - 发送前自检: skills/photo-shoot/reference/qa-checklist.md
+          - 需求与造型规划:
+              - skills/photo-shoot/requirements/index.md
+              - 时空方向: skills/photo-shoot/requirements/reference/directions.md
+              - 方向卡: skills/photo-shoot/requirements/reference/direction-cards.md
+              - 完整 Look: skills/photo-shoot/requirements/reference/look-plan.md
+              - 交接文件: skills/photo-shoot/requirements/reference/handoff-schema.md
+              - 影视与流行文化联想: skills/photo-shoot/requirements/reference/media-association.md
+              - 需求示例: skills/photo-shoot/requirements/reference/examples.md
+          - 发型师: skills/photo-shoot/hairstyle.md
+          - 化妆师: skills/photo-shoot/makeup.md
+          - 参考图美化: skills/photo-shoot/beauty-prep.md
+          - 换装六宫格: skills/photo-shoot/wardrobe/index.md
+          - 拍摄与八宫格:
+              - skills/photo-shoot/shooting/index.md
+              - 姿势与情绪: skills/photo-shoot/shooting/reference/pose-emotion.md
+              - Shot List: skills/photo-shoot/shooting/reference/shot-list.md
+              - 分享文案: skills/photo-shoot/shooting/reference/share-card.md
+              - 情侣写真骨架: skills/photo-shoot/shooting/reference/couple-prompt.md
+              - 婚纱骨架: skills/photo-shoot/shooting/reference/wedding-prompt.md
+              - 单人与群像骨架: skills/photo-shoot/shooting/reference/group-prompt.md
       - FastAPI 后端:
           - skills/fastapi/index.md
           - 项目布局: skills/fastapi/reference/项目布局.md
@@ -1244,6 +1296,7 @@ nav:
               - 查证与研究:
                   - 事实核查: skills/collab/chat-prompts/fact-check.md
                   - 纵横分析法: skills/collab/chat-prompts/cross-axis.md
+                  - 粗讲项目: skills/collab/chat-prompts/project-gist.md
                   - 根因追踪: skills/collab/chat-prompts/root-cause.md
                   - 实事求是: skills/collab/chat-prompts/seek-truth.md
               - 学概念:
@@ -1325,11 +1378,14 @@ nav:
               - gallery/images/handdraw-style/styles-f.md
               - gallery/images/handdraw-style/styles-g.md
               - gallery/images/handdraw-style/styles-h.md
+              - gallery/images/handdraw-style/styles-i.md
       - 排版:
           - gallery/layouts/index.md
           - gallery/layouts/social-cards.md
           - gallery/layouts/infographics.md
           - gallery/layouts/comic-storyboards.md
+          - gallery/layouts/ip-characters.md
+          - gallery/layouts/ecommerce.md
       - 色彩:
           - gallery/colors/index.md
           - gallery/colors/classic.md
@@ -1405,6 +1461,20 @@ nav:
           - 整理视频为笔记: maintenance/skills/video-note.md
           - 花卉动态生长海报: maintenance/skills/flower-growth-poster.md
           - anidoodle 代码手绘: maintenance/skills/anidoodle.md
+          - HyperFrames 视频: maintenance/skills/hyperframes.md
+          - 去 AI 味: maintenance/skills/qu-ai-wei.md
+          - 檄文: maintenance/skills/xi-wen.md
+          - Dashboard: maintenance/skills/dashboard.md
+          - Lieflat Charts: maintenance/skills/lieflat-charts.md
+          - 手绘风格出图: maintenance/skills/handdraw.md
+          - 写真拍摄企划: maintenance/skills/photo-shoot.md
+      - Gallery 收录:
+          - GPT Image 2 图库: maintenance/gallery/gpt-image2.md
+          - prompt-cards 生图条目: maintenance/gallery/prompt-cards.md
+          - 二次元平面设计风格: maintenance/gallery/linux-do-style.md
+          - 图片区零散收集: maintenance/gallery/images-collected.md
+          - 色彩区零散收集: maintenance/gallery/colors-collected.md
+          - 视频区零散收集: maintenance/gallery/video-collected.md
       - 实测用的示例:
           - 测试skill:
               - maintenance/mock-bundle/index.md

@@ -3,7 +3,7 @@ name: hyperframes-css-animations
 description: >
   HyperFrames 的 CSS 动画 adapter 用法模式。在编写 CSS keyframes、基于 animation-delay 的时间控制、animation-fill-mode、animation-play-state，或者编写 HyperFrames 必须在预览和渲染期间确定性地 seek 的纯 CSS 动效时使用。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/css-animations.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/css-animations.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 用于 HyperFrames 的 CSS 动画
 

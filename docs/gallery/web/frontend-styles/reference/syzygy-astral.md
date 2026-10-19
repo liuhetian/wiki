@@ -10,7 +10,7 @@ description: "一 div 巨行星 + 大气层渐变落地纸白正文的深空官�
 
 一个「本地优先剪贴板工具」的官网首屏：纯 CSS 深空星象 hero（一 div 巨行星 + JS 星点 + 光斑），
 经「大气层渐变」落进纸白正文的蓝图特性卡。整站颜色全是 `data-brand-theme` 令牌，右下角按钮
-一键从克莱因蓝切到琥珀烈日。吸纳自 [en.syzygysync.com](https://en.syzygysync.com/)，纯手写零依赖复刻。
+一键从克莱因蓝切到琥珀烈日。吸纳自 en.syzygysync.com[^syzygysync]，纯手写零依赖复刻。
 
 ## 要点
 
@@ -35,3 +35,5 @@ description: "一 div 巨行星 + 大气层渐变落地纸白正文的深空官�
     ```html
     --8<-- "gallery/web/frontend-styles/assets/syzygy-astral-demo.html"
     ```
+
+[^syzygysync]: [en.syzygysync.com](https://en.syzygysync.com/)，2026-07-28 读。

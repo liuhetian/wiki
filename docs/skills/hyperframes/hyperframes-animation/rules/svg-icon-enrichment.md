@@ -5,7 +5,7 @@ description: >
 metadata:
   tags: svg, icon, animation, internal, micro-animation, pulse, rotation
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/svg-icon-enrichment.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/svg-icon-enrichment.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # SVG Icon Enrichment
 

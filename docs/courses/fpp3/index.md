@@ -10,7 +10,7 @@ description: "FPP3 伴读导读：预测实务的主干，分解、ETS、ARIMA �
 
 ## 读法
 
-- **免费在线，以 Python 版为准**：[OTexts.com/fpppy](https://otexts.com/fpppy/)。第 1–13 章跟 R 版第 3 版一一对应，代码换成 Nixtla 的 nixtlaverse（`statsforecast`、`neuralforecast`、`utilsforecast` 等），另加第 14、15 章。R 版 [OTexts.com/fpp3](https://otexts.com/fpp3/) 只做对照，讲解链到 Python 版的章节，不摘抄
+- **免费在线，以 Python 版为准**：OTexts.com/fpppy[^fpppy]。第 1–13 章跟 R 版第 3 版一一对应，代码换成 Nixtla 的 nixtlaverse（`statsforecast`、`neuralforecast`、`utilsforecast` 等），另加第 14、15 章。R 版 OTexts.com/fpp3[^fpp3] 只做对照，讲解链到 Python 版的章节，不摘抄
 - **环境照书**：附录 Using Python 给了 `environment.yml`（conda 环境名 `fpppy`）和打包好的数据 `fpppy_data.zip`，版本钉死，跑出来的数才能和书对上
 - **每章习题当任务**：题换一条序列自己出，不照抄书里的数
 - 第 6 章判断预测跳；第 11 章层级预测、第 12、13 章选读
@@ -45,3 +45,6 @@ description: "FPP3 伴读导读：预测实务的主干，分解、ETS、ARIMA �
 ## 课程
 
 还没开课。排到时先写第 5 章：基线和滚动评估是后面每一章比较模型的尺子。
+
+[^fpppy]: [OTexts.com/fpppy](https://otexts.com/fpppy/)，2026-10-02 读。
+[^fpp3]: [OTexts.com/fpp3](https://otexts.com/fpp3/)，2026-10-02 读。

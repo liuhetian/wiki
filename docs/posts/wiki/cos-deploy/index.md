@@ -37,7 +37,7 @@ description: "讲这个站点本身的定位设计与部署过程"
 
 为什么 2026 年还要自己搭 wiki？因为"维护 wiki"这件事的成本被 AI 改写了。
 
-Karpathy 在 2026 年 4 月发过一份只有 75 行的 gist —— [llm-wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)[^karpathy]，讲他怎么用 LLM agent 维护个人知识库。整个体系只有三个部件：
+Karpathy 在 2026 年 4 月发过一份只有 75 行的 gist —— llm-wiki[^karpathy]，讲他怎么用 LLM agent 维护个人知识库。整个体系只有三个部件：
 
 !!! note "llm-wiki 的三个部件"
 
@@ -95,7 +95,7 @@ Karpathy 在 2026 年 4 月发过一份只有 75 行的 gist —— [llm-wiki](h
 
 语法糖解决"读得到"，读到的东西长什么样，由两个写作约定决定 —— 也是渐进式披露的两级：
 
-- **结构即 skill**：整个 `docs/skills/` 按 [Anthropic 官方 skill 标准目录](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)组织（`index.md` + `reference/` + `assets/`），跟 `~/.claude/skills/` 一一对应。AI 顺 URL 读到的目录形态，就是它熟悉的 skill 形态 —— **整个 wiki 可以直接当远程 skill 喂给 Claude Code**；哪怕一篇还没资格独立成 skill 的普通文章（比如你正在读的这篇），只要是 `docs/` 下的 `.md`，同样有 URL、能被顺链跟随 —— **写文章 = 顺手就喂了 AI**。
+- **结构即 skill**：整个 `docs/skills/` 按 Anthropic 官方 skill 标准目录[^best-practices]组织（`index.md` + `reference/` + `assets/`），跟 `~/.claude/skills/` 一一对应。AI 顺 URL 读到的目录形态，就是它熟悉的 skill 形态 —— **整个 wiki 可以直接当远程 skill 喂给 Claude Code**；哪怕一篇还没资格独立成 skill 的普通文章（比如你正在读的这篇），只要是 `docs/` 下的 `.md`，同样有 URL、能被顺链跟随 —— **写文章 = 顺手就喂了 AI**。
 - **代码即引用，真身可远程取**：文章里的代码用 `--8<--` snippet 引用仓库里的**真实文件**，构建时注入 HTML（文档跟实际跑的代码**永不脱节**）；真身软链进文章 `assets/`、随源一起发布 —— 这是披露的最深一级：AI 顺 URL 一路走到底，取到的是最新的 `deploy.sh`、证书脚本本身，"可寻址"就此覆盖到非 md 文件。
 
 !!! note "nav 随便重排，链接图纹丝不动 —— 两套信息架构是解耦的"
@@ -111,14 +111,14 @@ Karpathy 在 2026 年 4 月发过一份只有 75 行的 gist —— [llm-wiki](h
 
 | 检查 | 规则 |
 |---|---|
-| 父级链接 | 每篇 `.md` 必须被**某个祖先目录**的 `index.md` / `MIRROR.md` / `SKILL.md` 用 markdown 链接直接链到 |
+| 父级链接 | 每篇 `.md` 必须被**某个祖先目录**的 `index.md` / `SKILL.md` 用 markdown 链接直接链到 |
 | 死链 | 指向不存在的 `.md`；代码块和行内 code 里的是示范，不算 |
-| `nav` 注册 | 路径出现在 `mkdocs.yml` 里（`MIRROR.md` 按规范豁免） |
+| `nav` 注册 | 路径出现在 `mkdocs.yml` 里 |
 
 两个设计要点都是被真实数据逼出来的,不是设计时想到的：
 
-- **是"祖先"而不是"最近父级"**。原样收录的上游原文不往里加链接,它的归档文件只能由 `MIRROR.md`（目录里自己写的来源说明）或分类索引挂链,隔着一层。活例：xi-wen 的 9 份归档全靠 [`MIRROR.md`](../../../skills/writing/xi-wen/MIRROR.md) 的"本地归档"一栏挂住。按"最近父级"写的原型在这批文件上报了 14 个误报。
-- **原样收录的原文里的死链降级为警告**。原文正文里的路径常是举例,本地不可能存在（代码块里的举例死链检查已经统一跳过）;往原文里加豁免注释,它就不是原文了。判据是同级或祖先目录有 `MIRROR.md`。警告仍然打印 —— 归档真漏了一份依赖也会在这里现形。
+- **是"祖先"而不是"最近父级"**。深层目录里的文件常由上面几层的入口统一挂链,隔着一层或几层。活例：HyperFrames 的 [hyperframes-animation](../../../skills/hyperframes/hyperframes-animation/index.md) 在入口末尾的文件清单里挂住 `rules/`、`transitions/` 等子目录下的上百篇。按"最近父级"写的原型在这批文件上报了 14 个误报。
+- **原样收录的原文不再特殊对待**。原先判据是同级或祖先目录有 `MIRROR.md`，那里的死链只警告不阻断 —— 原文正文里的路径常是举例，往原文里加豁免注释它就不是原文了。2026-10-19 来源说明全部挪进维护目录、MIRROR.md 不再存在，这条降级随之删掉：原文里的举例路径大都在代码块里，死链检查本来就跳过；剩下的照常阻断，归档漏了依赖也会现形。
 
 豁免写在文件顶部 `<!-- link-check-ok: 理由 -->`,理由跟着文件走、不躺在脚本白名单里：挪文件不会让豁免失效,读到那个文件的人也立刻知道为什么。**"已迁移存根"不是正当理由** —— 本 wiki 不给挪走的文件留存根页,要保住旧 URL 就别挪文件。存根页是天生的孤儿（无人链接、不进 nav）,留着只会逼校验开豁免口子,而每个口子都是下一次漏挂链接的藏身处。
 
@@ -211,10 +211,10 @@ flowchart TB
 
 发布机制到这里算闭环了，但还有几件事没做，先记在这：
 
-- **CDN**。2026-06 用 [ping.chinaz.com](https://ping.chinaz.com/) 全国多节点测过首页（部署机自己 `curl` 不算数，它的出口跟普通用户不是一回事）：建连 20–50 ms，各地差不多；大头是冷 DNS 解析，0.15–0.3 秒；个别节点偶发 1–2 秒或超时；响应头没有 `Content-Encoding`，文本是裸传的。自用够了，上 CDN 能顺手开压缩、抹平偶发卡顿，更多是想借这个站练手，还没做。
+- **CDN**。2026-06 用 ping.chinaz.com[^chinaz] 全国多节点测过首页（部署机自己 `curl` 不算数，它的出口跟普通用户不是一回事）：建连 20–50 ms，各地差不多；大头是冷 DNS 解析，0.15–0.3 秒；个别节点偶发 1–2 秒或超时；响应头没有 `Content-Encoding`，文本是裸传的。自用够了，上 CDN 能顺手开压缩、抹平偶发卡顿，更多是想借这个站练手，还没做。
 - **个人 IP**。站点、配图、交互 demo 的风格现在各写各的，观感不统一。想把个人审美落成一份 **AI 可执行的 style spec**——色板、字体、构图规则、负面清单、示例对，进 git 当 skill——以后产出任何图和 HTML 都强制引用它防漂移。原型是[项目管理那篇](../../ai-pm.md)里 changelog 卡片的纪律：第一张定死，之后只换皮。配图工具也倾向真身是文本的方案（如 Excalidraw，`.excalidraw` JSON 进 git、导出 SVG 发布），跟本文"真身进仓库"一脉。
 - **写作管线**。本文开头借了 Karpathy 的 raw → wiki 分层，但本 wiki 的 `raw/` 层还空着。想走"讲述式写作"：对着 AI 把事情讲一遍，讲述的 transcript 就是 `raw/`；中间攒成[原子笔记](../../../notes/index.md)；攒够之后的长文总结由 AI 跑合成。
-- **正文标注视觉**。想过给重点段落加"荧光笔 / 圈选 / 手绘箭头"这类批注效果，让长文里的关键处更抓眼。方案见过两条路：纯 CSS 的 [neat-annotations](https://github.com/syabro/neat-annotations)（观感最像手写批注，但字体只覆盖拉丁字符，中文标签要另配手写字），或 `pymdownx.critic` + Material 自带的正文 annotations（语义清晰、深浅色都稳，观感规矩）。没定要不要上 —— 顾虑是它容易从"标重点"滑到"分散注意力"，尤其中文长文更怕花哨；先记一笔，看以后写作里真的需要再选。
+- **正文标注视觉**。想过给重点段落加"荧光笔 / 圈选 / 手绘箭头"这类批注效果，让长文里的关键处更抓眼。方案见过两条路：纯 CSS 的 neat-annotations[^neat-annotations]（观感最像手写批注，但字体只覆盖拉丁字符，中文标签要另配手写字），或 `pymdownx.critic` + Material 自带的正文 annotations（语义清晰、深浅色都稳，观感规矩）。没定要不要上 —— 顾虑是它容易从"标重点"滑到"分散注意力"，尤其中文长文更怕花哨；先记一笔，看以后写作里真的需要再选。
 
 做了再回来补。
 
@@ -222,3 +222,6 @@ flowchart TB
 [^karpathy]: [karpathy/llm-wiki.md](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) —— "A pattern for building personal knowledge bases using LLMs."，2026-04。本文 `assets/` 存档了 2026-07-03 clone 的版本。
 [^llmstxt]: [The /llms.txt file](https://llmstxt.org/)（Jeremy Howard，2024-09-03）· [Answer.AI 发布博文](https://www.answer.ai/posts/2024-09-03-llmstxt.html)。本文 `assets/` 存档了 2026-07-06 clone 的版本（取自 llmstxt.org/index.md）。
 [^mkdocs-llms]: 插件如 [mkdocs-llms-source](https://github.com/TimChild/mkdocs-llms-source)（把原始 .md 源复制进构建产物并生成 llms.txt）、[pawamoy/mkdocs-llmstxt](https://github.com/pawamoy/mkdocs-llmstxt)。FastAPI 的状态见 [typer discussion #1114](https://github.com/fastapi/typer/discussions/1114)（2025-01 发起 "make docs LLM friendly"，至本文更新时无维护者回应）。
+[^best-practices]: [Anthropic 官方 skill 标准目录](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)，2026-07-28 读。
+[^chinaz]: [ping.chinaz.com](https://ping.chinaz.com/)，2026-10-01 读。
+[^neat-annotations]: [neat-annotations](https://github.com/syabro/neat-annotations)，2026-07-28 读。

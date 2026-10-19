@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-audio/references/presets.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-audio/references/presets.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Preset、具名任务（job）和单旋钮 profile
 

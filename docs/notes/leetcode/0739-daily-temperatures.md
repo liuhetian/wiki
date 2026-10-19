@@ -4,7 +4,7 @@ description: "「下一个更大元素」的标准答案是单调栈：栈里存
 
 # 739. 每日温度
 
-[LeetCode 739](https://leetcode.cn/problems/daily-temperatures/) · 中等 · 栈
+LeetCode 739[^leetcode] · 中等 · 栈
 
 ## 题
 
@@ -59,3 +59,5 @@ class Solution:
     assert s.dailyTemperatures([50, 50, 50]) == [0, 0, 0]
     assert s.dailyTemperatures([90]) == [0]
     ```
+
+[^leetcode]: [LeetCode 739](https://leetcode.cn/problems/daily-temperatures/)，2026-09-29 读。

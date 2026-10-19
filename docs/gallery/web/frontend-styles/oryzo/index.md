@@ -16,13 +16,13 @@ description: "Lusion 的高斯泼溅玩梗营销站，按叙事顺序复现精�
 
 Oryzo 并不是真实存在的 AI 产品，而是英国互动创意工作室 **Lusion** 的内部概念项目：把一个普通宜家软木杯垫包装成 AI 时代的旗舰科技产品，用来展示他们的创意、品牌叙事、3D 和 WebGL 能力。
 
-官网自己也明确声明项目是虚构和讽刺性的；Lusion 将服务范围列为 Concept、Web Design、Web Development、3D Design、WebGL 和 Animation。[Oryzo 官网](https://oryzo.ai/)、[Lusion 项目页](https://lusion.co/projects/oryzo_ai/)
+官网自己也明确声明项目是虚构和讽刺性的；Lusion 将服务范围列为 Concept、Web Design、Web Development、3D Design、WebGL 和 Animation。Oryzo 官网[^oryzo]、Lusion 项目页[^oryzo-ai]
 
 项目从 2025 年初开始，前后作为内部项目打磨约一年，并不是“两三周做一个 Awwwards 首页”。Part 1 原话：
 
 > Oryzo is a year long internal project, and we wanted to share some of the thinking behind how it came together. This post is the first in a seven part behind the scenes series on the making of Oryzo.ai.
 
-Lusion 计划发 7 篇幕后文章，但截至 2026 年 7 月公开的只有前三篇，原本准备披露具体 Three.js 技巧的第 4～7 篇尚未发布。[Oryzo BTS Part 1](https://blog.lusion.co/oryzo-bts-part-1-7-concept-and-creative-direction)（[本地存档](assets/upstream/lusion-bts-part-1.md)）、[Part 3](https://blog.lusion.co/oryzo-bts-part-3-7-website-ux-ui-and-illustrations)（[本地存档](assets/upstream/lusion-bts-part-3.md)）
+Lusion 计划发 7 篇幕后文章，但截至 2026 年 7 月公开的只有前三篇，原本准备披露具体 Three.js 技巧的第 4～7 篇尚未发布。Oryzo BTS Part 1[^oryzo-bts-part-1-7-concept-and-c]（[本地存档](assets/upstream/lusion-bts-part-1.md)）、Part 3[^oryzo-bts-part-3-7-website-ux-ui]（[本地存档](assets/upstream/lusion-bts-part-3.md)）
 
 ---
 
@@ -48,13 +48,13 @@ Lusion 计划发 7 篇幕后文章，但截至 2026 年 7 月公开的只有前�
 >
 > So we explored Gaussian Splatting as a way to translate high quality rendered scenes into something that could still run in real time with WebGL.
 
-最后选择了 Gaussian Splatting，把 Houdini/Redshift 生成的高质量场景转成浏览器里可实时交互的 WebGL 场景。[Lusion 3D 与动效幕后](https://blog.lusion.co/oryzo-bts-part-2-7-3d-design-and-motion-graphics)（[本地存档](assets/upstream/lusion-bts-part-2.md)）
+最后选择了 Gaussian Splatting，把 Houdini/Redshift 生成的高质量场景转成浏览器里可实时交互的 WebGL 场景。Lusion 3D 与动效幕后[^oryzo-bts-part-2-7-3d-design-and]（[本地存档](assets/upstream/lusion-bts-part-2.md)）
 
 所以正确表述是：
 
 > 它是“预制的高质量 3D 世界，被重新封装成可实时交互的 WebGL 体验”，而不是纯视频，也不是所有像素都由浏览器传统 PBR 现场算出来。
 
-项目作者 Edan Kwan 也在 Three.js 官方社区明确表示它是用 Three.js 创建的。[Three.js 官方论坛展示帖](https://discourse.threejs.org/t/oryzo-ai-a-wearable-product-in-the-ai-era/90696)
+项目作者 Edan Kwan 也在 Three.js 官方社区明确表示它是用 Three.js 创建的。Three.js 官方论坛展示帖[^oryzo-ai-a-wearable-product-in-t-90696]
 
 ---
 
@@ -72,7 +72,7 @@ Lusion 计划发 7 篇幕后文章，但截至 2026 年 7 月公开的只有前�
 * Redshift 负责高质量灯光、材质和离线渲染；
 * Photoshop 用于拼合特殊的正交投影贴图。
 
-这也是画面有“广告级 CG 味道”的根本原因。Three.js 只是最终播放和交互载体，视觉品质是在 Houdini、Redshift、摄影、扫描和贴图阶段建立的。[完整制作披露](https://blog.lusion.co/oryzo-bts-part-2-7-3d-design-and-motion-graphics)
+这也是画面有“广告级 CG 味道”的根本原因。Three.js 只是最终播放和交互载体，视觉品质是在 Houdini、Redshift、摄影、扫描和贴图阶段建立的。完整制作披露[^oryzo-bts-part-2-7-3d-design-and]
 
 ## 2. Gaussian Splatting 不是用来扫描现实，而是“扫描离线渲染”
 
@@ -142,7 +142,7 @@ flowchart TD
 * DOM 文案、遮罩和 WebGL 场景共用同一条时间线；
 * 需要二维化时，把 3D 输出当成一个平面或纹理继续参与合成。
 
-Awwwards 对它的技术分类也列出了 Three.js、WebGL、GSAP，并专门拆出了“3D → 2D → 3D”“Gallery Transition”“WebGL Sketches”“Footer Particles”等交互节点。[Awwwards 项目页](https://www.awwwards.com/sites/oryzo-ai)
+Awwwards 对它的技术分类也列出了 Three.js、WebGL、GSAP，并专门拆出了“3D → 2D → 3D”“Gallery Transition”“WebGL Sketches”“Footer Particles”等交互节点。Awwwards 项目页[^oryzo-ai-2]
 
 ---
 
@@ -287,7 +287,7 @@ Lusion 披露：
 
 > We will walk through the early visual exploration, the design principles that came out of it, **the way we kept UI from getting in the way of the content**, and where we allowed AI into the pipeline without letting it define the final look.
 
-那四条原则是 A realistic image、The product at the centre、Seamless transitions、Humour —— 全都指向内容和产品，UI 的职责只剩"别挡路"。[UX/UI 制作披露](https://blog.lusion.co/oryzo-bts-part-3-7-website-ux-ui-and-illustrations)（[本地存档](assets/upstream/lusion-bts-part-3.md)）
+那四条原则是 A realistic image、The product at the centre、Seamless transitions、Humour —— 全都指向内容和产品，UI 的职责只剩"别挡路"。UX/UI 制作披露[^oryzo-bts-part-3-7-website-ux-ui]（[本地存档](assets/upstream/lusion-bts-part-3.md)）
 
 ## 4. 真实世界细节比 shader 更重要
 
@@ -384,7 +384,7 @@ Lusion 披露：
 * **忽视内容。** Oryzo 真正有记忆点的是讽刺、六指手、假论文、假模型和细节笑话，不只是 WebGL。
 * **照抄视觉语言。** 深棕色、奶油字和一个浮动模型只能得到“像 Awwwards”，得不到它的叙事完整性。
 
-最后一个重要提醒：Lusion 在 GitHub 放出的内容只是杯垫的 OBJ“开源模型”，是整个笑话的一部分，并不是 Oryzo 网站源码；网站工程目前没有公开。[ORYZO-1 GitHub 仓库](https://github.com/lusionltd/ORYZO-1)
+最后一个重要提醒：Lusion 在 GitHub 放出的内容只是杯垫的 OBJ“开源模型”，是整个笑话的一部分，并不是 Oryzo 网站源码；网站工程目前没有公开。ORYZO-1 GitHub 仓库[^oryzo-1]
 
 真正值得借鉴的不是某段源码，而是它的核心方法：
 
@@ -420,15 +420,29 @@ Lusion 披露：
 
 ## 蓝本
 
-- 官网：[oryzo.ai](https://oryzo.ai/)，Lusion 出品。拆解基于 2026-07-12 的线上构建，产物 URL 自带内容哈希可当永链：
-  主 bundle [`/_astro/hoisted.CRsATKbF.js`](https://oryzo.ai/_astro/hoisted.CRsATKbF.js)（1.10MB）、
-  排序 Worker [`/_astro/SplatsWorker-DSMxtdkh.js`](https://oryzo.ai/_astro/SplatsWorker-DSMxtdkh.js)（3.3KB）、
-  排序器 wasm [`/_astro/splat_sorter_bg-BfJrILzx.wasm`](https://oryzo.ai/_astro/splat_sorter_bg-BfJrILzx.wasm)（38.5KB）；
+- 官网：oryzo.ai[^oryzo]，Lusion 出品。拆解基于 2026-07-12 的线上构建，产物 URL 自带内容哈希可当永链：
+  主 bundle `/_astro/hoisted.CRsATKbF.js`[^hoisted-crsatkbf-js]（1.10MB）、
+  排序 Worker `/_astro/SplatsWorker-DSMxtdkh.js`[^splatsworker-dsmxtdkh-js]（3.3KB）、
+  排序器 wasm `/_astro/splat_sorter_bg-BfJrILzx.wasm`[^splat-sorter-bg-bfjrilzx-wasm]（38.5KB）；
   泼溅资产 `props.sog`（3.0MB）+ `table_reflection.sog`（0.5MB）；2D 矢量动画 Rive（59KB `oryzo.riv`）；
   标题动效 GSAP SplitText；字体自托管 DM Mono + Literata；console 彩蛋 "Built by Lusion with love ♥"
-- 玩梗仓库：[lusionltd/ORYZO-1](https://github.com/lusionltd/ORYZO-1)（MIT）——"杯垫模型权重"的段子，**不含网站源码**
+- 玩梗仓库：lusionltd/ORYZO-1[^oryzo-1]（MIT）——"杯垫模型权重"的段子，**不含网站源码**
 - 许可纪律：网站代码未开源、无许可声明 → 专有代码真身不入库，只钉哈希 URL + 短摘句转述；
-  demo 全部为独立实现（泼溅算法出自 [Kerbl et al. 2023](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/)，
-  SOG 格式见 PlayCanvas [开源规范](https://github.com/playcanvas/splat-transform)），占位视觉用 CSS 自绘，不搬原站摄影素材
+  demo 全部为独立实现（泼溅算法出自 Kerbl et al. 2023[^3d-gaussian-splatting]，
+  SOG 格式见 PlayCanvas 开源规范[^splat-transform]），占位视觉用 CSS 自绘，不搬原站摄影素材
 - 验证口径：行为侦察用 playwright 驱动真浏览器逐步滚屏截图（静态截图看不到滚动叙事，是这次拆解返工的教训）；
   demo 经 headless 截图 + 注入进度的调试副本逐相位验收，无 JS / WebGL 错误；滚轮手感、hover 反馈无头验证不了，属诚实缺口
+
+[^oryzo]: [Oryzo 官网](https://oryzo.ai/)，2026-07-28 读。
+[^oryzo-ai]: [Lusion 项目页](https://lusion.co/projects/oryzo_ai/)，2026-07-28 读。
+[^oryzo-bts-part-1-7-concept-and-c]: [Oryzo BTS Part 1](https://blog.lusion.co/oryzo-bts-part-1-7-concept-and-creative-direction)，2026-09-04 读。
+[^oryzo-bts-part-3-7-website-ux-ui]: [Part 3](https://blog.lusion.co/oryzo-bts-part-3-7-website-ux-ui-and-illustrations)，2026-09-04 读。
+[^oryzo-bts-part-2-7-3d-design-and]: [Lusion 3D 与动效幕后](https://blog.lusion.co/oryzo-bts-part-2-7-3d-design-and-motion-graphics)，2026-09-04 读。
+[^oryzo-ai-a-wearable-product-in-t-90696]: [Three.js 官方论坛展示帖](https://discourse.threejs.org/t/oryzo-ai-a-wearable-product-in-the-ai-era/90696)，2026-07-28 读。
+[^oryzo-ai-2]: [Awwwards 项目页](https://www.awwwards.com/sites/oryzo-ai)，2026-07-28 读。
+[^oryzo-1]: [ORYZO-1 GitHub 仓库](https://github.com/lusionltd/ORYZO-1)，2026-07-28 读。
+[^hoisted-crsatkbf-js]: [`/_astro/hoisted.CRsATKbF.js`](https://oryzo.ai/_astro/hoisted.CRsATKbF.js)，2026-07-28 读。
+[^splatsworker-dsmxtdkh-js]: [`/_astro/SplatsWorker-DSMxtdkh.js`](https://oryzo.ai/_astro/SplatsWorker-DSMxtdkh.js)，2026-07-28 读。
+[^splat-sorter-bg-bfjrilzx-wasm]: [`/_astro/splat_sorter_bg-BfJrILzx.wasm`](https://oryzo.ai/_astro/splat_sorter_bg-BfJrILzx.wasm)，2026-07-28 读。
+[^3d-gaussian-splatting]: [Kerbl et al. 2023](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/)，2026-07-28 读。
+[^splat-transform]: [开源规范](https://github.com/playcanvas/splat-transform)，2026-07-28 读。

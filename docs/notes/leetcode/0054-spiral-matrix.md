@@ -4,7 +4,7 @@ description: "维护上下左右四条边界，一圈走四条边、每走完一
 
 # 54. 螺旋矩阵
 
-[LeetCode 54](https://leetcode.cn/problems/spiral-matrix/) · 中等 · 矩阵
+LeetCode 54[^leetcode] · 中等 · 矩阵
 
 ## 题
 
@@ -59,7 +59,7 @@ class Solution:
 
 ## 延伸
 
-- 反向题「螺旋矩阵 II」（[LeetCode 59](https://leetcode.cn/problems/spiral-matrix-ii/)）：按同样的边界法把 `1..n²` 填进去。
+- 反向题「螺旋矩阵 II」（LeetCode 59[^leetcode-2]）：按同样的边界法把 `1..n²` 填进去。
 - 同为「按层处理矩阵」：[48. 旋转图像](0048-rotate-image.md) 也可以一圈一圈地四元素轮换。
 - Python 花式写法 `matrix.pop(0) + spiral(zip(*matrix)[::-1])`（取第一行、剩下的逆时针转 90°）很短，但每次转置是 $O(mn)$，总体 $O(mn \cdot \min(m, n))$。
 
@@ -73,3 +73,6 @@ class Solution:
     assert s.spiralOrder([[1, 2, 3]]) == [1, 2, 3]
     assert s.spiralOrder([[1], [2], [3]]) == [1, 2, 3]
     ```
+
+[^leetcode]: [LeetCode 54](https://leetcode.cn/problems/spiral-matrix/)，2026-09-29 读。
+[^leetcode-2]: [LeetCode 59](https://leetcode.cn/problems/spiral-matrix-ii/)，2026-09-29 读。

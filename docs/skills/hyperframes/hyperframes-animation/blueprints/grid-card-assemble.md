@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/grid-card-assemble.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/grid-card-assemble.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # grid-card-assemble — 网格 / 卡片组装
 

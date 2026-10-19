@@ -24,10 +24,12 @@ description: "表格数据要出去（给 Excel、给同事）或成批进来（
 - **导入只预览，落库前必须校验**：解析出的每行过资源的 schema（demo 用表头映射 + 行级规则代替 Zod），确认后只提交合法行，成败都用 toast 报数。demo 写内存；真实版把合法行交给 bulk-create mutation（server fn 里先 `requireUser()`）
 - **导出喂真实数据源**：demo 序列化内存里筛选后的行，真实版从 `Repository.list()` 拿全部匹配行再 `downloadCsv`
 
-> 蓝本：[`add-export-import.md`](https://github.com/ahpxex/open-dashboard/blob/aa9815f426e9520841c4aa15a341bfd9f866091f/.claude/skills/add-component/references/add-export-import.md)（open-dashboard @ `aa9815f`，MIT，Invariants 已消化进上面「规矩」）
+> 蓝本：`add-export-import.md`[^add-export-import]（open-dashboard @ `aa9815f`，MIT，Invariants 已消化进上面「规矩」）
 
 ??? abstract "demo 源码：`assets/demo-export-import.html`（自包含、未压缩）"
 
     ```html
     --8<-- "skills/dashboard/assets/demo-export-import.html"
     ```
+
+[^add-export-import]: [`add-export-import.md`](https://github.com/ahpxex/open-dashboard/blob/aa9815f426e9520841c4aa15a341bfd9f866091f/.claude/skills/add-component/references/add-export-import.md)，2026-07-28 读。

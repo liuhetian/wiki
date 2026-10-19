@@ -4,7 +4,7 @@ description: "先计数再选 top-k：大小为 k 的堆 O(n log k)；频次上�
 
 # 347. 前 K 个高频元素
 
-[LeetCode 347](https://leetcode.cn/problems/top-k-frequent-elements/) · 中等 · 堆
+LeetCode 347[^leetcode] · 中等 · 堆
 
 ## 题
 
@@ -68,3 +68,5 @@ description: "先计数再选 top-k：大小为 k 的堆 O(n log k)；频次上�
     assert sorted(s.topKFrequent([4, 1, -1, 2, -1, 2, 3], 2)) == [-1, 2]
     assert sorted(s.topKFrequent([5, 6, 7], 3)) == [5, 6, 7]  # 频次全相同，k = 全部
     ```
+
+[^leetcode]: [LeetCode 347](https://leetcode.cn/problems/top-k-frequent-elements/)，2026-09-29 读。

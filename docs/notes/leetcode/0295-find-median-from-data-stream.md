@@ -4,7 +4,7 @@ description: "对顶堆：大顶堆装较小一半、小顶堆装较大一半，
 
 # 295. 数据流的中位数
 
-[LeetCode 295](https://leetcode.cn/problems/find-median-from-data-stream/) · 困难 · 堆
+LeetCode 295[^leetcode] · 困难 · 堆
 
 ## 题
 
@@ -84,3 +84,5 @@ class MedianFinder:
         want = seen[n // 2] if n % 2 else (seen[n // 2 - 1] + seen[n // 2]) / 2
         assert m.findMedian() == want
     ```
+
+[^leetcode]: [LeetCode 295](https://leetcode.cn/problems/find-median-from-data-stream/)，2026-09-29 读。

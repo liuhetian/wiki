@@ -43,7 +43,7 @@ function undo() {
 { "tldraw": "^4.5", "react": "^18 || ^19" }
 ```
 
-> **⚠ 许可证**：tldraw v2 起非宽松开源——免费使用必须保留 "Made with tldraw" 水印，商用去水印需购买 business license。这是选型决策因子。不能接受时用 MIT 的 [Excalidraw](https://github.com/excalidraw/excalidraw)（白板能力类似，自定义形状扩展弱于 tldraw）。
+> **⚠ 许可证**：tldraw v2 起非宽松开源——免费使用必须保留 "Made with tldraw" 水印，商用去水印需购买 business license。这是选型决策因子。不能接受时用 MIT 的 Excalidraw[^excalidraw]（白板能力类似，自定义形状扩展弱于 tldraw）。
 
 内置能力（demo 里手写的一切 + 你没空写的一切）：无限画布 + 视口剔除、完整撤销重做、snapshot 序列化、形状系统、多选/对齐/复制粘贴/快捷键、PNG/SVG/PDF 导出、协作方案、响应式 store（大量形状只重渲变化部分）。
 
@@ -92,3 +92,5 @@ export class CardShapeUtil extends BaseBoxShapeUtil<CardShape> {
     ```html
     --8<-- "skills/canvas/assets/demo-l4-whiteboard.html"
     ```
+
+[^excalidraw]: [Excalidraw](https://github.com/excalidraw/excalidraw)，2026-07-28 读。

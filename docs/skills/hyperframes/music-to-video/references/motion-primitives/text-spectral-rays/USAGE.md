@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/references/motion-primitives/text-spectral-rays/USAGE.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/references/motion-primitives/text-spectral-rays/USAGE.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 使用 `text-spectral-rays` —— 它**独占**自己的文字标志
 

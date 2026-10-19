@@ -76,7 +76,7 @@ export SHELL="$(command -v zsh)" && exec zsh
 | 安装器 | 往哪写 PATH | `$SHELL` 还是 bash 时 |
 |---|---|---|
 | uv 0.12.21 | 不看 `$SHELL`：`.profile`、`.bashrc` 这类 bash 文件存在的都写，`.zshrc`/`.zshenv` 写第一个存在的 | 没影响 |
-| nvm v0.40.3 | [`nvm_detect_profile`](https://github.com/nvm-sh/nvm/blob/v0.40.3/install.sh#L278-L317) 先认 `$PROFILE`，再看 `$SHELL` 里含 bash 还是 zsh | 只写 `~/.bashrc` |
+| nvm v0.40.3 | `nvm_detect_profile`[^install-sh] 先认 `$PROFILE`，再看 `$SHELL` 里含 bash 还是 zsh | 只写 `~/.bashrc` |
 
 ## 4. 装 uv { #uv }
 
@@ -125,3 +125,5 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | PROFI
 ## 没做的
 
 - 只写了 Ubuntu（apt），其他发行版和 macOS 没写。
+
+[^install-sh]: [`nvm_detect_profile`](https://github.com/nvm-sh/nvm/blob/v0.40.3/install.sh#L278-L317)，2026-10-01 读。

@@ -4,7 +4,7 @@ description: "Trie 把共同前缀合并成共同路径，查询只和单词长�
 
 # 208. 实现 Trie (前缀树)
 
-[LeetCode 208](https://leetcode.cn/problems/implement-trie-prefix-tree/) · 中等 · 图论
+LeetCode 208[^leetcode] · 中等 · 图论
 
 ## 题
 
@@ -77,8 +77,8 @@ class Trie:
 
 ## 延伸
 
-- **带通配符 `.` 的查询**：[211. 添加与搜索单词](https://leetcode.cn/problems/design-add-and-search-words-data-structure/)，遇到 `.` 就对所有子节点 DFS。
-- **Trie + 网格回溯**：[212. 单词搜索 II](https://leetcode.cn/problems/word-search-ii/) 把所有候选词建成 Trie，在 [79. 单词搜索](0079-word-search.md) 的回溯里沿 Trie 剪枝，一次搜出全部单词。
+- **带通配符 `.` 的查询**：211. 添加与搜索单词[^leetcode-2]，遇到 `.` 就对所有子节点 DFS。
+- **Trie + 网格回溯**：212. 单词搜索 II[^leetcode-3] 把所有候选词建成 Trie，在 [79. 单词搜索](0079-word-search.md) 的回溯里沿 Trie 剪枝，一次搜出全部单词。
 - 字典匹配判断可拆分：[139. 单词拆分](0139-word-break.md) 的 DP 里，用 Trie 从每个位置往后匹配可以省掉切片和哈希。
 - **坑**：`search` 忘了判 `is_end`，就会把前缀当成单词；`startsWith("")` 按定义为 `true`（空前缀人人都有），`_walk("")` 返回根节点，天然满足。
 
@@ -97,3 +97,7 @@ class Trie:
     assert t.search("applepie") is False
     assert t.startsWith("") is True
     ```
+
+[^leetcode]: [LeetCode 208](https://leetcode.cn/problems/implement-trie-prefix-tree/)，2026-09-29 读。
+[^leetcode-2]: [211. 添加与搜索单词](https://leetcode.cn/problems/design-add-and-search-words-data-structure/)，2026-09-29 读。
+[^leetcode-3]: [212. 单词搜索 II](https://leetcode.cn/problems/word-search-ii/)，2026-09-29 读。

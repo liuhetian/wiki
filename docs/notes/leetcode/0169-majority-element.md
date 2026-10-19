@@ -4,7 +4,7 @@ description: "Boyer-Moore 投票：不同的数两两抵消，多数元素超过
 
 # 169. 多数元素
 
-[LeetCode 169](https://leetcode.cn/problems/majority-element/) · 简单 · 技巧
+LeetCode 169[^leetcode] · 简单 · 技巧
 
 ## 题
 
@@ -56,3 +56,5 @@ class Solution:
     assert s.majorityElement([7]) == 7
     assert s.majorityElement([1, 2, 1, 3, 1]) == 1
     ```
+
+[^leetcode]: [LeetCode 169](https://leetcode.cn/problems/majority-element/)，2026-09-29 读。

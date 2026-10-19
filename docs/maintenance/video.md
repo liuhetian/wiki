@@ -8,9 +8,9 @@ description: "视频生成的维护记录：AutoDL.Art ComfyUI 工作流列表�
 
 ## 接口从哪来 { #upstream }
 
-- 工作流列表页 [autodl.art/large-model/comfyui](https://www.autodl.art/large-model/comfyui) 是单页应用，抓不到正文。列表接口是从前端 JS（`assets/comfyui.*.js`）里找到的：`POST /api/v1/comfyui/workflows`，请求体 `{"page_size": 100, "page_index": 1}`，不用鉴权。
+- 工作流列表页 autodl.art/large-model/comfyui[^comfyui] 是单页应用，抓不到正文。列表接口是从前端 JS（`assets/comfyui.*.js`）里找到的：`POST /api/v1/comfyui/workflows`，请求体 `{"page_size": 100, "page_index": 1}`，不用鉴权。
 - 每个工作流的详情走元数据接口 `GET /api/v1/comfyui/workflows/<id>`，也不用鉴权，[语音合成](tts.md#upstream)那次就用过。里面有参数定义 `input_rules`、带中文说明的 `input_example`、计费 `billing_config` 和一段介绍。
-- 官方文档 [`/docs/comfyui_api/`](https://autodl.art/docs/comfyui_api/) 是所有工作流共用的一篇，只讲提交、查询两步，示例就是文生视频的 `minimax_h3_lightx2v_no_pic`。没有讲怎么写 prompt，多张参考图在 prompt 里怎么分别指代也没写。
+- 官方文档 `/docs/comfyui_api/`[^comfyui-api] 是所有工作流共用的一篇，只讲提交、查询两步，示例就是文生视频的 `minimax_h3_lightx2v_no_pic`。没有讲怎么写 prompt，多张参考图在 prompt 里怎么分别指代也没写。
 - 2026-10-02 列表里一共 17 个工作流：15 个 MiniMax H3、1 个 Wan2.2 Animate 动作迁移、1 个 IndexTTS2。MiniMax H3 底层是什么没写，有几个 ID 里带 `lightx2v`，那是一个开源视频推理加速框架的名字。
 
 ## 价格怎么算 { #pricing }
@@ -80,3 +80,6 @@ description: "视频生成的维护记录：AutoDL.Art ComfyUI 工作流列表�
 - 多张参考图在 prompt 里怎么分别指代（比如「图 1 的人走进图 2 的场景」），官方没写，也没测。
 - 参考音频怎么影响视频（当背景音、配音还是对口型）没测。
 - 冷门工作流的冷启动要多久没测。
+
+[^comfyui]: [autodl.art/large-model/comfyui](https://www.autodl.art/large-model/comfyui)，2026-10-02 读。
+[^comfyui-api]: [`/docs/comfyui_api/`](https://autodl.art/docs/comfyui_api/)，2026-10-02 读。

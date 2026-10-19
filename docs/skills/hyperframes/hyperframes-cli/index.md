@@ -3,7 +3,7 @@ name: hyperframes-cli
 description: >
   使用 HyperFrames CLI 开发循环：init、add、catalog、capture、lint、check、snapshot、compare、grade-compare、preview、play、present、beats、keyframes、单个或批量 render、publish、cloud、cloudrun、feedback、lambda、doctor、browser、info、upgrade、skills、compositions、timeline、history、clean、docs、benchmark、telemetry、transcribe、auth、tts 和 remove-background。诊断构建或渲染失败时也使用本 skill。validate、inspect 和 layout 是已弃用的别名；请改用 check。涵盖本地、HeyGen 托管云、AWS Lambda 和 Google Cloud Run 渲染。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于某个 HyperFrames 插件内时，在运行安装配置或保持最新类的命令之前，遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装照常使用下面的更新说明。
 
@@ -182,3 +182,18 @@ npx hyperframes figma asset KEY:10-20
 已知结果包含 `status: "known"`、`harness`、`planTier`、`session` 和 `weekly`。每个可用的窗口包含 `usedPercent`、`remainingPercent` 和 `resetsAt`；不可用的窗口为 `null`。`planTier` 在可用时是可读的订阅档位，否则为 `null`。Claude Code 报告其共享的五小时窗口和每周窗口。Codex 在可用时报告其共享的会话窗口和每周窗口。Grok 报告其包含的每周额度，并且 `session: null`。
 
 未知结果包含 `status: "unknown"` 和一个不含 token 的 `reason`。登录信息缺失、过期、不受支持、有歧义或无法读取，以及提供方响应不可用时，都返回 unknown。如实报告 unknown 状态，不要猜测额度。该命令读取现有凭据，不会刷新或改写它们，也不发出任何 token 或遥测。用量只是一个快照；它不会预留额度，也不估算下一个视频的成本。范围和工作流的选择交给用户决定。
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [references/beats.md](references/beats.md) —— 生成项目的节拍网格
+- [references/cloud.md](references/cloud.md) —— cloud —— HeyGen 托管渲染（零基础设施）
+- [references/cloudrun.md](references/cloudrun.md) —— 在 Google Cloud 上用 Cloud Run 渲染
+- [references/compare-and-batch.md](references/compare-and-batch.md) —— 对比与批量渲染
+- [references/doctor-browser.md](references/doctor-browser.md) —— doctor、browser
+- [references/init-and-scaffold.md](references/init-and-scaffold.md) —— init、capture、skills
+- [references/lambda.md](references/lambda.md) —— 在 AWS 上用 Lambda 渲染
+- [references/lint-validate-inspect.md](references/lint-validate-inspect.md) —— lint、check、snapshot
+- [references/preview-render.md](references/preview-render.md) —— preview、play、render、publish
+- [references/upgrade-info-misc.md](references/upgrade-info-misc.md) —— info、upgrade、compositions、timeline、docs、benchmark、telemetry、素材预处理

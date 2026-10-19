@@ -883,11 +883,11 @@ AI 写教程 / 科普 / 知识科普到收尾，特别爱塞一段**对仗工整
 
 **原文（含 AI 源痕迹）：**
 > 根据 Smith 和 Chen (2023) 在《Journal of AI Ethics》的研究 (DOI: 10.1000/fake.doi.2023),大模型在...
-> 详见 [OpenAI 官方文档](https://platform.openai.com/docs/guides/text?utm_source=chatgpt.com)
+> 详见 OpenAI 官方文档[^text]
 
 **改后（验证 + 清理）：**
 > （DOI 查验失败，该论文不存在 —— 删掉这句，或改为"有研究表明...（原始引用未能核实）"）
-> 详见 [OpenAI 官方文档](https://platform.openai.com/docs/guides/text)
+> 详见 OpenAI 官方文档[^text-2]
 
 ### 47b. AI 模板占位符残留（硬证据 · 单次出现即触发）
 
@@ -983,3 +983,6 @@ AI 写教程 / 科普 / 知识科普到收尾，特别爱塞一段**对仗工整
 - G 篇章与节奏(#35-36, #43-44):4 条
 - H 平台场景与文体(#37-38, #49-50):4 条 — 详见 [platform-patterns.md](platform-patterns.md)
 - I 幻觉与格式残留(#45-48):4 条 — 受中文维基《AI生成文的特徵》启发
+
+[^text]: [OpenAI 官方文档](https://platform.openai.com/docs/guides/text?utm_source=chatgpt.com)，2026-07-28 读。
+[^text-2]: [OpenAI 官方文档](https://platform.openai.com/docs/guides/text)，2026-07-28 读。

@@ -8,7 +8,7 @@ description: "结构化判断的维护记录：默认的 OpenRouter typesafe/jev
 
 ## 接口从哪来 { #upstream }
 
-- 模型是用户指定的，页面是 [openrouter.ai/typesafe/jev-1.13](https://openrouter.ai/typesafe/jev-1.13)。页面靠 JS 渲染，抓不到正文。
+- 模型是用户指定的，页面是 openrouter.ai/typesafe/jev-1.13[^jev-1-13]。页面靠 JS 渲染，抓不到正文。
 - 请求格式是经 Context7 查 OpenRouter 文档仓库（`openrouterteam/docs`）查到的，主要看了这几篇：博客 2026-09-21 的「What is Jev」、2026-09-23 的「How to use Jev」，社区指南 `jev-tutorial.mdx` 和 `typesafe-sdk.mdx`。要点：
     - Jev 是 TypeSafe 的第一个 System One 模型，回答关于 state 的带类型问题，不生成文字。
     - 端点：教程和博客都用 `POST /api/alpha/decisions`；`typesafe-sdk.mdx` 说 OpenRouter 另有 `POST /api/v1/systemone`，实现的是 TypeSafe 自己的请求和响应格式，TypeSafe 的 SDK 能直接指过来。
@@ -147,3 +147,5 @@ description: "结构化判断的维护记录：默认的 OpenRouter typesafe/jev
 - Mercury 免费版要去 OpenRouter 后台改隐私设置才能用，没改。
 - 微软、Mercury 的上下文上限没试到头。
 - OpenAI 的拒答只在材料完全没有答案时碰到过一次，材料含糊时会不会也拒答没测。
+
+[^jev-1-13]: [openrouter.ai/typesafe/jev-1.13](https://openrouter.ai/typesafe/jev-1.13)，2026-10-02 读。

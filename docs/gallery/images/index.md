@@ -4,7 +4,7 @@ description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘�
 
 # 图片
 
-一张图配一段生成它的 prompt，看中哪张就把 prompt 拿走改一改。页面里只有图和 prompt；来源与授权记在各自的 MIRROR 里：[GPT Image 2 图库](gpt-image2/MIRROR.md)（收录自 wuyoscar/GPT-Image2-Skill，MIT，共 163 条，已译成中文）、[手绘风格库](handdraw-style/MIRROR.md)（收录自 yang0/handraw-style，MIT，280 种画风；配套的版式和主题色在[排版](../layouts/index.md)、[色彩](../colors/classic.md)两区）、[二次元平面设计风格](linux-do-style/assets/MIRROR.md)（整理自 linux.do @sallyn 的帖子，12 组）和 [prompt-cards 生图条目](prompt-cards/MIRROR.md)（照录自 prompt-cards.cyanfish.site，10 条，英文的已译成中文，分散在角色设计、摄影、插画、复古与赛博朋克、字体与海报、品牌系统六页的末尾）；另有单条收进来的零散 prompt，来源记在 [零散收集](collected/MIRROR.md)。
+一张图配一段生成它的 prompt，看中哪张就把 prompt 拿走改一改。页面里只有图和 prompt；来源与授权记在各自的维护记录里：[GPT Image 2 图库](../../maintenance/gallery/gpt-image2.md)（收录自 wuyoscar/GPT-Image2-Skill，MIT，共 163 条，已译成中文）、[手绘风格库](../../maintenance/skills/handdraw.md)（收录自 yang0/handraw-style，MIT，365 种画风；配套的版式和主题色在[排版](../layouts/index.md)、[色彩](../colors/classic.md)两区）、[二次元平面设计风格](../../maintenance/gallery/linux-do-style.md)（整理自 linux.do @sallyn 的帖子，12 组）和 [prompt-cards 生图条目](../../maintenance/gallery/prompt-cards.md)（照录自 prompt-cards.cyanfish.site，10 条，英文的已译成中文，分散在角色设计、摄影、插画、复古与赛博朋克、字体与海报、品牌系统六页的末尾）；另有单条收进来的零散 prompt，来源记在[零散收集](../../maintenance/gallery/images-collected.md)。
 
 怎么从一张图反推出 prompt，看 skills 里的[图片提示词反推](../../skills/collab/image-prompt-reverse/index.md)：简化版[七维拆解](../../skills/collab/image-prompt-reverse/seven-dimensions/index.md)和完整版[从图反推 prompt](../../skills/collab/image-prompt-reverse/get-prompt-from-image/index.md)。
 
@@ -13,8 +13,8 @@ description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘�
 跟下面各类不同，这里每条只是一段**片段**：画风管画法、排版管构图、色彩管颜色，挑好再加上主题，自己拼成完整 prompt，拼法见入口页。
 
 - [手绘风格库](handdraw-style/index.md) —— 入口与拼接方法：风格 + 版式 + 主题色 + 主题，何时要垫样片、怎么写隔离声明
-- 画风：[社论漫画](handdraw-style/styles-a.md) · 35 / [绘本叙事](handdraw-style/styles-b.md) · 19 / [现代平面](handdraw-style/styles-c.md) · 28 / [日本插画](handdraw-style/styles-d.md) · 41 / [中国插画](handdraw-style/styles-e.md) · 31 / [网感媒介](handdraw-style/styles-f.md) · 46 / [中国插画补充](handdraw-style/styles-g.md) · 16 / [其他](handdraw-style/styles-h.md) · 64
-- 配套的[排版](../layouts/index.md) · 124 种、[色彩](../colors/classic.md) · 36 种，各自单独成区
+- 画风：[社论幽默](handdraw-style/styles-a.md) · 40 / [绘本叙事](handdraw-style/styles-b.md) · 66 / [现代平面](handdraw-style/styles-c.md) · 32 / [日本插画](handdraw-style/styles-d.md) · 42 / [新国风](handdraw-style/styles-e.md) · 67 / [黏土毛毡纸雕](handdraw-style/styles-f.md) · 17 / [动漫赛璐璐](handdraw-style/styles-g.md) · 23 / [先锋实验](handdraw-style/styles-h.md) · 44 / [写实摄影](handdraw-style/styles-i.md) · 34
+- 配套的[排版](../layouts/index.md) · 167 种、[色彩](../colors/classic.md) · 36 种，各自单独成区
 
 ## 动漫、角色与游戏
 

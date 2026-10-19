@@ -54,4 +54,6 @@ Amazon 的股东信把可逆决策称为 two-way doors，主张采用轻量流�
 
 ## 来源
 
-- Amazon：[2016 Letter to Shareholders](https://www.aboutamazon.com/news/company-news/2016-letter-to-shareholders) —— “High-Velocity Decision Making”一节提出双向门、信息充分度和快速纠偏
+- Amazon：2016 Letter to Shareholders[^2016-letter-to-shareholders] —— “High-Velocity Decision Making”一节提出双向门、信息充分度和快速纠偏
+
+[^2016-letter-to-shareholders]: [2016 Letter to Shareholders](https://www.aboutamazon.com/news/company-news/2016-letter-to-shareholders)，2026-07-28 读。

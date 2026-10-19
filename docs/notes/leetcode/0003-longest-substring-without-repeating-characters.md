@@ -4,7 +4,7 @@ description: "可变长滑动窗口的母题：右端贪心扩、违规就收左
 
 # 3. 无重复字符的最长子串
 
-[LeetCode 3](https://leetcode.cn/problems/longest-substring-without-repeating-characters/) · 中等 · 滑动窗口
+LeetCode 3[^leetcode] · 中等 · 滑动窗口
 
 ## 题
 
@@ -61,3 +61,5 @@ class Solution:
     assert s.lengthOfLongestSubstring("abba") == 2
     assert s.lengthOfLongestSubstring(" ") == 1
     ```
+
+[^leetcode]: [LeetCode 3](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)，2026-09-29 读。

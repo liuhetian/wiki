@@ -87,10 +87,10 @@ description: 撰写檄文——中国传统的声讨、宣战、动员文体。�
 
 | 需求 | 读什么 |
 |---|---|
-| 想看名篇如何逐段执行五段骨架、每篇最值得偷师的招 | `references/逐篇精读.md` |
-| 骈句写不工整、节奏不对、气势起不来 | `references/骈句声律.md` |
-| 需要典故素材、贬称词库、骂法火力编排 | `references/用典骂法库.md` |
-| 写现代戏仿，想看完整范例与翻车点 | `references/戏仿范例.md` |
+| 想看名篇如何逐段执行五段骨架、每篇最值得偷师的招 | [references/逐篇精读.md](references/逐篇精读.md) |
+| 骈句写不工整、节奏不对、气势起不来 | [references/骈句声律.md](references/骈句声律.md) |
+| 需要典故素材、贬称词库、骂法火力编排 | [references/用典骂法库.md](references/用典骂法库.md) |
+| 写现代戏仿，想看完整范例与翻车点 | [references/戏仿范例.md](references/戏仿范例.md) |
 
 ## 第三层：五篇原典（沉浸语感、核对引文）
 
@@ -98,11 +98,11 @@ description: 撰写檄文——中国传统的声讨、宣战、动员文体。�
 
 | 需求 | 读哪篇 |
 |---|---|
-| 攻击出身人品、罪状具体化、赏格写法 | `originals/为袁绍檄豫州文.md` |
-| 分条数罪（其罪N也）、极致夸张、五段全结构 | `originals/为李密檄洛州文.md` |
-| 骈文节奏、情感煽动、短篇精悍（三段成檄） | `originals/为徐敬业讨武曌檄.md` |
-| 谕体、正统叙事、政策承诺、宽宏姿态 | `originals/谕中原檄.md` |
-| 卫道立论（讨抽象事物）、分层招抚 | `originals/讨粤匪檄.md` |
+| 攻击出身人品、罪状具体化、赏格写法 | [originals/为袁绍檄豫州文.md](references/originals/为袁绍檄豫州文.md) |
+| 分条数罪（其罪N也）、极致夸张、五段全结构 | [originals/为李密檄洛州文.md](references/originals/为李密檄洛州文.md) |
+| 骈文节奏、情感煽动、短篇精悍（三段成檄） | [originals/为徐敬业讨武曌檄.md](references/originals/为徐敬业讨武曌檄.md) |
+| 谕体、正统叙事、政策承诺、宽宏姿态 | [originals/谕中原檄.md](references/originals/谕中原檄.md) |
+| 卫道立论（讨抽象事物）、分层招抚 | [originals/讨粤匪檄.md](references/originals/讨粤匪檄.md) |
 
 ## 输出格式
 
@@ -110,3 +110,11 @@ description: 撰写檄文——中国传统的声讨、宣战、动员文体。�
 - 篇幅：默认四百至八百字（骆宾王全文仅三百余字而成千古名篇——宁短而精，勿长而散）；用户要求长文时可仿祖君彦铺陈至千字以上。
 - 正文用段落分隔五段骨架，不加小标题（檄文是一气呵成的文章，不是报告）。
 - 交稿后可附一句话说明写法（用了哪篇的路数），不要逐句注释。
+
+<div class="zx-no-copy" markdown>
+
+---
+
+维护记录：[从哪来、改了什么](../../../maintenance/skills/xi-wen.md)。正常使用不用看，出问题再看。
+
+</div>

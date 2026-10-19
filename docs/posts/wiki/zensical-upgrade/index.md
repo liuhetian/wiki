@@ -41,7 +41,7 @@ description: "本站钉在 Zensical 0.0.62，最新是 0.0.70：八个版本加�
 
 > An `llms.txt` index and Markdown copies of selected pages are generated.
 
-（[plugins.md，钉 commit](https://github.com/zensical/docs/blob/1a86815c8f96c9b171c91017cd8c2c90498d3a30/docs/compatibility/mkdocs/plugins.md)）关键在 selected 和 copies。2026-10-15 在临时站上实测：
+（plugins.md，钉 commit[^plugins]）关键在 selected 和 copies。2026-10-15 在临时站上实测：
 
 - **内容走的是 md → HTML → md**：`autoclean` 的说明是 "Clean generated HTML before conversion to Markdown"——HTML 里没留下的回不来。frontmatter、选项卡标签、代码块标题、自定义块类型（mermaid、echarts、`conflict`、`age`）、折叠状态、自定义锚点、`md_in_html` 外层 div 全丢，提示框变成 GitHub 的 `> [!NOTE]`；公式被 Markdown 转义成 `\\(E\[T\] = n H\_n\\)`，按 Markdown 解析回去仍是正常 LaTeX，只是原文多了一层噪音
 - **代码块语言靠 `pygments_lang_class: true` 保住**：HTML 里有 `language-xxx` 才转得回来，本站开着
@@ -110,7 +110,7 @@ description: "本站钉在 Zensical 0.0.62，最新是 0.0.70：八个版本加�
 
 > Files matched by `draft_docs` are excluded from `zensical build` but included during `zensical serve`.
 
-（[basics.md，钉 commit](https://github.com/zensical/docs/blob/1a86815c8f96c9b171c91017cd8c2c90498d3a30/docs/setup/basics.md)）现在没写完、没挂索引的草稿，每次部署都得临时挪出 `docs/`，不然 `check-links.py` 拦部署。`draft_docs` 只管 Zensical 自己的构建，本站另外两处不认它，要省掉挪文件得三处一起改：
+（basics.md，钉 commit[^basics]）现在没写完、没挂索引的草稿，每次部署都得临时挪出 `docs/`，不然 `check-links.py` 拦部署。`draft_docs` 只管 Zensical 自己的构建，本站另外两处不认它，要省掉挪文件得三处一起改：
 
 - `mkdocs.yml` 写 `draft_docs: "*.draft.md"`，草稿统一以 `.draft.md` 结尾
 - `deploy.sh` 的 md 镜像加 `--exclude='*.draft.md'`，否则草稿源照样上桶
@@ -143,3 +143,6 @@ description: "本站钉在 Zensical 0.0.62，最新是 0.0.70：八个版本加�
 - **本地预览常改真身吗**：常改，0.0.63 和 0.0.69 两处修复每天都用得上；很少改，这条不算收益
 - **想不想用 `draft_docs`**：想，就得升，还要按[草稿](#drafts)那节改三处；不想，草稿照旧部署时挪开
 两件都否，就没有非升不可的理由；风险低，什么时候想升都行，代价始终是那一次全站重传。一键复制不用为它升级：按钮自己做在 0.0.62 上，见[最后的做法](#own-copy)。
+
+[^plugins]: [plugins.md，钉 commit](https://github.com/zensical/docs/blob/1a86815c8f96c9b171c91017cd8c2c90498d3a30/docs/compatibility/mkdocs/plugins.md)，2026-10-15 读。
+[^basics]: [basics.md，钉 commit](https://github.com/zensical/docs/blob/1a86815c8f96c9b171c91017cd8c2c90498d3a30/docs/setup/basics.md)，2026-10-15 读。

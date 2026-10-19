@@ -32,12 +32,12 @@ pdf-inspector 在中文段落上的实际输出（原文是"GPT-6 Astra 发布�
 
 ## 吸收的两个 DSH 插件 { #upstream }
 
-DeepSeek Harness 官方的 `read` 不读 PDF（`tool-fs` README 写的是 "PDF, audio, and video remain deferred"），社区在 [Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions?discussions_q=pdf) 里做了几个插件。这里存档的是其中两个的核心文件，只取和读 PDF 有关的几份。两者都是**只提取文字**，都不给模型看页面图片。
+DeepSeek Harness 官方的 `read` 不读 PDF（`tool-fs` README 写的是 "PDF, audio, and video remain deferred"），社区在 Discussions[^discussions] 里做了几个插件。这里存档的是其中两个的核心文件，只取和读 PDF 有关的几份。两者都是**只提取文字**，都不给模型看页面图片。
 
 | 插件 | 钉的 commit | 许可证 | 存档 |
 |---|---|---|---|
-| [jiaoqsh/dsh-document](https://github.com/jiaoqsh/dsh-document/tree/393aad9bbc454f4ac182ac8326e2749cdd761514)（[帖子 #2746](https://github.com/deepseek-ai/deepseek-harness/discussions/2746)） | `393aad9`（2026-08-16） | MIT，原文 [LICENSE](assets/pdf-upstream/dsh-document/LICENSE) | `src/tool.ts`、`pdf-inspector.ts`、`pdf-worker.ts`、`pages.ts` |
-| [vaxilicaihouxian/dsh-pdf-reader](https://github.com/vaxilicaihouxian/dsh-pdf-reader/tree/0758700ce796b0354e9d6b64db85fdcaa28077f3)（[帖子 #6449](https://github.com/deepseek-ai/deepseek-harness/discussions/6449)） | `0758700`（2026-09-12） | MIT，只在 `package.json` 里声明，上游没有 LICENSE 文件 | `src/pdf-reader.ts` |
+| jiaoqsh/dsh-document[^dsh-document]（帖子 #2746[^discussions-2746]） | `393aad9`（2026-08-16） | MIT，原文 [LICENSE](assets/pdf-upstream/dsh-document/LICENSE) | `src/tool.ts`、`pdf-inspector.ts`、`pdf-worker.ts`、`pages.ts` |
+| vaxilicaihouxian/dsh-pdf-reader[^dsh-pdf-reader]（帖子 #6449[^discussions-6449]） | `0758700`（2026-09-12） | MIT，只在 `package.json` 里声明，上游没有 LICENSE 文件 | `src/pdf-reader.ts` |
 
 抓取日期都是 2026-09-29。上游 README、Office 转换、浏览器阅读视图和测试都没有收，要看原貌请点上面钉了 commit 的链接。
 
@@ -109,3 +109,9 @@ DeepSeek Harness 官方的 `read` 不读 PDF（`tool-fs` README 写的是 "PDF, 
     ```python
     --8<-- "skills/agent-io/scripts/pdf_read.py"
     ```
+
+[^discussions]: [Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions?discussions_q=pdf)，2026-10-02 读。
+[^dsh-document]: [jiaoqsh/dsh-document](https://github.com/jiaoqsh/dsh-document/tree/393aad9bbc454f4ac182ac8326e2749cdd761514)，2026-10-02 读。
+[^discussions-2746]: [帖子 #2746](https://github.com/deepseek-ai/deepseek-harness/discussions/2746)，2026-10-02 读。
+[^dsh-pdf-reader]: [vaxilicaihouxian/dsh-pdf-reader](https://github.com/vaxilicaihouxian/dsh-pdf-reader/tree/0758700ce796b0354e9d6b64db85fdcaa28077f3)，2026-10-02 读。
+[^discussions-6449]: [帖子 #6449](https://github.com/deepseek-ai/deepseek-harness/discussions/6449)，2026-10-02 读。

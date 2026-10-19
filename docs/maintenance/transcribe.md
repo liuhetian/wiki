@@ -8,7 +8,7 @@ description: "音频转录的维护记录：OpenRouter 上 microsoft/mai-transcr
 
 ## 接口从哪来 { #upstream }
 
-- 示例是用户从 OpenRouter 模型页（[openrouter.ai/microsoft/mai-transcribe-2](https://openrouter.ai/microsoft/mai-transcribe-2)）的 API 标签贴过来的：`POST /api/v1/audio/transcriptions`，JSON 里的 `input_audio` 放 base64 和格式；时间戳用 `response_format` 和 `timestamp_granularities`；说话人分离、专有名词、转录风格是 Azure 的参数，放在 `provider.options.azure` 里透传；生成 ID 在响应头 `X-Generation-Id` 里。
+- 示例是用户从 OpenRouter 模型页（openrouter.ai/microsoft/mai-transcribe-2[^mai-transcribe-2]）的 API 标签贴过来的：`POST /api/v1/audio/transcriptions`，JSON 里的 `input_audio` 放 base64 和格式；时间戳用 `response_format` 和 `timestamp_granularities`；说话人分离、专有名词、转录风格是 Azure 的参数，放在 `provider.options.azure` 里透传；生成 ID 在响应头 `X-Generation-Id` 里。
 - 能用 multipart 上传，是从 OpenRouter 文档仓库里 2026-05-01 那篇音频 API 公告看到的（经 Context7 查）：转录端点也收 OpenAI 风格的 `multipart/form-data`，支持 WAV、MP3、FLAC 等格式。
 - `GET /api/v1/models` 返回的 463 个模型里没有转录模型，查不到它的元数据。
 
@@ -43,3 +43,5 @@ description: "音频转录的维护记录：OpenRouter 上 microsoft/mai-transcr
 - multipart 上传时能不能带 `provider.options.azure`，没测。
 - 没跟 Whisper、GPT-4o Transcribe 这些别的转录模型比过。
 - 海外机的 SSH 公钥还没装回去，OpenRouter 的中转配置没同步进 `assets/gateway/`。
+
+[^mai-transcribe-2]: [openrouter.ai/microsoft/mai-transcribe-2](https://openrouter.ai/microsoft/mai-transcribe-2)，2026-10-02 读。

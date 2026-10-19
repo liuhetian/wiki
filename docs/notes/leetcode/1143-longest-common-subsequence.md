@@ -4,7 +4,7 @@ description: "双序列 DP 的母题：dp[i][j] 看两个前缀，末字符相�
 
 # 1143. 最长公共子序列
 
-[LeetCode 1143](https://leetcode.cn/problems/longest-common-subsequence/) · 中等 · 多维动态规划
+LeetCode 1143[^leetcode] · 中等 · 多维动态规划
 
 ## 题
 
@@ -71,3 +71,5 @@ class Solution:
     assert s.longestCommonSubsequence("a", "a") == 1
     assert s.longestCommonSubsequence("bsbininm", "jmjkbkjkv") == 1
     ```
+
+[^leetcode]: [LeetCode 1143](https://leetcode.cn/problems/longest-common-subsequence/)，2026-09-29 读。

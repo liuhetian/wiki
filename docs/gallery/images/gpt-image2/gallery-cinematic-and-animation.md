@@ -2,7 +2,7 @@
 
 ### Pixar 风 3D 动画剧照（小猫）
 
-<img src="assets/cinematic-animation/pixar-kitchen.png" alt="pixar kitchen" width="420"/>
+<img src="assets/cinematic-animation/pixar-kitchen.png" alt="pixar kitchen" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张 Pixar 品质的 3D 动画剧照，横版 16:9。电影长片质感，温暖的影棚布光。
@@ -16,7 +16,7 @@
 
 ### 1940 年代黑色电影剧照
 
-<img src="assets/cinematic-animation/noir-detective.png" alt="noir detective" width="420"/>
+<img src="assets/cinematic-animation/noir-detective.png" alt="noir detective" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张 1940 年代黑色电影（film noir）风格的黑白剧照，横版 16:9，高反差。用 35mm 胶片拍摄，颗粒可见。
@@ -28,7 +28,7 @@
 
 ### 专业 6 格电影分镜
 
-<img src="assets/cinematic-animation/storyboard.png" alt="storyboard" width="420"/>
+<img src="assets/cinematic-animation/storyboard.png" alt="storyboard" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张 6 格电影分镜，排成 3×2 网格，整体为横版 16:9。每一格都是一张矩形的铅笔加马克笔草图，带白色页边框，下方有一条小小的信息栏。
@@ -47,7 +47,7 @@
 
 ### 吉卜力风动画剧照
 
-<img src="assets/cinematic-animation/ghibli-cottage.png" alt="ghibli cottage" width="420"/>
+<img src="assets/cinematic-animation/ghibli-cottage.png" alt="ghibli cottage" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张 Studio Ghibli（吉卜力工作室）风格的手绘动画剧照，横版 16:9。黄金时刻，一座小木屋坐落在长满青草的山坡上，俯瞰着一片山谷。一个孩子赤脚站在木屋门口，朝一只半藏在草甸里、毛茸茸的小森林精灵挥手。远处一列火车横穿谷底，燕子在头顶低飞掠过。
@@ -57,7 +57,7 @@
 
 ### VHS 超市混乱监控截图
 
-<img src="assets/cinematic-animation/vhs-grocery-chaos.png" alt="vhs grocery chaos" width="420"/>
+<img src="assets/cinematic-animation/vhs-grocery-chaos.png" alt="vhs grocery chaos" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张混乱的监控摄像头截图，场景是 1990 年代的一家超市。一个身穿全套中世纪盔甲的男人正在冲刺，被定格在半空，偷着好几只烤鸡跑过乳制品区。头顶的日光灯在盔甲上反光。地面是婴儿蓝瓷砖。加入一个时间戳，显示 "08/13/96 04:44 AM"，以及一张墙上海报，写着 "NEW! TOASTER STRUDELS!"。做成低保真、荒诞、略带紧张感的样子，带运动模糊、VHS 色彩溢出、监控噪点和真实的老式模拟时代超市灯光。

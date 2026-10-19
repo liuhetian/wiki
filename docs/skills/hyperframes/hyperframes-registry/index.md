@@ -3,7 +3,7 @@ name: hyperframes-registry
 description: >
   搜索、安装 registry 中的 block 和 component，并把它们接入 HyperFrames composition。在手工搭建任何有名字的视觉效果之前先用它——只要 brief、用户或分镜点名了某种外观、效果、处理手法或转场，比如 CRT 扫描线、glitch、色差、胶片颗粒、shimmer 扫光、图表、代码或终端窗口、地图、彩纸爆发——因为托管的约 400 个条目已经覆盖了其中许多，而且搜索会对全部条目排序，不需要安装任何东西、不需要项目、也不需要账号。运行 hyperframes add 或 hyperframes catalog、安装单个条目或某个 tag 下的全部 block、把已安装条目接入 index.html、或处理 hyperframes.json 时也用它。涵盖发现、安装位置、block 的 sub-composition 接入、component 片段合并，以及编写新的 block 或 component 并贡献到上游（构思 → 搭骨架 → 校验 → PR）。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-registry/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-registry/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装配置或更新类命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 
@@ -147,3 +147,19 @@ CLI 连不上的 registry **不会**让 catalog 在**发现**环节变空：只�
 ## 贡献新的 block 或 component
 
 如果要编写一个新的 registry 条目（字幕样式、VFX block、转场、lower third，或者可复用的 component）并以上游 PR 的形式发布——而不是安装已有的条目——请按 [contributing.md](./references/contributing.md) 中完整的构思 → 搭骨架 → 构建 → 校验 → 预览 → 发布工作流来做。可直接复制粘贴的起步模板（字幕 / VFX / component / `registry-item.json`）在 [templates.md](./references/templates.md) 里。
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [examples/add-block.md](examples/add-block.md) —— 完整示例：添加一个 block
+- [examples/add-component.md](examples/add-component.md) —— 完整示例：添加一个 component
+- [references/component-quality-bar.md](references/component-quality-bar.md) —— Component 质量门槛
+- [references/contributing.md](references/contributing.md) —— 向 registry 贡献 block 或 component
+- [references/demo-html-pattern.md](references/demo-html-pattern.md) —— demo.html 约定
+- [references/discovery.md](references/discovery.md) —— Registry 发现
+- [references/install-locations.md](references/install-locations.md) —— 安装位置
+- [references/placeholder-material.md](references/placeholder-material.md) —— 占位材质
+- [references/templates.md](references/templates.md) —— 贡献用模板
+- [references/wiring-blocks.md](references/wiring-blocks.md) —— 接入 block
+- [references/wiring-components.md](references/wiring-components.md) —— 接入 component

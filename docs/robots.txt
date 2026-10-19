@@ -1,5 +1,5 @@
 # 全站开放抓取：本 wiki 的设计目标就是给人和 AI 同时读，
-# 每个页面在同域提供 .md 源（把 URL 结尾的 / 换成 .md），全站地图见 /llms.txt。
+# 每个页面在同域提供 .md 源（普通页把 URL 结尾的 / 换成 .md，目录首页加 index.md），全站地图见 /llms.txt。
 User-agent: *
 Allow: /
 

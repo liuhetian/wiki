@@ -4,7 +4,7 @@ description: "每行两端是 1，中间每个数等于上一行肩上两数之�
 
 # 118. 杨辉三角
 
-[LeetCode 118](https://leetcode.cn/problems/pascals-triangle/) · 简单 · 动态规划
+LeetCode 118[^leetcode] · 简单 · 动态规划
 
 ## 题
 
@@ -49,3 +49,5 @@ class Solution:
     assert s.generate(1) == [[1]]
     assert s.generate(2) == [[1], [1, 1]]
     ```
+
+[^leetcode]: [LeetCode 118](https://leetcode.cn/problems/pascals-triangle/)，2026-09-29 读。

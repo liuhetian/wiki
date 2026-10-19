@@ -4,7 +4,7 @@ description: "每个节点交换左右孩子，访问顺序无所谓——前序
 
 # 226. 翻转二叉树
 
-[LeetCode 226](https://leetcode.cn/problems/invert-binary-tree/) · 简单 · 二叉树
+LeetCode 226[^leetcode] · 简单 · 二叉树
 
 ## 题
 
@@ -65,3 +65,5 @@ description: "每个节点交换左右孩子，访问顺序无所谓——前序
     assert s.invertTree(None) is None
     assert tree_vals(s.invertTree(build_tree([1, 2]))) == [1, None, 2]
     ```
+
+[^leetcode]: [LeetCode 226](https://leetcode.cn/problems/invert-binary-tree/)，2026-09-29 读。

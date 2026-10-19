@@ -1,8 +1,8 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/animate-text.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/animate-text.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 文字效果 —— 参考
 
-对于确定性的文字动画规格（例如精确到 `240ms / 46ms stagger / steps(1, end) easing` 的 `typewriter`），本 skill 交给另一个独立的 **`animate-text`** skill 处理，它由 Pixel Point 维护，地址是 [github.com/pixel-point/animate-text](https://github.com/pixel-point/animate-text)。它提供一个包含 24 种具名文字效果的目录，带有可移植的契约，以及针对各个库的实现配方（GSAP、Anime.js、WAAPI）。
+对于确定性的文字动画规格（例如精确到 `240ms / 46ms stagger / steps(1, end) easing` 的 `typewriter`），本 skill 交给另一个独立的 **`animate-text`** skill 处理，它由 Pixel Point 维护，地址是 github.com/pixel-point/animate-text[^animate-text]。它提供一个包含 24 种具名文字效果的目录，带有可移植的契约，以及针对各个库的实现配方（GSAP、Anime.js、WAAPI）。
 
 **我们不在本仓库内附带这个目录。** Pixel Point 的 `animate-text` 是事实来源；把它的文件搬进来会违反上游的授权（截至撰写时，上游没有声明明确的许可证）。单独加载那个 skill，既能保持法律层面的清晰，又能给你同样的目录。
 
@@ -66,3 +66,5 @@ npx skills add pixel-point/animate-text
 实现该段落节拍的子 agent 如果还没加载 `/animate-text`，就会加载它，然后从上游 skill 的文件里读取每个具名效果的规格。
 
 如果上游 skill 不可用（离线构建、网络限制、不支持加载 skill 的 agent runtime），子 agent 就回退到仅凭描述来实现效果 —— 利用 GSAP 知识，再把效果 ID 当作意图描述（例如 "typewriter" = 逐字符、阶跃式、无插值的揭示）。
+
+[^animate-text]: [github.com/pixel-point/animate-text](https://github.com/pixel-point/animate-text)，2026-10-15 读。

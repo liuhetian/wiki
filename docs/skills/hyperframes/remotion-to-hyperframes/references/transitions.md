@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/transitions.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/transitions.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 转场翻译：@remotion/transitions → HF 交叉淡化 / shader-transitions
 
@@ -62,7 +62,7 @@ springTiming({config: {damping: 12}})             → ease: "back.out(1.4)" (~0.
 
 ## 何时使用 HF shader-transitions
 
-对于 Remotion preset 中那些有着视觉效果丰富的 GLSL 等价物的转场（iris、ripple、zoom、glitch），使用 HF 的 [shader-transitions](https://hyperframes.heygen.com/catalog/blocks) 包。它们产出的效果比手动 GSAP transform 更丰富。
+对于 Remotion preset 中那些有着视觉效果丰富的 GLSL 等价物的转场（iris、ripple、zoom、glitch），使用 HF 的 shader-transitions[^blocks] 包。它们产出的效果比手动 GSAP transform 更丰富。
 
 ```bash
 npx hyperframes add sdf-iris
@@ -105,3 +105,5 @@ const customPresentation: PresentationComponent = ({
 翻译方式：从 `style={...}` 块中提取出数学计算，输出等价的 GSAP tween。具体来说，transform 公式直接映射为一个以 `progress` 为参数的 `gsap.to(target, { transform: ... })`。
 
 如果自定义 presentation 在内部使用 `useCurrentFrame()` 来给简单进度曲线*之外*的东西做动画，就把这份源码视为不可翻译，退出并改用 runtime 互操作模式（见 [escape-hatch.md](escape-hatch.md)）。
+
+[^blocks]: [shader-transitions](https://hyperframes.heygen.com/catalog/blocks)，2026-10-15 读。

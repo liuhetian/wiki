@@ -4,7 +4,7 @@ description: "返回值与答案分离：递归返回「往下单边能走多深
 
 # 543. 二叉树的直径
 
-[LeetCode 543](https://leetcode.cn/problems/diameter-of-binary-tree/) · 简单 · 二叉树
+LeetCode 543[^leetcode] · 简单 · 二叉树
 
 ## 题
 
@@ -64,3 +64,5 @@ class Solution:
     # 最长路径不经过根：左子树内部拐弯
     assert s.diameterOfBinaryTree(build_tree([1, 2, None, 3, 4, 5, None, None, 6, 7, None, None, 8])) == 6
     ```
+
+[^leetcode]: [LeetCode 543](https://leetcode.cn/problems/diameter-of-binary-tree/)，2026-09-29 读。

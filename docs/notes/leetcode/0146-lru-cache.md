@@ -4,7 +4,7 @@ description: "哈希表管「O(1) 找到」，双向链表管「O(1) 挪位和�
 
 # 146. LRU 缓存
 
-[LeetCode 146](https://leetcode.cn/problems/lru-cache/) · 中等 · 链表
+LeetCode 146[^leetcode] · 中等 · 链表
 
 ## 题
 
@@ -114,7 +114,7 @@ description: "哈希表管「O(1) 找到」，双向链表管「O(1) 挪位和�
 
 ## 延伸
 
-- **淘汰策略换成「最不常用」**：[460. LFU 缓存](https://leetcode.cn/problems/lfu-cache/)，按频次分桶，每个桶是一条这题的双向链表，再记一个当前最小频次。
+- **淘汰策略换成「最不常用」**：460. LFU 缓存[^leetcode-2]，按频次分桶，每个桶是一条这题的双向链表，再记一个当前最小频次。
 - 双向链表的基本操作可以对照单链表的 [206. 反转链表](0206-reverse-linked-list.md)、[19. 删除链表的倒数第 N 个结点](0019-remove-nth-node-from-end-of-list.md)——单链表删除要找前驱，这里 `prev` 指针把它变成了 $O(1)$。
 - 同是「设计一个数据结构、每个操作 $O(1)$」：[155. 最小栈](0155-min-stack.md)。
 - **坑**：`put` 已存在的键时要算「使用」，也要挪到最前；只改值不挪位是常见错误。容量满时先淘汰再插入，别反过来把刚插入的踢掉。
@@ -148,3 +148,6 @@ description: "哈希表管「O(1) 找到」，双向链表管「O(1) 挪位和�
     assert c.get(1) == 10
     assert c.get(2) == -1
     ```
+
+[^leetcode]: [LeetCode 146](https://leetcode.cn/problems/lru-cache/)，2026-09-29 读。
+[^leetcode-2]: [460. LFU 缓存](https://leetcode.cn/problems/lfu-cache/)，2026-09-29 读。

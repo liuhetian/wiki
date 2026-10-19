@@ -26,10 +26,12 @@ description: "少类目比较（≤8），单位可数"
 - 颜色只使用纸灰、炭黑和中间灰阶，不使用渐变、阴影或装饰色
 - 滚入视野才播放，点击重播；`prefers-reduced-motion` 下关闭动画
 
-> 模板来源：Lieflat Charts `F1 Rung Bars`，真实骨架取自 [`templates/basics-gallery.html`](https://github.com/larashero3-dotcom/lieflat-charts/blob/e5b369de1d0d32637093ee62d60bd556cf2c1af4/templates/basics-gallery.html) 的 “Revenue by plan, rung by rung” 卡片与对应渲染块。
+> 模板来源：Lieflat Charts `F1 Rung Bars`，真实骨架取自 `templates/basics-gallery.html`[^basics-gallery] 的 “Revenue by plan, rung by rung” 卡片与对应渲染块。
 
 ??? abstract "`f1-rung-bars.html` —— 自包含单页源码"
 
     ```html
     --8<-- "skills/data-visualization/lieflat-charts/assets/f1-rung-bars.html"
     ```
+
+[^basics-gallery]: [`templates/basics-gallery.html`](https://github.com/larashero3-dotcom/lieflat-charts/blob/e5b369de1d0d32637093ee62d60bd556cf2c1af4/templates/basics-gallery.html)，2026-07-28 读。

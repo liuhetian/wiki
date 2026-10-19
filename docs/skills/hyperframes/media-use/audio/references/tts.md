@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/tts.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/tts.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 文字转语音
 
@@ -132,7 +132,7 @@ node <SKILL_DIR>/audio/scripts/audio.mjs \
 
 API 报错会被记为一条失败的台词；显式选定的 Gemini 声音绝不会默默回退到别的提供方。要检查引擎的 anomalies 和输出元数据，而不只是看它的退出码。
 
-API 约定：[Google 的语音生成指南](https://ai.google.dev/gemini-api/docs/speech-generation)。
+API 约定：Google 的语音生成指南[^speech-generation]。
 
 ## ffmpeg 依赖
 
@@ -202,3 +202,5 @@ npx hyperframes tts "Today is a nice day" --voice af_heart
 ```
 
 对于 ElevenLabs / Kokoro，运行 `npx hyperframes transcribe narration.wav --model small.en` 得到同样的结构。
+
+[^speech-generation]: [Google 的语音生成指南](https://ai.google.dev/gemini-api/docs/speech-generation)，2026-10-15 读。

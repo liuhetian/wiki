@@ -5,15 +5,19 @@
 // 本地预览也能用（zensical serve 不出源文件，要先把 .md 镜像进 site/）；改写链接时用它的原始地址，复制出去的链接都指向线上。
 // 复制前做这几件事，让贴进对话框的文字自成一体、只剩正文：
 //   - 代码块以外的相对链接、图片、HTML 的 src/href 改成绝对地址；代码块和行内代码里举例写的链接不动
-//   - --8<-- "路径" 改成真身的绝对地址：先按站点根找（snippet 的 base_path 先 docs），找不到就指向 GitHub 仓库
+//   - --8<-- "路径" 改成真身的绝对地址：先按站点根找（snippet 的 base_path 先 docs），找不到就指向 GitHub 仓库；
+//     只引几行（"x.py:31:36"）或一段（"x.py:name"）的，地址只留文件，范围写在后面
 //   - 去掉 frontmatter：description 之类是给站点用的，粘进对话框是噪音；也不加来源注释
 //   - 去掉 <div class="zx-no-copy" markdown> … </div> 整块：维护记录之类，网页上照常显示、读 .md 源的 AI
 //     也看得到，只是不进对话框；块里嵌套的 div 按层数配对，代码块里写的不算
+//   - <div data-when="名=值" markdown> … </div> 是分支：名为「名」的控件选了「值」才复制；只写「名」就是那个框
+//     填了才复制。网页上条件不成立的挂上 zx-no-copy，和写死的那种一个样子；复制时拿源文件里的条件和同一批控件值
+//     再算一遍（同一个 holds，结果和网页上一致），不成立的整块去掉，成立的只去掉外壳 div，里面照常复制
 //   - 去掉代码以外的 HTML 注释：网页上本来就不显示，对话框里也不要；去掉后留下的连续空行并成一行
 //   - 正文里手写的 <input>、<textarea>、<select> 是填空：读者在网页上就地填，复制时标签换成填的值（下拉框取
 //     选中项的文字），原样嵌入、不参与链接改写；空着的写成【placeholder】；写了 required 的没填就不复制。
 //     网页上第 n 个控件对应源文件代码以外第 n 个标签，数量对不上就报错不复制；标签要写在一行里，单选、复选不算。
-//     name 相同的是同一个变量：在一个框里填，别的同名框跟着变
+//     name 相同的是同一个变量：在一个框里填，别的同名框跟着变。不复制的块里的 required 不拦
 // 打码的密文原样复制，页面上解锁过也一样。页头没有那行 link 就不出按钮。
 (function () {
   const REPO = "https://github.com/liuhetian/wiki/blob/main/";
@@ -23,7 +27,11 @@
   const KEEP = /^(?:[a-z][a-z0-9+.-]*:|#|\/\/|<)/i;        // 已带协议、页内锚点、协议相对、<…> 包着的：不动
   const SNIPPET = /^(\s*)--8<--\s+(["'])(.+?)\2\s*$/;
   const NO_COPY = /^\s*<div\b[^>]*\bclass="[^"]*\bzx-no-copy\b/;
-  const divDepth = line => (line.match(/<div\b/gi) || []).length - (line.match(/<\/div>/gi) || []).length;
+  const WHEN = /^\s*<div\b[^>]*\bdata-when="([^"]*)"/;
+  const divDepth = line => {                                // 行内代码里写的 div 不算
+    const s = line.replace(/`[^`]*`/g, "");
+    return (s.match(/<div\b/gi) || []).length - (s.match(/<\/div>/gi) || []).length;
+  };
   const FIELD = /<textarea\b[^>]*>.*?<\/textarea>|<select\b[^>]*>.*?<\/select>|<input\b[^>]*>/gi;
   const NOT_FIELD = /^<input\b[^>]*\btype=["']?(?:radio|checkbox|hidden)\b/i;
   const FIELD_SEL = "input:not([type=radio]):not([type=checkbox]):not([type=hidden]), textarea, select"; // 选项卡底下是隐藏的 radio
@@ -54,13 +62,32 @@
     return value && value.trim() ? value : `【${(opt ? opt.text : el.placeholder) || ""}】`;
   }
 
-  async function snippetUrl(path, base) {
+  // 分支的条件：「名=值」是名为「名」的控件当前值等于「值」，只写「名」是那个框填了东西；找不到这个名字就不成立
+  function holds(cond, fields) {
+    const eq = cond.indexOf("=");
+    const name = eq < 0 ? cond : cond.slice(0, eq);
+    const el = fields.find(f => f.name === name);
+    if (!el) return false;
+    return eq < 0 ? !!el.value.trim() : el.value === cond.slice(eq + 1);
+  }
+
+  // snippet 的取用范围：:31:36 是第 31–36 行，:31 是第 31 行起，::36 是到第 36 行，:name 是 --8<-- [start:name] 圈的那段
+  const RANGE = /^(.+?)(?::(\d*)(?::(\d*))?|:([A-Za-z_][\w-]*))$/;
+  function splitRange(path) {
+    const m = !path.includes("://") && path.match(RANGE);
+    if (!m || (m[2] === undefined && !m[4]) || (!m[2] && !m[3] && !m[4])) return [path, ""];
+    if (m[4]) return [m[1], `（片段 ${m[4]}）`];
+    return [m[1], `（第 ${m[2] || 1}${m[3] ? `–${m[3]}` : " 行起"}${m[3] ? " 行" : ""}）`];
+  }
+
+  async function snippetUrl(raw, base) {
+    const [path, range] = splitRange(raw);
     const site = new URL(path, new URL("/", base)).href;
     try {
       const r = await fetch(new URL(new URL(site).pathname, location.origin), { method: "HEAD" });
-      if (r.ok) return site;
+      if (r.ok) return [site, range];
     } catch (e) { /* 取不到就当不在站上 */ }
-    return REPO + path;
+    return [REPO + path, range];                            // 站上没有的是仓库根的文件（mkdocs.yml、deploy.sh）
   }
 
   // 去掉一行里代码以外的 HTML 注释，行内代码原样跳过；注释跨行时 state.open 记着还没收尾
@@ -89,6 +116,8 @@
     let fence = null;                                       // { ch, len }：当前所在代码块的围栏
     const comment = { open: false };
     let skip = 0;                                           // 在 zx-no-copy 块里时：还没配上 </div> 的层数
+    let depth = 0;                                          // 照常复制的部分：代码以外的 div 层数
+    const unwrap = [];                                      // 条件成立的分支：进去之前的层数，配上它的 </div> 那行不要
     const seen = { n: 0 };                                  // 数到第几个填空控件
     const jobs = [];
     const out = lines.map((line, i) => {
@@ -110,13 +139,27 @@
         }
         return null;
       }
-      if (!fence && NO_COPY.test(line)) {
+      const when = !fence && line.match(WHEN);
+      const on = when && holds(when[1], fields);
+      if (on && divDepth(line) > 0) {                       // 条件成立的分支：外壳不要，里面照常复制
+        unwrap.push(depth);
+        depth += divDepth(line);
+        return null;
+      }
+      if ((when && !on) || (!fence && NO_COPY.test(line))) {  // 写死的 zx-no-copy、条件不成立的分支：整块去掉
         skip = Math.max(divDepth(line), 0);
         return null;
       }
+      if (!fence) {
+        depth += divDepth(line);
+        if (unwrap.length && depth === unwrap[unwrap.length - 1] && /^\s*<\/div>\s*$/.test(line)) {
+          unwrap.pop();
+          return null;
+        }
+      }
       const s = line.match(SNIPPET);
       if (s) {
-        jobs.push(snippetUrl(s[3], base).then(u => { out[i] = `${s[1]}--8<-- "${u}"`; }));
+        jobs.push(snippetUrl(s[3], base).then(([u, range]) => { out[i] = `${s[1]}--8<-- "${u}"${range}`; }));
         return line;
       }
       return fence ? line : rewriteLine(markFields(line, seen), base);
@@ -153,6 +196,7 @@
     const inner = document.querySelector(".md-content__inner");
     if (!link || !inner) return;
     const base = link.href;                                 // 线上地址：改写链接用
+    const whens = [...inner.querySelectorAll("div[data-when]")];
     const fetchUrl = new URL(new URL(base).pathname, location.origin); // 当前站点：取文件用
 
     const btn = document.createElement("button");
@@ -163,7 +207,7 @@
     btn.innerHTML = ICON_COPY;
     btn.addEventListener("click", async () => {
       const fields = [...inner.querySelectorAll(FIELD_SEL)];
-      const missing = fields.find(el => !el.checkValidity());
+      const missing = fields.find(el => !el.closest(".zx-no-copy") && !el.checkValidity());
       if (missing) {                                        // required 没填：不复制，展开折叠块、用浏览器的气泡指过去
         for (let d = missing.closest("details"); d; d = d.parentElement.closest("details")) d.open = true;
         missing.reportValidity();
@@ -184,12 +228,21 @@
     });
     inner.prepend(btn);
 
+    // 分支：条件不成立的挂上 zx-no-copy，网页上就是「不复制」的样子；打开页面算一次，之后每次填写再算
+    const applyWhen = () => {
+      const fields = [...inner.querySelectorAll(FIELD_SEL)];
+      for (const w of whens) w.classList.toggle("zx-no-copy", !holds(w.dataset.when, fields));
+    };
+    if (whens.length) applyWhen();
+
     // 同名的填空是同一个变量：在一个框里填，别的同名框同步；只挂一个监听，不扫页面
     inner.addEventListener("input", e => {
       const el = e.target;
-      if (!el.name || !el.matches(FIELD_SEL)) return;
-      for (const other of inner.querySelectorAll(FIELD_SEL))
-        if (other !== el && other.name === el.name) other.value = el.value;
+      if (!el.matches(FIELD_SEL)) return;
+      if (el.name)
+        for (const other of inner.querySelectorAll(FIELD_SEL))
+          if (other !== el && other.name === el.name) other.value = el.value;
+      if (whens.length) applyWhen();
     });
   }
 

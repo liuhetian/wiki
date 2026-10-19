@@ -28,10 +28,12 @@ description: "F6 · 并列梯级柱：分组对比（每类 2 系列，如今昔
 - 使用时只替换数据与文案，并保持“分组对比（每类 2 系列，如今昔）”这一数据契约；若数据本体改变，应回到总目录重新选型。
 - 颜色限于 Mono 灰阶，面积编码继续使用平方根换算；柱长、位置与角度编码不得断轴或视觉夸大。
 
-> 模板来源：Lieflat Charts `F6 Paired Rungs`，真实骨架取自 [`templates/basics-gallery.html`](https://github.com/larashero3-dotcom/lieflat-charts/blob/e5b369de1d0d32637093ee62d60bd556cf2c1af4/templates/basics-gallery.html) 的 “This year against last, plan by plan” 卡片与对应渲染块。
+> 模板来源：Lieflat Charts `F6 Paired Rungs`，真实骨架取自 `templates/basics-gallery.html`[^basics-gallery] 的 “This year against last, plan by plan” 卡片与对应渲染块。
 
 ??? abstract "`f6-paired-rungs.html` —— 自包含单页源码"
 
     ```html
     --8<-- "skills/data-visualization/lieflat-charts/assets/f6-paired-rungs.html"
     ```
+
+[^basics-gallery]: [`templates/basics-gallery.html`](https://github.com/larashero3-dotcom/lieflat-charts/blob/e5b369de1d0d32637093ee62d60bd556cf2c1af4/templates/basics-gallery.html)，2026-07-28 读。

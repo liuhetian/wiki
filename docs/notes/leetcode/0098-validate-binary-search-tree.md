@@ -4,7 +4,7 @@ description: "只比父子是错的——BST 约束是整棵子树的上下界�
 
 # 98. 验证二叉搜索树
 
-[LeetCode 98](https://leetcode.cn/problems/validate-binary-search-tree/) · 中等 · 二叉树
+LeetCode 98[^leetcode] · 中等 · 二叉树
 
 ## 题
 
@@ -82,3 +82,5 @@ description: "只比父子是错的——BST 约束是整棵子树的上下界�
     assert s.isValidBST(build_tree([1])) is True
     assert s.isValidBST(build_tree([-2**31, None, 2**31 - 1])) is True
     ```
+
+[^leetcode]: [LeetCode 98](https://leetcode.cn/problems/validate-binary-search-tree/)，2026-09-29 读。

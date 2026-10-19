@@ -4,7 +4,7 @@ description: "Agent 生成视频：默认用文字加参考图生成，AutoDL �
 
 # 生成视频
 
-最常用的是给一张或几张参考图，再写一段文字，生成视频。用的是 AutoDL 上的 MiniMax H3 工作流 `minimax_h3_zm_u24`。走[中转](../../../../posts/ai-assistant/api-gateway.md)，照 [AutoDL ComfyUI API 文档](https://autodl.art/docs/comfyui_api/)调，只改两处：
+最常用的是给一张或几张参考图，再写一段文字，生成视频。用的是 AutoDL 上的 MiniMax H3 工作流 `minimax_h3_zm_u24`。走[中转](../../../../posts/ai-assistant/api-gateway.md)，照 AutoDL ComfyUI API 文档[^comfyui-api]调，只改两处：
 
 - **base URL**：`https://autodl.art` 换成 `https://autodl-proxy.liuhetian.work`
 - **API key**：用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来。官方文档里令牌前面不带 `Bearer`，经中转要带
@@ -41,3 +41,5 @@ curl -sS https://autodl-proxy.liuhetian.work/api/v1/comfyui/comfyui_workflow/res
 | [动作迁移](motion-transfer.md) | `wan2.2animate-v4-motion_retargeting` | 让照片里的人照着一段视频做动作 |
 
 维护记录：[工作流从哪找、价格怎么算、为什么只收这几个、实测结果](../../../../maintenance/video.md)。正常使用不用看，出问题或者想换工作流时再看。
+
+[^comfyui-api]: [AutoDL ComfyUI API 文档](https://autodl.art/docs/comfyui_api/)，2026-10-02 读。

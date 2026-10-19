@@ -3,7 +3,7 @@ name: slideshow
 description: >
   编写一个 HyperFrames slideshow —— 演示文稿、融资路演 deck 或交互式 deck，包含离散的幻灯片、fragment 分步揭示、分支、热点导航，以及内置的带演讲者备注的演讲者模式；也能把现有页面转换成 deck。输出是一个可导航的 deck，而不是渲染出来的 MP4。如果用户没有明确要求 slideshow，先确认再动手编写。不明确 → /hyperframes。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/slideshow/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/slideshow/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于某个 HyperFrames 插件内时，在执行安装或保鲜命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装的情况保留下面的更新说明。
 
@@ -520,3 +520,9 @@ slideshow lint 规则检查：
 - 没有两张主线幻灯片在时间上重叠。
 
 预览之前修复所有违规项。lint 不通过的 composition 在播放器里无法正确解析。
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [references/standalone-harness.md](references/standalone-harness.md) —— 独立运行的 HyperFrames Slideshow Harness

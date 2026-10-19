@@ -4,7 +4,7 @@ description: "异或自反：x ^ x = 0、x ^ 0 = x，且满足交换律——全
 
 # 136. 只出现一次的数字
 
-[LeetCode 136](https://leetcode.cn/problems/single-number/) · 简单 · 技巧
+LeetCode 136[^leetcode] · 简单 · 技巧
 
 ## 题
 
@@ -52,3 +52,5 @@ class Solution:
     assert s.singleNumber([1]) == 1
     assert s.singleNumber([-3, 5, 5]) == -3
     ```
+
+[^leetcode]: [LeetCode 136](https://leetcode.cn/problems/single-number/)，2026-09-29 读。

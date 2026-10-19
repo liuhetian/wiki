@@ -4,7 +4,7 @@ description: "dp[i] 表示前缀 s[:i] 能否拆完；枚举最后一个单词�
 
 # 139. 单词拆分
 
-[LeetCode 139](https://leetcode.cn/problems/word-break/) · 中等 · 动态规划
+LeetCode 139[^leetcode] · 中等 · 动态规划
 
 ## 题
 
@@ -61,3 +61,5 @@ class Solution:
     assert s.wordBreak("aaaaaaa", ["aaaa", "aaa"]) is True
     assert s.wordBreak("a", ["b"]) is False
     ```
+
+[^leetcode]: [LeetCode 139](https://leetcode.cn/problems/word-break/)，2026-09-29 读。

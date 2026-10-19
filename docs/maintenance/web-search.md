@@ -12,7 +12,7 @@ description: "网络搜索和读取网页的维护记录：2026-10-02 起默认�
 
 ### 接口从哪来 { #sonar-upstream }
 
-- 模型是用户指定的，页面是 [openrouter.ai/perplexity/sonar-pro-search](https://openrouter.ai/perplexity/sonar-pro-search)。它就是 OpenRouter 上的普通 chat 模型，用 `/api/v1/chat/completions`，没有特殊端点。
+- 模型是用户指定的，页面是 openrouter.ai/perplexity/sonar-pro-search[^sonar-pro-search]。它就是 OpenRouter 上的普通 chat 模型，用 `/api/v1/chat/completions`，没有特殊端点。
 - 元数据从中转的 `GET /api/v1/models/perplexity/sonar-pro-search/endpoints` 查：
     - 模型说明写的是「只在 OpenRouter API 上提供」的 Pro Search 模式，Perplexity 最强的 agentic 搜索。
     - 上下文 200k，最多输出 8000 token。
@@ -101,3 +101,4 @@ DeepSeek 2026-10-17 开放了官方的 Search 和 Fetch 接口[^ds-guide]，2026
 
 [^ds-guide]: DeepSeek [网页搜索与抓取](https://api-docs.deepseek.com/zh-cn/guides/search)指南，以及 [Search](https://api-docs.deepseek.com/zh-cn/api/search)、[Fetch](https://api-docs.deepseek.com/zh-cn/api/fetch) 的 API Reference，2026-10-18 读。
 [^dsh-plugin]: [deepseek-harness `web-search-deepseek` 插件](https://github.com/deepseek-ai/deepseek-harness/blob/639ed015397290b3745d163aafe02ffee4aa3f84/packages/web/web-search-deepseek/src/provider.ts)，钉 `639ed01`（0.2.0-rc.2），2026-10-01 读。
+[^sonar-pro-search]: [openrouter.ai/perplexity/sonar-pro-search](https://openrouter.ai/perplexity/sonar-pro-search)，2026-10-02 读。

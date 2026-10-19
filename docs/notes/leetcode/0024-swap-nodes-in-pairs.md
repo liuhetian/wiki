@@ -4,7 +4,7 @@ description: "指针改接前先画清三根线：pre→b、a→b.next、b→a�
 
 # 24. 两两交换链表中的节点
 
-[LeetCode 24](https://leetcode.cn/problems/swap-nodes-in-pairs/) · 中等 · 链表
+LeetCode 24[^leetcode] · 中等 · 链表
 
 ## 题
 
@@ -66,3 +66,5 @@ class Solution:
     assert list_vals(s.swapPairs(build_list([1]))) == [1]
     assert list_vals(s.swapPairs(build_list([1, 2, 3]))) == [2, 1, 3]
     ```
+
+[^leetcode]: [LeetCode 24](https://leetcode.cn/problems/swap-nodes-in-pairs/)，2026-09-29 读。

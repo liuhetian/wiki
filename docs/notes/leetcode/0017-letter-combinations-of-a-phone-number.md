@@ -4,7 +4,7 @@ description: "多组候选的笛卡尔积——第 i 层只从第 i 组里挑，
 
 # 17. 电话号码的字母组合
 
-[LeetCode 17](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/) · 中等 · 回溯
+LeetCode 17[^leetcode] · 中等 · 回溯
 
 ## 题
 
@@ -83,3 +83,5 @@ description: "多组候选的笛卡尔积——第 i 层只从第 i 组里挑，
     assert sorted(s.letterCombinations("2")) == ["a", "b", "c"]
     assert len(s.letterCombinations("79")) == 16
     ```
+
+[^leetcode]: [LeetCode 17](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/)，2026-09-29 读。

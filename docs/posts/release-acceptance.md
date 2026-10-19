@@ -26,7 +26,7 @@ description: "黄金用例保下限、evals 保变更不退化、线上差评回
 
 ## 第二层：evals 把跑批变成一条命令
 
-有了用例集，需要一个东西把"批量跑一遍、和期望比对、出报告"这套动作固化下来。OpenAI 的 [evals](https://github.com/openai/evals/tree/8eac7a7de521)（钉在 `8eac7a7`，2026-04-14）就是干这个的：它既是跑批框架，也是一个公开的 benchmark 注册表。
+有了用例集，需要一个东西把"批量跑一遍、和期望比对、出报告"这套动作固化下来。OpenAI 的 evals[^evals]（钉在 `8eac7a7`，2026-04-14）就是干这个的：它既是跑批框架，也是一个公开的 benchmark 注册表。
 
 README 开头那句话说得很直白：
 
@@ -57,3 +57,5 @@ README 开头那句话说得很直白：
 - 没有回灌，测试集永远停在上线那天，线上出过的事还会再出
 
 先建第一层，让它能一条命令跑起来；第三层的通道尽早埋，因为它需要时间积累。
+
+[^evals]: [evals](https://github.com/openai/evals/tree/8eac7a7de521)，2026-09-04 读。

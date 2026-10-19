@@ -4,7 +4,7 @@ description: "网格回溯：进格子时原地打标记、出来时还原，用
 
 # 79. 单词搜索
 
-[LeetCode 79](https://leetcode.cn/problems/word-search/) · 中等 · 回溯
+LeetCode 79[^leetcode] · 中等 · 回溯
 
 ## 题
 
@@ -76,3 +76,5 @@ class Solution:
     assert s.exist([["a", "b"]], "ba") is True
     assert s.exist([["a", "a"]], "aaa") is False
     ```
+
+[^leetcode]: [LeetCode 79](https://leetcode.cn/problems/word-search/)，2026-09-29 读。

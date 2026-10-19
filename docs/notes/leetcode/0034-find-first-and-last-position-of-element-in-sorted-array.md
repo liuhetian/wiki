@@ -4,7 +4,7 @@ description: "左右边界不写两套二分——只写一个 lower_bound，右
 
 # 34. 在排序数组中查找元素的第一个和最后一个位置
 
-[LeetCode 34](https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/) · 中等 · 二分查找
+LeetCode 34[^leetcode] · 中等 · 二分查找
 
 ## 题
 
@@ -73,3 +73,5 @@ class Solution:
     assert s.searchRange([1], 1) == [0, 0]
     assert s.searchRange([1, 3], 4) == [-1, -1]
     ```
+
+[^leetcode]: [LeetCode 34](https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/)，2026-09-29 读。

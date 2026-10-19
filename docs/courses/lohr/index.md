@@ -10,7 +10,7 @@ description: "Lohr 伴读导读：有限总体抽样的设计与分析，复杂�
 
 ## 读法
 
-- **在版教材：只摘句、标页码**。作者页 [sharonlohr.com](https://www.sharonlohr.com/books-1) 放了目录、前言和勘误；配套的 R Companion（Lu & Lohr）和 SAS Companion 两本 PDF 免费下载，数据集有 CSV 包，也有 CRAN 上的 R 包 `SDAResources`
+- **在版教材：只摘句、标页码**。作者页 sharonlohr.com[^books-1] 放了目录、前言和勘误；配套的 R Companion（Lu & Lohr）和 SAS Companion 两本 PDF 免费下载，数据集有 CSV 包，也有 CRAN 上的 R 包 `SDAResources`
 - **计算照 R Companion 走**，用 R 的 `survey` 包；它覆盖第 1–13 章的例子
 - **主线是第 1–9 章**：前言（书页 xv）给统计研究生一学期的建议就是第 1–9 章、余下按需挑。本课再加两章：第 11 章（11.6 是校准到总体总量）和第 15 章（非概率样本，业务数据最常碰到的情形）
 - 带星号的小节是随机化理论和基于模型的理论，要数理统计底子；[Casella & Berger](../casella-berger/index.md) 读过再回头补
@@ -47,3 +47,5 @@ description: "Lohr 伴读导读：有限总体抽样的设计与分析，复杂�
 ## 课程
 
 还没开课。
+
+[^books-1]: [sharonlohr.com](https://www.sharonlohr.com/books-1)，2026-10-02 读。

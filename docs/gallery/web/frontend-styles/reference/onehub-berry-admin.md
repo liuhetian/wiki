@@ -8,8 +8,8 @@ description: "Berry 骨架 × Minimals 色语言的 MUI 后台皮肤：墨色主
         style="width:100%;height:1210px;border:1px solid #8884;border-radius:10px"
         loading="lazy" title="One Hub 翡翠管理台 demo：LLM 网关管理后台总览页"></iframe>
 
-[One Hub](https://github.com/MartialBE/one-hub)（LLM 网关）的后台皮肤：Berry 模板的骨架 ×
-[Minimals](https://minimals.cc/) 的色彩语言 —— 纯白底靠双层阴影分卡片、翡翠绿 `#00A76F` 主色、
+One Hub[^one-hub]（LLM 网关）的后台皮肤：Berry 模板的骨架 ×
+Minimals[^minimals] 的色彩语言 —— 纯白底靠双层阴影分卡片、翡翠绿 `#00A76F` 主色、
 墨色主按钮、灰底表头 + 虚线行分隔的明暗双态 MUI 管理台。demo 是纯 HTML/CSS 缩微复刻（非像素镜像），
 真身的实现本体是 MUI v5 的 `createTheme` 三件套，配方见下节。
 
@@ -29,9 +29,9 @@ description: "Berry 骨架 × Minimals 色语言的 MUI 后台皮肤：墨色主
 
 ## MUI 配方（真身实现）
 
-以下代码摘自 one-hub 仓库（钉 commit [`387f8bf`](https://github.com/MartialBE/one-hub/tree/387f8bf16ed0d601fdede7ade378adb10aa1a35a/web/src/themes)，
+以下代码摘自 one-hub 仓库（钉 commit `387f8bf`[^themes]，
 内容冻结不随上游变），核心就三个文件：`palette.js`、`typography.js`、`compStyleOverride.js`，
-由 [`themes/index.js`](https://github.com/MartialBE/one-hub/blob/387f8bf16ed0d601fdede7ade378adb10aa1a35a/web/src/themes/index.js) 组装：
+由 `themes/index.js`[^index-js] 组装：
 
 ```javascript
 const themes = createTheme(themeOptions);          // palette + typography + shape 先建题
@@ -43,7 +43,7 @@ return themes;
 > 覆盖函数里直接闭包引用色板对象（`theme.colors?.primaryMain`），绕开 `theme.palette` 回查 ——
 > 换肤时只要换传入的 colors 就能重算整套组件样式。
 
-色板的单一来源是一个 SCSS module（[`_themes-vars.module.scss`](https://github.com/MartialBE/one-hub/blob/387f8bf16ed0d601fdede7ade378adb10aa1a35a/web/src/assets/scss/_themes-vars.module.scss)），
+色板的单一来源是一个 SCSS module（`_themes-vars.module.scss`[^themes-vars-module-scss]），
 用 `:export` 块同时喂给 SCSS 和 JS，改一处两边生效：
 
 ```scss
@@ -53,7 +53,7 @@ $grey800: #1C252E;
 ```
 
 「墨色主按钮」和签名阴影都在
-[`compStyleOverride.js`](https://github.com/MartialBE/one-hub/blob/387f8bf16ed0d601fdede7ade378adb10aa1a35a/web/src/themes/compStyleOverride.js)：
+`compStyleOverride.js`[^compstyleoverride-js]：
 
 ```javascript
 MuiButton: {
@@ -117,3 +117,10 @@ MuiListItemButton: {
     ```html
     --8<-- "gallery/web/frontend-styles/assets/onehub-berry-admin-demo.html"
     ```
+
+[^one-hub]: [One Hub](https://github.com/MartialBE/one-hub)，2026-08-14 读。
+[^minimals]: [Minimals](https://minimals.cc/)，2026-08-14 读。
+[^themes]: [`387f8bf`](https://github.com/MartialBE/one-hub/tree/387f8bf16ed0d601fdede7ade378adb10aa1a35a/web/src/themes)，2026-08-14 读。
+[^index-js]: [`themes/index.js`](https://github.com/MartialBE/one-hub/blob/387f8bf16ed0d601fdede7ade378adb10aa1a35a/web/src/themes/index.js)，2026-08-14 读。
+[^themes-vars-module-scss]: [`_themes-vars.module.scss`](https://github.com/MartialBE/one-hub/blob/387f8bf16ed0d601fdede7ade378adb10aa1a35a/web/src/assets/scss/_themes-vars.module.scss)，2026-08-14 读。
+[^compstyleoverride-js]: [`compStyleOverride.js`](https://github.com/MartialBE/one-hub/blob/387f8bf16ed0d601fdede7ade378adb10aa1a35a/web/src/themes/compStyleOverride.js)，2026-08-14 读。

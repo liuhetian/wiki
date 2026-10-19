@@ -4,7 +4,7 @@ description: "深拷贝的本质是「原节点 → 新节点」的映射；哈�
 
 # 138. 随机链表的复制
 
-[LeetCode 138](https://leetcode.cn/problems/copy-list-with-random-pointer/) · 中等 · 链表
+LeetCode 138[^leetcode] · 中等 · 链表
 
 ## 题
 
@@ -81,7 +81,7 @@ description: "深拷贝的本质是「原节点 → 新节点」的映射；哈�
 
 ## 延伸
 
-- **图的深拷贝同理**：[133. 克隆图](https://leetcode.cn/problems/clone-graph/) 用哈希表记「原节点 → 副本」，DFS/BFS 时遇到见过的直接取副本，防止环上无限复制。
+- **图的深拷贝同理**：133. 克隆图[^leetcode-2] 用哈希表记「原节点 → 副本」，DFS/BFS 时遇到见过的直接取副本，防止环上无限复制。
 - 哈希版里 `{None: None}` 这个小技巧，把 `next`、`random` 为空的判断全省掉了。
 - **坑**：交织法的第 3 步必须把原链表也复原；LeetCode 判题会检查原链表没被改动。
 - 其他链表基础模块：[206. 反转链表](0206-reverse-linked-list.md)、[21. 合并两个有序链表](0021-merge-two-sorted-lists.md)。
@@ -124,3 +124,6 @@ description: "深拷贝的本质是「原节点 → 新节点」的映射；哈�
         assert dump(head)[0] == pairs  # 原链表没被改坏
     assert s.copyRandomList(None) is None
     ```
+
+[^leetcode]: [LeetCode 138](https://leetcode.cn/problems/copy-list-with-random-pointer/)，2026-09-29 读。
+[^leetcode-2]: [133. 克隆图](https://leetcode.cn/problems/clone-graph/)，2026-09-29 读。

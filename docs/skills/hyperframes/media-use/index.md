@@ -3,7 +3,7 @@ name: media-use
 description: >
   HyperFrames 项目的 Agent 媒体操作系统。把 BGM、音效（SFX）、图片、图标、品牌 logo、配音、调色或 LUT 解析成一个冻结的本地文件或一段可直接粘贴的代码块 + 一条台账记录（只有一个动词：`resolve`）；catalog 里没有时，通过 TTS / 音乐 / 图像模型生成；通过一个共享的音频引擎产出旁白、转写、字幕和背景移除；对媒体进行操作（裁剪 / 重新构图 / 变换）；并在项目之间复用素材。当用户给出模糊反馈，说真实素材画面看起来偏暗、发平、无聊，应该有复古 / 家用摄像机 / 印刷 / ASCII 的感觉，需要隐私处理，或者需要一个媒体揭示时，也用它。当宿主应用提供了自己的音乐或音效工具时，音乐和音效就用那些工具；`resolve --type bgm|sfx` 需要 heygen CLI。设置了 `HEYGEN_API_BASE` 时，HeyGen 调用经由该宿主进行，无需登录 CLI。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装配置或更新类命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 
@@ -79,3 +79,30 @@ npx hyperframes media-use resolve --type <type> --intent "<description>" --proje
 | 安装 + 认证、服务商表、内存阶梯、`--local-only`、`--provider` | `references/setup-providers.md`  |
 | 记住的偏好 + 冻结的配方（用户记忆） | `references/memory.md`           |
 | 归属矩阵、使用统计、遥测、隐私（面向维护者） | `references/meta.md`             |
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [audio/assets/sfx/CREDITS.md](audio/assets/sfx/CREDITS.md) —— 音效（SFX）来源致谢
+- [audio/references/bgm.md](audio/references/bgm.md) —— 背景音乐（BGM）
+- [audio/references/captions/authoring.md](audio/references/captions/authoring.md) —— 字幕
+- [audio/references/captions/motion.md](audio/references/captions/motion.md) —— 动态字幕技法
+- [audio/references/captions/transcript-handling.md](audio/references/captions/transcript-handling.md) —— 转写稿指南
+- [audio/references/remove-background.md](audio/references/remove-background.md) —— 背景移除
+- [audio/references/requirements.md](audio/references/requirements.md) —— 依赖与缓存
+- [audio/references/sfx.md](audio/references/sfx.md) —— 音效（SFX）
+- [audio/references/transcribe.md](audio/references/transcribe.md) —— 转写
+- [audio/references/tts-to-captions.md](audio/references/tts-to-captions.md) —— TTS → 字幕
+- [audio/references/tts.md](audio/references/tts.md) —— 文字转语音
+- [luts/README.md](luts/README.md) —— LUT 库（编写说明）
+- [references/audio.md](references/audio.md) —— 音频引擎 —— 旁白、音乐、音效、字幕、转写
+- [references/grading.md](references/grading.md) —— 调色 —— grade 块与 LUT
+- [references/media-treatment-recipes.md](references/media-treatment-recipes.md) —— 媒体处理方案配方
+- [references/media-treatments.md](references/media-treatments.md) —— 媒体处理方案
+- [references/memory.md](references/memory.md) —— 用户记忆 —— 偏好与配方
+- [references/meta.md](references/meta.md) —— 职责矩阵、使用统计、遥测、隐私
+- [references/operations.md](references/operations.md) —— 媒体操作：agent 指南
+- [references/resolve.md](references/resolve.md) —— Resolve —— 命令、参数、复用、收编（adopt）、清单
+- [references/setup-providers.md](references/setup-providers.md) —— 安装与提供方 —— 安装、认证、RAM 阶梯、强制指定提供方
+- [references/telemetry-dashboard.md](references/telemetry-dashboard.md) —— media-use 使用情况仪表盘

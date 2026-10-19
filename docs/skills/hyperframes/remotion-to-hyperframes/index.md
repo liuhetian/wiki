@@ -3,7 +3,7 @@ name: remotion-to-hyperframes
 description: >
   把一个现有 Remotion（React）composition 的源码移植成 HyperFrames HTML。仅在用户明确要求移植 / 转换 / 迁移 / 翻译某份 Remotion 源码时使用 —— 单向，仅限 Remotion。顺带提到 Remotion、只作参考的代码，或者「做一个像我那个 Remotion 视频一样的东西」，都属于全新构建（/general-video）。拿不准 → /hyperframes。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 
@@ -15,7 +15,7 @@ description: >
 
 ## 概览
 
-把基于 React 的 Remotion 视频 composition 翻译成 HyperFrames（HTML + GSAP）composition。大多数 Remotion 惯用写法都有直接对应的 HyperFrames 等价物 —— 对约 80% 的典型 composition 来说，翻译是机械性的。本 skill 把这套映射编码下来，并防范那有损的 20%：对不适合 HF 的 seek 驱动模型的模式拒绝翻译，转而推荐 [PR #214](https://github.com/heygen-com/hyperframes/pull/214) 中的 runtime 互操作模式。
+把基于 React 的 Remotion 视频 composition 翻译成 HyperFrames（HTML + GSAP）composition。大多数 Remotion 惯用写法都有直接对应的 HyperFrames 等价物 —— 对约 80% 的典型 composition 来说，翻译是机械性的。本 skill 把这套映射编码下来，并防范那有损的 20%：对不适合 HF 的 seek 驱动模型的模式拒绝翻译，转而推荐 PR #214[^pull-214] 中的 runtime 互操作模式。
 
 本 skill 附带一套**分级测试语料库**（T1–T4，共 4 个 fixture），按实测得出的 SSIM 阈值给翻译打分。不跑 eval 就不要翻译 —— 一个"看起来没问题"、但渲染结果比经过验证的基线低 0.05 SSIM 的翻译，是在悄无声息地出错。
 
@@ -110,7 +110,7 @@ cd ../hf-src && npx hyperframes render --skill=remotion-to-hyperframes --output 
 ## 本 skill 明确不做的事
 
 - **翻译 React 状态机。** 通过 `useState` + `useEffect` 驱动动画的 composition，在 HyperFrames 的 seek 驱动模型下不是确定性的逐帧捕获目标。推荐 runtime 互操作模式。
-- **在 HyperFrames 旁边同时运行 Remotion 的渲染流水线。** 那是 [PR #214](https://github.com/heygen-com/hyperframes/pull/214) 中的 runtime 互操作模式 —— 一个独立的方案，面向没能通过本 skill lint 的 composition。
+- **在 HyperFrames 旁边同时运行 Remotion 的渲染流水线。** 那是 PR #214[^pull-214] 中的 runtime 互操作模式 —— 一个独立的方案，面向没能通过本 skill lint 的 composition。
 
 （`@remotion/lambda` *不是*阻断项 —— Lambda 配置属于部署，不属于动画。本 skill 把它当作警告去掉，然后翻译其余部分。见 [`references/escape-hatch.md`](references/escape-hatch.md)。）
 
@@ -132,3 +132,25 @@ cd ../hf-src && npx hyperframes render --skill=remotion-to-hyperframes --output 
 | T2 | 多场景 + spring + 音频 + 图片 | 0.985 | 0.95 |
 | T3 | 数据驱动、自定义子组件、数字递增 | 0.953 | 0.90 |
 | T4 | escape-hatch（8 个 lint 案例） | 8/8 通过 | n/a |
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [assets/test-corpus/tier-1-title-card/README.md](assets/test-corpus/tier-1-title-card/README.md) —— Tier 1 — title-card-fade
+- [assets/test-corpus/tier-2-multi-scene/README.md](assets/test-corpus/tier-2-multi-scene/README.md) —— Tier 2 — title-image-outro
+- [assets/test-corpus/tier-3-data-driven/README.md](assets/test-corpus/tier-3-data-driven/README.md) —— Tier 3 — stargazed-data-driven
+- [assets/test-corpus/tier-4-escape-hatch/README.md](assets/test-corpus/tier-4-escape-hatch/README.md) —— Tier 4 — escape-hatch
+- [references/api-map.md](references/api-map.md) —— Remotion → HyperFrames API 映射
+- [references/escape-hatch.md](references/escape-hatch.md) —— 何时退出：runtime 互操作模式
+- [references/eval.md](references/eval.md) —— Eval：如何端到端地校验一次翻译
+- [references/fonts.md](references/fonts.md) —— 字体翻译
+- [references/limitations.md](references/limitations.md) —— 翻译的局限
+- [references/lottie.md](references/lottie.md) —— Lottie 翻译：@remotion/lottie → HF lottie adapter
+- [references/media.md](references/media.md) —— 媒体翻译：Audio、Video、Img、IFrame、staticFile
+- [references/parameters.md](references/parameters.md) —— 参数翻译：Zod schema、defaultProps、calculateMetadata
+- [references/sequencing.md](references/sequencing.md) —— Sequencing 翻译：Sequence、Series、Composition 根
+- [references/timing.md](references/timing.md) —— Timing 翻译：interpolate、spring、easing
+- [references/transitions.md](references/transitions.md) —— 转场翻译：@remotion/transitions → HF 交叉淡化 / shader-transitions
+
+[^pull-214]: [PR #214](https://github.com/heygen-com/hyperframes/pull/214)，2026-10-15 读。

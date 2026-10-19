@@ -4,7 +4,7 @@ description: "答案必在 1..n+1，于是把数组本身当哈希表：值 v �
 
 # 41. 缺失的第一个正数
 
-[LeetCode 41](https://leetcode.cn/problems/first-missing-positive/) · 困难 · 普通数组
+LeetCode 41[^leetcode] · 困难 · 普通数组
 
 ## 题
 
@@ -46,7 +46,7 @@ class Solution:
 
 ## 延伸
 
-- 同一个「下标即哈希」的招：[287. 寻找重复数](0287-find-the-duplicate-number.md)（值域 $1..n$，数组长 $n+1$），以及「找到所有数组中消失的数字」（[LeetCode 448](https://leetcode.cn/problems/find-all-numbers-disappeared-in-an-array/)）——那题用「取负号标记」，不交换。
+- 同一个「下标即哈希」的招：[287. 寻找重复数](0287-find-the-duplicate-number.md)（值域 $1..n$，数组长 $n+1$），以及「找到所有数组中消失的数字」（LeetCode 448[^leetcode-2]）——那题用「取负号标记」，不交换。
 - 标记法替代交换：先把越界值改成 $n+1$，再对每个 $|v| \le n$ 把下标 $|v|-1$ 置负，最后找第一个正数。
 - 坑：Python 里交换写成 `nums[i], nums[nums[i] - 1] = nums[nums[i] - 1], nums[i]` 会出错——左边赋值是从左到右的，`nums[i]` 先被改了，第二个下标就算错了。先把 `j` 存下来最稳。
 
@@ -61,3 +61,6 @@ class Solution:
     assert s.firstMissingPositive([1]) == 2
     assert s.firstMissingPositive([2, 1]) == 3
     ```
+
+[^leetcode]: [LeetCode 41](https://leetcode.cn/problems/first-missing-positive/)，2026-09-29 读。
+[^leetcode-2]: [LeetCode 448](https://leetcode.cn/problems/find-all-numbers-disappeared-in-an-array/)，2026-09-29 读。

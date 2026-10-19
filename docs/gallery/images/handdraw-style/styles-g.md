@@ -1,135 +1,257 @@
 ---
-description: "手绘风格·中国当代插画补充，16 种，每条一张样片加一段画法特征 prompt"
+description: "手绘风格库·动漫和赛璐璐，23 种，每条一张样片加一段画法特征 prompt，标题带编号"
 ---
 
-# 中国当代插画补充
+# 动漫和赛璐璐
 
 拼接方法见[手绘风格库](index.md)：画风片段 + 排版 + 色彩 + 你的主题。
 
-### Delicate Youth Narrative Comic
+### FG-001 · Late-80s Cyberpunk Dark OVA Cel Anime
 
-<img src="assets/images/individual/201-400/201.webp" alt="Delicate Youth Narrative Comic" width="320"/>
+<img src="assets/images/individual/FG/FG-001_grid.webp" alt="Late-80s Cyberpunk Dark OVA Cel Anime" width="320" loading="lazy" decoding="async"/>
+
+参考：OscarAI ｜ gpt-image-2：要垫样片
 
 ````text
-偏写实的人物比例与青春群像；细腻线稿，水彩、水墨与版画经验融入彩色画面；重视光线、环境与人物情绪，画面清爽但不是“大头萌系日常”。
+80年代末日本黑暗赛博朋克OVA赛璐珞动画风、锐利手绘勾线、浓郁阴郁的丙烯手绘背景、高对比度硬光影、冷艳魅惑的女性肖像与黄金时代动画胶片质感。
 ````
 
-### Dreamy Emotional Picturebook Comic
+### FG-002 · Classic 60s-70s Xerox Cel Animation
 
-<img src="assets/images/individual/201-400/202.webp" alt="Dreamy Emotional Picturebook Comic" width="320"/>
+<img src="assets/images/individual/FG/FG-002_grid.webp" alt="Classic 60s-70s Xerox Cel Animation" width="320" loading="lazy" decoding="async"/>
+
+参考：OscarAI ｜ gpt-image-2：要垫样片
 
 ````text
-清新温暖而带淡淡忧伤；色彩承担情绪表达，现实场景与幻想意象交织；人物和空间具有绘本式象征性，文字与画面共同完成叙事。
+60-70年代经典静电复印(Xerox)手绘赛璐珞动画风、生动微糙的石墨铅笔动态勾线、古典手绘水粉城堡背景、优雅灵动的迪士尼黄金时代复古人物造型。
 ````
 
-### Classical Chinese Fine-Line Manga
+### FG-003 · Classic 80s-90s Heroic Fantasy Cel Anime
 
-<img src="assets/images/individual/201-400/203.webp" alt="Classical Chinese Fine-Line Manga" width="320"/>
+<img src="assets/images/individual/FG/FG-003_grid.webp" alt="Classic 80s-90s Heroic Fantasy Cel Anime" width="320" loading="lazy" decoding="async"/>
+
+参考：OscarAI ｜ gpt-image-2：要垫样片
 
 ````text
-细密、灵秀的线条和人物塑造；古典服饰、建筑与自然背景考究；人物情绪含蓄，擅长历史与古风长篇叙事，不宜简化为“古风美女插画”。
+80-90年代经典剑与魔法奇幻赛璐珞动画风、纯正手绘赛璐珞质感、红发持剑女勇士与古堡阴影下的重甲战士、古典戏剧性冷暖打光。
 ````
 
-### Faceless New-Chinese Figure Illustration
+### FG-004 · Vintage 70s European Comic Animation Cel
 
-<img src="assets/images/individual/201-400/204.webp" alt="Faceless New-Chinese Figure Illustration" width="320"/>
+<img src="assets/images/individual/FG/FG-004_grid.webp" alt="Vintage 70s European Comic Animation Cel" width="320" loading="lazy" decoding="async"/>
+
+参考：OscarAI ｜ gpt-image-2：要垫样片
 
 ````text
-标志性的“无脸古装群像”；以发型、服装、轮廓、动作和环境传达身份与情绪；人物多修长、弱化五官，强调衣袂节奏、光影和电影感构图，追求“无脸有魂”。
+70年代欧洲传统手绘手作动画风、质朴粗糙的手绘石墙背景、夸张滑稽的红发大胡子卫兵与尖帽侍从、古典讽刺动画与阿斯特里克斯式的幽默神态。
 ````
 
-### Chinese Pet Deadpan Cartoon
+### FG-005 · Modern Cinematic 2D Character Animation
 
-<img src="assets/images/individual/201-400/205.webp" alt="Chinese Pet Deadpan Cartoon" width="320"/>
+<img src="assets/images/individual/FG/FG-005_grid.webp" alt="Modern Cinematic 2D Character Animation" width="320" loading="lazy" decoding="async"/>
+
+参考：OscarAI ｜ gpt-image-2：要垫样片
 
 ````text
-以猫狗性格和“内心戏”驱动笑点；造型概括、表情高度角色化，常配短句或对白；画面干净、留白多，兼具漫画感和中国绘画趣味，核心不是单纯“可爱”。
+现代电影级2D动画角色插画风、灵动深邃的大眼睛与微卷盘发墨镜、细腻柔和的室内环境光影与利落干净的动画清线造型。
 ````
 
-### Philosophical Minimal Dog Cartoon
+### FG-006 · Stylized Cinematic Action-Comedy Character
 
-<img src="assets/images/individual/201-400/206.webp" alt="Philosophical Minimal Dog Cartoon" width="320"/>
+<img src="assets/images/individual/FG/FG-006_grid.webp" alt="Stylized Cinematic Action-Comedy Character" width="320" loading="lazy" decoding="async"/>
+
+参考：Shinyi ｜ gpt-image-2：要垫样片
 
 ````text
-简洁的轮廓线与大面积留白；白色小狗“刀刀”以沉静旁观者姿态出现，常站在屋顶、街角、栏杆或城市边缘；配合短句、独白和轻哲思，形成温柔、孤独、幽默的都市寓言感。
+风格化大块面剪影动画插画风、夸张强壮的胡子大叔与市井风情、干练几何块面平涂与微颗粒光影、充满动势与幽默张力的街头角色原画。
 ````
 
-### Minimal Visual-Pun Cartoon
+### FG-007 · South Park Animation Style
 
-<img src="assets/images/individual/201-400/207.webp" alt="Minimal Visual-Pun Cartoon" width="320"/>
+<img src="assets/images/individual/FG/FG-007.webp" alt="South Park Animation Style" width="320" loading="lazy" decoding="async"/>
+
+参考：South Park ｜ gpt-image-2：认得名字，只写风格名和参考作者
 
 ````text
-寥寥几笔、黑白或极少色彩、大留白；把日常物件、人物和动物重新组合形成视觉双关；逻辑清晰但结果荒诞，常用无字或极少文字制造“看懂后一笑”的瞬间。
+扁平几何色块、粗黑轮廓线、简化圆润人物形体、夸张圆眼与极简五官、鲜明高饱和蓝色与海洋色调、电视动画式平涂质感。
 ````
 
-### Conceptual Eastern Film Poster Design
+### FG-008 · Patapon Remastered
 
-<img src="assets/images/individual/201-400/208.webp" alt="Conceptual Eastern Film Poster Design" width="320"/>
+<img src="assets/images/individual/FG/FG-008.webp" alt="Patapon Remastered" width="320" loading="lazy" decoding="async"/>
+
+参考：Patapon Remastered ｜ gpt-image-2：认得名字，只写风格名和参考作者
+
+上游没给这一条写画法特征，靠名字激活，下面这句就是画风片段；模型认不出时再垫样片，加上[隔离声明](index.md#splice)。
 
 ````text
-以电影核心概念为先，而非固定画法；擅长“减法”、视觉隐喻与大尺度留白，常借鉴水墨、书法、传统图形与东方空间意识；摄影、插画、字体、图形会随项目变化。
+风格名称：Patapon Remastered。参考作者/风格名称：Patapon Remastered。
 ````
 
-### Digital Chinese Gongbi Fantasy
+### FG-009 · Don't Starve Animation Style
 
-<img src="assets/images/individual/201-400/209.webp" alt="Digital Chinese Gongbi Fantasy" width="320"/>
+<img src="assets/images/individual/FG/FG-009.webp" alt="Don't Starve Animation Style" width="320" loading="lazy" decoding="async"/>
+
+参考：Don’t Starve ｜ gpt-image-2：认得名字，只写风格名和参考作者
+
+上游没给这一条写画法特征，靠名字激活，下面这句就是画风片段；模型认不出时再垫样片，加上[隔离声明](index.md#splice)。
 
 ````text
-用数位板和数字笔刷模拟中国画皴、擦、点、染；重视白描、工笔人物、衣纹和结构；题材常取古典文学、志怪、神话与历史，具有严谨线描和数字水墨结合的特征。
+风格名称：Don't Starve Animation Style。参考作者/风格名称：Don’t Starve。
 ````
 
-### Contemporary Chinese Ink Picturebook
+### FG-010 · Cartoon Saloon Animation Style
 
-<img src="assets/images/individual/201-400/210.webp" alt="Contemporary Chinese Ink Picturebook" width="320"/>
+<img src="assets/images/individual/FG/FG-010.webp" alt="Cartoon Saloon Animation Style" width="320" loading="lazy" decoding="async"/>
+
+参考：Cartoon Saloon ｜ gpt-image-2：认得名字，只写风格名和参考作者
+
+上游没给这一条写画法特征，靠名字激活，下面这句就是画风片段；模型认不出时再垫样片，加上[隔离声明](index.md#splice)。
 
 ````text
-中国水墨的线条与墨色为核心，但叙事结构现代；造型简练、灵动、略带拙趣与怪趣；把传统神祇、民俗和东方哲学转换成儿童可以进入的日常童话。
+风格名称：Cartoon Saloon Animation Style。参考作者/风格名称：Cartoon Saloon。
 ````
 
-### Wild Chinese Ink Fantasy Comic
+### FG-011 · Black and White Horror Manga Style
 
-<img src="assets/images/individual/201-400/211.webp" alt="Wild Chinese Ink Fantasy Comic" width="320"/>
+<img src="assets/images/individual/FG/FG-011.webp" alt="Black and White Horror Manga Style" width="320" loading="lazy" decoding="async"/>
+
+参考：黑白恐怖漫画 ｜ gpt-image-2：靠画法特征
 
 ````text
-铅笔、毛笔、墨水、水彩与有质感纸张并用；墨线狂放、干湿与飞白明显，静态细节与强烈动作并存；常见少年侠客、山林、妖怪与志怪幻想，气质野、孤独而自由。
+精密排线、高对比实黑、留白式悬念
 ````
 
-### Hong Kong Urban Female Comic Illustration
+### FG-012 · Tite Kubo Bleach Manga Style
 
-<img src="assets/images/individual/201-400/212.webp" alt="Hong Kong Urban Female Comic Illustration" width="320"/>
+<img src="assets/images/individual/FG/FG-012.webp" alt="Tite Kubo Bleach Manga Style" width="320" loading="lazy" decoding="async"/>
+
+参考：久保带人《BLEACH》 ｜ gpt-image-2：认得名字，只写风格名和参考作者
+
+上游没给这一条写画法特征，靠名字激活，下面这句就是画风片段；模型认不出时再垫样片，加上[隔离声明](index.md#splice)。
 
 ````text
-强烈的女性主体意识与身体表现；人物自信、性感但不以媚态为核心；水彩、漫画线条、时装与香港都市经验交织，构图自由且有当代独立漫画气质。
+风格名称：Tite Kubo Bleach Manga Style。参考作者/风格名称：久保带人《BLEACH》。
 ````
 
-### Gentle Seasonal Nature Illustration
+### FG-013 · Tatsuki Fujimoto Chainsaw Man Manga Style
 
-<img src="assets/images/individual/201-400/213.webp" alt="Gentle Seasonal Nature Illustration" width="320"/>
+<img src="assets/images/individual/FG/FG-013.webp" alt="Tatsuki Fujimoto Chainsaw Man Manga Style" width="320" loading="lazy" decoding="async"/>
+
+参考：藤本树《电锯人》 ｜ gpt-image-2：认得名字，只写风格名和参考作者
+
+上游没给这一条写画法特征，靠名字激活，下面这句就是画风片段；模型认不出时再垫样片，加上[隔离声明](index.md#splice)。
 
 ````text
-长期围绕四季、自然、旅行和日常生活；人物常缩小在更大的环境中，强调人与自然的关系；色彩柔和明亮、笔触松弛，画面带梦境感、季节光线和安静的孤独感。
+风格名称：Tatsuki Fujimoto Chainsaw Man Manga Style。参考作者/风格名称：藤本树《电锯人》。
 ````
 
-### Warm Nostalgic Everyday Picturebook
+### FG-014 · Gege Akutami Jujutsu Kaisen Manga Style
 
-<img src="assets/images/individual/201-400/214.webp" alt="Warm Nostalgic Everyday Picturebook" width="320"/>
+<img src="assets/images/individual/FG/FG-014.webp" alt="Gege Akutami Jujutsu Kaisen Manga Style" width="320" loading="lazy" decoding="async"/>
+
+参考：芥见下下《咒术回战》 ｜ gpt-image-2：认得名字，只写风格名和参考作者
+
+上游没给这一条写画法特征，靠名字激活，下面这句就是画风片段；模型认不出时再垫样片，加上[隔离声明](index.md#splice)。
 
 ````text
-作者自述关键词为“温暖、感动、记录”；常以80后成长记忆、家庭、友情与生活阶段为内容；画面偏日记和绘本叙事，柔和温暖，偶尔进入荒诞或黑白想象。
+风格名称：Gege Akutami Jujutsu Kaisen Manga Style。参考作者/风格名称：芥见下下《咒术回战》。
 ````
 
-### Realistic Absurdist Webcomic
+### FG-015 · Masashi Kishimoto Naruto Manga Style
 
-<img src="assets/images/individual/201-400/215.webp" alt="Realistic Absurdist Webcomic" width="320"/>
+<img src="assets/images/individual/FG/FG-015.webp" alt="Masashi Kishimoto Naruto Manga Style" width="320" loading="lazy" decoding="async"/>
+
+参考：岸本齐史《火影忍者》 ｜ gpt-image-2：认得名字，只写风格名和参考作者
+
+上游没给这一条写画法特征，靠名字激活，下面这句就是画风片段；模型认不出时再垫样片，加上[隔离声明](index.md#splice)。
 
 ````text
-基础造型相对写实，人物面部和肢体却高度表演化；夸张表情、无厘头台词、鬼畜式节奏和电影分镜制造喜剧反差；作者常自拍表情作为绘画参考。
+风格名称：Masashi Kishimoto Naruto Manga Style。参考作者/风格名称：岸本齐史《火影忍者》。
 ````
 
-### Beijing Hutong Watercolor Graphic Novel
+### FG-016 · Eiichiro Oda One Piece Manga Style
 
-<img src="assets/images/individual/201-400/216.webp" alt="Beijing Hutong Watercolor Graphic Novel" width="320"/>
+<img src="assets/images/individual/FG/FG-016.webp" alt="Eiichiro Oda One Piece Manga Style" width="320" loading="lazy" decoding="async"/>
+
+参考：尾田荣一郎《海贼王》 ｜ gpt-image-2：认得名字，只写风格名和参考作者
+
+上游没给这一条写画法特征，靠名字激活，下面这句就是画风片段；模型认不出时再垫样片，加上[隔离声明](index.md#splice)。
 
 ````text
-全水彩手绘、明快色彩、轻松线条与流畅分镜；擅长老北京胡同、街坊日常与儿童视角，把现实生活和轻度奇幻自然融合，空间细节丰富但整体温暖轻盈。
+风格名称：Eiichiro Oda One Piece Manga Style。参考作者/风格名称：尾田荣一郎《海贼王》。
+````
+
+### FG-017 · Studio Ghibli Nostalgic Hand-Drawn Cel Anime & Painterly Landscape
+
+<img src="assets/images/individual/FG/FG-017.webp" alt="Studio Ghibli Nostalgic Hand-Drawn Cel Anime & Painterly Landscape" width="320" loading="lazy" decoding="async"/>
+
+参考：吉卜力 / Studio Ghibli ｜ gpt-image-2：靠画法特征
+
+````text
+参考吉卜力动画风格
+````
+
+### FG-018 · Scissor Seven Season 1 Anime Style, Simple Composition, Highly Generalized Character Design
+
+<img src="assets/images/individual/FG/FG-018.webp" alt="Scissor Seven Season 1 Anime Style, Simple Composition, Highly Generalized Character Design" width="320" loading="lazy" decoding="async"/>
+
+参考：小疯映画《刺客伍六七》 / Scissor Seven (Sharefun Studio) ｜ gpt-image-2：靠画法特征
+
+````text
+参考风格：小疯映画的刺客伍六七第一季，构图简单，角色高度概括
+````
+
+### FG-019 · Cinematic American Comic Illustration, Expressive Anime Emotion, Digital Impasto
+
+<img src="assets/images/individual/FG/FG-019.webp" alt="Cinematic American Comic Illustration, Expressive Anime Emotion, Digital Impasto" width="320" loading="lazy" decoding="async"/>
+
+参考：高饱和电影感美漫插画 / Cinematic American Comic Illustration ｜ gpt-image-2：靠画法特征
+
+````text
+风格：高饱和电影感美漫插画（Cinematic American Comic Illustration），也可以称作 美漫线稿 × 日漫表情 × 数字厚涂风格。线条：黑色粗描边、密集排线、手绘刮擦纹理。上色：高饱和撞色、厚涂与赛璐璐结合。人物：日漫式夸张表情，美漫式面部结构。构图：广角透视、电影分镜、强烈的视觉冲突。质感：复古印刷漫画、数字厚涂、AI 插画的混合质感。角色：中国普通老百姓的形象
+````
+
+### FG-020 · Retro Seinen Manga Line Art, American Narrative Illustration, Digital Cel Shading
+
+<img src="assets/images/individual/FG/FG-020.webp" alt="Retro Seinen Manga Line Art, American Narrative Illustration, Digital Cel Shading" width="320" loading="lazy" decoding="async"/>
+
+参考：复古青年漫画与美式叙事插画 / Retro Seinen Manga & American Narrative Illustration ｜ gpt-image-2：靠画法特征
+
+````text
+复古漫画、半写实人物、日式青年漫画线稿、美式叙事插画、暖色低饱和、手绘墨线、复古纸张纹理、夸张表情、动态速度线、数字赛璐璐上色。
+````
+
+### FG-021 · Korean Webtoon
+
+<img src="assets/images/individual/FG/FG-021.webp" alt="Korean Webtoon" width="320" loading="lazy" decoding="async"/>
+
+参考：韩漫webtoon / Korean Webtoon ｜ gpt-image-2：认得名字，只写风格名和参考作者
+
+上游没给这一条写画法特征，靠名字激活，下面这句就是画风片段；模型认不出时再垫样片，加上[隔离声明](index.md#splice)。
+
+````text
+风格名称：Korean Webtoon。参考作者/风格名称：韩漫webtoon / Korean Webtoon。
+````
+
+### FG-022 · Spider-Man: Into the Spider-Verse Animation Style
+
+<img src="assets/images/individual/FG/FG-022.webp" alt="Spider-Man: Into the Spider-Verse Animation Style" width="320" loading="lazy" decoding="async"/>
+
+参考：动画片《蜘蛛侠：平行宇宙》 / Spider-Man: Into the Spider-Verse ｜ gpt-image-2：认得名字，只写风格名和参考作者
+
+上游没给这一条写画法特征，靠名字激活，下面这句就是画风片段；模型认不出时再垫样片，加上[隔离声明](index.md#splice)。
+
+````text
+风格名称：Spider-Man: Into the Spider-Verse Animation Style。参考作者/风格名称：动画片《蜘蛛侠：平行宇宙》 / Spider-Man: Into the Spider-Verse。
+````
+
+### FG-023 · Retro 90s Cel Anime & Korean Emotional Webtoon Illustration, Grainy Nostalgic Film Aesthetic
+
+<img src="assets/images/individual/FG/FG-023.webp" alt="Retro 90s Cel Anime & Korean Emotional Webtoon Illustration, Grainy Nostalgic Film Aesthetic" width="320" loading="lazy" decoding="async"/>
+
+参考：复古日系赛璐璐与韩系情绪动画 / Retro 90s Cel Anime & Korean Mood Webtoon ｜ gpt-image-2：靠画法特征
+
+````text
+复古日系二维动画与现代韩系情绪漫画融合的插画风格，具有1990年代手绘赛璐璐动画的朴素视觉质感。二维平面绘制，清晰但略带自然手绘感的深色轮廓线，线条轻微不规则，轮廓简洁，细节适度省略。大面积平涂色块，硬边赛璐璐阴影，明暗层次简化，阴影以完整、清晰的形状呈现，几乎没有柔和渐变或复杂体积塑造。整体配色低饱和、暗调、褪色感，偏砖红、暗青绿、灰蓝、灰褐、褪色粉橙与米灰色，色彩之间具有克制的冷暖对比，暗部厚重，黑色深沉。背景采用概括性的色块、简化的形体与有限的细节，呈现二维动画背景美术的平面感，不刻意追求写实精度。全画面覆盖明显、均匀、细密的模拟胶片噪点，颗粒与画面色彩自然融合，轻微色彩漂移、柔和的旧胶片褪色感，带有细微的模拟影像粗糙度。画面具有克制的光影、略低的清晰度、自然的暗部色彩沉积，整体像经过模拟胶片扫描和统一调色处理的旧动画截图。视觉语言安静、内敛、忧郁、怀旧，带有轻微的梦境感和疏离感，质朴而不精致化，强调二维手绘痕迹、色彩氛围和年代质感。
 ````

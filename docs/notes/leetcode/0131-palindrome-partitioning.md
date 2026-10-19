@@ -4,7 +4,7 @@ description: "切割问题 = 枚举下一刀切在哪；先用区间 DP 把「s[
 
 # 131. 分割回文串
 
-[LeetCode 131](https://leetcode.cn/problems/palindrome-partitioning/) · 中等 · 回溯
+LeetCode 131[^leetcode] · 中等 · 回溯
 
 ## 题
 
@@ -75,3 +75,5 @@ class Solution:
     assert norm(s.partition("aaa")) == norm([["a", "a", "a"], ["a", "aa"], ["aa", "a"], ["aaa"]])
     assert s.partition("ab") == [["a", "b"]]
     ```
+
+[^leetcode]: [LeetCode 131](https://leetcode.cn/problems/palindrome-partitioning/)，2026-09-29 读。

@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/talking-head-recut/references/DESIGN_INDEX.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/talking-head-recut/references/DESIGN_INDEX.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # V—Take 视觉设计库
 

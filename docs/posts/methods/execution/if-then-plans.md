@@ -56,4 +56,6 @@ description: "预先把一个明确情境和一个明确动作绑在一起，省
 
 ## 来源
 
-- Peter M. Gollwitzer：[Implementation Intentions: Strong Effects of Simple Plans](https://doi.org/10.1037/0003-066X.54.7.493) —— 论文把 implementation intention 定义为情境线索与目标动作之间的预先连接，并讨论了线索可及性和动作启动机制
+- Peter M. Gollwitzer：Implementation Intentions: Strong Effects of Simple Plans[^0003-066x-54-7-493] —— 论文把 implementation intention 定义为情境线索与目标动作之间的预先连接，并讨论了线索可及性和动作启动机制
+
+[^0003-066x-54-7-493]: [Implementation Intentions: Strong Effects of Simple Plans](https://doi.org/10.1037/0003-066X.54.7.493)，2026-07-28 读。

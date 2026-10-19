@@ -8,7 +8,7 @@ description: "Rapier 物理绳链 + meshline 绳带 + 反投影拖拽的挂绳�
         style="width:100%;height:680px;border:1px solid #8884;border-radius:10px"
         loading="lazy" title="Vercel Lanyard 可拖拽 3D 工牌 demo"></iframe>
 
-一张挂在绳上的会议工牌：抓住它甩出去，绳子跟着摆、卡片自己转回正面 —— 物理引擎驱动的"真实感小玩具"，复现自 Vercel 官方博客 [Building an interactive 3D event badge with React Three Fiber](https://vercel.com/blog/building-an-interactive-3d-event-badge-with-react-three-fiber)（Ship 2024 注册页彩蛋）。核心只有约 80 行声明式代码。
+一张挂在绳上的会议工牌：抓住它甩出去，绳子跟着摆、卡片自己转回正面 —— 物理引擎驱动的"真实感小玩具"，复现自 Vercel 官方博客 Building an interactive 3D event badge with React Three Fiber[^building-an-interactive-3d-event]（Ship 2024 注册页彩蛋）。核心只有约 80 行声明式代码。
 
 ## 要点
 
@@ -52,3 +52,5 @@ description: "Rapier 物理绳链 + meshline 绳带 + 反投影拖拽的挂绳�
     ```html
     --8<-- "gallery/web/frontend-styles/assets/vercel-lanyard-demo/index.html"
     ```
+
+[^building-an-interactive-3d-event]: [Building an interactive 3D event badge with React Three Fiber](https://vercel.com/blog/building-an-interactive-3d-event-badge-with-react-three-fiber)，2026-08-17 读。

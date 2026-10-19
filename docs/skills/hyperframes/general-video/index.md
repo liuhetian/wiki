@@ -3,7 +3,7 @@ name: general-video
 description: >
   在没有合适的专门工作流时，或者 BRIEF.md 设置了 flow: companion 时，编写或编辑一个自定义的 HyperFrames composition。用于较长或多场景的作品、品牌片和混剪集锦、蒙太奇、静态循环、静态标题卡、素材画面重混，以及自由形式的构建。时长短、无旁白、以运动为先的单元（包括动画标题）改用 motion-graphics。全新创作要先经 hyperframes 路由，再使用本 skill。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/general-video/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/general-video/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 
@@ -157,3 +157,9 @@ npx hyperframes init "videos/<project>" --non-interactive --example=blank --skil
 - 请求了渲染时，已核验渲染出的文件。
 
 最终批准之后，按 `../hyperframes/references/review-loop.md` § 4 的做法，提议一次把这次运行固化为一个配方。
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [sub-agents/frame-worker.md](sub-agents/frame-worker.md) —— Frame worker —— general-video 增量部分

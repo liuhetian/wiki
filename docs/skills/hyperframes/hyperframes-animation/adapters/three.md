@@ -3,7 +3,7 @@ name: hyperframes-three
 description: >
   HyperFrames 的 Three.js 与 WebGL adapter 模式。在创建确定性的 Three.js 场景、WebGL canvas 图层、AnimationMixer 时间线、镜头运动、shader 驱动的视觉，或响应 HyperFrames hf-seek 事件的 canvas 渲染时使用。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/three.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/three.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # HyperFrames 中的 Three.js
 

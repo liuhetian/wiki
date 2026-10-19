@@ -116,6 +116,8 @@ git diff --stat upstream/main...dev         # 我碰过的所有文件
 
 分支策略只决定冲突什么时候暴露，**改动落在哪些文件才决定冲突有多少**。优先走项目自己的扩展点，你的代码就全是新增文件，跟上游改动天然不重叠。
 
-活例：fork [PawzoChat](https://github.com/iwyxdxl/PawzoChat) 做二次开发时，三个扩展点是 `data/plugins/`（插件可注册通道、注册工具、复用 LLM）、`data/theme/`（纯 CSS 叠加）、`data/mcp_servers/`（MCP 工具）；而 `pawzochat/services/chat.py`、`pawzochat/web/app.py`、`pawzochat/core/config.py` 是上游高频改动区，非改不可时把改动切成小而独立的 commit，rebase 时才能逐个处理。
+活例：fork PawzoChat[^pawzochat] 做二次开发时，三个扩展点是 `data/plugins/`（插件可注册通道、注册工具、复用 LLM）、`data/theme/`（纯 CSS 叠加）、`data/mcp_servers/`（MCP 工具）；而 `pawzochat/services/chat.py`、`pawzochat/web/app.py`、`pawzochat/core/config.py` 是上游高频改动区，非改不可时把改动切成小而独立的 commit，rebase 时才能逐个处理。
 
 规律是通用的：**先找项目的官方扩展点，找不到再改核心文件，改核心文件就把 commit 切碎。**
+
+[^pawzochat]: [PawzoChat](https://github.com/iwyxdxl/PawzoChat)，2026-07-30 读。

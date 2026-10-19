@@ -4,7 +4,7 @@ description: "回溯的标准三件套——路径、选择列表、撤销；用
 
 # 46. 全排列
 
-[LeetCode 46](https://leetcode.cn/problems/permutations/) · 中等 · 回溯
+LeetCode 46[^leetcode] · 中等 · 回溯
 
 ## 题
 
@@ -103,3 +103,5 @@ graph TD
     assert s.permute([1]) == [[1]]
     assert len(s.permute([1, 2, 3, 4, 5])) == 120
     ```
+
+[^leetcode]: [LeetCode 46](https://leetcode.cn/problems/permutations/)，2026-09-29 读。

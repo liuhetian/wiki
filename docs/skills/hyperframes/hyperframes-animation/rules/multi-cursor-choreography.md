@@ -5,7 +5,7 @@ description: >
 metadata:
   tags: cursor, multi-cursor, collaboration, ensemble, canvas, name-tag, choreography, ambient, teamwork
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/multi-cursor-choreography.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/multi-cursor-choreography.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Multi-Cursor Choreography
 

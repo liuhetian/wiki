@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/media.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/media.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 媒体翻译：Audio、Video、Img、IFrame、staticFile
 
@@ -116,7 +116,7 @@ runtime 要自动播放，就必须有 `playsinline`（浏览器策略）；始�
 <iframe src="https://example.com"></iframe>
 ```
 
-当 HF 在 composition 中检测到嵌套的 iframe 时，会自动回退到**截图模式**，而不是确定性的 BeginFrame 模式。这会牺牲渲染性能，但能产出视觉上正确的输出。详情见 [hyperframes-vs-remotion.mdx](https://github.com/heygen-com/hyperframes/blob/main/docs/guides/hyperframes-vs-remotion.mdx)。
+当 HF 在 composition 中检测到嵌套的 iframe 时，会自动回退到**截图模式**，而不是确定性的 BeginFrame 模式。这会牺牲渲染性能，但能产出视觉上正确的输出。详情见 hyperframes-vs-remotion.mdx[^hyperframes-vs-remotion-mdx]。
 
 ## `delayRender()` / `continueRender()`
 
@@ -127,7 +127,7 @@ useEffect(() => {
 }, []);
 ```
 
-去掉。HF 通过 [Frame Adapter 模式](https://hyperframes.heygen.com/concepts/frame-adapters) 等待素材就绪 —— 图片、视频、字体和 Lottie 动画都会原生地发出加载完成的信号。在应用层面无需做任何事。
+去掉。HF 通过 Frame Adapter 模式[^frame-adapters] 等待素材就绪 —— 图片、视频、字体和 Lottie 动画都会原生地发出加载完成的信号。在应用层面无需做任何事。
 
 ## 素材不是文件时
 
@@ -137,3 +137,6 @@ useEffect(() => {
 2. 对于小素材（< 100 KB），以 data URL 的形式直接嵌入 HTML（`src="data:image/png;base64,..."`）。
 
 对于音频 / 视频的 Buffer，优先选择第 1 种 —— base64 编码的媒体会让 HTML 膨胀，并拖慢渲染器。
+
+[^hyperframes-vs-remotion-mdx]: [hyperframes-vs-remotion.mdx](https://github.com/heygen-com/hyperframes/blob/main/docs/guides/hyperframes-vs-remotion.mdx)，2026-10-15 读。
+[^frame-adapters]: [Frame Adapter 模式](https://hyperframes.heygen.com/concepts/frame-adapters)，2026-10-15 读。

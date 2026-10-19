@@ -2,7 +2,7 @@
 name: music-to-video
 description: "把一条音乐曲目（一个音频文件、一个要从中提取音频的视频，或者根据情绪 brief 生成的曲目）做成一支卡节拍的视频 —— 歌词视频、幻灯片或动态宣传片。音乐驱动全部节奏；用户提供的任何图片 / 视频都会被剪到同一张节拍网格上，而一支完整的视频不需要任何素材。有旁白的作品 → 与输入相匹配的工作流（见 /hyperframes）。不明确 → /hyperframes。"
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在运行安装或更新命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 
@@ -209,3 +209,16 @@ music-to-video/
   scripts/      analyze-beatgrid.py · assemble-index.mjs · validate-plan.mjs · stage-assets.mjs · lib/storyboard.mjs
   sub-agents/   frame-worker.md   ← the one subagent (one per frame)
 ```
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [references/frame-skeleton.md](references/frame-skeleton.md) —— Frame 骨架（Step 2）—— 读懂音乐，排出各个 frame
+- [references/montage.md](references/montage.md) —— 素材处理方式 —— 把用户媒体编织到节拍主干上
+- [references/motion-primitive-catalog.md](references/motion-primitive-catalog.md) —— 运动基本元素 catalog —— 自由组合菜单
+- [references/motion-primitives/text-spectral-rays/USAGE.md](references/motion-primitives/text-spectral-rays/USAGE.md) —— 使用 text-spectral-rays —— 它独占自己的文字标志
+- [references/planning.md](references/planning.md) —— 规划（Step 3）—— 挑选品牌，填满每一个 frame
+- [references/storyboard-format.md](references/storyboard-format.md) —— STORYBOARD.md 格式 —— frame → group
+- [references/template-catalog.md](references/template-catalog.md) —— 模板 catalog —— 选择菜单（Step 3）
+- [sub-agents/frame-worker.md](sub-agents/frame-worker.md) —— Frame worker —— 逐 frame 的 composition 作者（music-to-video）

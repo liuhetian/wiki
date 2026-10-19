@@ -4,7 +4,7 @@ description: "Kadane：以 i 结尾的最优只有「接上前面」或「另起
 
 # 53. 最大子数组和
 
-[LeetCode 53](https://leetcode.cn/problems/maximum-subarray/) · 中等 · 普通数组
+LeetCode 53[^leetcode] · 中等 · 普通数组
 
 ## 题
 
@@ -60,3 +60,5 @@ class Solution:
     assert s.maxSubArray([5, 4, -1, 7, 8]) == 23
     assert s.maxSubArray([-3, -1, -2]) == -1
     ```
+
+[^leetcode]: [LeetCode 53](https://leetcode.cn/problems/maximum-subarray/)，2026-09-29 读。

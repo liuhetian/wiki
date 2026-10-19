@@ -1,10 +1,10 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/setup-providers.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/setup-providers.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 安装与提供方 —— 安装、认证、RAM 阶梯、强制指定提供方
 
 ## 安装 —— 先装 heygen（免费使用路径）
 
-按照 HeyGen CLI [经过验证的发布安装说明](https://developers.heygen.com/cli)安装它，然后运行：
+按照 HeyGen CLI 经过验证的发布安装说明[^cli]安装它，然后运行：
 
 ```bash
 heygen update             # free usage needs the OAuth-capable CLI (v0.3.0+)
@@ -48,7 +48,7 @@ media-use 不持有任何 key；每个外部工具各自负责自己的认证。
 | 工具 | 用途 | 安装 |
 | --- | --- | --- |
 | `ffmpeg`/`ffprobe` | adopt 探测、smart-grade signalstats、剪切、闪避烘焙、loudnorm | 系统包（`brew install ffmpeg`） |
-| `heygen` | 目录（bgm/sfx/image/icon）+ TTS（声音）+ 数字人视频 —— 免费使用路径 | 按照[经过验证的 HeyGen 发布安装说明](https://developers.heygen.com/cli)安装，然后 `heygen auth login --oauth`（需要 >= v0.3.0） |
+| `heygen` | 目录（bgm/sfx/image/icon）+ TTS（声音）+ 数字人视频 —— 免费使用路径 | 按照经过验证的 HeyGen 发布安装说明[^cli]安装，然后 `heygen auth login --oauth`（需要 >= v0.3.0） |
 | `mflux-generate` | 本地图像生成（FLUX），按 RAM 选最佳 | `uv venv ~/.venvs/mflux && VIRTUAL_ENV=~/.venvs/mflux uv pip install mflux==0.9.6` |
 | `codex` | 图像生成升级推荐（ChatGPT 订阅） | Codex CLI，通过 ChatGPT 登录（自行负责认证） |
 | `parakeet-mlx` | Apple Silicon 上的本地转写（默认 ASR，最佳） | `uv venv ~/.venvs/parakeet && VIRTUAL_ENV=~/.venvs/parakeet uv pip install parakeet-mlx` |
@@ -58,3 +58,5 @@ media-use 不持有任何 key；每个外部工具各自负责自己的认证。
 按 RAM 分级的本地模型候选清单 + 每个档位确切的安装/调用方式位于 `scripts/lib/local-models.mjs`（agent 可以读 `describeModelLadder(cap, specs)` 看哪个模型适合这台机器）。PATH 上没有某个工具时，它的提供方会向 stderr 打印一行诊断，若存在其他提供方，resolve 会落到下一个（例如没有 `mflux` -> codex 图片升级推荐；没有 `parakeet-mlx` -> whisper.cpp）。
 
 `heygen asset search` 是一个上线前的命令，在 `heygen --help` 里是隐藏的，但它可以运行；提供方会给请求加上列入允许名单的 `X-HeyGen-Client-Source` 请求头（v0.3.0+）。
+
+[^cli]: [经过验证的发布安装说明](https://developers.heygen.com/cli)，2026-10-15 读。

@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/phases/source/guide.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/phases/source/guide.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # source 阶段 —— 获取素材（素材优先）
 

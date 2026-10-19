@@ -2,7 +2,7 @@
 
 ### MAPPA 风格动画战斗截帧（咒术回战美学）
 
-<img src="assets/anime-manga/anime-jjk-action.png" alt="anime jjk action" width="420"/>
+<img src="assets/anime-manga/anime-jjk-action.png" alt="anime jjk action" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张动画战斗截帧，视觉风格仿照 MAPPA 制作的 Jujutsu Kaisen（咒术回战，2020 年 TV 动画）。横版 16:9。
@@ -16,7 +16,7 @@
 
 ### 少年漫战斗主视觉（火影忍者疾风传美学）
 
-<img src="assets/anime-manga/anime-naruto-clash.png" alt="anime naruto clash" width="420"/>
+<img src="assets/anime-manga/anime-naruto-clash.png" alt="anime naruto clash" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张少年动画战斗主视觉，视觉风格仿照 Studio Pierrot 的 Naruto Shippuden（火影忍者疾风传）。横版 16:9。
@@ -32,7 +32,7 @@
 
 ### 少年漫画跨页（篮球灌篮）
 
-<img src="assets/anime-manga/manga-spread.png" alt="manga spread" width="420"/>
+<img src="assets/anime-manga/manga-spread.png" alt="manga spread" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张黑白少年漫画跨页（横版 16:9 作为单一构图，中间有一条淡淡的装订缝线）。高对比墨线加网点纸（screentone），属于周刊少年 Jump 篮球漫画的传统（井上雄彦的 Slam Dunk / 藤卷忠俊的 Kuroko no Basuke）。
@@ -53,7 +53,7 @@
 
 ### 漫画人物关系图——*双城记*
 
-<img src="assets/anime-manga/manga-relationship.png" alt="manga relationship" width="420"/>
+<img src="assets/anime-manga/manga-relationship.png" alt="manga relationship" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张漫画风格插画，展示查尔斯·狄更斯 "A Tale of Two Cities"（双城记）的人物关系图。单一满幅构图，单色墨线 + 网点，经典少女漫画 / 历史漫画美学。
@@ -72,7 +72,7 @@
 
 ### 16 格动漫表情表
 
-<img src="assets/anime-manga/anime-expression-grid.png" alt="anime expression grid" width="420"/>
+<img src="assets/anime-manga/anime-expression-grid.png" alt="anime expression grid" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张 16 格表情表，主角是一位银发蓝眼的动漫少女。她的脸型、发型和服装在所有格子里都必须高度一致。16 种表情包括：开心、难过、生气、惊讶、害羞、无语、坏笑、沉思、好奇、得意、委屈、鄙视、困惑、害怕、大哭，以及比心。
@@ -80,7 +80,7 @@
 
 ### 优雅咖啡馆动漫时尚肖像
 
-<img src="assets/anime-manga/anime-cafe-stockings-fashion.png" alt="anime cafe stockings fashion" width="420"/>
+<img src="assets/anime-manga/anime-cafe-stockings-fashion.png" alt="anime cafe stockings fashion" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张有品位的竖版动漫时尚插画，主角是一位 24 岁的成年女性，表情可爱俏皮，在黄金时刻的温馨欧式咖啡馆里看向镜头。她穿着奶油色衬衫、炭灰色百褶裙、剪裁合身的短款外套、黑色透肤丝袜、乐福鞋，戴一个小蝴蝶结发夹；她侧身坐在一张小大理石桌旁，桌上有拉花拿铁和速写本，窗外洒进温暖的光。构图：四分之三身时尚肖像，优雅的双腿可见但姿态放松、不暴露，健康的杂志大片氛围，不要裸露，不要内衣，不要校服，不要露骨姿势，只限成年角色。采用精致的现代动漫渲染，利落线稿，明亮有神的眼睛，柔和的赛璐璐上色（cel shading），细腻的面料质感，淡淡的腮红，背景散景，以及考究的杂志封面配色。
@@ -88,7 +88,7 @@
 
 ### 霓虹街机动漫时尚肖像
 
-<img src="assets/anime-manga/anime-arcade-stockings-fashion.png" alt="anime arcade stockings fashion" width="420"/>
+<img src="assets/anime-manga/anime-arcade-stockings-fashion.png" alt="anime arcade stockings fashion" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张竖版动漫时尚插画，主角是一位 25 岁的成年女性，身处夜晚的霓虹街机街区。她带着可爱而自信的微笑直视观者，站在发光的抓娃娃机和复古游戏机台旁。服装：黑色高领衫、红色缎面飞行员夹克、高腰裙、带花纹的深色丝袜、厚底鞋、小号斜挎包、星星耳环。构图：全身时尚肖像，轮廓鲜明，湿漉漉的路面映出霓虹倒影，周围有自动售货机、贴满贴纸的墙面、五颜六色的招牌和电影感的轮廓光。姿势要俏皮但不暴露，不要裸露，不要内衣，不要恋物式取景，只限成年角色。采用高端动漫主视觉渲染，利落线稿，高饱和的品红-青色光线，清晰易读的背景细节，以及光泽感十足的赛博流行氛围。
@@ -96,7 +96,7 @@
 
 ### 春日咖啡馆动漫群像
 
-<img src="assets/anime-manga/anime-girls-sweet-group.png" alt="anime girls sweet group" width="420"/>
+<img src="assets/anime-manga/anime-girls-sweet-group.png" alt="anime girls sweet group" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张横版动漫群像主视觉，画面中有六位各不相同的成年年轻女性，年龄 22 到 27 岁，性格可爱温柔，聚在一处温馨的春日校园咖啡馆庭院里。构图要像一张精致的日常系动画宣传海报，而不是单人肖像：中间一位坐着、手捧速写本的角色，两位朋友带着温暖的笑容凑过来，一位害羞的角色捧着一小束花，一位开朗的角色在挥手，还有一位沉静的文艺角色在倒茶。每个角色都要有明显不同的发型、服装配色、配饰和表情，同时让整个群体和谐、健康。服装：柔软的开衫、百褶裙、贝雷帽、蝴蝶结、乐福鞋、浅色丝袜、马卡龙色外套，端庄又时髦的穿搭。氛围：甜美、乖巧、俏皮、友好，不要卖肉福利镜头，不要裸露，不要露骨姿势，只限成年角色。采用现代高端动漫渲染，利落线稿，明亮有神的眼睛，柔和的赛璐璐上色，温暖的午后阳光，樱花，咖啡馆招牌，小点心，层次均衡的纵深，干净的背景细节，以及清晰易读的群体剪影。
@@ -104,7 +104,7 @@
 
 ### 十格动漫角色网格
 
-<img src="assets/anime-manga/anime-ten-panel-character-grid.png" alt="anime ten panel character grid" width="420"/>
+<img src="assets/anime-manga/anime-ten-panel-character-grid.png" alt="anime ten panel character grid" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张横版图片，内含一个干净的 2×5 十格动漫角色网格。每一格展示一位不同的成年年轻女性，年龄 22 到 26 岁，按可爱温柔的女主角原型来设计：书卷气的图书管理员、开朗的咖啡师、害羞的小提琴手、运动型网球选手、优雅的学生会会长、睡眼惺忪的插画师、花店店员、轻声细语的魔女学徒、city-pop 歌手，以及裹得暖暖的冬日通勤族。所有格子的美术方向保持一致：现代精致动漫，利落线稿，柔和的赛璐璐上色，明亮有神的眼睛，马卡龙色点缀，整齐的白色格间距，每格底部有一个清晰可读的小名牌，整体呈现均衡的角色设定表感觉。每个角色都要有各自独特的发型、服装、道具和表情。整张图应当像一张可收藏的动漫角色阵容表 / 十宫格海报，可爱健康，不要裸露，不要内衣，不要露骨姿势，只限成年角色。
@@ -112,7 +112,7 @@
 
 ### Tide Brothers 19 页漫画样张
 
-<img src="assets/anime-manga/tide-brothers-19-page-manga.png" alt="tide brothers 19 page manga" width="420"/>
+<img src="assets/anime-manga/tide-brothers-19-page-manga.png" alt="tide brothers 19 page manga" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张竖长的漫画章节样张，包含 19 个带页码的缩略页，内容是一部原创少年海盗漫画，不基于任何现有作品。标题："TIDE BROTHERS: THE STARFALL MAP"。主角：Rune，一位开朗的年轻海盗船长，手臂像橡胶一样能伸缩，围着一条稻草色围巾，但服装是原创的；以及 Ash，他会操纵火焰的哥哥，穿红色外套，有雀斑，笑容沉静。他们都是原创角色，不是现有 IP。把 19 个小页面排成一张易读的样张，每页 1 到 3 个漫画分格，黑白墨线，网点，动感速度线，表情丰富的脸，以及清晰的对话气泡。完整剧情节拍：1 封面页，兄弟俩站在暴风雨中的甲板上；2 在漂浮港口重逢；3 发现一张星形地图；4 外星海兽浮出水面；5 Rune 开玩笑说 "Adventure found us first!"；6 Ash 回答 "Then we answer together."；7 敌对的空中海盗来袭；8 搞笑的做饭场景；9 安静的回忆，一个约定；10 把跨页式的动作造型压缩进一页；11 地图上亮起外星星座；12 船员欢呼；13 反派船长偷走罗盘；14 在屋顶船帆间追逐；15 Ash 用火焰护住 Rune；16 Rune 打出弹簧般的一拳；17 胜利后兄弟俩开怀大笑；18 悬念：月亮之门打开；19 最后一页文字 "NEXT: THE ISLAND ABOVE THE CLOUDS"。对白保持简短、清晰、完整。风格：经典周刊少年漫画的活力，原创海盗冒险，温暖健康的兄弟情，不要血腥，不要任何现有的受版权保护角色。
@@ -120,7 +120,7 @@
 
 ### 路边后视镜动漫时尚自拍
 
-<img src="assets/anime-manga/anime-roadside-mirror-fashion.png" alt="anime roadside mirror fashion" width="420"/>
+<img src="assets/anime-manga/anime-roadside-mirror-fashion.png" alt="anime roadside mirror fashion" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张竖版动漫时尚插画，主角是一位 24 岁的成年女性，在东京一条安静的小街上，对着一辆停着的小摩托的后视镜俏皮地自拍。她望着镜子，露出明亮又带点狡黠的笑容，一只手在脸颊旁比一个小小的剪刀手，另一只手拿着套了可爱贴纸手机壳的手机。服装：柔软的象牙白针织开衫、藏青色百褶裙、黑色透肤丝袜、乐福鞋、小号单肩包、蝴蝶结发夹，是有品位的日常街头穿搭。构图：后视镜里的倒影是主画面，镜子边缘周围是虚化的街道标牌、自动售货机的光晕、斑马线条纹，以及春日傍晚的光线。姿势要可爱、时髦、不暴露；不要裸露，不要内衣，不要恋物式取景，只限成年角色。采用精致的现代动漫渲染，利落线稿，明亮有神的眼睛，柔和的赛璐璐上色，温暖的反光，自然的街拍感，以及迷人的日常系氛围。
@@ -128,7 +128,7 @@
 
 ### 雨中公交站凸面镜动漫肖像
 
-<img src="assets/anime-manga/anime-rainy-bus-stop-mirror.png" alt="anime rainy bus stop mirror" width="420"/>
+<img src="assets/anime-manga/anime-rainy-bus-stop-mirror.png" alt="anime rainy bus stop mirror" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张竖版动漫主视觉，主角是一位 25 岁的成年女性，在蓝调时刻的雨中路边公交站旁，对着一面凸面交通安全镜摆出可爱的姿势。画面要同时呈现圆形镜子里的倒影和它周围的一小部分真实街景：湿漉漉的柏油路、雨伞、虚化的公交车前灯、一块小小的时刻表牌，以及亮着灯的便利店橱窗。她穿着驼色牛角扣大衣、短款格纹裙、黑色透肤丝袜、短靴、针织围巾，戴一条小巧的吊坠手链；表情俏皮又害羞，透过镜中倒影看向观者。造型保持有品位、健康：不要裸露，不要内衣，不要露骨姿势，不要校服式取景，只限成年角色。采用高端动漫渲染，细腻的雨滴高光，利落线稿，明亮有神的眼睛，柔和的赛璐璐上色，真实的镜面畸变，以及温馨的雨夜城市氛围。

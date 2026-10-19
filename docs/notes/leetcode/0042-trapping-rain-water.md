@@ -4,7 +4,7 @@ description: "每格水位 = min(左最高, 右最高) − 自身；双指针让
 
 # 42. 接雨水
 
-[LeetCode 42](https://leetcode.cn/problems/trapping-rain-water/) · 困难 · 双指针
+LeetCode 42[^leetcode] · 困难 · 双指针
 
 ## 题
 
@@ -80,7 +80,7 @@ $$
 
 - 别和 [11. 盛最多水的容器](0011-container-with-most-water.md) 混：那题只挑两根线，中间柱子不占体积。
 - 单调栈解法和 [84. 柱状图中最大的矩形](0084-largest-rectangle-in-histogram.md)、[739. 每日温度](0739-daily-temperatures.md) 同骨架——「找左右第一个比我高/矮的」。
-- 二维版接雨水 II（[LeetCode 407](https://leetcode.cn/problems/trapping-rain-water-ii/)）：把「矮的一侧先结算」推广成最小堆从外圈往里 BFS。
+- 二维版接雨水 II（LeetCode 407[^leetcode-2]）：把「矮的一侧先结算」推广成最小堆从外圈往里 BFS。
 
 ??? note "自测"
 
@@ -93,3 +93,6 @@ $$
         assert s.trap([1]) == 0
         assert s.trap([3, 2, 1]) == 0
     ```
+
+[^leetcode]: [LeetCode 42](https://leetcode.cn/problems/trapping-rain-water/)，2026-09-29 读。
+[^leetcode-2]: [LeetCode 407](https://leetcode.cn/problems/trapping-rain-water-ii/)，2026-09-29 读。

@@ -4,7 +4,7 @@ description: "只维护「最远能到哪」一个数：可达区间必然连续
 
 # 55. 跳跃游戏
 
-[LeetCode 55](https://leetcode.cn/problems/jump-game/) · 中等 · 贪心算法
+LeetCode 55[^leetcode] · 中等 · 贪心算法
 
 ## 题
 
@@ -56,3 +56,5 @@ class Solution:
     assert s.canJump([0]) is True
     assert s.canJump([0, 1]) is False
     ```
+
+[^leetcode]: [LeetCode 55](https://leetcode.cn/problems/jump-game/)，2026-09-29 读。

@@ -4,7 +4,7 @@ description: "前缀和 + 哈希搬上树：根到当前节点就是一条「数
 
 # 437. 路径总和 III
 
-[LeetCode 437](https://leetcode.cn/problems/path-sum-iii/) · 中等 · 二叉树
+LeetCode 437[^leetcode] · 中等 · 二叉树
 
 ## 题
 
@@ -66,3 +66,5 @@ class Solution:
     assert s.pathSum(build_tree([0, 0, 0]), 0) == 5  # 三个单点 + 两条父子
     assert s.pathSum(build_tree([1, -1, None, 1]), 1) == 3  # 两个单点 1 + 整条链
     ```
+
+[^leetcode]: [LeetCode 437](https://leetcode.cn/problems/path-sum-iii/)，2026-09-29 读。

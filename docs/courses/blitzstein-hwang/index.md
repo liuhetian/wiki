@@ -10,8 +10,8 @@ description: "Blitzstein & Hwang 伴读导读：概率论主干，从计数到�
 
 ## 读法
 
-- **免费在线版**：作者在 [probabilitybook.net](https://probabilitybook.net/) 放了第 2 版全书，跳转到 Google Drive，只能在线看，不开放下载。讲解标章节和页码链回去，不摘抄
-- **课程视频**：同一作者的 Harvard Stat 110 讲课视频在 [stat110.net](http://stat110.net/)，路线和书一致，卡住时看
+- **免费在线版**：作者在 probabilitybook.net[^probabilitybook] 放了第 2 版全书，跳转到 Google Drive，只能在线看，不开放下载。讲解标章节和页码链回去，不摘抄
+- **课程视频**：同一作者的 Harvard Stat 110 讲课视频在 stat110.net[^stat110]，路线和书一致，卡住时看
 - **代码换成 Python**：书的附录 B 和例子用 R，本站用 `scipy.stats`，每个分布先对一遍参数化（见口径差异）
 - **题换数字自己出**：解析解和模拟两条路各算一遍，交叉核对
 - 第 1–10 章必读；第 11–13 章选读：Markov 链和 MCMC 由统计计算接手，Poisson 过程用到再读。附录 C 的分布表当速查用
@@ -44,3 +44,6 @@ description: "Blitzstein & Hwang 伴读导读：概率论主干，从计数到�
 ## 课程
 
 还没开课。排到时从第 1 章按顺序写伴读。
+
+[^probabilitybook]: [probabilitybook.net](https://probabilitybook.net/)，2026-10-02 读。
+[^stat110]: [stat110.net](http://stat110.net/)，2026-10-02 读。

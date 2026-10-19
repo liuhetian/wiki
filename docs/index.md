@@ -3,7 +3,7 @@ template: home.html
 hide:
   - navigation
   - toc
-description: "AI 友好的个人知识库：每个页面在同域提供 .md 源，把 URL 结尾的 / 换成 .md 即可，LLM 可顺相对链接一层层读进去。收录项目复盘、学科笔记、教材伴读课程、可挂载的 AI skills、图配 prompt 的图库，以及 skill 背后的维护记录。"
+description: "AI 友好的个人知识库：每个页面在同域提供 .md 源，普通页把 URL 结尾的 / 换成 .md，目录首页在结尾加 index.md，LLM 可顺相对链接一层层读进去。收录项目复盘、学科笔记、教材伴读课程、可挂载的 AI skills、图配 prompt 的图库，以及 skill 背后的维护记录。"
 ---
 
 <!-- 浏览器里首页由 overrides/home.html（SaaS 开屏）渲染，下面的正文不上屏，
@@ -11,7 +11,7 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 # 牛合天's wiki
 
-> AI 友好的个人知识库：每个页面在同域提供 `.md` 源（把 URL 结尾的 `/` 换成 `.md` 即可），LLM 可顺相对链接一层层读进去 —— 整份 wiki 可当远程 skill 用。设计与落地详见 [用对象存储部署 AI 友好的个人知识库](posts/wiki/cos-deploy/index.md)。
+> AI 友好的个人知识库：每个页面在同域提供 `.md` 源（普通页把 URL 结尾的 `/` 换成 `.md`，目录首页在结尾加 `index.md`；页头 `<link rel="alternate" type="text/markdown">` 直接给出地址），LLM 可顺相对链接一层层读进去 —— 整份 wiki 可当远程 skill 用。设计与落地详见 [用对象存储部署 AI 友好的个人知识库](posts/wiki/cos-deploy/index.md)。
 
 ## 文章
 

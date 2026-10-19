@@ -4,7 +4,7 @@ description: "BFS 分层的标准手法：每轮先记下 len(queue)，恰好弹
 
 # 102. 二叉树的层序遍历
 
-[LeetCode 102](https://leetcode.cn/problems/binary-tree-level-order-traversal/) · 中等 · 二叉树
+LeetCode 102[^leetcode] · 中等 · 二叉树
 
 ## 题
 
@@ -62,3 +62,5 @@ class Solution:
     assert s.levelOrder(build_tree([])) == []
     assert s.levelOrder(build_tree([1, 2, 3, 4, None, None, 5])) == [[1], [2, 3], [4, 5]]
     ```
+
+[^leetcode]: [LeetCode 102](https://leetcode.cn/problems/binary-tree-level-order-traversal/)，2026-09-29 读。

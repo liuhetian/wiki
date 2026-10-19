@@ -5,7 +5,7 @@ description: >
 metadata:
   tags: orbit, 3d, flip, ellipse, circular, icon, entry, continuous
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/orbit-3d-entry.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/orbit-3d-entry.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 带 3D 入场的轨道运动（Orbit with 3D Entry）
 

@@ -4,7 +4,7 @@ description: "每个元素入栈时顺手记下「截至此刻的最小值」；
 
 # 155. 最小栈
 
-[LeetCode 155](https://leetcode.cn/problems/min-stack/) · 中等 · 栈
+LeetCode 155[^leetcode] · 中等 · 栈
 
 ## 题
 
@@ -93,3 +93,5 @@ description: "每个元素入栈时顺手记下「截至此刻的最小值」；
     ms.pop(); ms.pop()
     assert ms.getMin() == 1 and ms.top() == 1  # 重复最小值
     ```
+
+[^leetcode]: [LeetCode 155](https://leetcode.cn/problems/min-stack/)，2026-09-29 读。

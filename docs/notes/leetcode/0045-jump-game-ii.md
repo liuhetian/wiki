@@ -4,7 +4,7 @@ description: "隐式 BFS：当前跳数能覆盖的区间是一层，走到层�
 
 # 45. 跳跃游戏 II
 
-[LeetCode 45](https://leetcode.cn/problems/jump-game-ii/) · 中等 · 贪心算法
+LeetCode 45[^leetcode] · 中等 · 贪心算法
 
 ## 题
 
@@ -57,3 +57,5 @@ class Solution:
     assert s.jump([0]) == 0
     assert s.jump([1, 1, 1, 1]) == 3
     ```
+
+[^leetcode]: [LeetCode 45](https://leetcode.cn/problems/jump-game-ii/)，2026-09-29 读。

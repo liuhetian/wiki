@@ -4,7 +4,7 @@ description: "顺时针转 90° = 沿主对角线转置 + 每行左右翻转；�
 
 # 48. 旋转图像
 
-[LeetCode 48](https://leetcode.cn/problems/rotate-image/) · 中等 · 矩阵
+LeetCode 48[^leetcode] · 中等 · 矩阵
 
 ## 题
 
@@ -72,3 +72,5 @@ class Solution:
         s.rotate(mat)
         assert mat == want
     ```
+
+[^leetcode]: [LeetCode 48](https://leetcode.cn/problems/rotate-image/)，2026-09-29 读。

@@ -4,7 +4,7 @@ description: "完全背包求最值：dp[a] = 1 + min(dp[a - c])，用 amount+1 
 
 # 322. 零钱兑换
 
-[LeetCode 322](https://leetcode.cn/problems/coin-change/) · 中等 · 动态规划
+LeetCode 322[^leetcode] · 中等 · 动态规划
 
 ## 题
 
@@ -62,3 +62,5 @@ class Solution:
     assert s.coinChange([1, 3, 4], 6) == 2
     assert s.coinChange([186, 419, 83, 408], 6249) == 20
     ```
+
+[^leetcode]: [LeetCode 322](https://leetcode.cn/problems/coin-change/)，2026-09-29 读。

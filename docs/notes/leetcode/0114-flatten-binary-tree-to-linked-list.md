@@ -4,7 +4,7 @@ description: "原地改指针的前序展开：把左子树整段插到右边，
 
 # 114. 二叉树展开为链表
 
-[LeetCode 114](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/) · 中等 · 二叉树
+LeetCode 114[^leetcode] · 中等 · 二叉树
 
 ## 题
 
@@ -106,3 +106,5 @@ flowchart TD
     s.flatten(t)
     assert tree_vals(t) == [1, None, 2, None, 3]
     ```
+
+[^leetcode]: [LeetCode 114](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/)，2026-09-29 读。

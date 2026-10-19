@@ -4,7 +4,7 @@ description: "Agent 转录音频（语音转文本）：OpenRouter 的 microsoft
 
 # 转录音频
 
-用 OpenRouter 上的 `microsoft/mai-transcribe-2`，走[中转](../../../posts/ai-assistant/api-gateway.md)的海外机。照 [OpenRouter 模型页](https://openrouter.ai/microsoft/mai-transcribe-2)的示例调，只改两处：
+用 OpenRouter 上的 `microsoft/mai-transcribe-2`，走[中转](../../../posts/ai-assistant/api-gateway.md)的海外机。照 OpenRouter 模型页[^mai-transcribe-2]的示例调，只改两处：
 
 - **base URL**：`https://openrouter.ai` 换成 `https://openrouter.reverse-pro.xyz`
 - **API key**：用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来
@@ -35,3 +35,5 @@ EOF
 - **大文件**：有 ffmpeg 就先转成 16 kHz 单声道 mp3（`ffmpeg -i in.wav -ac 1 -ar 16000 -b:a 32k out.mp3`）。大米这段 2.7 MB 转完只剩 57 KB，转出来的文字一样
 
 维护记录：[接口从哪来、实测结果](../../../maintenance/transcribe.md)。正常使用不用看，出问题再看。
+
+[^mai-transcribe-2]: [OpenRouter 模型页](https://openrouter.ai/microsoft/mai-transcribe-2)，2026-10-02 读。

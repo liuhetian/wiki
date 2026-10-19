@@ -424,7 +424,7 @@ Humanize 的默认假设是"原文信息都对，只是表达臃肿"。但现实
 - 原文没空格 → **不加**
 - **不把"缺空格"当 AI 腔** flag,**不把"加了空格"当排版过度** 改
 
-**如果你真的要统一中英空格，** 用 [pangu.js](https://github.com/vinta/pangu.js)、[pangu.py](https://github.com/vinta/paranoid-auto-spacing) 这类专门工具**另外处理**,不在本 skill 范围。
+**如果你真的要统一中英空格，** 用 pangu.js[^pangu-js]、pangu.py[^paranoid-auto-spacing] 这类专门工具**另外处理**,不在本 skill 范围。
 
 ---
 
@@ -920,3 +920,14 @@ AI 默认姿态是"全面、平衡、得体、中立",所以默认不会写上�
 ## 参考来源
 
 叶圣陶「写话」主张(1924/1934)/ Wikipedia: Signs of AI writing / 吕叔湘《现代汉语八百词》 / 朱德熙《语法讲义》 / 国标 GB/T 15834-2011 / yage.ai《写作中的 AI 味是哪儿来的》 / 《咬文嚼字》年度榜单及刷新机制 —— 全部见 [references/sources.md](references/sources.md)。
+
+<div class="zx-no-copy" markdown>
+
+---
+
+维护记录：[从哪来、改了什么](../../../maintenance/skills/qu-ai-wei.md)。正常使用不用看，出问题再看。
+
+</div>
+
+[^pangu-js]: [pangu.js](https://github.com/vinta/pangu.js)，2026-07-28 读。
+[^paranoid-auto-spacing]: [pangu.py](https://github.com/vinta/paranoid-auto-spacing)，2026-07-28 读。

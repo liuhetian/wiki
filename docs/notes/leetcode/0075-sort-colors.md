@@ -4,7 +4,7 @@ description: "荷兰国旗三指针：[0,p0) 全 0、[p0,i) 全 1、(p2,n) 全 2
 
 # 75. 颜色分类
 
-[LeetCode 75](https://leetcode.cn/problems/sort-colors/) · 中等 · 技巧
+LeetCode 75[^leetcode] · 中等 · 技巧
 
 ## 题
 
@@ -76,3 +76,5 @@ class Solution:
         s.sortColors(arr)
         assert arr == want
     ```
+
+[^leetcode]: [LeetCode 75](https://leetcode.cn/problems/sort-colors/)，2026-09-29 读。

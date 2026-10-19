@@ -5,7 +5,7 @@ description: >
 metadata:
   tags: spring, click, physics, cursor, subtractive, interaction, synchronized
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/physics-press-reaction.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/physics-press-reaction.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Physics Press Reaction（光标 + 元素同步）
 

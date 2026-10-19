@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/modes/cinematic/_archive/portrait-header/spec.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/modes/cinematic/_archive/portrait-header/spec.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 模板：portrait-header
 

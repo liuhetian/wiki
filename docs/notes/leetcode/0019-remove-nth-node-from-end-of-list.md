@@ -4,7 +4,7 @@ description: "前后指针拉开固定间距，前者到底时后者正停在目
 
 # 19. 删除链表的倒数第 N 个结点
 
-[LeetCode 19](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/) · 中等 · 链表
+LeetCode 19[^leetcode] · 中等 · 链表
 
 ## 题
 
@@ -59,3 +59,5 @@ class Solution:
     assert list_vals(s.removeNthFromEnd(build_list([1, 2]), 1)) == [1]
     assert list_vals(s.removeNthFromEnd(build_list([1, 2]), 2)) == [2]
     ```
+
+[^leetcode]: [LeetCode 19](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/)，2026-09-29 读。

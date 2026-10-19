@@ -4,7 +4,7 @@ description: "不二分值，二分「短数组切在哪」：左半凑够一半
 
 # 4. 寻找两个正序数组的中位数
 
-[LeetCode 4](https://leetcode.cn/problems/median-of-two-sorted-arrays/) · 困难 · 二分查找
+LeetCode 4[^leetcode] · 困难 · 二分查找
 
 ## 题
 
@@ -92,3 +92,5 @@ class Solution:
         c = sorted(a + b); t = len(c)
         assert s.findMedianSortedArrays(a, b) == (c[(t - 1) // 2] + c[t // 2]) / 2
     ```
+
+[^leetcode]: [LeetCode 4](https://leetcode.cn/problems/median-of-two-sorted-arrays/)，2026-09-29 读。

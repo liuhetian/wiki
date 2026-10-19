@@ -8,7 +8,7 @@ description: "每页右上角的复制按钮和页头的 Markdown 发现链接�
 
 ## 为什么不用官方插件 { #why }
 
-- **源文件就是 AI 写的、给 AI 读的**：不存在「AI 读不懂源文件」的问题。官方坚持转换，理由是源文件里的 snippet、指令没展开，维护者在 [#859](https://github.com/zensical/zensical/issues/859#issuecomment-5291561058) 的原话是 "serving the raw Markdown sources is not enough"——在本站，snippet 是故意留的指针，相对链接本身就是给 AI 逐层读的链接图
+- **源文件就是 AI 写的、给 AI 读的**：不存在「AI 读不懂源文件」的问题。官方坚持转换，理由是源文件里的 snippet、指令没展开，维护者在 #859[^issues-859] 的原话是 "serving the raw Markdown sources is not enough"——在本站，snippet 是故意留的指针，相对链接本身就是给 AI 逐层读的链接图
 - **转换是负收益**：2026-10-15 实测，图片、iframe、音视频整个丢，连说明文字都不剩；选项卡标签、代码块标题、自定义块类型、时间线分类、frontmatter 丢；snippet 一律展开，关不掉
 - **复制按钮和插件绑死**：不开插件没有按钮；开了，按钮复制的就是转换版
 - **想要的只有两样**：按钮和发现链接，都能自己做，下面就是做法
@@ -28,7 +28,7 @@ edit_uri: https://wiki.liuhetian.work/
 
 `edit_url` 就正好是源文件的线上地址：首页 `/index.md`、普通文章 `/posts/foo.md`、目录首页 `/posts/sub/index.md`，不在 nav 里的页也对，0.0.62 和 0.0.70 实测一样。不设 `repo_url` 时 `edit_url` 是空的，两个都得设。
 
-- **副作用一个**：`repo_url` 让顶栏和侧栏抽屉多出「Go to repository」入口，来自主题的 `partials/source.html`，放一个空的 [`overrides/partials/source.html`](https://github.com/liuhetian/wiki/blob/main/overrides/partials/source.html) 关掉
+- **副作用一个**：`repo_url` 让顶栏和侧栏抽屉多出「Go to repository」入口，来自主题的 `partials/source.html`，放一个空的 `overrides/partials/source.html`[^source] 关掉
 - **编辑按钮不会冒出来**：它要开 `content.action.edit` 才显示，本站不开
 - **域名是线上的**：`edit_url` 永远指向 `https://wiki.liuhetian.work/`，发现链接给 AI 用，本来就该指线上
 
@@ -70,9 +70,10 @@ const abs = (target, base) => (!target || KEEP.test(target) ? target : new URL(t
 - **本地预览要先镜像 `.md`**：`zensical serve` 不出源文件，请求 `/x.md` 被路由到网页 `/x/`，状态码照样是 200。在仓库根跑一次 `deploy.sh` 里那行 rsync，把 `.md` 镜像进 `site/`，serve 才原样给出源文件；按钮见到 `text/html` 就报「取到的是网页不是源文件」，不把整页 HTML 当源文件复制。serve 有时漏拷刚改过的 `vendor/` 脚本，改了脚本效果没变，先比一下 `docs/vendor/` 和 `site/vendor/` 里的是否一致
 - **改写哪些**：逐行匹配 Markdown 链接和图片的 `](目标)`、链接定义 `[名字]: 目标`（脚注 `[^1]:` 除外）、HTML 的 `src="…"` 和 `href="…"`
 - **不动哪些**：已带协议的（`https:`、`mailto:`）、页内锚点 `#cli`、`//` 开头、`<…>` 包着的；代码块里（按 ```` ``` ```` / `~~~` 围栏判断进出）和行内代码里的——写作规范里举例写的链接不能被改
-- **snippet 另算**：`--8<-- "路径"` 的路径不相对当前页，相对 snippet 的 `base_path`（先 `docs/`，再仓库根）。先拼「站点根 + 路径」，发一个 HEAD 请求：站上有就用站上的地址（如 `vendor/age-core.js`）；没有说明它只在仓库根（如 `scripts/age-open.py`），指向 GitHub 仓库
+- **snippet 另算**：`--8<-- "路径"` 的路径不相对当前页，相对 snippet 的 `base_path`（先 `docs/`，再仓库根）。先拼「站点根 + 路径」，发一个 HEAD 请求：站上有就用站上的地址（如 `vendor/age-core.js`）；没有说明它只在仓库根（如 `scripts/age-open.py`），指向 GitHub 仓库。只引几行的 `"x.py:31:36"` 先剥掉范围再探，地址只留文件，范围写成「（第 31–36 行）」跟在后面 —— 整串拿去探必然不在站上，会落到 GitHub 一个不存在的地址
 - **去掉 frontmatter，不加来源**：`description` 这类元数据是给站点用的，粘进对话框是噪音，连同后面的空行一起去掉；贴出去的只有正文（2026-10-15 起。此前 frontmatter 原样保留，后面插一行 `<!-- 来源：… -->` 注释，粘贴后也是噪音，一并去掉）
-- **`zx-no-copy` 块整块不复制**：用 `<div class="zx-no-copy" markdown>` 和 `</div>` 包起来的内容（写法同[时间线](../../skills/wiki-guide/reference/components.md#timeline)：开头结尾前后各空一行，里面不缩进），网页上照常显示、读 `.md` 源的 AI 也看得到，只是不进对话框。给维护记录这类「读者要看得到、但粘进对话框会被当成在说正在讨论的事」的内容用；块可以放在页面任何位置，前后的正文、脚注照常复制。块里嵌套的 div 按层数配对，代码块里写的不算。活例：[盘问我](../../skills/collab/grilling.md)页尾的维护记录
+- **`zx-no-copy` 块整块不复制**：用 `<div class="zx-no-copy" markdown>` 和 `</div>` 包起来的内容（写法同[时间线](../../skills/wiki-guide/reference/components.md#timeline)：开头结尾前后各空一行，里面不缩进），网页上照常显示、读 `.md` 源的 AI 也看得到，只是不进对话框。给维护记录这类「读者要看得到、但粘进对话框会被当成在说正在讨论的事」的内容用；块可以放在页面任何位置，前后的正文、脚注照常复制。块里嵌套的 div 按层数配对，代码块里写的不算。网页上左边一道虚线、上方一个「不复制」小字。活例：[盘问我](../../skills/collab/grilling.md)页尾的维护记录
+- **分支按选择去留**：`<div data-when="名=值" markdown>` 包起来的内容，名为「名」的控件选了「值」才复制，只写「名」就是那个框填了才复制。网页上条件不成立的块由脚本挂上 `zx-no-copy`，和写死的那种一个样子；复制时拿源文件里写的条件和同一批控件值再算一遍，用的是同一个函数，结果和网页上一致，不成立的整块去掉，成立的只去掉外壳 div。不复制的块里的 `required` 不拦。写法见[分支](../../skills/wiki-guide/reference/branch.md)
 - **去掉 HTML 注释**：网页上本来不显示，对话框里也不要，整行、行尾、跨行的都去；代码块和行内代码里举例写的注释不动。删完留下的连续空行并成一行
 - **填空换成填的值**：正文里的 `<input>`、`<textarea>`、`<select>` 是给读者填的空，复制时标签换成填的值，空着的写成【placeholder】；值在链接改写之后才嵌进去，填的内容不会被当成链接改写。写法见[自研组件 · 填空](../../skills/wiki-guide/reference/components.md#fill)
 - **打码原样复制**：取的是源文件，页面上解锁过也还是密文；要明文接 [`age-open.py`](age-mosaic.md#cli)
@@ -85,8 +86,8 @@ const abs = (target, base) => (!target || KEEP.test(target) ? target : new URL(t
 | `mkdocs.yml` | `repo_url`、`edit_uri` 设成站点根；`extra_javascript` 挂 `vendor/md-copy.js` |
 | `overrides/main.html`、`overrides/home.html` | 页头写 `alternate` 和 `describedby` 两行 |
 | `overrides/partials/source.html` | 空文件，关掉 `repo_url` 带出来的仓库入口 |
-| [`vendor/md-copy.js`](../../vendor/md-copy.js) | 复制按钮、改写和填空，约 200 行，不压缩 |
-| `stylesheets/zx-theme.css` 第 11 节 | 填空控件的样式 |
+| [`vendor/md-copy.js`](../../vendor/md-copy.js) | 复制按钮、改写、填空和分支，约 250 行，不压缩 |
+| `stylesheets/zx-theme.css` 第 11、12 节 | 填空控件的样式；不复制的块的样式 |
 
 2026-10-15 测过：正式站构建并照 `deploy.sh` 镜像 `.md` 后起本地预览，在打码那篇把剪贴板接口换成记录、自动点按钮——frontmatter 保留、来源注释在、三种 snippet 各指对地方、正文相对链接和 iframe 的 `src` 改成线上地址、`#cli` 锚点和代码块里的命令不动。
 
@@ -100,3 +101,6 @@ const abs = (target, base) => (!target || KEEP.test(target) ? target : new URL(t
 
 - 自动测试替换了剪贴板接口；真实写进剪贴板、按钮在页面上的样子，由人在浏览器里点过确认
 - 改写是逐行正则，不是完整的 Markdown 解析：网址里带括号的链接、跨行的链接、双反引号包的行内代码、单引号写的 HTML 属性可能处理不对，本站现有写法里没碰到
+
+[^issues-859]: [#859](https://github.com/zensical/zensical/issues/859#issuecomment-5291561058)，2026-10-15 读。
+[^source]: [`overrides/partials/source.html`](https://github.com/liuhetian/wiki/blob/main/overrides/partials/source.html)，2026-10-15 读。

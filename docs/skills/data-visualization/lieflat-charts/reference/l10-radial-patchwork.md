@@ -28,10 +28,12 @@ description: "L10 · 径向拼布图：逐事件叠加：时刻(角)×规模(径
 - 使用时只替换数据与文案，并保持“逐事件叠加：时刻(角)×规模(径)，透明度=密度”这一数据契约；若数据本体改变，应回到总目录重新选型。
 - 颜色限于 Mono 灰阶，面积编码继续使用平方根换算；柱长、位置与角度编码不得断轴或视觉夸大。
 
-> 模板来源：Lieflat Charts `L10 Radial Patchwork`，真实骨架取自 [`templates/lupi-gallery.html`](https://github.com/larashero3-dotcom/lieflat-charts/blob/e5b369de1d0d32637093ee62d60bd556cf2c1af4/templates/lupi-gallery.html) 的 “A quarter of deploys, overlaid” 卡片与对应渲染块。
+> 模板来源：Lieflat Charts `L10 Radial Patchwork`，真实骨架取自 `templates/lupi-gallery.html`[^lupi-gallery] 的 “A quarter of deploys, overlaid” 卡片与对应渲染块。
 
 ??? abstract "`l10-radial-patchwork.html` —— 自包含单页源码"
 
     ```html
     --8<-- "skills/data-visualization/lieflat-charts/assets/l10-radial-patchwork.html"
     ```
+
+[^lupi-gallery]: [`templates/lupi-gallery.html`](https://github.com/larashero3-dotcom/lieflat-charts/blob/e5b369de1d0d32637093ee62d60bd556cf2c1af4/templates/lupi-gallery.html)，2026-07-28 读。

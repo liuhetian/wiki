@@ -10,13 +10,13 @@
 
 ## 通用 AI 腔分类
 
-通用分类（过度拔高、模糊归因、rule of three、同义词轮换、宣传腔、填充、谄媚、客服腔等）参考自英文 [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)(由 [WikiProject AI Cleanup](https://en.wikipedia.org/wiki/Wikipedia:WikiProject_AI_Cleanup) 维护)。中文维基也有一份社群协作的平行条目 [维基百科：AI生成文的特徵](https://zh.wikipedia.org/wiki/Wikipedia:AI%E7%94%9F%E6%88%90%E6%96%87%E7%9A%84%E7%89%B9%E5%BE%B5)（与英文版独立，不是翻译），含中文具体实例，可作交叉参考。
+通用分类（过度拔高、模糊归因、rule of three、同义词轮换、宣传腔、填充、谄媚、客服腔等）参考自英文 Wikipedia: Signs of AI writing[^wikipedia-signs-of-ai-writing] (由 WikiProject AI Cleanup[^wikipedia-wikiproject-ai-cleanup] 维护)。中文维基也有一份社群协作的平行条目 维基百科：AI生成文的特徵[^wikipedia-ai]（与英文版独立，不是翻译），含中文具体实例，可作交叉参考。
 
 ## 汉语语法依据
 
 - 吕叔湘《现代汉语八百词》（商务印书馆）— 现代汉语虚词用法权威
 - 朱德熙《语法讲义》（商务印书馆）— 现代汉语句法结构权威
-- 中文维基百科 [汉语语法](https://zh.wikipedia.org/zh-cn/%E6%B1%89%E8%AF%AD%E8%AF%AD%E6%B3%95) — 综述性参考（基本语序 SVO、话题优先、不完全主谓句、助词 的 / 地 / 得 分工、缺乏印欧语屈折变化）
+- 中文维基百科 汉语语法[^wikipedia] — 综述性参考（基本语序 SVO、话题优先、不完全主谓句、助词 的 / 地 / 得 分工、缺乏印欧语屈折变化）
 
 ## 现代汉语经验基线(语料库)
 
@@ -38,7 +38,7 @@
 
 ## 中文 AI 腔观察者
 
-- [**yage.ai《写作中的 AI 味是哪儿来的》**](https://yage.ai/share/ai-chinese-translationese-20260418.html) — 原创观察文章，主张"AI 味 = 翻译腔"。模式 **#39（思考过程里的物理动作动词）、#40（"X 很 Y:" 形容词+冒号起手式）、#41（抽象名词主语 + 形容词收尾）、#42（有中文译法却留着的英文单词）** 的核心观察来自这篇文章。文章的"归化式思维"（覆盖原文，用中文重新说一遍）主张与本 skill「避免过度修正五问」的反向翻译验证精神相通。
+- **yage.ai《写作中的 AI 味是哪儿来的》**[^ai-chinese-translationese-202604] — 原创观察文章，主张"AI 味 = 翻译腔"。模式 **#39（思考过程里的物理动作动词）、#40（"X 很 Y:" 形容词+冒号起手式）、#41（抽象名词主语 + 形容词收尾）、#42（有中文译法却留着的英文单词）** 的核心观察来自这篇文章。文章的"归化式思维"（覆盖原文，用中文重新说一遍）主张与本 skill「避免过度修正五问」的反向翻译验证精神相通。
 
 ## 语言时效性锚点
 
@@ -49,7 +49,13 @@
 
 ## 中文特有模式
 
-中文特有的 AI 腔模式（的的不休、进行 + V、性 / 化 后缀堆叠、四字成语机械堆叠、赋能 / 助力 / 打造 词族、长破折号解释句、翻译腔残留、自媒体平台套路等）基于对 LLM 中文输出的观察整理。可交叉参考的中文社群资源：[维基百科：AI生成文的特徵](https://zh.wikipedia.org/wiki/Wikipedia:AI%E7%94%9F%E6%88%90%E6%96%87%E7%9A%84%E7%89%B9%E5%BE%B5)。欢迎补充、纠正、反馈。
+中文特有的 AI 腔模式（的的不休、进行 + V、性 / 化 后缀堆叠、四字成语机械堆叠、赋能 / 助力 / 打造 词族、长破折号解释句、翻译腔残留、自媒体平台套路等）基于对 LLM 中文输出的观察整理。可交叉参考的中文社群资源：维基百科：AI生成文的特徵[^wikipedia-ai]。欢迎补充、纠正、反馈。
 
 > Wikipedia 的关键洞察："LLM 靠统计算法猜下一个 token 该是什么。结果会倾向于在最多场景下都适用的、最统计常见的那种说法。"
 > (LLMs use statistical algorithms to guess what should come next. The result tends toward the most statistically likely result that applies to the widest variety of cases.)
+
+[^wikipedia-signs-of-ai-writing]: [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)，2026-07-28 读。
+[^wikipedia-wikiproject-ai-cleanup]: [WikiProject AI Cleanup](https://en.wikipedia.org/wiki/Wikipedia:WikiProject_AI_Cleanup)，2026-07-28 读。
+[^wikipedia-ai]: [维基百科：AI生成文的特徵](https://zh.wikipedia.org/wiki/Wikipedia:AI%E7%94%9F%E6%88%90%E6%96%87%E7%9A%84%E7%89%B9%E5%BE%B5)，2026-07-28 读。
+[^wikipedia]: [汉语语法](https://zh.wikipedia.org/zh-cn/%E6%B1%89%E8%AF%AD%E8%AF%AD%E6%B3%95)，2026-07-28 读。
+[^ai-chinese-translationese-202604]: [**yage.ai《写作中的 AI 味是哪儿来的》**](https://yage.ai/share/ai-chinese-translationese-20260418.html)，2026-07-28 读。

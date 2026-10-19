@@ -4,7 +4,7 @@ description: "固定卖出日，买入日只需是前缀最小值——一遍扫
 
 # 121. 买卖股票的最佳时机
 
-[LeetCode 121](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/) · 简单 · 贪心算法
+LeetCode 121[^leetcode] · 简单 · 贪心算法
 
 ## 题
 
@@ -53,3 +53,5 @@ class Solution:
     assert s.maxProfit([5]) == 0
     assert s.maxProfit([2, 4, 1]) == 2
     ```
+
+[^leetcode]: [LeetCode 121](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/)，2026-09-29 读。

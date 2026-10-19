@@ -8,7 +8,7 @@ description: "模板驱动的单色编辑型数据可视化；从数据形状选
 
 与 [Dashboard 后台的图表页](../../dashboard/reference/详情与页面/图表页.md) 不同：dashboard 关心后台总览的功能契约；Lieflat Charts 关心一张图如何诚实编码数据、如何在几秒或几十秒内被读懂，以及怎样保持一致的 Mono 视觉语言。
 
-规范真身独立维护在 [lieflat-charts 仓库](https://github.com/larashero3-dotcom/lieflat-charts/tree/e5b369de1d0d32637093ee62d60bd556cf2c1af4)；本目录把固定版本的真实 gallery 实现拆成可逐张浏览、可直接取用的 Wiki 页面。
+规范真身在上游 lieflat-charts 仓库独立维护[^upstream]；本目录把固定版本的真实 gallery 实现拆成可逐张浏览、可直接取用的 Wiki 页面。
 
 ## 怎么看这套目录
 
@@ -90,3 +90,13 @@ description: "模板驱动的单色编辑型数据可视化；从数据形状选
 - [B1 · 密集环形关系图](reference/b1-circular-graph-dense.md) —— 网络 60 节点环形弦膜
 - [B2 · 密集力导向图](reference/b2-force-graph-dense.md) —— 网络 180 节点力导向星系
 - [B3 · 三段丝线图](reference/b3-thread-triptych.md) —— 三段路径 100+ 条丝线
+
+<div class="zx-no-copy" markdown>
+
+---
+
+维护记录：[从哪来、改了什么](../../../maintenance/skills/lieflat-charts.md)。正常使用不用看，出问题再看。
+
+</div>
+
+[^upstream]: [larashero3-dotcom/lieflat-charts @ e5b369d](https://github.com/larashero3-dotcom/lieflat-charts/tree/e5b369de1d0d32637093ee62d60bd556cf2c1af4)，2026-07-28 读。

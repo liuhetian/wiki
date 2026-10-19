@@ -4,7 +4,7 @@ description: "只从「序列起点」（x-1 不在集合里）往后数，每�
 
 # 128. 最长连续序列
 
-[LeetCode 128](https://leetcode.cn/problems/longest-consecutive-sequence/) · 中等 · 哈希
+LeetCode 128[^leetcode] · 中等 · 哈希
 
 ## 题
 
@@ -59,3 +59,5 @@ class Solution:
     assert s.longestConsecutive([]) == 0
     assert s.longestConsecutive([-1, -2, 5]) == 2
     ```
+
+[^leetcode]: [LeetCode 128](https://leetcode.cn/problems/longest-consecutive-sequence/)，2026-09-29 读。

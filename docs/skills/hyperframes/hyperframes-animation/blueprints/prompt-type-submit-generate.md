@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/prompt-type-submit-generate.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/prompt-type-submit-generate.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # prompt-type-submit-generate —— 输入提示词、提交、生成
 

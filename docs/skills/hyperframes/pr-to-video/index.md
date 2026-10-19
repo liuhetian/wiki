@@ -2,7 +2,7 @@
 name: pr-to-video
 description: "把一个 GitHub pull request（PR URL、owner/repo#N，或已 checkout 仓库里的「this PR」）做成代码变更讲解视频 —— 由 diff、commit 和文件构建出的 changelog、功能揭晓、修复讲解或重构走查：输入是一次代码变更，不是网站。不是产品宣传片（/product-launch-video），也不是没有 PR 的主题讲解视频（/faceless-explainer）。拿不准 → /hyperframes。"
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/pr-to-video/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/pr-to-video/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 
@@ -272,3 +272,14 @@ node <SKILL_DIR>/scripts/frame-packets.mjs --project "$PROJECT_DIR" --storyboard
 | `[sub-agents/frame-worker.md](sub-agents/frame-worker.md)` | Step 5：本工作流的 frame-worker 增量。 |
 | `[../hyperframes/references/subagent-dispatch.md](../hyperframes/references/subagent-dispatch.md)` | Step 5：安全地派发子 agent。 |
 | `[../hyperframes-creative/frame-presets/code-editorial/FRAME.md](../hyperframes-creative/frame-presets/code-editorial/FRAME.md)` | Step 2：code-editorial preset（固定风格）。 |
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [references/code-vocabulary.md](references/code-vocabulary.md) —— 代码词汇 —— code-* 动画 block
+- [references/cut-catalog.md](references/cut-catalog.md) —— 切法目录 —— 帧内接缝（由 worker 构建）
+- [references/motion-language.md](references/motion-language.md) —— 动效语言 —— 运动词汇 + 动效准则 + seek 安全的核心
+- [references/story-design.md](references/story-design.md) —— 故事设计 —— PR → 叙事
+- [references/visual-design.md](references/visual-design.md) —— 视觉设计 —— PR-to-video 的逐帧镜头方法
+- [sub-agents/frame-worker.md](sub-agents/frame-worker.md) —— Frame worker —— PR-to-video 增量

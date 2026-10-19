@@ -11,7 +11,7 @@ description: "在本 wiki 新建或修改任何页面前读：写作流程、内
 1. 按[六问](#where)定板块和位置
 2. 写正文，顶部写一行 [`description`](#description)
 3. 在 `mkdocs.yml` 的 `nav:` 注册
-4. 在某个祖先目录的索引页（`index.md` / `MIRROR.md` / `SKILL.md`）挂一行带钩子的链接 —— nav 只给人看，AI 只顺相对链接走，没挂上的页面对 AI 等于不存在
+4. 在某个祖先目录的索引页（`index.md` / `SKILL.md`）挂一行带钩子的链接 —— nav 只给人看，AI 只顺相对链接走，没挂上的页面对 AI 等于不存在
 5. 跑 `python3 scripts/check-links.py`，不过就改完再跑；`deploy.sh` 构建前也跑，不过不许部署
 6. 到这里为止：commit、push、部署都等用户说。渲染效果（含 mermaid）由用户自己在浏览器里看，AI 不截图 —— 有 mermaid 的页面提醒一句，原因见 [mermaid 的坑](reference/components.md#mermaid)
 
@@ -19,7 +19,7 @@ description: "在本 wiki 新建或修改任何页面前读：写作流程、内
 
 顶层六个板块按用途分，主题只做板块内的二级目录。按顺序问：
 
-1. 收录一件成品当参考 —— 一张图配 prompt、一种前端风格配 demo？→ [Gallery](../../gallery/index.md)，按媒介进 images / layouts / colors / video / audio / web 六区之一。原样收录，只调排版和图片路径，来源写进各自的 `MIRROR.md`；本站自己做的，成品和做法写在同一页，不写 MIRROR（[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)）；layouts 区的三个分类页和 colors 区的经典主题色页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改；两区的 `index.md` 手写。活例：[GPT Image 2 的动漫与漫画](../../gallery/images/gpt-image2/gallery-anime-and-manga.md)、[前端风格收集](../../gallery/web/frontend-styles/index.md)
+1. 收录一件成品当参考 —— 一张图配 prompt、一种前端风格配 demo？→ [Gallery](../../gallery/index.md)，按媒介进 images / layouts / colors / video / audio / web 六区之一。原样收录，只调排版和图片路径，来源和改动写进[维护 · Gallery 收录](../../maintenance/index.md#gallery)，一个来源一篇；本站自己做的，成品和做法写在同一页（[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)）；layouts 区的五个分类页和 colors 区的经典主题色页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改；两区的 `index.md` 手写。活例：[GPT Image 2 的动漫与漫画](../../gallery/images/gpt-image2/gallery-anime-and-manga.md)、[前端风格收集](../../gallery/web/frontend-styles/index.md)
 2. 给 agent 直接挂载的成套资产？→ [Skills](../index.md)
 3. 一个 skill 或 Agent 能力背后的事 —— 从哪来、为什么这么选、改过什么、实测过什么？→ [维护](../../maintenance/index.md)。skill 页只写怎么用，页尾链过来，写法见[收纳 skill · 维护记录](skill.md#maintenance-record)
 4. 跟着一本书或一套实操走、自己做完才算数？→ [课程](../../courses/index.md)
@@ -36,7 +36,7 @@ description: "在本 wiki 新建或修改任何页面前读：写作流程、内
 - **挪文件不留存根页**：要保住旧 URL 就别挪；挪了就删原文件、站内引用一并改，`mkdocs.yml` 的 `redirects` 加一行兜站外书签（只管 HTML，旧 `.md` 地址照样 404）。存根页没人链、不进 nav，留着只会逼 check-links 开豁免口子
 - **引外部一手资料三步**：① 真身存档进 `assets/`，注明出处和获取日期，正文用 `??? abstract` 折叠 + `--8<--` 展示；② 正文用 `>` 摘关键原句；③ 每处引用跟自己的分析。活跃开源仓库、关键契约已经消化成自己的话的，可以用钉 commit 的 GitHub 永链代替存档 —— 活例：[Dashboard](../dashboard/index.md) 的蓝本吸收
 - **正文链接只指站内，外部来源进脚注**：正文留 `[^名]`，URL 和读取日期写进文末脚注 —— 活例：[对象存储部署](../../posts/wiki/cos-deploy/index.md)
-- **别人的图和视频直接收原件**：本 wiki 自己看、不商用，忠实记录比避嫌要紧，不为避嫌改成自己重新生成；作者和出处写进 MIRROR 或脚注 —— 活例：[二次元平面设计风格](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)的 23 张配图原样存档
+- **别人的图和视频直接收原件**：本 wiki 自己看、不商用，忠实记录比避嫌要紧，不为避嫌改成自己重新生成；作者和出处写进维护记录或脚注 —— 活例：[二次元平面设计风格](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)的 23 张配图原样存档
 - **收录外部仓库只取核心文件**：挑对理解主题真正关键的几个进 `assets/`，其余钉 commit 永链。吸纳来的 skill 例外，要收齐才能跑，见 [收纳 skill](skill.md)
 - **代码即引用**：展示仓库里的文件用 `--8<--` 引真身，不复制粘贴；路径先相对 `docs/`、再相对仓库根（`skills/.../x.css`、`mkdocs.yml`）。完整文件不单独成页，在讲它的页面文末 `??? abstract` 折叠引用
 - **缩进 4 空格**：折叠块、选项卡、提示框的子内容不缩 4 格就不被识别；代码块内部的缩进照原样
@@ -62,7 +62,7 @@ description: "一句话说清这页回答什么问题，120 字以内，不写�
 两类文件不塞 frontmatter：上游原文照录的存档（改了就不是原文），和被 `--8<--` 引用的真身（frontmatter 会漏进引用它的正文）。在目录里放 `.meta.yml`，给该目录及子目录的页面当默认，页面自己写的优先：
 
 ```yaml title="docs/gallery/images/gpt-image2/.meta.yml"
-description: "GPT Image 2 图库（收录自 wuyoscar/GPT-Image2-Skill，MIT），整页中译，只改图片路径；来源与译法见 MIRROR.md"
+description: "GPT Image 2 图库（收录自 wuyoscar/GPT-Image2-Skill，MIT），整页中译，只改图片路径；来源与译法见维护记录 maintenance/gallery/gpt-image2.md"
 ```
 
 一个目录一句话，写这批文件是什么、从哪来。
@@ -88,6 +88,7 @@ Material / pymdownx 的语法照常写，这张表只提醒什么时候该用上
 | 不想公开的小字：服务器地址、域名、用户名 | `` `age:…` `` 打码 → [打码](reference/components.md#age-mosaic) |
 | 一串按时间排的事件 | `zx-timeline` 块 → [时间线](reference/components.md#timeline) |
 | 读者要看、粘进对话框会被误读的内容 | `zx-no-copy` 块 → [复制时跳过](reference/components.md#no-copy) |
+| prompt 按读者的选择走不同分支；可选的空没填就整行不要 | `data-when` 块 → [分支](reference/branch.md) |
 | prompt 里要读者先填的空 | 单行 `<input>`、多行 `<textarea>`、选项 `<select>` 写进句子，带 `placeholder`，复制时换成填的值 → [填空](reference/components.md#fill) |
 | AI 新生成的概念配图 | 白底黑色马克笔草图 → [配图](reference/marker-doodle.md) |
 

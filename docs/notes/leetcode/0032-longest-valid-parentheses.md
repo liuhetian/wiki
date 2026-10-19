@@ -4,7 +4,7 @@ description: "栈里存「最后一个没配上的位置」当分界；每配上
 
 # 32. 最长有效括号
 
-[LeetCode 32](https://leetcode.cn/problems/longest-valid-parentheses/) · 困难 · 动态规划
+LeetCode 32[^leetcode] · 困难 · 动态规划
 
 ## 题
 
@@ -90,3 +90,5 @@ description: "栈里存「最后一个没配上的位置」当分界；每配上
         assert s.longestValidParentheses("()(())") == 6
         assert s.longestValidParentheses("())((())") == 4
     ```
+
+[^leetcode]: [LeetCode 32](https://leetcode.cn/problems/longest-valid-parentheses/)，2026-09-29 读。

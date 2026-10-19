@@ -3,7 +3,7 @@ name: motion-graphics
 description: >
   一段短小、以设计为主导、运动即信息的动态图形 —— 动态文字、数字 count-up、图表 / 数据可视化的冲击镜头、logo sting / 品牌 lockup、lower-third / 标注 / 社交 overlay、动画地图（高亮区域、连接地点、缩放到某个位置）、动画推文 / 新闻文章 / 标题、网页 / UI 动画（滚动、光标、标注），或者把一张真实图片的几何形状融合进图表。通常不超过 10 秒（最长约 30 秒），没有旁白，也没有真人拍摄的主体；渲染为 MP4 或透明 overlay。更长 / 有旁白 / 多场景 → /general-video。不明确 → /hyperframes。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在运行安装或更新命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 
@@ -166,3 +166,27 @@ npx hyperframes init "$PROJECT_DIR" --non-interactive --example=blank --skill=mo
     renders/video.mp4
   ```
 - **登记：** 在 `hyperframes` 路由里 —— 加上「以设计为主导的短动态图形」这个意图 + 工作流描述；把 motion-graphics 的触发词从 `/general-video` 中划出来；加上反向的 Do-NOT-use 边。见 `motion-graphics-genre.md` §5-7。
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [agents/builder.md](agents/builder.md) —— Motion-Graphics Builder
+- [agents/director.md](agents/director.md) —— Motion-Graphics Director
+- [agents/finalize.md](agents/finalize.md) —— 定稿 / 修复子 agent
+- [catalog-map.md](catalog-map.md) —— Director → catalog block 对照表（复用优先）
+- [categories/asset-fusion/module.md](categories/asset-fusion/module.md) —— asset-fusion —— category 模块（搜索驱动 · 全新的 IP）
+- [categories/charts/module.md](categories/charts/module.md) —— charts —— category 模块
+- [categories/kinetic-type/module.md](categories/kinetic-type/module.md) —— kinetic-type —— category 模块
+- [categories/logo-reveal/module.md](categories/logo-reveal/module.md) —— logo-reveal —— category 模块
+- [categories/lower-thirds/module.md](categories/lower-thirds/module.md) —— lower-thirds —— category 模块
+- [categories/maps/module.md](categories/maps/module.md) —— maps —— category 模块
+- [categories/news/module.md](categories/news/module.md) —— news —— category 模块（搜索驱动）
+- [categories/stat/module.md](categories/stat/module.md) —— stat —— category 模块
+- [categories/tweet/module.md](categories/tweet/module.md) —— tweet —— category 模块（搜索驱动）
+- [categories/webpage/module.md](categories/webpage/module.md) —— webpage —— category 模块（搜索驱动）
+- [grounding/PROTOCOL.md](grounding/PROTOCOL.md) —— locate —— 在图片里找到 "X"（不假设有检测器 API）
+- [phases/source/guide.md](phases/source/guide.md) —— source 阶段 —— 获取素材（素材优先）
+- [references/builder-contract.md](references/builder-contract.md) —— Builder 契约 —— composition 规则（agents/builder.md 背后的细节）
+- [references/motion-vocabulary.md](references/motion-vocabulary.md) —— 文字模块 · 运动词汇（基本元素 → GSAP）
+- [references/shot-plan-ir.md](references/shot-plan-ir.md) —— shot-plan IR

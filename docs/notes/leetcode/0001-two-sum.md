@@ -4,7 +4,7 @@ description: "边扫边查「补数见过没」，一遍哈希 O(n)；先查后�
 
 # 1. 两数之和
 
-[LeetCode 1](https://leetcode.cn/problems/two-sum/) · 简单 · 哈希
+LeetCode 1[^leetcode] · 简单 · 哈希
 
 ## 题
 
@@ -50,3 +50,5 @@ class Solution:
     assert s.twoSum([3, 2, 4], 6) == [1, 2]
     assert s.twoSum([3, 3], 6) == [0, 1]
     ```
+
+[^leetcode]: [LeetCode 1](https://leetcode.cn/problems/two-sum/)，2026-09-29 读。

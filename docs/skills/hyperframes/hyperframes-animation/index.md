@@ -2,7 +2,7 @@
 name: hyperframes-animation
 description: "HyperFrames 的全部动画知识 —— 原子动效规则、多阶段场景蓝图、场景转场、更广泛的动效设计技巧，以及七个 runtime adapter（默认 GSAP，另有 Lottie、Three.js、Anime.js、CSS keyframes、Web Animations API、TypeGPU）。用于任何动效或动画任务：挑 2-4 条规则组合起来，或加载一个蓝图，或查阅特定 runtime 的 API（例如 GSAP 的 ease / Lottie 播放器 / Three.js mixer）。也涵盖审查已有 composition 的编排（动画地图），以及 24 种具名的文字动画效果。HyperFrames 原生：单条暂停的 timeline、seek 安全、确定性。"
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/SKILL.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于某个 HyperFrames 插件之内时，在执行安装设置或版本刷新类命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装的情况仍按下文的更新说明执行。
 
@@ -87,3 +87,110 @@ node <SKILL_DIR>/scripts/animation-map.mjs <composition-dir> \
 - `hyperframes-core` —— composition 结构、data 属性、sub-composition、确定性渲染契约
 - `hyperframes-creative` —— 色板、字体排印、旁白、段落节拍规划（动画之外的创意方向）
 - `hyperframes-cli` —— `npx hyperframes lint / check / snapshot / preview / render`
+
+## 本 skill 的文件 { #files }
+
+本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
+
+- [adapters/animate-text.md](adapters/animate-text.md) —— 文字效果 —— 参考
+- [adapters/animejs.md](adapters/animejs.md) —— 用于 HyperFrames 的 Anime.js
+- [adapters/css-animations.md](adapters/css-animations.md) —— 用于 HyperFrames 的 CSS 动画
+- [adapters/gsap-easing-and-stagger.md](adapters/gsap-easing-and-stagger.md) —— Easing、Stagger 与基于函数的值
+- [adapters/gsap-timeline-and-labels.md](adapters/gsap-timeline-and-labels.md) —— Timeline 与 Label
+- [adapters/gsap-transforms-and-perf.md](adapters/gsap-transforms-and-perf.md) —— Transform 与性能
+- [adapters/gsap.md](adapters/gsap.md) —— HyperFrames GSAP
+- [adapters/html-in-canvas-patterns.md](adapters/html-in-canvas-patterns.md) —— HTML-in-Canvas 模式
+- [adapters/lottie.md](adapters/lottie.md) —— HyperFrames 中的 Lottie
+- [adapters/three.md](adapters/three.md) —— HyperFrames 中的 Three.js
+- [adapters/typegpu.md](adapters/typegpu.md) —— HyperFrames 中的 TypeGPU / WebGPU
+- [adapters/waapi.md](adapters/waapi.md) —— HyperFrames 中的 Web Animations API
+- [blueprints-index.md](blueprints-index.md) —— Blueprint（经过验证的形状）
+- [blueprints/agent-progress-theater.md](blueprints/agent-progress-theater.md) —— agent-progress-theater —— Agent 进度剧场
+- [blueprints/camera-journey.md](blueprints/camera-journey.md) —— camera-journey —— 摄像机旅程
+- [blueprints/comparison-split.md](blueprints/comparison-split.md) —— comparison-split —— 对比分屏卡片
+- [blueprints/constellation-hub.md](blueprints/constellation-hub.md) —— constellation-hub —— 星座 / 中枢 + 卫星
+- [blueprints/cta-morph-press.md](blueprints/cta-morph-press.md) —— cta-morph-press —— CTA 变形与按压
+- [blueprints/cursor-ui-demo.md](blueprints/cursor-ui-demo.md) —— cursor-ui-demo — 光标驱动的 UI 演示
+- [blueprints/dataviz-countup.md](blueprints/dataviz-countup.md) —— dataviz-countup — 数据可视化 / 数字滚动计数
+- [blueprints/device-surface-showcase.md](blueprints/device-surface-showcase.md) —— device-surface-showcase — 设备 / 界面展示
+- [blueprints/fixed-anchor-cycle.md](blueprints/fixed-anchor-cycle.md) —— fixed-anchor-cycle — 固定锚点，轮换世界
+- [blueprints/grid-card-assemble.md](blueprints/grid-card-assemble.md) —— grid-card-assemble — 网格 / 卡片组装
+- [blueprints/kinetic-type-beats.md](blueprints/kinetic-type-beats.md) —— kinetic-type-beats — 动态文字段落节拍
+- [blueprints/logo-assemble-lockup.md](blueprints/logo-assemble-lockup.md) —— logo-assemble-lockup — Logo 组装 → Lockup
+- [blueprints/overwhelm-surround.md](blueprints/overwhelm-surround.md) —— overwhelm-surround — 压迫 / 围拢
+- [blueprints/panel-edit-live-sync.md](blueprints/panel-edit-live-sync.md) —— panel-edit-live-sync —— 面板编辑，实时同步
+- [blueprints/prompt-type-submit-generate.md](blueprints/prompt-type-submit-generate.md) —— prompt-type-submit-generate —— 输入提示词、提交、生成
+- [blueprints/spatial-pan-stations.md](blueprints/spatial-pan-stations.md) —— spatial-pan-stations —— 空间平移 / 站点
+- [blueprints/ticker-takeover.md](blueprints/ticker-takeover.md) —— ticker-takeover —— 滚字被挤开 / 接管
+- [blueprints/titlecard-reveal.md](blueprints/titlecard-reveal.md) —— titlecard-reveal —— 标题卡 / 单卡揭示
+- [blueprints/transcript-scroll-artifact-reveal.md](blueprints/transcript-scroll-artifact-reveal.md) —— transcript-scroll-artifact-reveal —— 对话记录滚动 + 产物揭示
+- [blueprints/typewriter-reveal.md](blueprints/typewriter-reveal.md) —— typewriter-reveal —— 打字机揭示
+- [blueprints/video-text-pivot.md](blueprints/video-text-pivot.md) —— video-text-pivot —— 视频 → 文字转向
+- [blueprints/zoom-out-workspace-reveal.md](blueprints/zoom-out-workspace-reveal.md) —— zoom-out-workspace-reveal —— 拉远揭示工作区
+- [references/motion-blur.md](references/motion-blur.md) —— 运动模糊 —— 任何动画元素上的快门拖影
+- [rules-index.md](rules-index.md) —— 规则索引
+- [rules/3d-camera-flight.md](rules/3d-camera-flight.md) —— 3D Camera Flight（3D 镜头飞行）
+- [rules/3d-page-scroll.md](rules/3d-page-scroll.md) —— 3D Page Scroll（3D 页面滚动）
+- [rules/3d-text-depth-layers.md](rules/3d-text-depth-layers.md) —— 3D Text Depth Layers（3D 文字纵深图层）
+- [rules/ai-tracking-box.md](rules/ai-tracking-box.md) —— AI Tracking Box（AI 跟踪框）
+- [rules/ambient-glow-bloom.md](rules/ambient-glow-bloom.md) —— Ambient Glow Bloom（环境辉光绽放）
+- [rules/anchored-layout-expand.md](rules/anchored-layout-expand.md) —— 锚定布局展开
+- [rules/asr-keyword-glow.md](rules/asr-keyword-glow.md) —— ASR 关键词发光
+- [rules/avatar-cloud-network.md](rules/avatar-cloud-network.md) —— 头像云网络
+- [rules/camera-cursor-tracking.md](rules/camera-cursor-tracking.md) —— 两阶段摄像机光标跟踪
+- [rules/card-morph-anchor.md](rules/card-morph-anchor.md) —— 卡片形变锚点
+- [rules/center-outward-expansion.md](rules/center-outward-expansion.md) —— 中心向外扩散
+- [rules/chart-scrub-readout.md](rules/chart-scrub-readout.md) —— 图表拖动读数
+- [rules/chromatic-glitch.md](rules/chromatic-glitch.md) —— 色差故障
+- [rules/context-sensitive-cursor.md](rules/context-sensitive-cursor.md) —— 上下文感知光标
+- [rules/control-target-sync.md](rules/control-target-sync.md) —— 控件-目标同步
+- [rules/coordinate-target-zoom.md](rules/coordinate-target-zoom.md) —— 坐标目标缩放
+- [rules/counting-dynamic-scale.md](rules/counting-dynamic-scale.md) —— 动态缩放计数
+- [rules/css-marker-patterns.md](rules/css-marker-patterns.md) —— 记号笔高亮的 CSS 模式
+- [rules/cursor-click-ripple.md](rules/cursor-click-ripple.md) —— 光标点击涟漪
+- [rules/cursor-drag.md](rules/cursor-drag.md) —— 光标拖动
+- [rules/depth-of-field-blur.md](rules/depth-of-field-blur.md) —— 景深模糊（选择性对焦 / 移焦）
+- [rules/depth-scatter-assemble.md](rules/depth-scatter-assemble.md) —— 纵深散开 ↔ 组装
+- [rules/discrete-text-sequence.md](rules/discrete-text-sequence.md) —— 离散文字序列
+- [rules/dynamic-content-sequencing.md](rules/dynamic-content-sequencing.md) —— 动态内容排程
+- [rules/gradient-text-sweep.md](rules/gradient-text-sweep.md) —— 渐变文字扫光
+- [rules/gsap-effects.md](rules/gsap-effects.md) —— HyperFrames 的 GSAP 效果
+- [rules/hacker-flip-3d.md](rules/hacker-flip-3d.md) —— Hacker Flip 3D 揭示
+- [rules/kinetic-beat-slam.md](rules/kinetic-beat-slam.md) —— Kinetic Beat Slam
+- [rules/motion-blur-streak.md](rules/motion-blur-streak.md) —— Motion-Blur Streak
+- [rules/multi-cursor-choreography.md](rules/multi-cursor-choreography.md) —— Multi-Cursor Choreography
+- [rules/multi-phase-camera.md](rules/multi-phase-camera.md) —— Multi-Phase Camera
+- [rules/nudge-curve.md](rules/nudge-curve.md) —— Nudge Curve
+- [rules/orbit-3d-entry.md](rules/orbit-3d-entry.md) —— 带 3D 入场的轨道运动（Orbit with 3D Entry）
+- [rules/particle-burst.md](rules/particle-burst.md) —— Particle Burst
+- [rules/physics-press-reaction.md](rules/physics-press-reaction.md) —— Physics Press Reaction（光标 + 元素同步）
+- [rules/press-release-spring.md](rules/press-release-spring.md) —— Press-Release Spring Chain
+- [rules/reactive-displacement.md](rules/reactive-displacement.md) —— Reactive Displacement
+- [rules/scale-swap-transition.md](rules/scale-swap-transition.md) —— Scale-Swap Transition
+- [rules/sine-wave-loop.md](rules/sine-wave-loop.md) —— Sine Wave Loop（含蓄抖动 / 有界环境运动）
+- [rules/split-tilt-cards.md](rules/split-tilt-cards.md) —— Split Tilt Cards
+- [rules/spring-pop-entrance.md](rules/spring-pop-entrance.md) —— Spring-Pop Entrance
+- [rules/stat-bars-and-fills.md](rules/stat-bars-and-fills.md) —— Stat Bars & Fills
+- [rules/svg-icon-enrichment.md](rules/svg-icon-enrichment.md) —— SVG Icon Enrichment
+- [rules/svg-path-draw.md](rules/svg-path-draw.md) —— SVG Path Draw
+- [rules/theme-crossfade-morph.md](rules/theme-crossfade-morph.md) —— Theme Crossfade Morph
+- [rules/vertical-spring-ticker.md](rules/vertical-spring-ticker.md) —— Vertical Spring Ticker（老虎机）
+- [rules/viewport-change.md](rules/viewport-change.md) —— Viewport Change（虚拟镜头）
+- [rules/waterfall-entry.md](rules/waterfall-entry.md) —— 瀑布入场（Waterfall Entry）
+- [techniques.md](techniques.md) —— 视觉技法参考
+- [transitions/TRANSITION-REGISTRY.md](transitions/TRANSITION-REGISTRY.md) —— 转场 registry——机器用的唯一事实来源
+- [transitions/catalog.md](transitions/catalog.md) —— 转场目录
+- [transitions/css-3d.md](transitions/css-3d.md) —— css-3d
+- [transitions/css-blur.md](transitions/css-blur.md) —— css-blur
+- [transitions/css-cover.md](transitions/css-cover.md) —— css-cover
+- [transitions/css-destruction.md](transitions/css-destruction.md) —— css-destruction
+- [transitions/css-dissolve.md](transitions/css-dissolve.md) —— css-dissolve
+- [transitions/css-distortion.md](transitions/css-distortion.md) —— css-distortion
+- [transitions/css-grid.md](transitions/css-grid.md) —— css-grid
+- [transitions/css-light.md](transitions/css-light.md) —— css-light
+- [transitions/css-mechanical.md](transitions/css-mechanical.md) —— css-mechanical
+- [transitions/css-other.md](transitions/css-other.md) —— css-other
+- [transitions/css-push.md](transitions/css-push.md) —— css-push
+- [transitions/css-radial.md](transitions/css-radial.md) —— css-radial
+- [transitions/css-scale.md](transitions/css-scale.md) —— css-scale
+- [transitions/overview.md](transitions/overview.md) —— 场景转场

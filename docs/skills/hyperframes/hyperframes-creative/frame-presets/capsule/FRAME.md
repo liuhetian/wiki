@@ -108,7 +108,7 @@ components:
     background: "1–3 radial candy glows (6–15% opacity) over {colors.cream} + 4% grain overlay"
     description: "Baseline canvas layers on every frame. Never absent."
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/frame-presets/capsule/FRAME.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/frame-presets/capsule/FRAME.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Capsule — Frame (video / frame layer)
 

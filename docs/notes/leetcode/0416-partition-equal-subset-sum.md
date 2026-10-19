@@ -4,7 +4,7 @@ description: "转成 0-1 背包：能否选出和为 sum/2 的子集；一维布
 
 # 416. 分割等和子集
 
-[LeetCode 416](https://leetcode.cn/problems/partition-equal-subset-sum/) · 中等 · 动态规划
+LeetCode 416[^leetcode] · 中等 · 动态规划
 
 ## 题
 
@@ -88,3 +88,5 @@ description: "转成 0-1 背包：能否选出和为 sum/2 的子集；一维布
         assert s.canPartition([2, 2]) is True
         assert s.canPartition([1, 2, 5]) is False
     ```
+
+[^leetcode]: [LeetCode 416](https://leetcode.cn/problems/partition-equal-subset-sum/)，2026-09-29 读。

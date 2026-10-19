@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/product-launch-video/references/motion-language.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/product-launch-video/references/motion-language.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 运动语言 —— 动作词表 + 运动准则 + seek 安全核心
 

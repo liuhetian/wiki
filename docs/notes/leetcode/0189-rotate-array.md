@@ -4,7 +4,7 @@ description: "三次翻转实现原地轮转：(AB)ᴿ = BᴿAᴿ，整体反转
 
 # 189. 轮转数组
 
-[LeetCode 189](https://leetcode.cn/problems/rotate-array/) · 中等 · 普通数组
+LeetCode 189[^leetcode] · 中等 · 普通数组
 
 ## 题
 
@@ -85,3 +85,5 @@ $$
             s.rotate(arr, k)
             assert arr == want, (S, arr, k)
     ```
+
+[^leetcode]: [LeetCode 189](https://leetcode.cn/problems/rotate-array/)，2026-09-29 读。

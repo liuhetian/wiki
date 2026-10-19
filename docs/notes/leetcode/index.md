@@ -4,7 +4,7 @@ description: "官方热题 100 一题一篇，按题型分组；记的不是答�
 
 # LeetCode 热题 100
 
-LeetCode 官方学习计划[「热题 100」](https://leetcode.cn/studyplan/top-100-liked/)的题解，一题一篇，分组沿用官方的 15 个题型。题单 2026-09-29 抓取，存档在 [`assets/hot100.json`](assets/hot100.json)。
+LeetCode 官方学习计划「热题 100」[^top-100-liked]的题解，一题一篇，分组沿用官方的 15 个题型。题单 2026-09-29 抓取，存档在 [`assets/hot100.json`](assets/hot100.json)。
 
 每篇骨架是**题 → 一句话 → 关键技巧 → 解 → 延伸**，价值密度在"关键技巧"——为什么想得到、为什么是对的。题意用自己的话概括，原文点每篇顶部的 LeetCode 链接看。
 
@@ -160,3 +160,5 @@ LeetCode 官方学习计划[「热题 100」](https://leetcode.cn/studyplan/top-
 - [75. 颜色分类](0075-sort-colors.md) · 中等 —— 荷兰国旗三指针：[0,p0) 全 0、[p0,i) 全 1、(p2,n) 全 2，i 扫到 p2 为止；换来的 2 侧元素没看过，i 不前进
 - [31. 下一个排列](0031-next-permutation.md) · 中等 —— 从右找第一个下降点 i，再从右找第一个比它大的数交换，最后把 i 之后的降序段反转成升序——增幅最小的那一步
 - [287. 寻找重复数](0287-find-the-duplicate-number.md) · 中等 —— 把 i → nums[i] 看成链表的 next 指针，重复值就是环的入口——Floyd 快慢指针，不改数组、O(1) 空间
+
+[^top-100-liked]: [「热题 100」](https://leetcode.cn/studyplan/top-100-liked/)，2026-09-29 读。

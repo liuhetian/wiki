@@ -57,4 +57,6 @@ Kanban 把 WIP 定义为某一时刻已经进入流程、尚未完成的工作�
 
 ## 来源
 
-- Kanban University：[The Official Guide to The Kanban Method](https://kanban.university/kanban-guide/) —— 官方指南将限制 WIP、拉动工作和管理流动放在同一套机制里
+- Kanban University：The Official Guide to The Kanban Method[^kanban-guide] —— 官方指南将限制 WIP、拉动工作和管理流动放在同一套机制里
+
+[^kanban-guide]: [The Official Guide to The Kanban Method](https://kanban.university/kanban-guide/)，2026-07-28 读。

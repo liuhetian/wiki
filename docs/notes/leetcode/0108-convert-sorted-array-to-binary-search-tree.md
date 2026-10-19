@@ -4,7 +4,7 @@ description: "有序数组取中点当根、两半递归建子树——BST 性�
 
 # 108. 将有序数组转换为二叉搜索树
 
-[LeetCode 108](https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/) · 简单 · 二叉树
+LeetCode 108[^leetcode] · 简单 · 二叉树
 
 ## 题
 
@@ -66,3 +66,5 @@ class Solution:
         assert inorder(t) == nums and height(t) >= 1
     assert tree_vals(s.sortedArrayToBST([-10, -3, 0, 5, 9])) == [0, -10, 5, None, -3, None, 9]
     ```
+
+[^leetcode]: [LeetCode 108](https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/)，2026-09-29 读。

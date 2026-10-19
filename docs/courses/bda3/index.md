@@ -10,9 +10,9 @@ description: "BDA3 伴读导读：贝叶斯的方法主干，先验、层级模�
 
 ## 读法
 
-- **免费 PDF**：Gelman 的书页 [sites.stat.columbia.edu/gelman/book](https://sites.stat.columbia.edu/gelman/book/) 提供全书 PDF，限非商业用途，勘误修到 2025 年 2 月。同页有数据集、勘误表和部分习题解答。讲解直接链到书页，不摘抄
-- **顺序照 Aki Vehtari 的 Aalto 课走**：[BDA_course_Aalto](https://avehtari.github.io/BDA_course_Aalto/) 按第 1、2、3、10、11、12、5、6、7、9、4 章的顺序走，先学计算再学层级模型；第 7 章配一篇 LOO 与 WAIC 的补充论文。每章有阅读提示（chapter notes）和讲课视频
-- **代码用 Python**：Aki 的 [BDA_py_demos](https://github.com/avehtari/BDA_py_demos) 复现书里的例子；模型用 CmdStanPy，诊断用 ArviZ。诊断函数比书新，见口径差异
+- **免费 PDF**：Gelman 的书页 sites.stat.columbia.edu/gelman/book[^book] 提供全书 PDF，限非商业用途，勘误修到 2025 年 2 月。同页有数据集、勘误表和部分习题解答。讲解直接链到书页，不摘抄
+- **顺序照 Aki Vehtari 的 Aalto 课走**：BDA_course_Aalto[^bda-course-aalto] 按第 1、2、3、10、11、12、5、6、7、9、4 章的顺序走，先学计算再学层级模型；第 7 章配一篇 LOO 与 WAIC 的补充论文。每章有阅读提示（chapter notes）和讲课视频
+- **代码用 Python**：Aki 的 BDA_py_demos[^bda-py-demos] 复现书里的例子；模型用 CmdStanPy，诊断用 ArviZ。诊断函数比书新，见口径差异
 - 第 1–7、9–12、14–16 章必读；第 8、13、17、18、20–22 章选读；第 19、23 章跳。附录 A 的分布表当速查用
 
 ## 章节地图
@@ -55,3 +55,7 @@ description: "BDA3 伴读导读：贝叶斯的方法主干，先验、层级模�
 ## 课程
 
 还没开课。排到时照 Aalto 的顺序，先写第 2 章伴读。
+
+[^book]: [sites.stat.columbia.edu/gelman/book](https://sites.stat.columbia.edu/gelman/book/)，2026-10-02 读。
+[^bda-course-aalto]: [BDA_course_Aalto](https://avehtari.github.io/BDA_course_Aalto/)，2026-10-02 读。
+[^bda-py-demos]: [BDA_py_demos](https://github.com/avehtari/BDA_py_demos)，2026-10-02 读。

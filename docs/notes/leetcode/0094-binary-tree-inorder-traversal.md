@@ -4,7 +4,7 @@ description: "递归改迭代的通用手法：显式栈模拟调用栈，「一
 
 # 94. 二叉树的中序遍历
 
-[LeetCode 94](https://leetcode.cn/problems/binary-tree-inorder-traversal/) · 简单 · 二叉树
+LeetCode 94[^leetcode] · 简单 · 二叉树
 
 ## 题
 
@@ -81,3 +81,5 @@ description: "递归改迭代的通用手法：显式栈模拟调用栈，「一
     assert s.inorderTraversal(build_tree([1])) == [1]
     assert s.inorderTraversal(build_tree([4, 2, 6, 1, 3, 5, 7])) == [1, 2, 3, 4, 5, 6, 7]
     ```
+
+[^leetcode]: [LeetCode 94](https://leetcode.cn/problems/binary-tree-inorder-traversal/)，2026-09-29 读。

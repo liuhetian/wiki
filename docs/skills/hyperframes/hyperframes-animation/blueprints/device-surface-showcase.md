@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/device-surface-showcase.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/device-surface-showcase.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # device-surface-showcase — 设备 / 界面展示
 

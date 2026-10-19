@@ -4,7 +4,7 @@ description: "所有二分都写成「找第一个满足条件的位置」——
 
 # 35. 搜索插入位置
 
-[LeetCode 35](https://leetcode.cn/problems/search-insert-position/) · 简单 · 二分查找
+LeetCode 35[^leetcode] · 简单 · 二分查找
 
 ## 题
 
@@ -64,3 +64,5 @@ class Solution:
     assert s.searchInsert([1, 3, 5, 6], 0) == 0
     assert s.searchInsert([1], 1) == 0
     ```
+
+[^leetcode]: [LeetCode 35](https://leetcode.cn/problems/search-insert-position/)，2026-09-29 读。

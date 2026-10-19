@@ -11,7 +11,7 @@ description: "音乐生成的维护记录：2026-10-02 选 OpenRouter 上的 Goo
 2026-10-02 比较了两家：
 
 - **Google Lyria 3**：2026-03-31 上了 OpenRouter，能直接走现有的海外中转。
-- **Suno**：没有公开的官方 API，只能在网页上用。2026 年 7 月 Suno 说在探索开发者 API，用申请表收意向，先给挑过的合作方，没给上线时间和价格（见 [Music Business Worldwide 的报道](https://www.musicbusinessworldwide.com/suno-explores-developer-api-seeking-apps-that-unlock-experiences-generative-music-makes-possible-for-the-first-time/)）。网上叫「Suno API」的都是第三方包装的，可能违反 Suno 的服务条款，不接。
+- **Suno**：没有公开的官方 API，只能在网页上用。2026 年 7 月 Suno 说在探索开发者 API，用申请表收意向，先给挑过的合作方，没给上线时间和价格（见 Music Business Worldwide 的报道[^suno-explores-developer-api-seek]）。网上叫「Suno API」的都是第三方包装的，可能违反 Suno 的服务条款，不接。
 
 ## 接口从哪来 { #upstream }
 
@@ -42,3 +42,5 @@ description: "音乐生成的维护记录：2026-10-02 选 OpenRouter 上的 Goo
 - pro 版、带歌词、传图片配乐都没跑过；文字部分是不是歌词还没确认。
 - 没比较过 Lyria 和别的音乐模型的效果。
 - 海外机的 SSH 公钥还没装回去，OpenRouter 的中转配置没同步进 `assets/gateway/`。
+
+[^suno-explores-developer-api-seek]: [Music Business Worldwide 的报道](https://www.musicbusinessworldwide.com/suno-explores-developer-api-seeking-apps-that-unlock-experiences-generative-music-makes-possible-for-the-first-time/)，2026-10-02 读。

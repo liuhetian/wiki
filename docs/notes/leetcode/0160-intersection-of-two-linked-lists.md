@@ -4,7 +4,7 @@ description: "两个指针走完自己再走对方，路程都是 a+b+c，差值
 
 # 160. 相交链表
 
-[LeetCode 160](https://leetcode.cn/problems/intersection-of-two-linked-lists/) · 简单 · 链表
+LeetCode 160[^leetcode] · 简单 · 链表
 
 ## 题
 
@@ -70,3 +70,5 @@ class Solution:
     same = build_list([1, 2])
     assert s.getIntersectionNode(same, same) is same
     ```
+
+[^leetcode]: [LeetCode 160](https://leetcode.cn/problems/intersection-of-two-linked-lists/)，2026-09-29 读。

@@ -8,7 +8,7 @@ description: "Agent 网络搜索：默认用 OpenRouter 的 perplexity/sonar-pro
 
 ## 默认：Perplexity Sonar Pro Search { #sonar }
 
-用 OpenRouter 上的 `perplexity/sonar-pro-search`，走[中转](../../../posts/ai-assistant/api-gateway.md)的海外机。就是一次普通的 chat completions 调用，模型自己去搜，再写一段带引用的回答。照 [OpenRouter 模型页](https://openrouter.ai/perplexity/sonar-pro-search)的示例调，只改两处：
+用 OpenRouter 上的 `perplexity/sonar-pro-search`，走[中转](../../../posts/ai-assistant/api-gateway.md)的海外机。就是一次普通的 chat completions 调用，模型自己去搜，再写一段带引用的回答。照 OpenRouter 模型页[^sonar-pro-search]的示例调，只改两处：
 
 - **base URL**：`https://openrouter.ai` 换成 `https://openrouter.reverse-pro.xyz`
 - **API key**：用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来
@@ -27,7 +27,7 @@ curl -sS https://openrouter.reverse-pro.xyz/api/v1/chat/completions \
 
 ## 结果列表：DeepSeek Search { #deepseek }
 
-DeepSeek 官方的搜索接口，只返回一串结果，不写回答。走中转的国内机，照 [DeepSeek 官方 API 文档](https://api-docs.deepseek.com/zh-cn/api/search)调，只改两处：
+DeepSeek 官方的搜索接口，只返回一串结果，不写回答。走中转的国内机，照 DeepSeek 官方 API 文档[^search]调，只改两处：
 
 - **base URL**：`https://api.deepseek.com` 换成 `https://deepseek-proxy.liuhetian.work`
 - **API key**：用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来
@@ -47,3 +47,6 @@ curl -sS https://deepseek-proxy.liuhetian.work/v1/tools/search \
 - **价钱**：有结果的一次 0.005 元，没结果、报错不收钱。账号限速每秒 5 次，超了返回 429，等一会儿再重试
 
 维护记录：[接口从哪来、实测结果](../../../maintenance/web-search.md)。正常使用不用看，搜索出问题再看。
+
+[^sonar-pro-search]: [OpenRouter 模型页](https://openrouter.ai/perplexity/sonar-pro-search)，2026-10-02 读。
+[^search]: [DeepSeek 官方 API 文档](https://api-docs.deepseek.com/zh-cn/api/search)，2026-10-18 读。

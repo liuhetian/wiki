@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/storyboard-recipe.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/storyboard-recipe.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 分镜配方 —— 像发布影片那样规划一支视频
 

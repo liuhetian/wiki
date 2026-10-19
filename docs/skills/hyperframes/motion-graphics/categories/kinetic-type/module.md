@@ -1,4 +1,4 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/categories/kinetic-type/module.md（Apache-2.0）；改动说明见 skills/hyperframes/MIRROR.md -->
+<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/categories/kinetic-type/module.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # kinetic-type —— category 模块
 

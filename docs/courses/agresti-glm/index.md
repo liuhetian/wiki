@@ -11,7 +11,7 @@ description: "Agresti 伴读导读：线性模型的投影视角、GLM 的拟合
 ## 读法
 
 - **在版教材：只摘句、标页码**。目前只有这一版
-- **数据**：书里印的 `www.stat.ufl.edu/~aa/glm/data` 已失效，数据集和勘误在作者站 [alanagresti.com/glm](https://alanagresti.com/glm/glm.html)
+- **数据**：书里印的 `www.stat.ufl.edu/~aa/glm/data` 已失效，数据集和勘误在作者站 alanagresti.com/glm[^glm]
 - **代码换成 Python**：书的例子用 R，本站用 `statsmodels`。先拿书上一个例子把系数和偏差对上，再往下读
 - **附录 B 有部分习题的解答提纲**：题换数据自己出，提纲只用来核对思路
 - 第 1–5、7、9 章必读；第 6、8、10、11 章选读：多项与有序 logit 到计量的离散因变量再用，准似然接第 7 章的过度离散，贝叶斯 GLM 交给 BDA3，正则化与 GAM 在 ISLP 第 6、7 章已经讲过
@@ -43,3 +43,5 @@ description: "Agresti 伴读导读：线性模型的投影视角、GLM 的拟合
 ## 课程
 
 还没开课。排到时先写第 2 章伴读：投影视角的 Gauss-Markov 是清单这一组的第一页。
+
+[^glm]: [alanagresti.com/glm](https://alanagresti.com/glm/glm.html)，2026-10-02 读。

@@ -261,12 +261,36 @@ flowchart LR
 
 审核对照的培养方案与教材来源，只指路不存档——本文没有引用原句，读者不依赖点开链接就能理解正文：
 
-- 教指委[应用统计专业硕士指导性培养方案（2024 年修订）](http://mas.ruc.edu.cn/jxpy/pyfa/index.htm)：五类专业基础课、七个建议方向
-- [中央财经大学](https://sam.cufe.edu.cn/info/1039/3814.htm)与[上海财经大学](https://ssds.sufe.edu.cn/1546/list.htm)应用统计专硕课表：国内财经类院校的必修交集
-- [Stanford MS Statistics](https://statistics.stanford.edu/graduate-programs/statistics-ms/statistics-ms-required-courses-2024-2025)、[Berkeley MA Statistics](https://statistics.berkeley.edu/academics/masters/program)、[CMU MADS handbook](https://www.cmu.edu/dietrich/statistics-datascience/resources/docs/mads-grad-handbook.pdf)、[UChicago MS handbook](https://stat.uchicago.edu/academics/current-students/ms-student-handbook/)：美国项目的共同骨架
-- Hernán、Hsu、Healy 2019 [A Second Chance to Get Causal Inference Right](https://arxiv.org/abs/1804.10846)：数据科学任务分 description / prediction / causal inference 三类
-- [Wooldridge 8e 目录](https://www.cengage.com/c/introductory-econometrics-a-modern-approach-8e-wooldridge/9780357900161/)、[ISLP](https://www.statlearning.com/)、[Blitzstein & Hwang](https://probabilitybook.net/)、[What If](https://miguelhernan.org/whatifbook)、[d2l.ai](https://d2l.ai/)、[BDA3](https://sites.stat.columbia.edu/gelman/book/)、[FPP3 Python 版](https://otexts.com/fpppy/)、[UDL](https://udlbook.github.io/udlbook/)、[The Effect](https://theeffectbook.net/)、[Mixtape](https://mixtape.scunning.com/)：课程队列与参考教材的开放版本；在版书的版次和目录来源记在各自的导读页
-- Roth 等 2023 [What's Trending in Difference-in-Differences](https://www.jonathandroth.com/assets/files/DiD_Review_Paper.pdf)：交错 DID 新进展的综述
-- [TabArena 2025](https://arxiv.org/abs/2506.16791)、[Grinsztajn 2022](https://arxiv.org/abs/2207.08815)：表格数据上 GBDT 与深度模型的基准
-- Angelopoulos、Bates 2021 [A Gentle Introduction to Conformal Prediction](https://arxiv.org/abs/2107.07511)：不确定性量化的入口
-- Keshav 2007 [How to Read a Paper](https://dl.acm.org/doi/10.1145/1273445.1273458)：论文三遍读法，论文页骨架的来源
+- 教指委应用统计专业硕士指导性培养方案（2024 年修订）[^pyfa]：五类专业基础课、七个建议方向
+- 中央财经大学[^1039-3814]与上海财经大学[^list]应用统计专硕课表：国内财经类院校的必修交集
+- Stanford MS Statistics[^statistics-ms-required-courses-2]、Berkeley MA Statistics[^program]、CMU MADS handbook[^mads-grad-handbook]、UChicago MS handbook[^ms-student-handbook]：美国项目的共同骨架
+- Hernán、Hsu、Healy 2019 A Second Chance to Get Causal Inference Right[^1804-10846]：数据科学任务分 description / prediction / causal inference 三类
+- Wooldridge 8e 目录[^introductory-econometrics-a-mode-9780357900161]、ISLP[^statlearning]、Blitzstein & Hwang[^probabilitybook]、What If[^whatifbook]、d2l.ai[^d2l]、BDA3[^book]、FPP3 Python 版[^fpppy]、UDL[^udlbook]、The Effect[^theeffectbook]、Mixtape[^scunning]：课程队列与参考教材的开放版本；在版书的版次和目录来源记在各自的导读页
+- Roth 等 2023 What's Trending in Difference-in-Differences[^did-review-paper]：交错 DID 新进展的综述
+- TabArena 2025[^2506-16791]、Grinsztajn 2022[^2207-08815]：表格数据上 GBDT 与深度模型的基准
+- Angelopoulos、Bates 2021 A Gentle Introduction to Conformal Prediction[^2107-07511]：不确定性量化的入口
+- Keshav 2007 How to Read a Paper[^1273445-1273458]：论文三遍读法，论文页骨架的来源
+
+[^pyfa]: [应用统计专业硕士指导性培养方案（2024 年修订）](http://mas.ruc.edu.cn/jxpy/pyfa/index.htm)，2026-09-29 读。
+[^1039-3814]: [中央财经大学](https://sam.cufe.edu.cn/info/1039/3814.htm)，2026-09-29 读。
+[^list]: [上海财经大学](https://ssds.sufe.edu.cn/1546/list.htm)，2026-09-29 读。
+[^statistics-ms-required-courses-2]: [Stanford MS Statistics](https://statistics.stanford.edu/graduate-programs/statistics-ms/statistics-ms-required-courses-2024-2025)，2026-09-29 读。
+[^program]: [Berkeley MA Statistics](https://statistics.berkeley.edu/academics/masters/program)，2026-09-29 读。
+[^mads-grad-handbook]: [CMU MADS handbook](https://www.cmu.edu/dietrich/statistics-datascience/resources/docs/mads-grad-handbook.pdf)，2026-09-29 读。
+[^ms-student-handbook]: [UChicago MS handbook](https://stat.uchicago.edu/academics/current-students/ms-student-handbook/)，2026-09-29 读。
+[^1804-10846]: [A Second Chance to Get Causal Inference Right](https://arxiv.org/abs/1804.10846)，2026-09-29 读。
+[^introductory-econometrics-a-mode-9780357900161]: [Wooldridge 8e 目录](https://www.cengage.com/c/introductory-econometrics-a-modern-approach-8e-wooldridge/9780357900161/)，2026-10-02 读。
+[^statlearning]: [ISLP](https://www.statlearning.com/)，2026-10-02 读。
+[^probabilitybook]: [Blitzstein & Hwang](https://probabilitybook.net/)，2026-10-02 读。
+[^whatifbook]: [What If](https://miguelhernan.org/whatifbook)，2026-10-02 读。
+[^d2l]: [d2l.ai](https://d2l.ai/)，2026-10-02 读。
+[^book]: [BDA3](https://sites.stat.columbia.edu/gelman/book/)，2026-10-02 读。
+[^fpppy]: [FPP3 Python 版](https://otexts.com/fpppy/)，2026-10-02 读。
+[^udlbook]: [UDL](https://udlbook.github.io/udlbook/)，2026-10-02 读。
+[^theeffectbook]: [The Effect](https://theeffectbook.net/)，2026-10-02 读。
+[^scunning]: [Mixtape](https://mixtape.scunning.com/)，2026-10-02 读。
+[^did-review-paper]: [What's Trending in Difference-in-Differences](https://www.jonathandroth.com/assets/files/DiD_Review_Paper.pdf)，2026-09-29 读。
+[^2506-16791]: [TabArena 2025](https://arxiv.org/abs/2506.16791)，2026-09-29 读。
+[^2207-08815]: [Grinsztajn 2022](https://arxiv.org/abs/2207.08815)，2026-09-29 读。
+[^2107-07511]: [A Gentle Introduction to Conformal Prediction](https://arxiv.org/abs/2107.07511)，2026-09-29 读。
+[^1273445-1273458]: [How to Read a Paper](https://dl.acm.org/doi/10.1145/1273445.1273458)，2026-09-29 读。

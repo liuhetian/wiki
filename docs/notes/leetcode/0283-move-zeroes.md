@@ -4,7 +4,7 @@ description: "快慢指针原地「压缩」：慢指针左边永远是已处理
 
 # 283. 移动零
 
-[LeetCode 283](https://leetcode.cn/problems/move-zeroes/) · 简单 · 双指针
+LeetCode 283[^leetcode] · 简单 · 双指针
 
 ## 题
 
@@ -60,3 +60,5 @@ class Solution:
         s.moveZeroes(arr)
         assert arr == want
     ```
+
+[^leetcode]: [LeetCode 283](https://leetcode.cn/problems/move-zeroes/)，2026-09-29 读。

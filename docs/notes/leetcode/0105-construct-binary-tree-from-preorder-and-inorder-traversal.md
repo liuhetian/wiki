@@ -4,7 +4,7 @@ description: "前序给根，中序按根切成左右两段，段长反推前序
 
 # 105. 从前序与中序遍历序列构造二叉树
 
-[LeetCode 105](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/) · 中等 · 二叉树
+LeetCode 105[^leetcode] · 中等 · 二叉树
 
 ## 题
 
@@ -68,3 +68,5 @@ class Solution:
     assert tree_vals(s.buildTree([1, 2, 3], [3, 2, 1])) == [1, 2, None, 3]   # 左链
     assert tree_vals(s.buildTree([1, 2, 3], [1, 2, 3])) == [1, None, 2, None, 3]  # 右链
     ```
+
+[^leetcode]: [LeetCode 105](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)，2026-09-29 读。

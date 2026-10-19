@@ -4,7 +4,7 @@ description: "按「最后一间抢不抢」分两类：dp[i] = max(dp[i-1], dp[
 
 # 198. 打家劫舍
 
-[LeetCode 198](https://leetcode.cn/problems/house-robber/) · 中等 · 动态规划
+LeetCode 198[^leetcode] · 中等 · 动态规划
 
 ## 题
 
@@ -57,3 +57,5 @@ class Solution:
     assert s.rob([5]) == 5
     assert s.rob([2, 1, 1, 2]) == 4
     ```
+
+[^leetcode]: [LeetCode 198](https://leetcode.cn/problems/house-robber/)，2026-09-29 读。

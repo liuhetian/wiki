@@ -4,7 +4,7 @@ description: "单调队列：新来的更大就把队尾「永无出头之日」
 
 # 239. 滑动窗口最大值
 
-[LeetCode 239](https://leetcode.cn/problems/sliding-window-maximum/) · 困难 · 子串
+LeetCode 239[^leetcode] · 困难 · 子串
 
 ## 题
 
@@ -62,7 +62,7 @@ class Solution:
 
 - 堆也能做：最大堆存 `(-值, 下标)`，取堆顶前把过期的弹掉。$O(n \log n)$，好写但不是最优。
 - 单调**栈**是它的近亲，只从一端进出：[739. 每日温度](0739-daily-temperatures.md)、[84. 柱状图中最大的矩形](0084-largest-rectangle-in-histogram.md)、[42. 接雨水](0042-trapping-rain-water.md)。
-- 单调队列还常用来优化 DP 的「窗口内取最值」转移，如「跳跃游戏 VI」（[LeetCode 1696](https://leetcode.cn/problems/jump-game-vi/)）。
+- 单调队列还常用来优化 DP 的「窗口内取最值」转移，如「跳跃游戏 VI」（LeetCode 1696[^leetcode-2]）。
 - 坑：队列里存**下标**不存值，否则判断不了过期。
 
 ??? note "自测"
@@ -75,3 +75,6 @@ class Solution:
     assert s.maxSlidingWindow([9, 8, 7, 6], 2) == [9, 8, 7]
     assert s.maxSlidingWindow([4, 4, 4], 3) == [4]
     ```
+
+[^leetcode]: [LeetCode 239](https://leetcode.cn/problems/sliding-window-maximum/)，2026-09-29 读。
+[^leetcode-2]: [LeetCode 1696](https://leetcode.cn/problems/jump-game-vi/)，2026-09-29 读。

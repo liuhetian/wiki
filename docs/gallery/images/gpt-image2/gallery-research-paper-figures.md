@@ -2,7 +2,7 @@
 
 ### 患者队列与多模态生物标志物工作流
 
-<img src="assets/research-paper-figures/clinical-cohort-flow.png" alt="clinical cohort flow" width="420"/>
+<img src="assets/research-paper-figures/clinical-cohort-flow.png" alt="clinical cohort flow" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张 Nature Medicine / Science Translational Medicine 风格的科研论文配图，横版 3:2（1536×1024），柔和的文献科学配色，简洁优雅。
@@ -20,7 +20,7 @@ D. 紧凑的表格式性能汇总，三行："AUROC"、"C-index"、"Calibration 
 
 ### 单细胞免疫图谱揭示治疗响应状态
 
-<img src="assets/research-paper-figures/single-cell-immune-atlas.png" alt="single cell immune atlas" width="420"/>
+<img src="assets/research-paper-figures/single-cell-immune-atlas.png" alt="single cell immune atlas" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张精致的 Nature / Cell 风格生物医学科研配图，横版 3:2（1536×1024），柔和简约的配色，可直接用于发表。
@@ -38,7 +38,7 @@ D. 拟时序轨迹图：一条干净的分叉曲线，从 "naive" 分向 "effect
 
 ### 多模态医疗 AI 方法图
 
-<img src="assets/research-paper-figures/multimodal-medical-ai-method.png" alt="multimodal medical ai method" width="420"/>
+<img src="assets/research-paper-figures/multimodal-medical-ai-method.png" alt="multimodal medical ai method" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张 Nature Biomedical Engineering / NeurIPS 风格的医疗 AI 方法图，横版 3:2（1536×1024），柔和的文献科学配色，简约的学术版式。
@@ -55,7 +55,7 @@ C. 右侧输出：三个任务头 "diagnosis"、"risk score"、"treatment respon
 
 ### 治疗响应柱状图与森林图
 
-<img src="assets/research-paper-figures/therapeutic-response-bar-forest.png" alt="therapeutic response bar forest" width="420"/>
+<img src="assets/research-paper-figures/therapeutic-response-bar-forest.png" alt="therapeutic response bar forest" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张 Nature Medicine 风格的统计结果图，横版 3:2（1536×1024），柔和、克制、达到发表质量。
@@ -73,7 +73,7 @@ D. 极简机制示意图：适应性治疗降低炎症信号、恢复免疫监�
 
 ### Transformer 编码器–解码器架构
 
-<img src="assets/research-paper-figures/transformer-arch.png" alt="transformer arch" width="420"/>
+<img src="assets/research-paper-figures/transformer-arch.png" alt="transformer arch" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 学术概念图，展示 Transformer 编码器-解码器架构，NeurIPS 终稿（camera-ready）风格。两列竖向堆叠模块并排，中间用虚线分隔。
@@ -87,7 +87,7 @@ D. 极简机制示意图：适应性治疗降低炎症信号、恢复免疫监�
 
 ### 检索增强生成（RAG）流水线
 
-<img src="assets/research-paper-figures/rag-pipeline.png" alt="rag pipeline" width="420"/>
+<img src="assets/research-paper-figures/rag-pipeline.png" alt="rag pipeline" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 学术系统示意图，展示 RAG 流水线，6 个阶段从左到右排列。
@@ -106,7 +106,7 @@ D. 极简机制示意图：适应性治疗降低炎症信号、恢复免疫监�
 
 ### 多智能体 LLM 系统架构
 
-<img src="assets/research-paper-figures/agent-architecture.png" alt="agent architecture" width="420"/>
+<img src="assets/research-paper-figures/agent-architecture.png" alt="agent architecture" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 高保真系统图，展示多智能体 LLM 架构，风格仿照细节丰富的 AutoGen / LangGraph / Anthropic Managed Agents 论文 Figure 1。轻微投影，暖铜色高光，带编号的流程标记 ①②③④。
@@ -126,7 +126,7 @@ D. 极简机制示意图：适应性治疗降低炎症信号、恢复免疫监�
 
 ### 去噪扩散的前向/反向链
 
-<img src="assets/research-paper-figures/diffusion-chain.png" alt="diffusion chain" width="420"/>
+<img src="assets/research-paper-figures/diffusion-chain.png" alt="diffusion chain" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 学术配图，展示扩散的前向 + 反向链，两条横向链上下堆叠。
@@ -142,7 +142,7 @@ D. 极简机制示意图：适应性治疗降低炎症信号、恢复免疫监�
 
 ### 经验缩放定律曲线图
 
-<img src="assets/research-paper-figures/scaling-curves.png" alt="scaling curves" width="420"/>
+<img src="assets/research-paper-figures/scaling-curves.png" alt="scaling curves" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 对数坐标图，展示训练损失随算力的变化，四条曲线对应不同模型规模。
@@ -159,7 +159,7 @@ X 轴 "Training compute (FLOPs)"，对数刻度 "1e20"、"1e21"、"1e22"、"1e23
 
 ### 基准对比热力图
 
-<img src="assets/research-paper-figures/benchmark-heatmap.png" alt="benchmark heatmap" width="420"/>
+<img src="assets/research-paper-figures/benchmark-heatmap.png" alt="benchmark heatmap" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 热力图矩阵，模型 × 基准。
@@ -176,7 +176,7 @@ X 轴 "Training compute (FLOPs)"，对数刻度 "1e20"、"1e21"、"1e22"、"1e23
 
 ### 带误差线的消融柱状图
 
-<img src="assets/research-paper-figures/ablation-bars.png" alt="ablation bars" width="420"/>
+<img src="assets/research-paper-figures/ablation-bars.png" alt="ablation bars" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 分组柱状消融图。
@@ -196,7 +196,7 @@ X 轴：5 个基准分组 "MMLU"、"GSM8K"、"HumanEval"、"BBH"、"MATH"。Y �
 
 ### LLM 预训练数据配比桑基图
 
-<img src="assets/research-paper-figures/data-sankey.png" alt="data sankey" width="420"/>
+<img src="assets/research-paper-figures/data-sankey.png" alt="data sankey" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 桑基图，展示预训练数据配比，三个阶段，用半透明彩色流带连接。
@@ -214,7 +214,7 @@ X 轴：5 个基准分组 "MMLU"、"GSM8K"、"HumanEval"、"BBH"、"MATH"。Y �
 
 ### 多头注意力热力图
 
-<img src="assets/research-paper-figures/attention-heatmap.png" alt="attention heatmap" width="420"/>
+<img src="assets/research-paper-figures/attention-heatmap.png" alt="attention heatmap" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 配图，4 张注意力热力图（2×2 网格），共用同一个 12 token 的输入。
@@ -234,7 +234,7 @@ X 轴和 Y 轴上的 token 标签（X 轴旋转 45°）："The"、"quick"、"bro
 
 ### 前沿 LLM 家族谱系（2018–2026）
 
-<img src="assets/research-paper-figures/model-timeline.png" alt="model timeline" width="420"/>
+<img src="assets/research-paper-figures/model-timeline.png" alt="model timeline" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 时间线 / 家族谱系图，展示 2018–2026 年的前沿 LLM，三条泳道上下堆叠，共用一条横向时间轴。
@@ -252,7 +252,7 @@ X 轴和 Y 轴上的 token 标签（X 轴旋转 45°）："The"、"quick"、"bro
 
 ### ReAct 推理轨迹
 
-<img src="assets/research-paper-figures/react-trace.png" alt="react trace" width="420"/>
+<img src="assets/research-paper-figures/react-trace.png" alt="react trace" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 配图，展示 ReAct 在事实问答任务上的轨迹，7 个交替的块竖向排列。
@@ -277,7 +277,7 @@ Thought 块：灰青绿左边框，斜体，大脑图标。Action 块：低饱�
 
 ### 多模态智能体的记忆路由器
 
-<img src="assets/research-paper-figures/memory-router-figure.png" alt="memory router figure" width="420"/>
+<img src="assets/research-paper-figures/memory-router-figure.png" alt="memory router figure" width="420" loading="lazy" decoding="async"/>
 
 ```text
 为一个虚构的方法 Memory Router for Multimodal Agents 设计一张高品质的会议论文配图。横版版式，纯白背景，大号易读的标签，优雅的矢量感干净方框和弧形箭头，雅致的青绿、石板灰和琥珀色配色。顶部横条展示一条拥挤的基线流水线的失败模式，带红色警示点缀。主面板展示 User Query、Planner、Retriever、Tool Executor、Memory Router、Working Memory、Long-term Memory、Verifier，以及一条反馈回路。间距优美，图例清晰，纵深含蓄，精致的学术风格，细节丰富但不杂乱。
@@ -285,7 +285,7 @@ Thought 块：灰青绿左边框，斜体，大脑图标。Action 块：低饱�
 
 ### 前沿安全评测闭环
 
-<img src="assets/research-paper-figures/frontier-safety-eval-loop.png" alt="frontier safety eval loop" width="420"/>
+<img src="assets/research-paper-figures/frontier-safety-eval-loop.png" alt="frontier safety eval loop" width="420" loading="lazy" decoding="async"/>
 
 ```text
 为一条名为 Frontier Safety Eval Loop 的 AI 安全基准流水线生成一张漂亮的科研流程图。横版配图，白色背景，大号字体，矢量感图形，柔和的靛蓝、珊瑚、鼠尾草绿和石墨灰配色。展示以下阶段：Prompt Suite、Model Runs、Judge Models、Human Audit、Failure Taxonomy、Patch Queue 和 Re-run。使用干净的泳道、带编号的标注、紧凑的图例，以及高品质、可直接用于论文的风格。细节丰富，色彩和谐出色，留白充足，不杂乱，达到会议论文水准的示意图。
@@ -293,7 +293,7 @@ Thought 块：灰青绿左边框，斜体，大脑图标。Action 块：低饱�
 
 ### ICLR 风格方法图
 
-<img src="assets/research-paper-figures/hmr-iclr-figure.png" alt="hmr iclr figure" width="420"/>
+<img src="assets/research-paper-figures/hmr-iclr-figure.png" alt="hmr iclr figure" width="420" loading="lazy" decoding="async"/>
 
 ```text
 为一个虚构的方法 "Hierarchical Memory Routing for Long-Context Multimodal Reasoning (HMR)" 生成一张精致的 ICLR 风格 Figure 1。顶部横带展示朴素长上下文多模态处理的失败模式：一条过度拥挤的横向 token 流，混杂着文本、图像块、检索到的文档、工具调用轨迹和音频片段，用红橙色警示点缀表示干扰、注意力稀释、记忆冲突和二次方计算开销。一条干净的横向分隔线隔开下方的主面板，主面板把 HMR 框架呈现为一个宽敞的模块化闭环。中央：一个 Reasoning Controller，包含从 Observe_t 到 Update_t 的各个阶段。左侧：三层 Memory Hierarchy，分别是 working cache、episodic memory 和 semantic knowledge base。右侧：Multimodal Streams 通过路由路径有选择地进入。右下：只在需要时才激活的稀疏专家。白色背景，矢量感干净风格，中性灰加冷色点缀，标签精简但清晰可读，具备会议论文的清晰度，不要海报美学。
@@ -301,7 +301,7 @@ Thought 块：灰青绿左边框，斜体，大脑图标。Action 块：低饱�
 
 ### LLM 人格图谱
 
-<img src="assets/research-paper-figures/llm-persona-atlas.png" alt="llm persona atlas" width="420"/>
+<img src="assets/research-paper-figures/llm-persona-atlas.png" alt="llm persona atlas" width="420" loading="lazy" decoding="async"/>
 
 ```text
 为一篇 EMNLP / ACL 论文生成一张高品质的概念配图，横版 16:9，高分辨率，精致的编辑-学术风格。主题："LLM Persona Atlas"。它不应该看起来像一张普通的流水线示意图，而应该像顶级 NLP / 智能体论文里一张设计精美的 Figure 1：简约、考究、令人难忘，并有一个强有力的中心视觉隐喻。
@@ -315,7 +315,7 @@ Thought 块：灰青绿左边框，斜体，大脑图标。Action 块：低饱�
 
 ### 多模态智能体实验工作流图
 
-<img src="assets/research-paper-figures/multimodal-agent-experiment-workflow.png" alt="multimodal agent experiment workflow" width="420"/>
+<img src="assets/research-paper-figures/multimodal-agent-experiment-workflow.png" alt="multimodal agent experiment workflow" width="420" loading="lazy" decoding="async"/>
 
 ```text
 为一项多模态智能体评测实验生成一张精致的科研工作流图。白色背景上的横版学术示意图。展示以下阶段：Dataset Curation、Prompt Design、Tool Sandbox、Model Runs、Judge Ensemble、Error Taxonomy、Human Audit 和 Final Report。使用克制的蓝、石板灰和橙色配色，矢量感干净的方框，细箭头，带编号的标注，小图例，以及可直接用于论文的字体排印。它应该看起来像一篇扎实的系统论文里的 Figure 1，而不是营销海报。
@@ -323,7 +323,7 @@ Thought 块：灰青绿左边框，斜体，大脑图标。Action 块：低饱�
 
 ### 间接 prompt 注入攻击流程
 
-<img src="assets/research-paper-figures/prompt-injection-flow.png" alt="prompt injection flow" width="420"/>
+<img src="assets/research-paper-figures/prompt-injection-flow.png" alt="prompt injection flow" width="420" loading="lazy" decoding="async"/>
 
 ```text
 横版 16:9 安全论文配图，展示针对会调用工具的 LLM 智能体的间接 prompt 注入攻击。从左到右四列，主箭头沿途带编号流程标记 ①②③④。

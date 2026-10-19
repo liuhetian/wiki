@@ -4,7 +4,7 @@ description: "一行放一个皇后把二维搜索压成排列；列、主对角
 
 # 51. N 皇后
 
-[LeetCode 51](https://leetcode.cn/problems/n-queens/) · 困难 · 回溯
+LeetCode 51[^leetcode] · 困难 · 回溯
 
 ## 题
 
@@ -68,3 +68,5 @@ class Solution:
     assert s.solveNQueens(2) == [] and s.solveNQueens(3) == []
     assert len(s.solveNQueens(8)) == 92
     ```
+
+[^leetcode]: [LeetCode 51](https://leetcode.cn/problems/n-queens/)，2026-09-29 读。

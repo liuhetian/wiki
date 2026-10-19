@@ -4,7 +4,7 @@ description: "后序往上报「子树里找到了谁」：左右各报一个的
 
 # 236. 二叉树的最近公共祖先
 
-[LeetCode 236](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/) · 中等 · 二叉树
+LeetCode 236[^leetcode] · 中等 · 二叉树
 
 ## 题
 
@@ -72,3 +72,5 @@ class Solution:
     t = build_tree([1, 2])
     assert s.lowestCommonAncestor(t, find(t, 1), find(t, 2)).val == 1
     ```
+
+[^leetcode]: [LeetCode 236](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/)，2026-09-29 读。

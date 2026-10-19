@@ -4,4 +4,4 @@ description: "音频参考库：音乐、音效、配音成品配生成它的 pr
 
 # 音频
 
-音乐、音效、配音成品配生成它的 prompt 或制作方法。还没有收录，收了之后按[图片](../images/index.md)那边的格式来：一条一个成品，来源写进各自目录的 MIRROR。
+音乐、音效、配音成品配生成它的 prompt 或制作方法。还没有收录，收了之后按[图片](../images/index.md)那边的格式来：一条一个成品，来源写进[维护记录](../../maintenance/index.md#gallery)。
