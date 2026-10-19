@@ -10,6 +10,7 @@ description: "这个 wiki 自己的事：目标与计划、怎么当远程 skill
 
 - [本 wiki 的目标与计划](roadmap.md) —— 2026-09-29 的审核：专业主干只到本科应用统计，要补数理统计与计算、计量、机器学习、深度学习四块并加论文板块；吸纳教材只留地图、压缩、手迹、连线四样，课程排成 16 门的队列，文末进度表做一项划一项
 - [把 wiki 当远程 skill](everything-skill.md) —— skill 要人能读能改，所以吸纳别人的 skill 要翻译；frontmatter 可丢，脚本部署前打包；插件里「告诉模型怎么做」的一半能换成 skill，「Claude Code 自己执行」的 hooks、mod 换不了。由此衍生出 [skill 收纳方案](../../skills/wiki-guide/skill.md)
+- [新机器初始化自检](init-check.md) —— 从 clone 到能推送的五条链路：依赖与构建、链路闸门、LFS 真身、COS 凭证、GitHub 推送；各自怎么验、失败时先看哪里
 
 ## 用到的技术 { #tech }
 

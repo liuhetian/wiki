@@ -326,6 +326,7 @@ nav:
           - 打码：key 和小字: posts/wiki/age-mosaic.md
           - 复制本页 Markdown 源: posts/wiki/md-copy.md
           - Zensical 升级评估: posts/wiki/zensical-upgrade/index.md
+          - 新机器初始化自检: posts/wiki/init-check.md
       - 预测项目闭环: posts/prediction-loop.md
       - AI 时代的产品经理: posts/ai-pm.md
       - 动画网页 PPT: posts/animated-ppt/index.md
