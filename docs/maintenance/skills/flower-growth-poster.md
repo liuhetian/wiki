@@ -6,7 +6,7 @@ description: "花卉动态生长海报的维护记录：整理自抖音「小洁
 
 Gallery 里[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)那五步做法的维护记录。
 
-- **上游**：抖音「小洁AI实战」的 46 秒设计教程[^src]，读后的笔记是[花卉动态生长海报](../../posts/video-notes/flower-growth-poster.md)
+- **上游**：抖音「小洁AI实战」的 46 秒设计教程[^src]；上游视频的整理已并进 [Gallery 成品页](../../gallery/video/flower-growth-poster.md)
 - **commit**：不是仓库。视频 2026-10-15 发布，2026-10-17 读，同一天照做了一遍
 - **跳过**：
     - 在即梦的 Agent 对话里把效果存成平台技能、再从技能菜单调用：我们不用这个平台，两段固定的 prompt 就是对应的东西

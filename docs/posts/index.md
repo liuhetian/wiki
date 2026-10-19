@@ -16,4 +16,3 @@ description: "完整、可独立阅读的内容放在这里：既有一件事从
 - [如何分析数据](data-analysis/index.md) —— 描述性分析就两种：单变量分析和分组聚合；先分清指标是外延的还是内涵的，再看辛普森悖论、透视表与长宽表；附一份成绩长表，用 pandas pivot_table 走完[单维度分布](data-analysis/distribution.md)和[联合分析](data-analysis/cross-analysis.md)两篇案例
 - [搭建 AI 助手](ai-assistant/index.md) —— 给常驻 Agent 接输入输出通道；已落地的第一条是[不装邮件服务、自己在 25 端口说 SMTP](ai-assistant/mail-intake.md)，第二条是 [Caddy 换 key 的 API 中转](ai-assistant/api-gateway.md)（已接 DeepSeek）
 - [让 Kindle 常显一块 Token 看板](kindle-dashboard/index.md) —— 墨水屏的两条硬约束（刷新有代价、只有 16 级灰）反推出的整套设计；附[越狱与显示通道实操](kindle-dashboard/reference/jailbreak.md)、[上报接口交接](kindle-dashboard/reference/report-api.md)与[决策日志](kindle-dashboard/reference/decision-log.md)
-- [视频笔记](video-notes/index.md) —— 用整理视频为笔记 skill 把别人的视频整理成的学习笔记，一个视频一篇；要看的关键帧、截图直接用原图不随站发布。第一篇是抖音的[花卉动态生长海报](video-notes/flower-growth-poster.md)

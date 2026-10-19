@@ -63,7 +63,7 @@ description: "视频生成的维护记录：AutoDL.Art ComfyUI 工作流列表�
 
 ### 首尾帧 `minimax_h3_lightx2v` { #test-first-last }
 
-2026-10-17 12:47，照[花卉动态生长海报](../posts/video-notes/flower-growth-poster.md)那条视频笔记做的，成品和做法收在 [Gallery · 花卉动态生长海报](../gallery/video/flower-growth-poster.md)：
+2026-10-17 12:47，照抖音「小洁AI实战」那条 46 秒教程做的，成品和做法收在 [Gallery · 花卉动态生长海报](../gallery/video/flower-growth-poster.md)：
 
 | 请求 | 耗时 | 结果 |
 |---|---|---|

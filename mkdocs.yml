@@ -194,6 +194,10 @@ plugins:
         # 2026-10-17 视频制作 skill 并进 Gallery：花卉动态生长海报的做法直接写在成品页
         skills/video-production/index.md: gallery/video/index.md
         skills/video-production/flower-growth-poster/index.md: gallery/video/flower-growth-poster.md
+        # 2026-10-19 取消视频笔记板块：魔术题进 notes 智力题，花卉笔记并进 Gallery 成品页
+        posts/video-notes/five-card-trick.md: notes/probability/five-card-trick.md
+        posts/video-notes/flower-growth-poster.md: gallery/video/flower-growth-poster.md
+        posts/video-notes/index.md: posts/index.md
         # 2026-10-17 视频笔记改名整理视频为笔记、拆成下载分析输出三段，B站接口笔记并进 agent-io
         skills/video-note/references/bilibili-api-notes.md: skills/agent-io/reference/share-link/bilibili.md
         # 2026-10-17 测试skill是实测流水线用的 mock，从 Skills 挪进维护
@@ -360,9 +364,6 @@ nav:
               - posts/methods/decisions/index.md
               - 单向门与双向门: posts/methods/decisions/two-way-door-decisions.md
               - 事前验尸: posts/methods/decisions/premortem.md
-      - 视频笔记:
-          - posts/video-notes/index.md
-          - 花卉动态生长海报: posts/video-notes/flower-growth-poster.md
   - 笔记:
       - notes/index.md
       - 概率与算法:
@@ -394,6 +395,7 @@ nav:
           - 智力题:
               - "3 根绳子烧出 7 分钟": notes/probability/rope-timing.md
               - "1000 瓶酒找毒酒": notes/probability/poison-wine.md
+              - "五张牌魔术：24 种排列怎么猜中 48 张底牌": notes/probability/five-card-trick.md
               - "100 个囚徒开 100 个盒子": notes/probability/prisoners-boxes.md
               - "25 匹马找前 3 名": notes/probability/horse-race.md
               - "12 个球找假球": notes/probability/twelve-balls.md
