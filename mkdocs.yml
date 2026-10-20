@@ -1448,6 +1448,7 @@ nav:
           - 酒馆资产兼容: projects/liyuan/tavern.md
           - agent 模式与沙箱: projects/liyuan/agent-mode.md
           - 作者怎么用 AI 开发: projects/liyuan/ai-dev.md
+      - DeepSeek 视频问答: projects/deepseek-video-rag/index.md
   - 维护:
       - maintenance/index.md
       - Agent 能力:

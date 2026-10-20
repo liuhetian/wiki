@@ -13,3 +13,4 @@ description: "项目拆解板块：别人的一个项目实际在干什么、哪
 ## 已拆 { #projects }
 
 - [梨园 Liyuan](liyuan/index.md) —— 把 pi 这个 coding agent 改成演角色扮演的 agent：正文像代码一样用工具写在稿纸上，收笔后另一个模型记账；设计重心是 harness 该替模型管多少，作者加了一个月门禁又全拆掉。六个方向细讲：分权、场记账本、跨局记忆、酒馆兼容、写小说模式与沙箱、作者怎么用 AI 开发
+- [DeepSeek 视频问答](deepseek-video-rag/index.md) —— 粗讲：给 agent 挂的 skill，模型不收视频，就把录像拆成带时间标签的帧逐帧做卡片、拼成 30 秒一段；提问时 TF-IDF 粗筛、模型挑段、开推理深读，答案带时刻，准不准由人回放片段核对
