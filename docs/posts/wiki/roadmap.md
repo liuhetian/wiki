@@ -108,9 +108,9 @@ flowchart LR
 
 - `docs/papers/index.md` 与四个子目录索引，三个新笔记分类的索引
 - `mkdocs.yml` 的 nav
-- `docs/index.md` 与 `overrides/home.html`：板块卡片和「6 个板块」的计数改 7
+- `docs/index.md` 与 `overrides/home.html`：板块卡片和「7 个板块」的计数改 8
 - README 的仓库结构与内容导览
-- [写作规范](../../skills/wiki-guide/index.md)「内容放哪个板块」的归属六问变七问
+- [写作规范](../../skills/wiki-guide/index.md)「内容放哪个板块」的归属七问变八问
 
 脚本层没有写死顶层目录，`check-links.py` 对新板块自动生效。可选的第二步是给页面加一个按需加载的 Pyodide 运行器，让 numpy 级的小例子像 [JavaScript 笔记](../../notes/javascript/index.md)那样在页面上跑——不阻塞内容，先不做。
 

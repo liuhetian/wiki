@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 uv run zensical serve              # 本地预览（Python ≥3.13，依赖由 uv 管）
 uv run zensical build              # 构建到 site/
-python3 scripts/check-links.py     # AI 链路校验：父级链接 + 死链 + nav 注册 + 笔记未答题 + 图片/demo 资源死链；写完文章必跑
+python3 scripts/check-links.py     # AI 链路校验：父级链接 + 死链 + nav 注册 + 笔记未答题 + 图片/demo 资源死链 + 入口的复制带源地址标记；写完文章必跑
 ./deploy.sh                        # git pull --ff-only → check-links → 构建 → md 源镜像 + llms.txt + skill 整包 → 同步 COS
 node scripts/validate-lieflat-charts.mjs   # 只在改 data-visualization/lieflat-charts 时跑：48 篇 reference ↔ 48 个 demo 一一对应
 python3 scripts/check-leetcode.py         # 只在改 notes/leetcode 时跑：每篇 python 块拼起来真跑 assert + 五段骨架 + 热题 100 覆盖
@@ -31,7 +31,7 @@ bash scripts/course-smoke.sh               # 只在改 courses-src/git/assets/ �
 
 **AI 链路靠相对链接，不靠 nav。** 页面 URL 只由 `docs/` 里的文件位置决定，`nav` 只是给人的策展层；AI 只能顺祖先目录索引页（`index.md` / `SKILL.md`）的 markdown 链接读到页面。`scripts/check-links.py` 是这条规则的闸门，`deploy.sh` 在读凭证和构建之前跑它，非零退出即中止部署。挪文件后在 `mkdocs.yml` 的 `redirects` 写 `旧路径.md: 新路径.md`，支持 `#锚点` 级；它只产出 HTML 跳转页，`.md` 那一半是从 `docs/` 实镜像的，旧的 `/旧路径.md` 仍然 404，站内引用得一并改。
 
-**双产物是怎么出来的。** `zensical build` 只出 HTML；`deploy.sh` 用一行 rsync 把 `docs/` 下的 `.md` 树原样镜像进 `site/`。`use_directory_urls` 让页面占 `/x/index.html`，`/x.md` 这个 key 恰好空着，两者同域不撞。`site/llms.txt` 是 `docs/index.md` 剥掉 frontmatter 后的构建期副本，只维护 `index.md` 一份。每页页头的 `<link rel="alternate" type="text/markdown">` 和右上角的复制按钮（`vendor/md-copy.js`）都靠 `page.edit_url` 指向 `.md` 源：`mkdocs.yml` 的 `repo_url`、`edit_uri` 设成站点根不是为了显示仓库，别删；顶栏仓库入口由空的 `overrides/partials/source.html` 关掉。复制时去掉 frontmatter、代码以外的 HTML 注释和 `zx-no-copy` 块，`data-when` 分支按读者的选择去留，正文里的 `<input>`、`<textarea>`、`<select>` 换成读者填的值。来龙去脉见 `posts/wiki/md-copy.md`。上传时 `.md` 与 demo 源码（`.ts/.tsx/.jsx/.mjs/.py`）要钉文本类 Content-Type，否则 COS 按扩展名乱猜，AI 抓取工具拒收。页面写了「如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录>/<目录名>.tar.gz)下载到本地。」这一行，`scripts/build-skill-bundles.py` 在部署时就把链接指向的目录打成这个包放进 `site/`（入口 `index.md` 打自己的目录，Gallery 单页打自己的工程目录），只上桶、不进 git；写法见写作规范「收纳 skill · 带脚本的 skill」。
+**双产物是怎么出来的。** `zensical build` 只出 HTML；`deploy.sh` 用一行 rsync 把 `docs/` 下的 `.md` 树原样镜像进 `site/`。`use_directory_urls` 让页面占 `/x/index.html`，`/x.md` 这个 key 恰好空着，两者同域不撞。`site/llms.txt` 是 `docs/index.md` 剥掉 frontmatter 后的构建期副本，只维护 `index.md` 一份。每页页头的 `<link rel="alternate" type="text/markdown">` 和右上角的复制按钮（`vendor/md-copy.js`）都靠 `page.edit_url` 指向 `.md` 源：`mkdocs.yml` 的 `repo_url`、`edit_uri` 设成站点根不是为了显示仓库，别删；顶栏仓库入口由空的 `overrides/partials/source.html` 关掉。复制时去掉 frontmatter、代码以外的 HTML 注释和 `zx-no-copy` 块，`data-when` 分支按读者的选择去留，正文里的 `<input>`、`<textarea>`、`<select>` 换成读者填的值；目录下有页面链回的入口在 frontmatter 写 `copy_source: true`，复制时末尾带源地址和一句「链回这里就看上文，不要重复打开」，AI 顺链接读到子页、看到链回来的地址就认得出是贴进来的这篇，该不该写由 check-links.py 算。来龙去脉见 `posts/wiki/md-copy.md`。上传时 `.md` 与 demo 源码（`.ts/.tsx/.jsx/.mjs/.py`）要钉文本类 Content-Type，否则 COS 按扩展名乱猜，AI 抓取工具拒收。页面写了「如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录>/<目录名>.tar.gz)下载到本地。」这一行，`scripts/build-skill-bundles.py` 在部署时就把链接指向的目录打成这个包放进 `site/`（入口 `index.md` 打自己的目录，Gallery 单页打自己的工程目录），只上桶、不进 git；写法见写作规范「收纳 skill · 带脚本的 skill」。
 
 **首页有两个身子。** 浏览器里 `docs/index.md` 由 `overrides/home.html` 的开屏模板渲染，正文不上屏；但正文照样发布为 `/index.md` 与 `/llms.txt` 给 AI 读。改首页内容两边要同步。
 
@@ -47,4 +47,4 @@ bash scripts/course-smoke.sh               # 只在改 courses-src/git/assets/ �
 
 ## 两道链接校验
 
-zensical 自带的 `invalid_links` 设为 `warn`，报错带 `文件:行:列`，`serve` 时当场可见。阻断部署只靠 check-links.py —— 父级索引挂载、nav 注册、笔记未答题、资源死链这四项只有它管。
+zensical 自带的 `invalid_links` 设为 `warn`，报错带 `文件:行:列`，`serve` 时当场可见。阻断部署只靠 check-links.py —— 父级索引挂载、nav 注册、笔记未答题、资源死链、入口的复制带源地址标记这五项只有它管。

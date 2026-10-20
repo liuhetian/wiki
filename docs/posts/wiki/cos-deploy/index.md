@@ -1,5 +1,6 @@
 ---
 description: "讲这个站点本身的定位设计与部署过程"
+copy_source: true
 ---
 
 # 用对象存储部署 AI 友好的个人知识库

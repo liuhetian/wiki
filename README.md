@@ -24,13 +24,14 @@ flowchart LR
 
 ## 内容
 
-六个顶层板块，各自的索引页就是入口：
+七个顶层板块，各自的索引页就是入口：
 
 - [文章](docs/posts/index.md) —— 完整可独立阅读的复盘、观点与方法整理；这个站点本身怎么做的，见 [wiki 介绍](docs/posts/wiki/index.md)
 - [笔记](docs/notes/index.md) —— 概率与算法、统计学、机器学习、Git、JavaScript 等专业科目的学习与推导
 - [课程](docs/courses/index.md) —— 讲解在前、题在后的教材伴读，题写成 git 冲突标记，答完才归档成笔记
 - [Skills](docs/skills/index.md) —— 给 AI 挂载执行的成套资产：FastAPI 后端、Dashboard 后台、数据可视化、前端画布、Agent 基础能力、HyperFrames 视频等
 - [Gallery](docs/gallery/index.md) —— 原样收录的成品参考：图片配 prompt、排版、色彩、前端风格 demo
+- [项目拆解](docs/projects/index.md) —— 别人的项目实际在干什么、设计重心在哪，先读源码和 git 历史再讲，一个项目一个目录
 - [维护](docs/maintenance/index.md) —— skill 和 Agent 能力背后的事：选型实测、上游来源、吸纳来的 skill 改过什么
 
 往这里写东西的规矩见[本 wiki 写作规范](docs/skills/wiki-guide/index.md)。
@@ -39,7 +40,7 @@ flowchart LR
 
 ```text
 docs/                 # 全部内容源；docs/index.md 是站点首页，也是 AI 的入口
-├── posts/  notes/  courses/  skills/  gallery/  maintenance/
+├── posts/  notes/  courses/  skills/  gallery/  projects/  maintenance/
 ├── stylesheets/      # 全站令牌层 zx-tokens.css + 皮肤层 zx-theme.css + 首页 home.css
 └── vendor/           # 本地化运行时，全部不走 CDN：React、three / r3f、MathJax、ECharts、Chart.js、Mermaid、Maple Mono 字体
 overrides/            # 主题模板覆盖：首页开屏、按需引入 mermaid、页头指向 .md 源的发现链接

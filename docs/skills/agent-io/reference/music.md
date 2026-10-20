@@ -7,7 +7,7 @@ description: "Agent 生成音乐：OpenRouter 上 Google 的 Lyria 3，google/ly
 !!! warning "只实测过 clip 版纯音乐"
     下面的请求格式是按 OpenRouter 音频输出的通用文档和 Google Lyria 3 的文档推出来的。2026-10-17 用 clip 版出过一段纯音乐，照这一页的写法一次跑通；pro 版、带歌词、传图片都还没跑过，对不上时以实际返回为准，跑通后回来改这一页，把结果记进[维护记录](../../../maintenance/music.md)。
 
-用 OpenRouter 上 Google 的 Lyria 3，走[中转](../../../posts/ai-assistant/api-gateway.md)的海外机：
+用 OpenRouter 上 Google 的 Lyria 3，走中转的海外机：
 
 | 模型 | 生成什么 | 价格 |
 |---|---|---|

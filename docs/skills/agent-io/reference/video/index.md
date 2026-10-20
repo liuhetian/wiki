@@ -1,10 +1,11 @@
 ---
 description: "Agent 生成视频：默认用文字加参考图生成，AutoDL 的 minimax_h3_zm_u24 工作流，走中转 https://autodl-proxy.liuhetian.work，MY_API_KEY 写成 Authorization: Bearer；先提交拿 task_id，再轮询到 SUCCESS，mp4 链接 24 小时内下载；1–9 张图，可带 0–3 段音频，1–15 秒，480p 或 768p，每秒 0.03–0.04 元；文生视频、首尾帧、对口型、动作迁移各一篇，需要再打开"
+copy_source: true
 ---
 
 # 生成视频
 
-最常用的是给一张或几张参考图，再写一段文字，生成视频。用的是 AutoDL 上的 MiniMax H3 工作流 `minimax_h3_zm_u24`。走[中转](../../../../posts/ai-assistant/api-gateway.md)，照 AutoDL ComfyUI API 文档[^comfyui-api]调，只改两处：
+最常用的是给一张或几张参考图，再写一段文字，生成视频。用的是 AutoDL 上的 MiniMax H3 工作流 `minimax_h3_zm_u24`。走中转，照 AutoDL ComfyUI API 文档[^comfyui-api]调，只改两处：
 
 - **base URL**：`https://autodl.art` 换成 `https://autodl-proxy.liuhetian.work`
 - **API key**：用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来。官方文档里令牌前面不带 `Bearer`，经中转要带

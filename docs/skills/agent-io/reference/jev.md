@@ -4,7 +4,7 @@ description: "Agent 让大模型做结构化判断：默认 OpenRouter 的 types
 
 # 结构化判断
 
-默认用 OpenRouter 上的 `typesafe/jev-1.13`，走[中转](../../../posts/ai-assistant/api-gateway.md)的海外机。它不是对话模型：交给它一段材料（`state`）和几道带类型的题（`questions`），它返回是非题的概率、单选题选了哪项、分档题落在第几档，不生成文字。适合代码里要分类、路由、打标签的地方，比如判断工单归哪个组、有多急。照 OpenRouter 模型页[^jev-1-13]的示例调，只改两处：
+默认用 OpenRouter 上的 `typesafe/jev-1.13`，走中转的海外机。它不是对话模型：交给它一段材料（`state`）和几道带类型的题（`questions`），它返回是非题的概率、单选题选了哪项、分档题落在第几档，不生成文字。适合代码里要分类、路由、打标签的地方，比如判断工单归哪个组、有多急。照 OpenRouter 模型页[^jev-1-13]的示例调，只改两处：
 
 - **base URL**：`https://openrouter.ai` 换成 `https://openrouter.reverse-pro.xyz`
 - **API key**：用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来

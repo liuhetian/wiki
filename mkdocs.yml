@@ -1438,6 +1438,16 @@ nav:
                   - Wearable 一幕: gallery/web/frontend-styles/oryzo/wearable-scene.md
                   - RGB 呼吸光边: gallery/web/frontend-styles/oryzo/rgb-glow-border.md
           - Sandboard WebGPU 沙盘: gallery/web/sandboard/index.md
+  - 项目拆解:
+      - projects/index.md
+      - 梨园 Liyuan:
+          - projects/liyuan/index.md
+          - 分权的反复: projects/liyuan/harness.md
+          - 场记账本: projects/liyuan/scribe.md
+          - 跨局记忆: projects/liyuan/memory.md
+          - 酒馆资产兼容: projects/liyuan/tavern.md
+          - agent 模式与沙箱: projects/liyuan/agent-mode.md
+          - 作者怎么用 AI 开发: projects/liyuan/ai-dev.md
   - 维护:
       - maintenance/index.md
       - Agent 能力:

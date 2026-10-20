@@ -71,7 +71,7 @@ console.log({ 对象也会格式化: true, 嵌套: [1, { k: "v" }] })
 
 ## 打码：`age:…` 小字与 ```` ```age ```` 块 { #age-mosaic }
 
-不想公开、泄露了也不致命的小字 —— 服务器地址、域名、用户名 —— 写进源文件时就是 age 密文。HTML、`.md` 镜像、git、AI 拿到的全是密文；浏览器里显示成马赛克，点开输口令就地还原。为什么这样选见[打码](../../../posts/wiki/age-mosaic.md)。
+不想公开、泄露了也不致命的小字 —— 服务器地址、域名、用户名 —— 写进源文件时就是 age 密文。HTML、`.md` 镜像、git、AI 拿到的全是密文；浏览器里显示成马赛克，点开输口令就地还原。
 
 在仓库根目录生成密文，只用 wiki 公钥：
 
@@ -93,7 +93,7 @@ bash scripts/age-seal.sh -a   # 粘贴多行、Ctrl-D 结束 → 打印 armor，
 - **举例只写 `age:…`**：脚本认 `age:` 加「age-encryption.org/v1」的 base64 前缀，前缀写全的例子会被当成密文、解不开标红
 - **块解开后是素 `<pre><code>`**，没有语法高亮，要高亮的内容别放进 `age` 块
 - **wiki 钥匙对专用**：私钥在部署机 `~/.config/age/wiki.key`，公钥在 `scripts/age-seal.sh`，口令锁住的副本在 [`vendor/age-init.js`](../../../vendor/age-init.js) 的 `WIKI_KEY_AGE`；换钥匙对时三处一起改，旧密文重新加密
-- 命令行读 `.md` 源时用 `age-open.py` 整页解开，见[命令行里一口气解开](../../../posts/wiki/age-mosaic.md#cli)
+- 命令行读 `.md` 源时，管道接 `uv run scripts/age-open.py` 整页解开；用法和凭据查找顺序写在脚本头部
 
 活例：[开发环境第 0 步](../../../posts/ai-assistant/dev-env.md#proxy)代码块里的服务器地址和登录密码。
 
@@ -130,7 +130,7 @@ bash scripts/age-seal.sh -a   # 粘贴多行、Ctrl-D 结束 → 打印 armor，
 </div>
 ```
 
-网页上照常显示，左边一道虚线、上方一个「不复制」小字；读 `.md` 源的 AI 也看得到，只有复制按钮整块跳过；块放在页面任何位置都行。写法同时间线：开头结尾前后各空一行，里面不缩进。复制按钮另外还会去掉 frontmatter 和代码以外的 HTML 注释，见[复制本页 Markdown 源](../../../posts/wiki/md-copy.md)。样式在 `zx-theme.css` 第 12 节。
+网页上照常显示，左边一道虚线、上方一个「不复制」小字；读 `.md` 源的 AI 也看得到，只有复制按钮整块跳过；块放在页面任何位置都行。写法同时间线：开头结尾前后各空一行，里面不缩进。复制按钮另外还会去掉 frontmatter 和代码以外的 HTML 注释；目录下有页面链回的入口在 frontmatter 写 `copy_source: true`，复制时末尾带一行源地址，该写没写、不该写写了 check-links 都会拦。样式在 `zx-theme.css` 第 12 节。
 
 活例：[盘问我](../../collab/grilling.md)页尾的维护记录，写法见[收纳 skill · 维护记录](../skill.md#maintenance-record)。
 

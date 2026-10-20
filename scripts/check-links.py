@@ -5,7 +5,7 @@
 给人的策展层、不在 AI 链路上。所以一篇文章漏挂链接 = 对 AI 不存在，nav 里有它
 也没用。这个校验就是那道闸门，在 deploy.sh 构建前跑，不过就不许部署。
 
-五项检查：
+六项检查：
 
 1. 父级链接 —— 每篇 .md 必须被**某个祖先目录**的索引页用 markdown 链接直接指向。
    索引页指 index.md / SKILL.md 两种：SKILL.md 是上游主文件，照样承担链接责任。
@@ -32,6 +32,15 @@
    该怎么写），那些是示范不是引用，先剥掉再查，否则全是误报。
    skill 整包（<目录>/<目录名>.tar.gz）部署时才生成，目录在就算存在；有没有用标准那一行
    声明，归 build-skill-bundles.py 在部署时拦。
+
+6. 复制带源地址 —— 目录下有页面在代码块之外链回本目录的 index.md / SKILL.md，这个入口的
+   frontmatter 就要写 `copy_source: true`；没人链回却写了也报。复制按钮（vendor/md-copy.js）
+   见到它，在复制出的正文末尾加一行本页的源地址：读者把入口贴给 AI，AI 顺链接读到子页，
+   子页写着「见[入口 · 用法](../index.md#usage)」，有了源地址 AI 认得出那就是开头贴进来的
+   那篇，不用再抓一遍。没有回链的页面不加 —— 只想复制一段文字贴给不联网的 AI 时，这行是噪音。
+   只管向下：子页链上级是去读共守的规矩，上级链回它只是菜单里的一行。判据由这里算、结果
+   写在源文件里，复制时不用去抓子页（一个入口最多链了上百篇），本地预览和线上一样。
+   首页没有复制按钮，不查。
 
 豁免：文件顶部（前 5 行内）写 `<!-- link-check-ok: 理由 -->` 可跳过检查 1 和 3。
 理由写在文件里而不是脚本白名单里 —— 挪文件不会让豁免失效，读到那个文件的人也
@@ -62,6 +71,8 @@ ASSET_REF = re.compile(r"""!?\[[^\]]*\]\(\s*<?([^)\s>]+)|(?:src|href)\s*=\s*["']
 # nav 段里一条页面条目：`- 标题: 路径.md` 或 `- 路径.md`
 NAV_ENTRY = re.compile(r"^\s*-\s+(?:[^:\n]*:\s+)?([^\s\"']+\.md)\s*$", re.M)
 INDEX_NAMES = ("index.md", "SKILL.md")
+# 检查 6 用：frontmatter 里的复制带源地址标记
+COPY_SOURCE = re.compile(r"^copy_source:\s*true\s*$", re.M)
 
 
 def rel(p: Path) -> Path:
@@ -104,11 +115,19 @@ def is_bundle(target: Path) -> bool:
     return target.name == f"{target.parent.name}.tar.gz" and target.parent.is_dir()
 
 
-def md_links(md: Path) -> set:
-    """该文件指向的、docs 内存在的 .md（相对 docs），顺带返回代码块之外的死链。"""
+def frontmatter(text: str) -> str:
+    """开头 --- 之间的那段，没有就是空串。"""
+    if not text.startswith("---\n"):
+        return ""
+    end = text.find("\n---", 3)
+    return text[4:end] if end > 0 else ""
+
+
+def md_links(md: Path) -> tuple:
+    """该文件指向的、docs 内存在的 .md（相对 docs），其中代码块之外的那些，以及代码块之外的死链。"""
     text = md.read_text(encoding="utf-8")
     in_prose = {m.group(1) for m in LINK.finditer(prose(text))}
-    hits, dead = set(), []
+    hits, visible_hits, dead = set(), set(), []
     for m in LINK.finditer(text):
         target = m.group(1)
         if target.startswith(("http://", "https://", "mailto:", "#")):
@@ -123,9 +142,11 @@ def md_links(md: Path) -> set:
             continue  # 指到 docs 之外（如项目根的 mkdocs.yml），不算页面链接
         if (DOCS / resolved).exists():
             hits.add(resolved)
+            if visible:
+                visible_hits.add(resolved)
         elif visible:
             dead.append(target)
-    return hits, dead
+    return hits, visible_hits, dead
 
 
 def asset_refs(md: Path) -> list:
@@ -174,14 +195,28 @@ def main() -> int:
     root_index = DOCS / "index.md"
 
     # 预先算好每个文件的出链，供反查
-    outgoing, dead_links = {}, {}
+    outgoing, visible_out, dead_links = {}, {}, {}
     for md in all_md:
         if "assets" in rel(md).parts:
             continue
-        hits, dead = md_links(md)
+        hits, visible_hits, dead = md_links(md)
         outgoing[md] = hits
+        visible_out[md] = visible_hits
         if dead:
             dead_links[md] = dead
+
+    # 6. 目录下有页面链回的入口要写 copy_source，没人链回的不许写
+    linked_back = {
+        r for md, hits in visible_out.items() for r in hits
+        if r.name in INDEX_NAMES and r != rel(md) and DOCS / r != root_index
+        and rel(md).is_relative_to(r.parent)
+    }
+    marked = {
+        rel(md) for md in outgoing
+        if COPY_SOURCE.search(frontmatter(md.read_text(encoding="utf-8")))
+    }
+    missing_source = sorted(linked_back - marked)
+    extra_source = sorted(marked - linked_back)
 
     orphans, unregistered, unresolved, dead_assets = [], [], [], {}
     for md in all_md:
@@ -231,6 +266,16 @@ def main() -> int:
         unresolved,
         "把每道题答完，再跑 python3 scripts/course.py add <分类>/<slug> 归档",
     )
+    report(
+        "目录下有页面链回这个入口 —— 复制入口贴给 AI，AI 读到子页可能再抓一遍入口",
+        missing_source,
+        "在它的 frontmatter 加一行 copy_source: true，复制时末尾会带上本页源地址",
+    )
+    report(
+        "写了 copy_source，但目录下没有页面链回它",
+        extra_source,
+        "删掉 frontmatter 里的 copy_source: true",
+    )
     if dead_assets:
         print(f"\n✗ 引用了不存在的本地资源（{len(dead_assets)} 个文件）", file=sys.stderr)
         for md, targets in dead_assets.items():
@@ -243,7 +288,8 @@ def main() -> int:
             print(f"    {rel(md)}  →  {', '.join(targets)}", file=sys.stderr)
 
     failed = (len(orphans) + len(unregistered) + len(dead_links)
-              + len(unresolved) + len(dead_assets))
+              + len(unresolved) + len(dead_assets)
+              + len(missing_source) + len(extra_source))
     checked = sum(1 for m in all_md if "assets" not in rel(m).parts)
     if failed:
         print(f"\n链路校验未通过：{failed} 处问题（检查了 {checked} 篇）", file=sys.stderr)

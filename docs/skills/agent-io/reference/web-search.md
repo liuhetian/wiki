@@ -8,7 +8,7 @@ description: "Agent 网络搜索：默认用 OpenRouter 的 perplexity/sonar-pro
 
 ## 默认：Perplexity Sonar Pro Search { #sonar }
 
-用 OpenRouter 上的 `perplexity/sonar-pro-search`，走[中转](../../../posts/ai-assistant/api-gateway.md)的海外机。就是一次普通的 chat completions 调用，模型自己去搜，再写一段带引用的回答。照 OpenRouter 模型页[^sonar-pro-search]的示例调，只改两处：
+用 OpenRouter 上的 `perplexity/sonar-pro-search`，走中转的海外机。就是一次普通的 chat completions 调用，模型自己去搜，再写一段带引用的回答。照 OpenRouter 模型页[^sonar-pro-search]的示例调，只改两处：
 
 - **base URL**：`https://openrouter.ai` 换成 `https://openrouter.reverse-pro.xyz`
 - **API key**：用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来

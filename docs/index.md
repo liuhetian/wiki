@@ -3,7 +3,7 @@ template: home.html
 hide:
   - navigation
   - toc
-description: "AI 友好的个人知识库：每个页面在同域提供 .md 源，普通页把 URL 结尾的 / 换成 .md，目录首页在结尾加 index.md，LLM 可顺相对链接一层层读进去。收录项目复盘、学科笔记、教材伴读课程、可挂载的 AI skills、图配 prompt 的图库，以及 skill 背后的维护记录。"
+description: "AI 友好的个人知识库：每个页面在同域提供 .md 源，普通页把 URL 结尾的 / 换成 .md，目录首页在结尾加 index.md，LLM 可顺相对链接一层层读进去。收录项目复盘、学科笔记、教材伴读课程、可挂载的 AI skills、图配 prompt 的图库、别人项目的拆解，以及 skill 背后的维护记录。"
 ---
 
 <!-- 浏览器里首页由 overrides/home.html（SaaS 开屏）渲染，下面的正文不上屏，
@@ -56,6 +56,12 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 - [网页](gallery/web/index.md) —— [前端风格收集](gallery/web/frontend-styles/index.md)：有特色的前端美学，一种风格一个可抄的活 demo
 - [视频](gallery/video/index.md) —— 视频成品配制作方法：本站自己做的[花卉动态生长海报](gallery/video/flower-growth-poster.md)，收录的[彩色手绘三维穿梭视频](gallery/video/collected/gallery-parallax-ink.md)，做法都写在成品下面
 - 音频区还没有收录
+
+## 项目拆解
+
+别人的项目实际在干什么、哪些归程序哪些归模型、作者的心思花在哪，先读源码和 git 历史再讲，全部在[项目拆解索引](projects/index.md)：
+
+- [梨园 Liyuan](projects/liyuan/index.md) —— 把 pi 这个 coding agent 改成演角色扮演的 agent；设计重心是 harness 该替模型管多少，六个方向各一页细讲
 
 ## 维护
 

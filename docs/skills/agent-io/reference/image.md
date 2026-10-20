@@ -4,7 +4,7 @@ description: "Agent 生成、编辑图片：CodeProxy 的 gpt-image-2.5，走海
 
 # 生成、编辑图片
 
-用 CodeProxy 转售的 `gpt-image-2.5`，走[中转](../../../posts/ai-assistant/api-gateway.md)的海外机。照 CodeProxy 文档调，只改两处：
+用 CodeProxy 转售的 `gpt-image-2.5`，走中转的海外机。照 CodeProxy 文档调，只改两处：
 
 - **base URL**：`https://codeproxy.dev` 换成 `https://codeproxy.reverse-pro.xyz`
 - **API key**：用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来

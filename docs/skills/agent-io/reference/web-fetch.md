@@ -4,7 +4,7 @@ description: "Agent 读取网页：DeepSeek 官方 Fetch 接口，走国内中�
 
 # 读取网页
 
-给一个 URL，返回网页标题和 Markdown 正文。用 DeepSeek 官方的 Fetch 接口，走[中转](../../../posts/ai-assistant/api-gateway.md)的国内机，照 DeepSeek 官方 API 文档[^fetch]调，只改两处：
+给一个 URL，返回网页标题和 Markdown 正文。用 DeepSeek 官方的 Fetch 接口，走中转的国内机，照 DeepSeek 官方 API 文档[^fetch]调，只改两处：
 
 - **base URL**：`https://api.deepseek.com` 换成 `https://deepseek-proxy.liuhetian.work`
 - **API key**：用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来

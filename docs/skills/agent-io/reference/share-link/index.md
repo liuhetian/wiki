@@ -1,5 +1,6 @@
 ---
 description: "Agent 把小红书、抖音、B 站、微信公众号链接换成一条一个文件夹：正文、作者、点赞收藏、原图、视频，B 站另有字幕和评论；抖音、小红书传作者主页链接就翻完这个人发的全部，公众号用 --account 取一个号最新的文章；一个平台一个脚本（xiaohongshu.py、douyin.py、bilibili.py、wechat_mp.py，其他平台 xiazaitool.py），文件夹格式各平台一样；每个平台一页，上面是脚本、下面是底层接口和请求参数"
+copy_source: true
 ---
 
 # 解析分享链接
@@ -52,7 +53,7 @@ python3 scripts/douyin.py <作者主页链接或分享文案> --out <目录>   #
 
 ## 底层：下载狗 { #xiazaitool }
 
-视频直链靠它，三个平台都用；其他平台只能靠它，脚本是 [`xiazaitool.py`](../../scripts/xiazaitool.py)，只给标题和媒体。经[中转](../../../../posts/ai-assistant/api-gateway.md)的国内机：
+视频直链靠它，三个平台都用；其他平台只能靠它，脚本是 [`xiazaitool.py`](../../scripts/xiazaitool.py)，只给标题和媒体。经中转的国内机：
 
 ```bash
 curl -sS -m 90 -G https://xiazaitool-proxy.liuhetian.work/ \

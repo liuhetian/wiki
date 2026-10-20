@@ -1,14 +1,15 @@
 ---
 description: "在本 wiki 新建或修改任何页面前读：写作流程、内容放哪个板块、硬规矩、什么场景用什么语法、文风；写课程页、写或收纳 skill、做精简检查时再读对应的子 skill"
+copy_source: true
 ---
 
 # 本 wiki 写作规范
 
-本 wiki 用 Zensical（MkDocs Material 兼容）渲染，同一份 markdown 同时发布成给人看的 HTML 和给 AI 读的 `.md` 源。往这里写任何东西都先读完这一页。
+本 wiki 用 Zensical（MkDocs Material 兼容）渲染，同一份 markdown 同时发布成给人看的 HTML 和给 AI 读的 `.md` 源。往这里写任何东西都先读完这一页。本页和子 skill 里的「活例」默认不点开：规矩本身写到能照做，拿不准哪一条时才点开那一条的活例。
 
 ## 写作流程 { #workflow }
 
-1. 按[六问](#where)定板块和位置
+1. 按[七问](#where)定板块和位置
 2. 写正文，顶部写一行 [`description`](#description)
 3. 在 `mkdocs.yml` 的 `nav:` 注册
 4. 在某个祖先目录的索引页（`index.md` / `SKILL.md`）挂一行带钩子的链接 —— nav 只给人看，AI 只顺相对链接走，没挂上的页面对 AI 等于不存在
@@ -17,18 +18,19 @@ description: "在本 wiki 新建或修改任何页面前读：写作流程、内
 
 ## 内容放哪个板块 { #where }
 
-顶层六个板块按用途分，主题只做板块内的二级目录。按顺序问：
+顶层七个板块按用途分，主题只做板块内的二级目录。按顺序问：
 
 1. 收录一件成品当参考 —— 一张图配 prompt、一种前端风格配 demo？→ [Gallery](../../gallery/index.md)，按媒介进 images / layouts / colors / video / audio / web 六区之一。原样收录，只调排版和图片路径，来源和改动写进[维护 · Gallery 收录](../../maintenance/index.md#gallery)，一个来源一篇；本站自己做的，成品和做法写在同一页（[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)）；layouts 区的五个分类页和 colors 区的经典主题色页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改；两区的 `index.md` 手写。活例：[GPT Image 2 的动漫与漫画](../../gallery/images/gpt-image2/gallery-anime-and-manga.md)、[前端风格收集](../../gallery/web/frontend-styles/index.md)
 2. 给 agent 直接挂载的成套资产？→ [Skills](../index.md)
 3. 一个 skill 或 Agent 能力背后的事 —— 从哪来、为什么这么选、改过什么、实测过什么？→ [维护](../../maintenance/index.md)。skill 页只写怎么用，页尾链过来，写法见[收纳 skill · 维护记录](skill.md#maintenance-record)
 4. 跟着一本书或一套实操走、自己做完才算数？→ [课程](../../courses/index.md)
 5. 算法、机器学习、编程语言等专业科目的学习、推导、题解？→ [笔记](../../notes/index.md)
-6. 其余能独立阅读的复盘、观点和方法整理 → [文章](../../posts/index.md)
+6. 拆解别人的一个项目——它实际在干什么、哪些归程序哪些归模型、设计重心在哪？→ [项目拆解](../../projects/index.md)，一个项目一个目录：`index.md` 四百字粗讲，挑中的方向各一页。用[粗讲项目](../collab/chat-prompts/project-gist.md)选「先探索」做出来，引用钉到读的那个 commit。活例：[梨园 Liyuan](../../projects/liyuan/index.md)
+7. 其余能独立阅读的复盘、观点和方法整理 → [文章](../../posts/index.md)
 
 - 能用在任意成品上的方法归 skill，只做一种成品的做法写在 Gallery 那页 —— [花卉动态生长海报](../../gallery/video/flower-growth-poster.md)的五步只做这一种海报，写在成品页；[图片提示词反推 · 七维拆解](../collab/image-prompt-reverse/seven-dimensions/index.md)是 skill，它整理的合集进了 [Gallery](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)，两边互链
 - 课程是题、笔记是答卷：同名文件，答完才从 `courses/` 归档进 `notes/`
-- 文章和 skill 共生：复盘归文章，复盘里沉淀出的可复用手册归 skill，互链 —— [动画 PPT 复盘](../../posts/animated-ppt/index.md)与它的[工程手册](../writing/deck.md)
+- 文章和 skill 共生、单向链：复盘归文章，复盘里沉淀出的可复用手册归 skill；文章链到 skill，skill 不链回文章讲原理、背景和实现 —— skill 是给 AI 照着做的，为什么这样做它用不上。拿文章当写法活例、指向文章板块的不算。活例：[动画 PPT 复盘](../../posts/animated-ppt/index.md)链到它的[工程手册](../writing/deck.md)，手册不链回来
 - 归属变了就把文件真的搬过去，按下一节「挪文件」办
 
 ## 硬规矩 { #rules }
@@ -103,12 +105,12 @@ AI 代笔时照此写：
 - **要点一行一条**：每条是可直接执行的指令或可检验的判断，不写「**小标题**：多行解释」的两段式
 - **加粗只给结论和硬规矩**，不给气氛词；形容词能删则删
 - **技术词允许保留英文原形**（commit、nav、snippet、iframe），叙述用中文，不音译不生造
-- **规矩必须带活例**：立一条规范就指一个站内真实例子；没有活例的规矩先别写
+- **规矩必须带活例**：立一条规范就指一个站内真实例子，只指一个，挑最小、最贴的；规矩本身写到不点开活例也能照做。没有活例的规矩先别写
 
 ## 针对具体场景：
 
 以下场景只有用户明确要求写作某个部分，或者进行精简检查才读：
 
 - [课程页怎么写](course.md) —— 如何写作一个`课程`，只有用户明确要求写一个课程时才查看。
-- [收纳 skill](skill.md) —— `skills/` 下的内容：别人的 skill 或插件、文章、自己的项目怎么收成 skill，迷你、标准、抽象三种形态怎么判，nav 怎么挂，维护记录怎么写
+- [收纳 skill](skill.md) —— 在 `skills/` 下收纳或改 skill 时读：迷你、标准、抽象三种形态怎么判，所有来源共用的收纳步骤，插件仓库、提示词合集、教程、自己跑通的 prompt 各多做什么，带脚本的 skill 怎么发，nav 怎么挂，维护记录怎么写
 - [精简检查](trim.md) —— 默认不用，用户手动复制粘贴才使用：逐段问「这是我们自己的，还是 AI 本来就会的」

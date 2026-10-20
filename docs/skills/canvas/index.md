@@ -1,5 +1,6 @@
 ---
 description: "无限画布/白板/节点图的 L1–L4 四级选型，比较成本与实用性，每级一个可玩的活 demo"
+copy_source: true
 ---
 
 # 前端画布

@@ -71,7 +71,8 @@ const abs = (target, base) => (!target || KEEP.test(target) ? target : new URL(t
 - **改写哪些**：逐行匹配 Markdown 链接和图片的 `](目标)`、链接定义 `[名字]: 目标`（脚注 `[^1]:` 除外）、HTML 的 `src="…"` 和 `href="…"`
 - **不动哪些**：已带协议的（`https:`、`mailto:`）、页内锚点 `#cli`、`//` 开头、`<…>` 包着的；代码块里（按 ```` ``` ```` / `~~~` 围栏判断进出）和行内代码里的——写作规范里举例写的链接不能被改
 - **snippet 另算**：`--8<-- "路径"` 的路径不相对当前页，相对 snippet 的 `base_path`（先 `docs/`，再仓库根）。先拼「站点根 + 路径」，发一个 HEAD 请求：站上有就用站上的地址（如 `vendor/age-core.js`）；没有说明它只在仓库根（如 `scripts/age-open.py`），指向 GitHub 仓库。只引几行的 `"x.py:31:36"` 先剥掉范围再探，地址只留文件，范围写成「（第 31–36 行）」跟在后面 —— 整串拿去探必然不在站上，会落到 GitHub 一个不存在的地址
-- **去掉 frontmatter，不加来源**：`description` 这类元数据是给站点用的，粘进对话框是噪音，连同后面的空行一起去掉；贴出去的只有正文（2026-10-15 起。此前 frontmatter 原样保留，后面插一行 `<!-- 来源：… -->` 注释，粘贴后也是噪音，一并去掉）
+- **去掉 frontmatter**：`description` 这类元数据是给站点用的，粘进对话框是噪音，连同后面的空行一起去掉；贴出去的只有正文（2026-10-15 起。此前 frontmatter 原样保留，后面插一行 `<!-- 来源：… -->` 注释，粘贴后也是噪音，一并去掉）
+- **子页会链回的入口，末尾带源地址**：frontmatter 写了 `copy_source: true` 的，复制出的正文末尾加一行「本文源地址：」加本页 `.md` 的线上地址，下面再跟一句「上面就是这个地址的全文。之后读到的页面再链到这个地址（包括带 # 的小节链接），直接看上文对应的地方，不要重复打开。」—— 光给地址，AI 不一定想到要对号入座。读者把入口贴给 AI，AI 顺链接读到子页，子页又写着「见[入口 · 用法](../../skills/agent-io/index.md#usage)」这类 —— 贴进来的文字没有网址，AI 认不出那就是开头那篇，会再抓一遍；有了这行就认得出。其他页面不加：只想复制一段文字贴给不联网的 AI 时，这行是噪音。只管向下：子页链上级是去读共守的规矩，上级链回它只是菜单里的一行。哪些入口该写由 `check-links.py` 算，该写没写、不该写写了都拦部署（2026-10-20 起，全站 17 个入口）
 - **`zx-no-copy` 块整块不复制**：用 `<div class="zx-no-copy" markdown>` 和 `</div>` 包起来的内容（写法同[时间线](../../skills/wiki-guide/reference/components.md#timeline)：开头结尾前后各空一行，里面不缩进），网页上照常显示、读 `.md` 源的 AI 也看得到，只是不进对话框。给维护记录这类「读者要看得到、但粘进对话框会被当成在说正在讨论的事」的内容用；块可以放在页面任何位置，前后的正文、脚注照常复制。块里嵌套的 div 按层数配对，代码块里写的不算。网页上左边一道虚线、上方一个「不复制」小字。活例：[盘问我](../../skills/collab/grilling.md)页尾的维护记录
 - **分支按选择去留**：`<div data-when="名=值" markdown>` 包起来的内容，名为「名」的控件选了「值」才复制，只写「名」就是那个框填了才复制。网页上条件不成立的块由脚本挂上 `zx-no-copy`，和写死的那种一个样子；复制时拿源文件里写的条件和同一批控件值再算一遍，用的是同一个函数，结果和网页上一致，不成立的整块去掉，成立的只去掉外壳 div。不复制的块里的 `required` 不拦。写法见[分支](../../skills/wiki-guide/reference/branch.md)
 - **去掉 HTML 注释**：网页上本来不显示，对话框里也不要，整行、行尾、跨行的都去；代码块和行内代码里举例写的注释不动。删完留下的连续空行并成一行
@@ -87,6 +88,7 @@ const abs = (target, base) => (!target || KEEP.test(target) ? target : new URL(t
 | `overrides/main.html`、`overrides/home.html` | 页头写 `alternate` 和 `describedby` 两行 |
 | `overrides/partials/source.html` | 空文件，关掉 `repo_url` 带出来的仓库入口 |
 | [`vendor/md-copy.js`](../../vendor/md-copy.js) | 复制按钮、改写、填空和分支，约 250 行，不压缩 |
+| `scripts/check-links.py` 检查 6 | 算哪些入口有子页链回，核对 frontmatter 的 `copy_source: true` |
 | `stylesheets/zx-theme.css` 第 11、12 节 | 填空控件的样式；不复制的块的样式 |
 
 2026-10-15 测过：正式站构建并照 `deploy.sh` 镜像 `.md` 后起本地预览，在打码那篇把剪贴板接口换成记录、自动点按钮——frontmatter 保留、来源注释在、三种 snippet 各指对地方、正文相对链接和 iframe 的 `src` 改成线上地址、`#cli` 锚点和代码块里的命令不动。

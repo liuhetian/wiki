@@ -9,7 +9,7 @@ description: "Agent 生成语音：默认用我们自己的音色——AutoDL �
 - **默认用我们自己的音色**——IndexTTS2 加大米的参考音频，见[方案一](#own-voice)
 - **用户说不用自己的音色**——微软 MAI-Voice 的预置音色 Mei，见[方案二](#preset-voice)
 
-两个都走[中转](../../../posts/ai-assistant/api-gateway.md)，API key 都用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来。
+两个都走中转，API key 都用 `.env` 里的 `MY_API_KEY`，写成 `Authorization: Bearer $MY_API_KEY`，别打印出来。
 
 ## 方案一：我们自己的音色（默认） { #own-voice }
 

@@ -1,3 +1,7 @@
+---
+copy_source: true
+---
+
 <!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/README.md -->
 # 音乐：以数据作曲，交给引擎演奏，经过测量，最后让人听一次
 

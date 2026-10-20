@@ -1,3 +1,7 @@
+---
+copy_source: true
+---
+
 <!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/example/README.md -->
 # MECHANICAL LEPIDOPTERA：完整范例
 

@@ -7,7 +7,10 @@
 //   - 代码块以外的相对链接、图片、HTML 的 src/href 改成绝对地址；代码块和行内代码里举例写的链接不动
 //   - --8<-- "路径" 改成真身的绝对地址：先按站点根找（snippet 的 base_path 先 docs），找不到就指向 GitHub 仓库；
 //     只引几行（"x.py:31:36"）或一段（"x.py:name"）的，地址只留文件，范围写在后面
-//   - 去掉 frontmatter：description 之类是给站点用的，粘进对话框是噪音；也不加来源注释
+//   - 去掉 frontmatter：description 之类是给站点用的，粘进对话框是噪音
+//   - frontmatter 写了 copy_source: true 的，末尾加「本文源地址：…」和一句「链回这里就看上文，不要重复打开」：
+//     目录下有子页链回这个入口，AI 顺链接读到子页、再看到链回来的地址，认得出就是贴进来的这篇，不用再抓一遍；
+//     光给地址它未必想到要对号入座，所以把话说明白。该不该写由 check-links.py 算
 //   - 去掉 <div class="zx-no-copy" markdown> … </div> 整块：维护记录之类，网页上照常显示、读 .md 源的 AI
 //     也看得到，只是不进对话框；块里嵌套的 div 按层数配对，代码块里写的不算
 //   - <div data-when="名=值" markdown> … </div> 是分支：名为「名」的控件选了「值」才复制；只写「名」就是那个框
@@ -112,6 +115,7 @@
   async function build(source, base, fields) {
     let lines = source.split("\n");
     const fm = lines[0] === "---" ? lines.indexOf("---", 1) : -1;
+    const withSource = fm > 0 && lines.slice(1, fm).some(l => /^copy_source:\s*true\s*$/.test(l));
     if (fm > 0) lines = lines.slice(fm + 1);                // 去掉 frontmatter
     let fence = null;                                       // { ch, len }：当前所在代码块的围栏
     const comment = { open: false };
@@ -176,7 +180,10 @@
       if (line.trim()) gap = false;
       kept.push(line);
     }
-    return kept.join("\n").replace(new RegExp(`${MARK}(\\d+)${MARK}`, "g"), (_, i) => fieldValue(fields[i]));
+    const text = kept.join("\n").replace(new RegExp(`${MARK}(\\d+)${MARK}`, "g"), (_, i) => fieldValue(fields[i]));
+    return withSource
+      ? `${text.trimEnd()}\n\n本文源地址：${base}\n上面就是这个地址的全文。之后读到的页面再链到这个地址（包括带 # 的小节链接），直接看上文对应的地方，不要重复打开。\n`
+      : text;
   }
 
   async function writeClipboard(text) {

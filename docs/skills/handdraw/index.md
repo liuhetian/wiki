@@ -1,5 +1,6 @@
 ---
 description: "手绘风格出图：从 365 种画风、167 种版式、36 种主题色里挑组合，拼成生图 prompt；写单张图、海报、文章或视频封面、长文配图、两种画风融合、IP 形象全套卡片时用。吸纳自 yang0/handraw-style"
+copy_source: true
 ---
 
 # 手绘风格出图
