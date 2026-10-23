@@ -1,0 +1,5 @@
+[SCHEDULE REMINDER]
+This is a scheduled message from the user
+schedule_id_json: "sch-1"
+occurrence_at: 2026-10-21T09:00:00.000Z
+reminder_prompt_json: "Check whether the nightly benchmark finished and summarize regressions."

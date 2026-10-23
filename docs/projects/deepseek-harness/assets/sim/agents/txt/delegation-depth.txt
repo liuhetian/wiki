@@ -1,0 +1,4 @@
+fresh top-level agent: delegationDepthOf = 0
+live child (header 1, runtime 1): delegationDepthOf = 1
+child resumed cold (header 1, fresh options): delegationDepthOf = 1
+runtime option claims 0 on a depth-1 session: delegationDepthOf = 1

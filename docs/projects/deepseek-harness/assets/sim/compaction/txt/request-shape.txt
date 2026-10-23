@@ -1,0 +1,11 @@
+上一个对话请求（第 8 次调用）：15 条消息
+压缩请求（第 9 次调用）：13 条消息
+system 逐字节相同：True
+tools 逐字节相同：True（1 个工具）
+thinking / output_config 相同：True
+前 12 条消息逐字节相同；第 13 条（最后一条）的前 2 个块也相同 = True，只在末尾多了一块
+
+压缩请求最后一条 user 消息的内容块：
+  - tool_result
+  - tool_result
+  - text: You are now acting as a compaction engine for this AI coding assistant. Condense the conversation ABOVE into a…

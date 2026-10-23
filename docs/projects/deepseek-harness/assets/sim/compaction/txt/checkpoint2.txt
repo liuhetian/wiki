@@ -1,0 +1,84 @@
+seq 104 user/message  source=compact-checkpoint  surfaceOp={"op": "replace", "startSeq": 78, "endSeq": 91}
+
+This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.
+
+<compacted-summary>## Primary Request and Intent
+- Four sequential read-and-explain tasks over the `compaction-basic` and `compaction-tool-result-pruner` packages, established by these verbatim asks:
+  - "Read packages/compaction/compaction-basic/src/summarizer.ts and packages/compaction/compaction-basic/src/region.ts. Explain in five bullets how a compaction request is assembled and how its result lands back in the session."
+  - "Now read packages/compaction/compaction-basic/src/config.ts. With a 1,000,000-token context window, a 256,000-token output reservation and default settings, what are thresholdTokens and retainTokens? Show the arithmetic."
+  - "Read packages/compaction/compaction-tool-result-pruner/src/index.ts and packages/compaction/compaction-tool-result-pruner/src/config.ts. When does the pruner run relative to summarization, and what exactly does a pruned tool result look like?"
+  - "Read packages/compaction/compaction-basic/src/index.ts. Describe the context-overflow recovery path step by step."
+- Deliverable format: explanatory prose/bullets with `path:line` citations, not code changes.
+- Tasks 1–3 answered; task 4 is the active request and has not yet been answered.
+
+## Key Technical Concepts
+- TypeScript monorepo; every package lives under `packages/<group>/<name>/src`.
+- Read-only checkout at `/tmp/dsh-lab/compaction/ws`; no edits or writes permitted.
+- Workspace instruction: cite `path:line` for every claim.
+- Cordis service/dependency-injection framework: `Context`, `Service`, `static inject`, `ctx.get()`, `ctx.on()`, `ctx.waterfall()`, `declare module` merges.
+- Schemastery config validation: `z.object({...})`, `z.number().step(1).min(...)`, `.required()`.
+- Event-sourced session model: `Session.append`, `SessionSeq`, `SessionEvent`, surface nodes, `surfaceOp: { op: 'replace', startSeq, endSeq }` shadowing instead of deletion (replay-safe).
+- Token accounting: `TokenMeter`/`measure`, `estimateMessage`, route-priced totals, shadow-price events; a "singleton replay fold" remeasure.
+- Compaction triggers: `CompactionTrigger` = `'pressure' | 'context-overflow'`; `assertNever` exhaustiveness guard.
+- `CONTEXT_WINDOW_EXCEEDED_CODE` imported from `@deepseek-ai/dsh-llm` (`index.ts:12`).
+- Automatic recovery registered as agent hooks: `agent/pre-step`, `agent/status`, `session/event`.
+
+## Files and Code
+- `packages/compaction/compaction-basic/src/summarizer.ts` (221 lines) — one-shot summarization LLM request + checkpoint framing.
+  - `SUMMARY_OPEN_TAG`/`SUMMARY_CLOSE_TAG` (22-23); `COMPACTION_INSTRUCTION` (32-67) appended as final **user** message so the call byte-prefixes the last routed request and reuses provider KV cache (25-31); exact Markdown sections incl. `## Primary Request and Intent`, `## Key Technical Concepts`, `## Files and Code`, `## Errors and Fixes`, `## Pending Jobs`, `## Current Work`, `## Next Step`, `## Critical Context`; empty section = `"(none)"`.
+  - `CHECKPOINT_PREAMBLE` (70-71); target resolution config → last routed header → agent options (127-142); `ctx.llm.stream()` with `toolHistory`, `purpose: 'compaction'`, `sessionId`, `maxTokens`, `signal` (152-163); `BlockAssembler` (163).
+  - Terminal `error`/`aborted` → `LlmError`; `max-tokens` → hard `Error` with `code = 'MAX_TOKENS'` (197-211); empty summary throws (167-171); `summaryText` rejects images via `LlmError('compaction summary cannot contain image output', 'UNSUPPORTED_CONTENT')` (214-220).
+  - `SummaryResult` = text + raw output + `llmStreamCall: true` + provider usage (87-107, 172-180); `frameSummary` wraps preamble + tags (188-194).
+- `packages/compaction/compaction-basic/src/region.ts` (600 lines) — surface-retention selection and the log-recorded compaction transaction.
+  - `selectCompactableRange` (117-155): reserve `retainTokens` tail budget, walk back, forward to first balanced boundary; node 0 `system/message` excluded (131); tool-pairing balance via `toolPairingBalancedAfter`/`toolPairingBalancedBefore` (143-147).
+  - `validateSurfaceRegion` (337-358); owner from open turn or `null` for manual; `compaction/start` with fresh `CompactionId` appended before any `await` — the durable marker is the lock (184-210), re-checked by `assertCompactionInactive` (308-320) and `assertNoActiveCompaction` (exported, used at `index.ts:305`).
+  - `prepareCompaction` prices nodes, detects surface drift, captures heuristic + route-priced totals (361-384); `buildSummarizationInput` replays head system message + tool schemas + shadowed region in surface order (544-563).
+  - `summarizeCompaction` tags checkpoint `UserMessage` with `compactCheckpointSource`, requires strictly smaller framed estimate vs span's route-priced total, retries once via `recover` (396-422).
+  - `commitCompactionBody` appends `compaction/summary` then `user/message` with `surfaceOp: { op: 'replace', startSeq, endSeq }` and `sourceEventSeqs` (491-509); bracket closes with `compaction/end`; `completeCompaction` attaches `endSeq` (237-239, 525-530).
+  - Stability modes `'whole-surface'`/`'selected-span'` with `SurfaceChangedError` (`region.ts:56-59`, `region.ts:77`).
+- `packages/compaction/compaction-basic/src/config.ts` (362 lines) — load-time validation and routed-model policy resolution.
+  - `DEFAULT_THRESHOLD_RATIO = 0.8` (20); `DEFAULT_RETAIN_RATIO = 0.16` (23); `headroomTokens` default `65_536` (75); `maxTokens` defaults to headroom (76); `compactionRetries`/`maxOverflowRetries` default 1 (105-106); `auto` default true (108).
+  - `resolveTargetPolicy` merges exact provider/model override over defaults (118-139); `retainRatio`/`retainTokens` mutually exclusive (292-294).
+  - `resolveCompactSpec` (153-216): `messageBudgetTokens = contextWindow - reservedCompletionTokens` (172); `pressureBudgetTokens = messageBudgetTokens - headroomTokens` (181); `thresholdTokens = floor(min(contextWindow * thresholdRatio, pressureBudgetTokens))` (191-194); ratio retention `floor(messageBudgetTokens * retainRatio)` (195-197); `retainTokens < thresholdTokens` guard (198-204); `deepFreeze` (205-216).
+- `packages/compaction/compaction-tool-result-pruner/src/index.ts` (185 lines) — replay-safe, model-free `ToolResultPruner extends Service`, `static inject = ['tokenMeter']` (44-47).
+  - Config `thresholdChars`/`headChars`/`tailChars` (49-53); `measureContent` sums text code points (68-74); `pruneContent` returns `null` when `totalChars <= thresholdChars` (85); `removedStart = headChars`, `removedEnd = totalChars - tailChars` (87-88); non-text blocks preserved in order (94-97); code-point slicing via `Array.from` (99).
+  - Per pruned result: `compaction/prune` with `shadowedRange {start:seq,end:seq}`, `shadowedSeqs: [seq]`, `shadowedTokenCount = estimateMessage(original)` (160-164); then new `tool/result` with `{ ...event.data, message }` + `surfaceOp replace` + `sourceEventSeqs: [seq]` (165-171); records `{originalSeq, replacementSeq, callId, charsBefore, charsAfter}` (172-178).
+- `packages/compaction/compaction-tool-result-pruner/src/config.ts` (77 lines) — `PRUNE_MARKER = '\n\n[... tool result middle pruned ...]\n\n'` (7, 39 code points); `DEFAULTS = { thresholdChars: 8192, headChars: 4096, tailChars: 1024 }` (10-14); `codePointLength` (27-29); `resolveConfig` rejects unknown keys (37-44); guard `headChars + marker + tailChars <= thresholdChars` (55-63).
+- `packages/compaction/compaction-basic/src/index.ts` (452 lines, just read) — the active task's subject.
+  - `routedTarget` (49-57) reads `session.requestHeader()?.config` and returns `{provider, model}` only when both non-empty; `reservedCompletionTokens` (65-68) = header `maxTokens ?? defaultMaxTokens ?? 0`; `conversationTarget` (71-79) falls back to `agent.options.provider/model`.
+  - Schemas 81-89, `modelPolicy` 91-103; `BasicCompactionEngine extends CompactionEngine`, `static inject = ['llm','tokenMeter','sessions']` (114); full `static Config` incl. `modelPolicies` array and `auto` boolean (116-128).
+  - Fields: `config` (131), `warnedPressureConfigTargets` (133), `overflowRetries: WeakMap<Agent, number>` (134), `overflowAgents: WeakMap<Session, Agent>` (135); constructor resolves config and calls `_registerAutomaticCompaction()` when `auto` (137-141).
+  - `_registerAutomaticCompaction` (148-…): `logResult` (150-156); `agent/pre-step` handler runs `this.compactIfNeeded(agent, 'pressure', signal)` when not aborted, swallows errors with `ctx.logger.warn('step compaction failed: …; continuing the turn')`, de-dupes `TargetPressureConfigError` warnings by `targetKey` (158-176); `agent/status` clears `overflowRetries` on `idle` (178-180); `session/event` resets the overflow-recovery sequence on `assistant/message` (182-186, comment: a successful response starts a fresh sequence even when tool calls continue the turn into another request) — the overflow handler body (≈187-240) was pruned from the read and is still unverified.
+  - `summarize` (247-257) resolves `conversationTarget` → `resolveTargetPolicy` → `summarizeWithLlm(this.ctx, config, input, agent, signal)`.
+  - `compactIfNeeded` (269-347): `routedTarget` undefined → `null`; `resolveTargetPolicy`; `measurement = meter.measure(session)`; `switch (trigger)` over `'context-overflow'`/`'pressure'` with `assertNever` default (279-287); `const prune = this.ctx.get('toolResultPruner')` (292).
+  - **Overflow branch** (294-302): if pruner present, `prune.pruneSession(agent.session)` then `measurement = meter.measure(agent.session)`; `selectCompactableRange(agent.session, measurement, 0)` — retain budget **0**, bypassing retention policy; `null` → return `null`; else `this.compactRegion(range.start, range.end, agent, signal)`. No `resolveModelInfo`, no threshold check, no retry loop, no `assertNoActiveCompaction`.
+  - **Pressure branch** (304-346): `await ctx.llm.resolveModelInfo(...)`; `assertNoActiveCompaction(session, 'automatic pressure compaction')`; `TargetPressureConfigError` if `info.context === undefined` (307-313); `resolveCompactSpec(policy, info.context.contextWindow, reservedCompletionTokens(agent, info.defaultMaxTokens))` (314-318); return `null` if `measurement.totalTokens < spec.thresholdTokens` (319); then pruner pass + remeasure (323-326) and re-check threshold (327); retry loop `for (attempt = 0; attempt <= spec.compactionRetries; attempt += 1)` selecting with `spec.retainTokens`, compacting, remeasuring, early-returning on success (329-341); else throws `` `compaction still above threshold after ${spec.compactionRetries + 1} compaction attempts (${...} estimated tokens >= threshold ${...})` `` (343-346).
+  - `compactRegion` (358-373) → `compactSurfaceRegion(deps, session, start, end, agent, { owner: 'current-turn', stability: 'whole-surface' }, signal)`.
+  - `compactNow` (383-435) → `agent.runMaintenance` with `AbortSignal.any([agentSignal, signal])`, `selectCompactableRange(..., 0)`, `owner: null`, `stability: 'selected-span'`, optional `sourceCommandId`, `flush: () => ctx.sessions.flush(session)`; maps aborts to `ManualCompactionError('cancelled', …)` and outer failures to `ManualCompactionError('busy', 'manual compaction requires an idle agent with no waking queued work', …)`.
+  - `regionDependencies` (438-449): `{ meter: this.ctx.tokenMeter, summarize: (input, owner, abort) => this.summarize(...), recover: (error, agent, sourceEventSeqs, signal) => this.ctx.waterfall('compaction/summary-error', {...}, () => false) }`; default export `BasicCompactionEngine` (452).
+
+## Errors and Fixes
+- No code errors or user corrections; no pushback on any answer.
+- Self-corrected trap in task 2: the 80% ratio does not bind — `678,464 < 800,000`, so the headroom-capped budget is the real `thresholdTokens`; retention scales off `messageBudgetTokens` (744,000), not the raw 1,000,000 window.
+- Tool-output truncation repeatedly pruned middle spans of reads (`index.ts` lines 95-244 in this latest read; earlier `summarizer.ts` 73-197, `region.ts` 92-575, `config.ts` 181-286). Recovered the needed ranges via `offset`/`limit`.
+
+## Pending Jobs
+- Task 4 answer not yet delivered.
+- Unread/unverified in `index.ts`: the overflow-mode `session/event` handler body (≈187-240), which is where `CONTEXT_WINDOW_EXCEEDED_CODE`, `overflowRetries`, and `overflowAgents` are used and where `compactIfNeeded(agent, 'context-overflow', …)` is presumably invoked.
+
+## Current Work
+- Reading `packages/compaction/compaction-basic/src/index.ts` in segments to trace the context-overflow recovery path; have lines 1-94, 95-264 (partial, pruned middle), 265-429, and 430-452.
+
+## Next Step
+- Read `packages/compaction/compaction-basic/src/index.ts` with `offset` ≈ 182, `limit` ≈ 70 to capture the `session/event` overflow handler (lines ≈186-240), then answer task 4 with a numbered step-by-step path and `path:line` citations.
+
+## Critical Context
+- Citation discipline is mandatory: every claim needs `path:line`; do not answer from memory.
+- Read-only checkout — verification is by reading, not running.
+- Established architecture: `compaction-basic` is model-based (one LLM call, `purpose: 'compaction'`, KV-cache-prefix-preserving replay, fail-closed on `max-tokens`); `compaction-tool-result-pruner` is deterministic/model-free (character budgets, no LLM, replay-safe substring replacement), reached from `compaction-basic` only via the optional service lookup `this.ctx.get('toolResultPruner')` (so the package stays independently composable, `index.ts:289-292`).
+- Task 3 answer delivered: the pruner's ordering vs summarization is caller-determined (no scheduling in either file); safe reading is prune-then-summarize; pruning inside an open compaction bracket would invalidate the span via `SurfaceChangedError`/stability checks. Pruned result = head 4096 + 39-code-point marker + tail 1024 code points (5159 ≤ 8192), non-text blocks preserved, original event left in log and shadowed by a replacement `tool/result` with identical `data` except `message`, prefixed by a `compaction/prune` shadow-price event.
+- Key asymmetry for task 4 that must be called out: **overflow** takes the cheap path only — pruner first, then `selectCompactableRange(..., 0)` (zero retained tail) — and skips `resolveModelInfo`, the threshold comparison, `assertNoActiveCompaction`, and the retry loop; **pressure** does model-capacity resolution, threshold gating, pruner second-pass, and a bounded retry loop that throws when still above threshold.
+- `retainTokens: 0` for overflow/manual means the whole compactable range can be replaced, which is why no retention policy applies; the summary must still be strictly cheaper than the span (`region.ts:417-422`).
+- Error containment differs by path: `agent/pre-step` swallows failures and continues the turn (`index.ts:166-173`), whereas `compactNow` maps to `ManualCompactionError('busy'|'cancelled')`.
+- `regionDependencies.recover` dispatches `ctx.waterfall('compaction/summary-error', …)` defaulting to `() => false` (`index.ts:442-447`), wiring the error-recovery hook to `region.ts`'s single retry.
+- Task 2 arithmetic (already delivered): `messageBudgetTokens = 744,000`; `pressureBudgetTokens = 678,464`; `thresholdTokens = 678,464`; `retainTokens = 119,040`; valid since `119,040 < 678,464`.</compacted-summary>

@@ -1,0 +1,16 @@
+# 构造的用户 patch，放进 $DSH_HOME/profiles/web/cordis.patch.yml
+# 1. 带沙箱的 bash 关掉，插入不带沙箱的本地实现
+- id: bash-sandbox
+  disabled: true
+- insert:
+    - id: bash-local
+      name: '@deepseek-ai/dsh-bash-local'
+      config:
+        timeoutMs: 60000
+# 2. 想直接把 agent-loop 这一行换成别的包
+- id: agent-loop
+  name: '@example/my-agent-loop'
+# 3. 换人设
+- id: system-prompt
+  config:
+    personaPrefix: You are a careful code reviewer.

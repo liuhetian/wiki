@@ -1,0 +1,29 @@
+## completed
+Background subagent child-1 finished and will do no further work unless you send it more.
+Its closing message:
+The `agent/turn-stopping` event lets a listener stop a turn; it is serial.
+source: {"kind":"subagent-settled","form":"notice","summary":"Background subagent child-1 finished and will do no further work unless you send it more.","senderSessionId":"child-1"}
+
+## completed, one-shot backend
+Background subagent child-1 finished. It cannot receive follow-up messages.
+Its closing message:
+Done.
+source: {"kind":"subagent-settled","form":"notice","summary":"Background subagent child-1 finished. It cannot receive follow-up messages.","senderSessionId":"child-1"}
+
+## aborted, no closing text
+Background subagent child-1 was stopped before it finished.
+It left no closing message.
+source: {"kind":"subagent-settled","form":"notice","summary":"Background subagent child-1 was stopped before it finished.","senderSessionId":"child-1"}
+
+## error with diagnostic
+Background subagent child-1 failed before it finished.
+It left no closing message.
+LLM request failed: 429 rate limited
+source: {"kind":"subagent-settled","form":"notice","summary":"Background subagent child-1 failed before it finished.","senderSessionId":"child-1"}
+
+## structured output
+Background subagent child-1 finished and will do no further work unless you send it more.
+Its closing message:
+Found 2 call sites.
+Structured result: {"callSites":["a.ts:12","b.ts:40"]}
+source: {"kind":"subagent-settled","form":"notice","summary":"Background subagent child-1 finished and will do no further work unless you send it more.","senderSessionId":"child-1"}

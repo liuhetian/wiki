@@ -1,0 +1,7 @@
+stored: --tmp-demo-cwd--/text-turn-demo/session.jsonl  version=0  sha256=ee51b18a2487bf9d  rows=25
+open(read):  17 current events (permission/preset, sandbox/mode, approval/policy, agent/inbox/spliced, turn/start, step/start, …); dir = session.jsonl
+open(write): dir = session.jsonl, session.lock, session.v4.jsonl
+  session.jsonl: 27347 bytes version=0 sha256=ee51b18a2487bf9d
+  session.lock: 0 bytes
+  session.v4.jsonl: 27338 bytes version=4 sha256=393ae90c28cc26fb
+v0 file unchanged: true

@@ -1,0 +1,5 @@
+<system-reminder>
+Instructions removed: packages/app/AGENTS.md
+
+The previously loaded instructions from this file no longer apply.
+</system-reminder>

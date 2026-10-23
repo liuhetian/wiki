@@ -1,0 +1,11 @@
+第 1 条之后：{"sticky": {"演示·定时.0": {"hash": 155117607671687, "start": 1, "end": 3, "protected": false}}, "cooldown": {"演示·定时.0": {"hash": 155117607671687, "start": 1, "end": 4, "protected": false}}}
+同样长度再扫一次（swipe / regenerate，聊天没有前进）：
+   [WI] Processing sticky entry 演示·定时.0
+   [WI] Removing sticky entry 演示·定时.0 from timedWorldInfo: chat not advanced
+   [WI] Processing cooldown entry 演示·定时.0
+   [WI] Removing cooldown entry 演示·定时.0 from timedWorldInfo: chat not advanced
+   [WI] Timed effect "delay" applied to entry
+   [WI] Entry 1 suppressed by delay
+   [WI] Entry 1 suppressed by delay
+   [WI] Adding sticky entry 演示·定时.0: start=1, end=3, protected=false
+   [WI] Adding cooldown entry 演示·定时.0: start=1, end=4, protected=false

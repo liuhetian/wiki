@@ -1,0 +1,56 @@
+{
+  "content": [
+    {
+      "type": "reasoning",
+      "text": "The user wants a plan to add a TOOL_TODO section order between TOOL_JOBS (1600) and TOOL_PTY (1700). I need to explore: find the todo tool plugin, see how sections registered, look for tests referencing SECTION_ORDERS, docs, snapshots.\n\nLet me search."
+    },
+    {
+      "type": "text",
+      "text": "I'll explore the repository to ground this plan."
+    },
+    {
+      "type": "tool-call",
+      "id": "call_00_mlyHxjdHMo2aW1wH37iJ3735",
+      "name": "grep",
+      "arguments": "{\"pattern\": \"TOOL_JOBS|TOOL_PTY|TOOL_TODO\", \"path\": \".\"}"
+    },
+    {
+      "type": "tool-call",
+      "id": "call_01_sDcghe8lN8UKad74rYzB7701",
+      "name": "grep",
+      "arguments": "{\"pattern\": \"getSectionOrder\\\\('TOOL_\", \"path\": \".\"}"
+    }
+  ],
+  "replayState": {
+    "response": {
+      "kind": "deepseek-messages",
+      "version": 1,
+      "model": "deepseek-flash"
+    },
+    "blocks": [
+      {
+        "type": "reasoning",
+        "signature": "b794284d-ffe7-4f1a-a01c-c5c8bacd4407"
+      },
+      {
+        "type": "text"
+      },
+      {
+        "type": "tool-call"
+      },
+      {
+        "type": "tool-call"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 1706,
+    "outputTokens": 193,
+    "cacheReadTokens": 17536,
+    "cacheWriteTokens": 0,
+    "totalTokens": 19435
+  },
+  "finish": {
+    "kind": "tool-calls"
+  }
+}

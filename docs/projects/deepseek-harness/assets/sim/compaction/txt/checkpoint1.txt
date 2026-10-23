@@ -1,0 +1,85 @@
+seq 78 user/message  source=compact-checkpoint  surfaceOp={"op": "replace", "startSeq": 5, "endSeq": 54}
+
+This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.
+
+<compacted-summary>## Primary Request and Intent
+- Three sequential read-and-explain tasks over `compaction-basic` and `compaction-tool-result-pruner` packages, established by these verbatim asks:
+  - "Read packages/compaction/compaction-basic/src/summarizer.ts and packages/compaction/compaction-basic/src/region.ts. Explain in five bullets how a compaction request is assembled and how its result lands back in the session."
+  - "Now read packages/compaction/compaction-basic/src/config.ts. With a 1,000,000-token context window, a 256,000-token output reservation and default settings, what are thresholdTokens and retainTokens? Show the arithmetic."
+  - "Read packages/compaction/compaction-tool-result-pruner/src/index.ts and packages/compaction/compaction-tool-result-pruner/src/config.ts. When does the pruner run relative to summarization, and what exactly does a pruned tool result look like?"
+- Deliverable format: explanatory prose/bullets with `path:line` citations, not code changes.
+- Tasks 1 and 2 were answered; task 3 was in progress.
+
+## Key Technical Concepts
+- TypeScript monorepo; every package lives under `packages/<group>/<name>/src`.
+- Read-only checkout at `/tmp/dsh-lab/compaction/ws`; no edits or writes permitted.
+- Workspace instruction: cite `path:line` for every claim.
+- Cordis service/dependency-injection framework: `Context`, `Service`, `static inject`, `declare module '@deepseek-ai/cordis'` merges.
+- Schemastery config validation: `z.object({...}).default(...)`, `z.number().step(1).min(...)`.
+- Event-sourced session model: `Session.append`, `SessionSeq`, `SessionEvent`, surface nodes, and `surfaceOp: { op: 'replace', startSeq, endSeq }` shadowing instead of deletion (replay-safe).
+- Token accounting: `TokenMeter`/`TokenMeasurement`, heuristic `estimateMessage` vs route-priced totals, shadow-price events.
+- LLM streaming: `BlockAssembler`, `FinishReason`, `LlmError`, `RequestMessage`, `ToolSchema`, `TokenUsage`.
+- Unicode correctness: code points via `Array.from(text).length` (never splits surrogate pairs); grapheme clusters may still split.
+
+## Files and Code
+- `packages/compaction/compaction-basic/src/summarizer.ts` (221 lines) — one-shot summarization, LLM request construction, checkpoint framing.
+  - `SUMMARY_OPEN_TAG = '<compacted-summary>'` / `SUMMARY_CLOSE_TAG = '</compacted-summary>'` (22-23).
+  - `COMPACTION_INSTRUCTION` (32-67) is appended as the **final user message**, not a separate summarizer system prompt, so the call is a byte-prefix of the last routed request and reuses provider KV cache (25-31). Requires exact Markdown structure: `## Primary Request and Intent`, `## Key Technical Concepts`, `## Files and Code`, `## Errors and Fixes`, `## Pending Jobs`, `## Current Work`, `## Next Step`, `## Critical Context`; empty section writes `"(none)"`.
+  - `CHECKPOINT_PREAMBLE` (70-71) makes the replacement message read as established background.
+  - Target resolution order: config → last routed header → agent options (`summarizer.ts:127-142`).
+  - `ctx.llm.stream()` with `toolHistory`, `purpose: 'compaction'`, `sessionId`, `maxTokens`, `signal` (152-163).
+  - Chunks feed `BlockAssembler` (163); terminal `error`/`aborted` → `LlmError`, `max-tokens` → hard `Error` with `code = 'MAX_TOKENS'` (197-211).
+  - Empty summary throws (167-171); `summaryText` rejects images with `LlmError('compaction summary cannot contain image output', 'UNSUPPORTED_CONTENT')` and keeps only `type: 'text'` blocks (214-220).
+  - `SummaryResult` = summarized text + raw output + `llmStreamCall: true` + provider usage (87-107, 172-180); `frameSummary` wraps preamble + tags (188-194).
+- `packages/compaction/compaction-basic/src/region.ts` (600 lines) — surface-retention selection and the log-recorded compaction transaction shared by automatic open-turn and manual idle-session paths.
+  - `selectCompactableRange` (117-155): reserve `retainTokens` tail budget, walk back, then forward to first balanced boundary; node 0 `system/message` excluded (131); tool-pairing balance via `toolPairingBalancedAfter`/`toolPairingBalancedBefore` (143-147).
+  - `validateSurfaceRegion` (337-358): both seqs exist on surface, ordered, balanced on both sides.
+  - Owner from open turn or `null` for manual; `compaction/start` with fresh `CompactionId` appended before any `await` — the durable marker is the lock, re-checked by `assertCompactionInactive` (184-210, 308-320).
+  - `prepareCompaction` prices selected nodes, detects surface drift, captures heuristic + route-priced totals (361-384); `buildSummarizationInput` replays head system message + tool schemas + shadowed region in surface order (544-563).
+  - `summarizeCompaction` tags the checkpoint `UserMessage` with `compactCheckpointSource`, refuses it unless the framed estimate is strictly smaller than the span's route-priced total, and retries once via `recover` (396-422).
+  - `commitCompactionBody` appends `compaction/summary` then a `user/message` with `surfaceOp: { op: 'replace', startSeq, endSeq }` and `sourceEventSeqs` (491-509); bracket closes with `compaction/end`; `completeCompaction` attaches `endSeq` (237-239, 525-530); failed close leaves an unmatched start detectable (240-251).
+- `packages/compaction/compaction-basic/src/config.ts` (362 lines) — load-time validation and routed-model policy resolution.
+  - `DEFAULT_THRESHOLD_RATIO = 0.8` (20); `DEFAULT_RETAIN_RATIO = 0.16` (23); `headroomTokens` default `65_536` (75); `maxTokens` defaults to `headroomTokens` (76); `compactionRetries`/`maxOverflowRetries` default 1 (105-106); `auto` default true (108).
+  - `resolveTargetPolicy` merges exact provider/model override over defaults (118-139); `retainRatio` and `retainTokens` are mutually exclusive (292-294).
+  - `resolveCompactSpec` (153-216): `messageBudgetTokens = contextWindow - reservedCompletionTokens` (172); `pressureBudgetTokens = messageBudgetTokens - headroomTokens` (181); `thresholdTokens = floor(min(contextWindow * thresholdRatio, pressureBudgetTokens))` (191-194); ratio retention `floor(messageBudgetTokens * retainRatio)` (195-197); `retainTokens < thresholdTokens` guard (198-204); `deepFreeze` result (205-216).
+- `packages/compaction/compaction-tool-result-pruner/src/index.ts` (185 lines) — "Replay-safe, model-free tool-result pruning service."
+  - `ToolResultPruner extends Service`, `static inject = ['tokenMeter']` (44-47) — the meter prices each shadowed node for its logged shadow-price event.
+  - Config schema `thresholdChars` / `headChars` / `tailChars` (49-53); constructor resolves immutable `config` (58-61).
+  - `measureContent(blocks)` sums code points across text blocks only (68-74).
+  - `pruneContent(blocks)` returns `null` when `totalChars <= config.thresholdChars` (85); sets `removedStart = headChars`, `removedEnd = totalChars - tailChars` (87-88); pushes non-text blocks through unchanged to preserve rich-block order (94-97); slices by `Array.from(block.text)` (99); inserts the marker once via `markerInserted` flag (91, 99+). JSDoc: code-point slicing cannot split surrogate pairs, but grapheme clusters may still split (76-82).
+  - Per pruned result: appends `compaction/prune` with `shadowedRange: { start: seq, end: seq }`, `shadowedSeqs: [seq]`, `shadowedTokenCount: this.ctx.tokenMeter.estimateMessage(original)` (160-164), then appends a new `tool/result` with `{ ...event.data, message }` and `surfaceOp: { op: 'replace', startSeq: seq, endSeq: seq }`, `sourceEventSeqs: [seq]` (165-171).
+  - Records `{ originalSeq, replacementSeq, callId, charsBefore, charsAfter }` (172-178); returns `{ pruned, charsRemoved }` (179-181). Default export `ToolResultPruner` (185).
+- `packages/compaction/compaction-tool-result-pruner/src/config.ts` (77 lines).
+  - `PRUNE_MARKER = '\n\n[... tool result middle pruned ...]\n\n'` (7) — 39 code points by computation.
+  - `DEFAULTS = { thresholdChars: 8192, headChars: 4096, tailChars: 1024 }`, `deepFreeze` (10-14).
+  - `codePointLength(text) = Array.from(text).length` (27-29).
+  - `resolveConfig` rejects unknown keys listing allowed set (37-44); validates `thresholdChars` positive int, `headChars`/`tailChars` non-negative ints (51-53, 67-77).
+  - Guard: `headChars + codePointLength(PRUNE_MARKER) + tailChars <= thresholdChars`, else throws "must be at most thresholdChars" (55-63); returns `deepFreeze(structuredClone(resolved))` (64).
+
+## Errors and Fixes
+- No code errors or user corrections occurred. All three requests were answered without pushback.
+- Self-corrected trap in task 2: the 80% ratio does not bind — `678,464 < 800,000`, so the headroom-capped budget is the real `thresholdTokens`. Also noted retention scales off `messageBudgetTokens` (744,000), not the raw 1,000,000 window.
+- Tool-output truncation, not a code error: middle segments of read results were pruned by the tool (e.g. `summarizer.ts` lines 73-197, `region.ts` lines 92-575, `config.ts` lines 181-286). Recovered the needed ranges by re-reading with `offset`/`limit`. The pruner's `index.ts` middle (lines ~102-158) was never recovered.
+
+## Pending Jobs
+- Task 3 answer is incomplete: it was not delivered before this point.
+- Unknown from current evidence: the exact hook that invokes the pruner relative to summarization, and thus its precise ordering (before/after the summarizer call, and within which turn boundary). The trigger site was in the unread middle of `index.ts`.
+- Not yet verified: whether pruning runs on the same shadowed span that summarization later prices, and how `compaction/prune` events interact with `selectCompactableRange`'s tail-retention decisions.
+- Detailed multi-text-block slicing semantics (how head/middle/tail are distributed across several text blocks) in `index.ts:99-130`.
+
+## Current Work
+- Just completed reading `packages/compaction/compaction-tool-result-pruner/src/index.ts` and `.../config.ts` in parallel for task 3.
+- Confirmed halves: config defaults/validation/marker, and the session-writing half of `pruneContent` (shadow-price event + shadowed `tool/result` replacement + result bookkeeping).
+- Task 2 answer already delivered with arithmetic: `messageBudgetTokens = 1,000,000 - 256,000 = 744,000`; `pressureBudgetTokens = 744,000 - 65,536 = 678,464`; `thresholdTokens = floor(min(800,000, 678,464)) = 678,464`; `retainTokens = floor(744,000 × 0.16) = 119,040`. Valid since `119,040 < 678,464`.
+
+## Next Step
+- Answer task 3: re-read `packages/compaction/compaction-tool-result-pruner/src/index.ts` around lines 100-160 (and check what consumes/emits `compaction/prune` or calls `pruneContent`) to pin the pruning trigger relative to summarization, then state precisely when the pruner runs and what a pruned tool result contains.
+
+## Critical Context
+- Citation discipline is mandatory: every claim needs `path:line`; do not answer from memory of these files.
+- Read-only checkout — never attempt edits; verification is by reading, not running.
+- Architectural split, both already established: `compaction-basic` is model-based (one LLM call, `purpose: 'compaction'`, KV-cache-prefix-preserving replay, fail-closed on `max-tokens`), while `compaction-tool-result-pruner` is deterministic and model-free (character budgets, no LLM, replay-safe substring replacement). The pruner's cheaper character-level surgery is the natural counterpart to summarization's expensive semantic rewrite, which is why its ordering relative to summarization is the crux of the pending question.
+- Pruned-result shape, confirmed portion: the original `tool/result` is not deleted but shadowed by a replacement `tool/result` event whose `data` is the original spread with only `message` swapped, aliased via `sourceEventSeqs: [seq]` — so `message.source.callId` and tool pairing survive intact and replay is stable. Content becomes retained head (default 4096 code points) + `PRUNE_MARKER` (39 code points) + retained tail (default 1024) with all non-text blocks preserved in original order. Default expansion is `4096 + 39 + 1024 = 5159`, comfortably under `thresholdChars: 8192`. The 8192 threshold is why typical coding-agent tool output passes untouched (`pruneContent` returns `null`).
+- Pruning is measurement-coupled: it is only sound because `tokenMeter` is injected (`index.ts:46-47`) and logs `shadowedTokenCount` via `estimateMessage(original)` at `index.ts:160-164`, letting pure consumers subtract the shadowed node's heuristic price without per-node state (`index.ts:157-159`). Note this is a heuristic estimate, whereas `compaction-basic`'s shrink comparison uses route-priced totals (`region.ts:46-47`, `region.ts:417-422`) — a real unit mismatch to keep in mind if the two are ever compared.
+- Pruned entries keep `charsBefore`/`charsAfter` per item and an aggregate `charsRemoved`, which are character counts, not tokens — again distinct from token accounting elsewhere.
+- Token constants already established for `compaction-basic` defaults: `0.8`, `0.16`, `65_536` headroom, `maxTokens` defaulting to headroom; `retainTokens` and `retainRatio` mutually exclusive, so supplying both is a load error.</compacted-summary>

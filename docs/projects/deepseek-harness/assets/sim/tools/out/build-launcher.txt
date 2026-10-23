@@ -1,0 +1,2 @@
+built /tmp/dsh-lab/tools/landlock-run
+landlock: partially enforced (older ABI)

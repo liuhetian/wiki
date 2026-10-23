@@ -1,0 +1,3 @@
+{{setvar::好感::35}}好感是 {{getvar::好感}}  →  好感是 35
+{{addvar::好感::5}}现在是 {{getvar::好感}}  →  现在是 40
+chat_metadata.variables = {"好感": 40}

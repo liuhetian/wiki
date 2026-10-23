@@ -1,0 +1,13 @@
+ ✓ snapshots/session/headless.snapshot.ts (166 tests | 156 skipped) 2317ms
+     ✓ replays agent-instructions through dsh --profile headless  1120ms
+     ✓ replays agent-instructions-budget through dsh --profile headless  1035ms
+     ✓ replays agent-instructions-group-failure through dsh --profile headless  1097ms
+     ✓ replays dynamic-tool-prompt-updates through dsh --profile headless  1089ms
+     ✓ replays model-switch-notice through dsh --profile headless  1053ms
+     ✓ replays skill-load through dsh --profile headless  1075ms
+     ✓ replays system-prompt-in-history through dsh --profile headless  1018ms
+     ✓ replays working-directory through dsh --profile headless  1201ms
+     ✓ replays working-directory-admission through dsh --profile headless  985ms
+     ✓ replays working-directory-consumers through dsh --profile headless  1196ms
+ Test Files  1 passed (1)
+      Tests  10 passed | 156 skipped (166)

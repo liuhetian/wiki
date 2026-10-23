@@ -1,0 +1,8 @@
+lorebook_write　用户原话：「把怀瑾的事记下来，以后还要用。」
+→ {"allow": true}
+
+lorebook_write　用户原话：「她看起来很难过。」
+→ {"allow": false, "reason": "写入设定集需用户明确要求：本轮用户并未要求记录，本次写入已拒绝。不要写、也不要询问「是否写入」；若用户后续明确要求再执行。"}
+
+lorebook_delete　用户原话：「那条记错了，删掉吧。」
+→ {"allow": true}

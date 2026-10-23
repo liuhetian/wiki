@@ -1,0 +1,28 @@
+  1 permission/preset  workspace-write
+  5 permission/preset  read-only
+--- turn 1
+ 12 system/message     system-prompt   {{system}}
+ 13 user/message       user            Can you create or edit a normal file right now under the current policy? Answer 
+ 14 user/message       runtime-context Current DSH file policy: read-only | Approval policy: ask
+ 15 user/message       time-context    Time sampled while preparing turn 1, step 1: {{timeContextTimestamp}}
+ 19 assistant/message  usage: uncached 59, cache read 14848
+ 23 permission/preset  danger-full-access
+--- turn 2
+ 33 user/message       user-approval   The approval policy changed from "ask" to "never" (changed by the user).
+ 34 user/message       user            Does the DSH file sandbox currently restrict file operations? Answer directly in
+ 35 user/message       runtime-context Current DSH file policy: danger-full-access | Approval prompts are disabled in this session: actions that require approval are rejected automatically — do not request sandbox escalation (do not set `sandbox_permissions`)
+ 36 assistant/message  usage: uncached 202, cache read 14848
+ 40 permission/preset  workspace-write
+--- turn 3
+ 50 user/message       user-approval   The approval policy changed from "never" to "ask" (changed by the user).
+ 51 user/message       user            Reply with exactly WORKSPACE_POLICY_SEEN. Do not call tools.
+ 52 user/message       runtime-context Current DSH file policy: workspace-write | Approval policy: ask
+ 53 assistant/message  usage: uncached 245, cache read 14976
+ 57 permission/preset  read-only
+--- turn 4
+ 64 user/message       user            Create the relative path policy-neutral.txt in the current workspace containing 
+ 65 user/message       runtime-context Current DSH file policy: read-only | Approval policy: ask
+ 66 assistant/message  usage: uncached 265, cache read 15104
+ 71 assistant/message  usage: uncached 176, cache read 15360
+ 78 assistant/message  usage: uncached 180, cache read 15744
+ 83 assistant/message  usage: uncached 211, cache read 15872

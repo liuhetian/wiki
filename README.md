@@ -42,7 +42,7 @@ flowchart LR
 docs/                 # 全部内容源；docs/index.md 是站点首页，也是 AI 的入口
 ├── posts/  notes/  courses/  skills/  gallery/  projects/  maintenance/
 ├── stylesheets/      # 全站令牌层 zx-tokens.css + 皮肤层 zx-theme.css + 首页 home.css
-└── vendor/           # 本地化运行时，全部不走 CDN：React、three / r3f、MathJax、ECharts、Chart.js、Mermaid、Maple Mono 字体
+└── vendor/           # 本地化运行时，全部不走 CDN：React、three / r3f、MathJax、ECharts、Chart.js、Mermaid、GLightbox、Maple Mono 字体
 overrides/            # 主题模板覆盖：首页开屏、按需引入 mermaid、页头指向 .md 源的发现链接
 mkdocs.yml            # Zensical 兼容配置；nav 只是给人的策展层，不在 AI 链路上
 deploy.sh             # git pull → 链路校验 → 构建 → md 源镜像 + llms.txt → 钉 Content-Type 同步 COS

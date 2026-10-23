@@ -29,6 +29,15 @@ mkdir -p docs/vendor/mermaid
 curl -fsSL --max-time 180 -o docs/vendor/mermaid/mermaid.min.js \
   https://cdn.jsdelivr.net/npm/mermaid@11.17.1/dist/mermaid.min.js
 
+# GLightbox 3.3.1：点图片弹出遮罩放大的灯箱。mkdocs.yml 开了 glightbox 插件，Zensical 把正文里的图
+# 包成 a.glightbox；它的加载器跟 mermaid 一样写死了 unpkg，GLightbox 未定义时才去拉 JS 和 CSS。
+# overrides/main.html 给有图的页面先引入这两个本地文件。CSS 不引用别的文件，单独一份就够
+mkdir -p docs/vendor/glightbox
+curl -fsSL --max-time 60 -o docs/vendor/glightbox/glightbox.min.js \
+  https://cdn.jsdelivr.net/npm/glightbox@3.3.1/dist/js/glightbox.min.js
+curl -fsSL --max-time 60 -o docs/vendor/glightbox/glightbox.min.css \
+  https://cdn.jsdelivr.net/npm/glightbox@3.3.1/dist/css/glightbox.min.css
+
 # 字体（Maple Mono）不在这里：官方发布物是 zip，且中文字形要本地子集化，
 # 升级流程独立一份 —— 见 scripts/build-fonts.py 的文件头注释。
 

@@ -1,0 +1,32 @@
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > each step request within a turn append-extends the previous, frozen end to end 18ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > a later turn append-extends the previous turn (one conversation, one log) 4ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > starts a new request series only when the admitted step explicitly asks for one 4ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > retains the explicit series boundary when that request also changes its header 4ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > keeps the series declaration when an outer listener rebuilds the enter decision 5ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > logs adapter defaults, supports per-turn effort changes, and restores the effective value 11ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > logs an adapter-owned maxTokens default before dispatch 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > rematerializes the selected adapter maxTokens default after a provider switch 4ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > preserves an explicit agent maxTokens cap across a provider switch 4ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > keeps exact-model resolution, request logging, and dispatch on one adapter registration 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > aborts a blocked reasoning lookup before quiescent disposal completes 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > does not swallow a plain error from exact-model resolution 2ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > does not swallow a LLM error from exact-model resolution 2ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > lets a short-circuiting llm/stream listener own an unregistered route 2ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > a compaction replace rewrites the resend, and the log explains it 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > starts a new request series when compaction rewrites a retry in the same step 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > a system-prompt change replaces surface node 0 and starts a new series under the same header 4ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > on an in-history route a system-prompt change appends after the cached history under the same header 5ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > on an in-history route a series start folds a prompt change into node 0 and empties later system nodes 4ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > on an in-history route a compaction replace since the last request re-baselines node 0 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > on an in-history route a tool-schema change re-baselines node 0 together with the changed header 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > an inject() during the agent/request waterfall joins the NEXT request (the step/start boundary) 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > a mutation attempt on the frozen request content throws into the step (loud, not silent) 2ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > a fresh loop instance over a seeded log anchors with a resume snapshot and stays cache-aligned 6ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > a delegating listener cannot mutate the seed through next() — the fold stays log-true 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request stability across the loop > THEOREM: every request rebuilds byte-equal from the session log alone 5ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request/context capacity records > records capacity once and skips it while the route is unchanged 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request/context capacity records > records a second capacity when the route changes mid-session 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request/context capacity records > records and deduplicates a route whose adapter advertises no capacity 3ms
+✓ |thread-safe| packages/core/agent-loop/tests/request-reconstruction.spec.ts > request/context capacity records > clears a previous capacity when the next route advertises none 3ms
+Test Files  1 passed (1)
+Tests  30 passed (30)

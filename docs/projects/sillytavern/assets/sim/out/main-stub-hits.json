@@ -1,0 +1,23 @@
+{
+ "localforage.createInstance": 1,
+ "new public/scripts/filters.js:FilterHelper": 1,
+ "computedStyle.getPropertyValue": 10,
+ "computedStyle.getPropertyValue().trim": 10,
+ "new public/scripts/slash-commands/SlashCommandArgument.js:SlashCommandArgument": 8,
+ "public/scripts/slash-commands/SlashCommand.js:SlashCommand.fromProps": 16,
+ "public/scripts/slash-commands/SlashCommandParser.js:SlashCommandParser.addCommandObject": 16,
+ "document.createElement": 3,
+ "document.getElementById": 29,
+ "document.getElementById().addEventListener": 9,
+ "document.getElementById().removeAttribute": 1,
+ "public/scripts/slash-commands/SlashCommandCommonEnumsProvider.js:commonEnumProviders.boolean": 5,
+ "public/scripts/slash-commands/SlashCommandCommonEnumsProvider.js:commonEnumProviders.boolean()": 5,
+ "new public/scripts/slash-commands/SlashCommandArgument.js:SlashCommandNamedArgument": 3,
+ "public/scripts/slash-commands/SlashCommandArgument.js:SlashCommandArgument.fromProps": 5,
+ "public/scripts/slash-commands/SlashCommandArgument.js:SlashCommandNamedArgument.fromProps": 21,
+ "public/scripts/slash-commands/SlashCommandCommonEnumsProvider.js:commonEnumProviders.characters": 1,
+ "public/scripts/slash-commands/SlashCommandCommonEnumsProvider.js:enumIcons.getDataTypeIcon": 126,
+ "new public/scripts/slash-commands/SlashCommandEnumValue.js:SlashCommandEnumValue": 126,
+ "public/scripts/preset-manager.js:getPresetManager": 147,
+ "public/script.js:saveSettings": 1
+}

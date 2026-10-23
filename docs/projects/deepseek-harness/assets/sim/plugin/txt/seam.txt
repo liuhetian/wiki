@@ -1,0 +1,11 @@
+1. mount consumer (no shell provider yet)
+   run: (no consumer listening)
+2. mount subprocess-local + LocalBashExecutor
+consumer: activated, ctx.shell is LocalBashExecutor
+   run: LocalBashExecutor -> exit 0, stdout "hello"
+3. dispose LocalBashExecutor
+consumer: deactivated
+   run: (no consumer listening)
+4. mount DryRunBash in its place
+consumer: activated, ctx.shell is DryRunBash
+   run: DryRunBash -> exit 0, stdout "[dry-run] echo hello"

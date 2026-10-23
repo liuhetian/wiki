@@ -1,10 +1,10 @@
 ---
-description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘画、海报品牌、摄影电影感、产品空间、信息知识、官方示例；每条就是一张图加一段中文 prompt"
+description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘画、海报品牌、摄影电影感、产品空间、信息知识、官方示例；每条就是一张图加一段中文 prompt；另有小红书收来的拍照姿势实拍图 59 组，只有图"
 ---
 
 # 图片
 
-一张图配一段生成它的 prompt，看中哪张就把 prompt 拿走改一改。页面里只有图和 prompt；来源与授权记在各自的维护记录里：[GPT Image 2 图库](../../maintenance/gallery/gpt-image2.md)（收录自 wuyoscar/GPT-Image2-Skill，MIT，共 163 条，已译成中文）、[手绘风格库](../../maintenance/skills/handdraw.md)（收录自 yang0/handraw-style，MIT，365 种画风；配套的版式和主题色在[排版](../layouts/index.md)、[色彩](../colors/classic.md)两区）、[二次元平面设计风格](../../maintenance/gallery/linux-do-style.md)（整理自 linux.do @sallyn 的帖子，12 组）和 [prompt-cards 生图条目](../../maintenance/gallery/prompt-cards.md)（照录自 prompt-cards.cyanfish.site，10 条，英文的已译成中文，分散在角色设计、摄影、插画、复古与赛博朋克、字体与海报、品牌系统六页的末尾）；另有单条收进来的零散 prompt，来源记在[零散收集](../../maintenance/gallery/images-collected.md)。
+一张图配一段生成它的 prompt，看中哪张就把 prompt 拿走改一改。页面里只有图和 prompt；来源与授权记在各自的维护记录里：[GPT Image 2 图库](../../maintenance/gallery/gpt-image2.md)（收录自 wuyoscar/GPT-Image2-Skill，MIT，共 163 条，已译成中文）、[手绘风格库](../../maintenance/skills/handdraw.md)（收录自 yang0/handraw-style，MIT，365 种画风；配套的版式和主题色在[排版](../layouts/index.md)、[色彩](../colors/classic.md)两区）、[二次元平面设计风格](../../maintenance/gallery/linux-do-style.md)（整理自 linux.do @sallyn 的帖子，12 组）和 [prompt-cards 生图条目](../../maintenance/gallery/prompt-cards.md)（照录自 prompt-cards.cyanfish.site，10 条，英文的已译成中文，分散在角色设计、摄影、插画、复古与赛博朋克、字体与海报、品牌系统六页的末尾）；另有单条收进来的零散 prompt，来源记在[零散收集](../../maintenance/gallery/images-collected.md)；[拍照姿势](#poses)三页只有实拍图、没有 prompt，取自小红书「我的id是江苏美人」，来源记在[小红书拍照姿势](../../maintenance/gallery/xhs-poses.md)。
 
 怎么从一张图反推出 prompt，看 skills 里的[图片提示词反推](../../skills/collab/image-prompt-reverse/index.md)：简化版[七维拆解](../../skills/collab/image-prompt-reverse/seven-dimensions/index.md)和完整版[从图反推 prompt](../../skills/collab/image-prompt-reverse/get-prompt-from-image/index.md)。
 
@@ -51,6 +51,14 @@ description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘�
 - [电影感与动画](gpt-image2/gallery-cinematic-and-animation.md) · 5 条
 - [经典电影参考](gpt-image2/gallery-cinematic-film-references.md) · 6 条
 - [人像写真模板](collected/gallery-portrait-templates.md) · 2 条（先补全参数再出图的写真助手指令；短视频主页自拍网格截图）
+
+## 拍照姿势 { #poses }
+
+实拍照片，拍照前翻一翻找动作；每组 9 张三栏排开，点开看原图。
+
+- [ins风拍照姿势](xhs-poses/gallery-ins-poses.md) · 29 组（ins风 27 组，外加韩国 ins 博主 sodaaam、nueisuu 各一组，259 张）
+- [韩系不露脸拍照姿势](xhs-poses/gallery-faceless-poses.md) · 27 组（挡脸、背影、低头，第 11 组在海边，243 张）
+- [生活感拍照姿势](xhs-poses/gallery-lifestyle-poses.md) · 3 组（闺蜜两人、情侣、单人，27 张）
 
 ## 产品与空间
 

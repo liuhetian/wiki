@@ -1,0 +1,49 @@
+{
+  "content": [
+    {
+      "type": "reasoning",
+      "text": "The user wants a plan to add a TOOL_TODO section order between TOOL_JOBS (1600) and TOOL_PTY (1700). Let me explore the repo to see how SECTION_ORDERS are used, whether there's an existing todo tool section, and conventions.\n\nLet me search for `getSectionOrder('TOOL_JOBS'` etc, and look for todo-related packages."
+    },
+    {
+      "type": "tool-call",
+      "id": "call_00_74OIzlBjhUAUqvgnJQYs5498",
+      "name": "grep",
+      "arguments": "{\"pattern\": \"TOOL_JOBS|TOOL_PTY|getSectionOrder\\\\(\", \"include\": \"*.ts\"}"
+    },
+    {
+      "type": "tool-call",
+      "id": "call_01_MXW93jXq3aZc2Rdgd61F5352",
+      "name": "grep",
+      "arguments": "{\"pattern\": \"todo\", \"include\": \"*.ts\"}"
+    }
+  ],
+  "replayState": {
+    "response": {
+      "kind": "deepseek-messages",
+      "version": 1,
+      "model": "deepseek-flash"
+    },
+    "blocks": [
+      {
+        "type": "reasoning",
+        "signature": "fb63422c-1298-4f6c-9b91-e36246b9eda3"
+      },
+      {
+        "type": "tool-call"
+      },
+      {
+        "type": "tool-call"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 18110,
+    "outputTokens": 199,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0,
+    "totalTokens": 18309
+  },
+  "finish": {
+    "kind": "tool-calls"
+  }
+}

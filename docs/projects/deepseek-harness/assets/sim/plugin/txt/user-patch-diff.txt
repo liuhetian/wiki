@@ -1,0 +1,22 @@
+dsh: [$DSH_HOME/profiles/web/cordis.patch.yml] patch: name mismatch for "agent-loop" (expected "@deepseek-ai/dsh-agent-loop", got "@example/my-agent-loop"), skipping
+
+137a138
+> # == @deepseek-ai/dsh-base, patched by $DSH_HOME/profiles/web/cordis.patch.yml
+140c141
+<   disabled: !!js process.platform === 'win32'
+---
+>   disabled: true
+142a144
+> # == @deepseek-ai/dsh-base
+389a392
+> # == @deepseek-ai/dsh-base, patched by @deepseek-ai/dsh-web-app, $DSH_HOME/profiles/web/cordis.patch.yml
+393c396
+<     personaPrefix: You are a coding agent powered by the {{model}} model.
+---
+>     personaPrefix: You are a careful code reviewer.
+1229a1233,1237
+> # == $DSH_HOME/profiles/web/cordis.patch.yml
+> - id: bash-local
+>   name: '@deepseek-ai/dsh-bash-local'
+>   config:
+>     timeoutMs: 60000

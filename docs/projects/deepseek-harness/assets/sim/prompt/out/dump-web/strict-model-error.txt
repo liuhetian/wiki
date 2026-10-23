@@ -1,0 +1,1 @@
+Error: prompt variable "{{model}}" has no value for this assembly (section "deployment:persona-prefix")

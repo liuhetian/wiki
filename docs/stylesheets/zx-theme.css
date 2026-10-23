@@ -805,6 +805,20 @@
   .md-typeset .gallery-pair { grid-template-columns: 1fr; }
 }
 
+/* 一组照片三栏网格：<div class="gallery-grid" markdown> 包若干张图，点图由灯箱放大；
+   固定三栏，窄屏两栏。活例：gallery/images/xhs-poses/gallery-ins-poses.md */
+.md-typeset .gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .4rem;
+  align-items: start;
+}
+.md-typeset .gallery-grid > p { margin: 0; display: contents; }
+.md-typeset .gallery-grid img { display: block; width: 100%; height: auto; }
+@media (max-width: 40em) {
+  .md-typeset .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 /* ================================================================
    10. 时间线 .zx-timeline（活例：posts/wiki/index.md 的能力时间线，写法见写作规范第 12 节）
    <div class="zx-timeline" markdown> 包住若干 ### 条目（md_in_html），容器第一个子元素必须是 h3；
@@ -945,7 +959,7 @@
 }
 
 /* ================================================================
-   12. 复制时不要的块 .zx-no-copy（活例：skills/collab/chat-prompts/project-gist.md）
+   12. 复制时不要的块 .zx-no-copy（活例：skills/collab/grilling.md 页尾、skills/project-research/dissect.md）
    复制按钮跳过的块：写死的 zx-no-copy（页尾维护记录、只给人看的开关），和条件不成立的分支
    div[data-when]（vendor/md-copy.js 按选择挂上 / 摘掉 zx-no-copy）。都是左边一道虚线、右上方
    「不复制」小字；没选中的分支另外变淡，鼠标移上去恢复。只是提示，不藏、不禁用：块里的控件照常能填。

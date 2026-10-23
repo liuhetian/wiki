@@ -1,0 +1,2 @@
+seq 37 reasoning：The middle was pruned — I need the resolveRetention and the policy resolution function that computes thresholdTokens/retainTokens from contextWindow and output reservation. Let me read lines ~100-300.
+seq 38 tool/call：read {"file_path": "packages/compaction/compaction-basic/src/config.ts", "offset": 100, "limit": 200}

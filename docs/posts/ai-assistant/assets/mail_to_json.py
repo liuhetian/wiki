@@ -3,7 +3,7 @@
 
 解析永远从 .eml 重跑，不回写真身 —— 解析逻辑改了，历史邮件重跑一遍就是新结果。
 
-    python mail_to_json.py /var/lib/mail-intake/raw/20260917/*.eml > mail.jsonl
+    python mail_to_json.py /var/lib/mail-intake/raw/data-7f3a/20260917/*.eml > mail.jsonl
 """
 
 import json

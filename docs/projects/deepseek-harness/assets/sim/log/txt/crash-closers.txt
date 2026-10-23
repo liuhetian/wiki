@@ -1,0 +1,15 @@
+persisted tail:
+   6 request/header
+   7 request/context
+   8 assistant/message tool-call deploy(c1), tool-call echo(c2)
+   9 tool/call c1
+
+interruptedTurnClosers(persisted):
+  10 tool/result c1 isError=true code=TOOL_OUTCOME_UNKNOWN sourceEventSeqs=[9]
+     "The tool call was interrupted after it was recorded, but no result was durably recorded. Its outcome is unknown. Decide whether to retry from the tool semantics: retry only if the operation is read-only or idempotent; if it may have side effects, first verify external state or ask the user. Do not retry blindly."
+  11 tool/result c2 isError=true code=TOOL_NOT_STARTED
+     "The tool call was interrupted before the Harness recorded it as started. Retry it if it is still needed."
+  12 step/end {"turn":1,"step":1}
+  13 turn/end {"turn":1,"reason":{"kind":"interrupted"}}
+
+model view after repair: system → user → assistant → tool → tool

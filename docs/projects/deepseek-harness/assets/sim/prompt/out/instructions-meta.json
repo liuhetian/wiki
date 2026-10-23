@@ -1,0 +1,34 @@
+{
+  "baseline": {
+    "omitted": [],
+    "truncated": []
+  },
+  "omitOne": {
+    "omitted": [
+      {
+        "absolutePath": "/home/u/.dsh/AGENTS.md",
+        "displayPath": "~/.dsh/AGENTS.md"
+      }
+    ],
+    "truncated": []
+  },
+  "tight": {
+    "omitted": [
+      {
+        "absolutePath": "/home/u/.dsh/AGENTS.md",
+        "displayPath": "~/.dsh/AGENTS.md"
+      },
+      {
+        "absolutePath": "/w/AGENTS.md",
+        "displayPath": "AGENTS.md"
+      }
+    ],
+    "truncated": [
+      {
+        "displayPath": "packages/app/AGENTS.md",
+        "originalBytes": 110,
+        "includedBytes": 31
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+当前项目：cards/青梧/对话/局A；免问前缀：ls、cat
+
+write cards/青梧/补充设定集.json
+      → allow
+read  assets/lorebooks/栖水镇.json
+      → allow
+write assets/lorebooks/栖水镇.json
+      → ask：申请授权，按「assets/lorebooks」给
+read  cards/青梧/对话/局B/会话/s.jsonl
+      → deny：cards/青梧/对话/局B/会话/s.jsonl 属于其他独立项目，当前项目无权访问。
+write cards/青梧/对话/局A/历史/检查点.jsonl
+      → deny：cards/青梧/对话/局A/历史/检查点.jsonl 属于梨园管理的数据（快照仓 / 会话树），原生 write 不能写。
+write notes.txt
+      → ask：申请授权，按「notes.txt」给
+bash  ls cards
+      → allow
+bash  cd cards && rm -rf 青梧
+      → ask-bash
+bash  rm -rf /
+      → deny：已拦截：命中命令黑名单「rm -rf /」，梨园不允许执行。如确有需要，请向用户说明。
+bash  python cleanup.py
+      → ask-bash

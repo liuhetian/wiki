@@ -1,0 +1,40 @@
+1. 没读过就改
+  edit {"file_path":"a.txt","old_string":"red","new_string":"blue"}
+  报错 [FS_NOT_OBSERVED]：Error: cannot modify "<ws>/a.txt": file has not been read — read the file, then retry
+
+2. 没读过就整篇覆盖
+  write {"file_path":"a.txt","content":"color = green\n"}
+  报错 [FS_NOT_OBSERVED]：Error: cannot modify "<ws>/a.txt": file has not been read — read the file, then retry
+
+3. 先读
+  read {"file_path":"a.txt"}
+  成功：<path><ws>/a.txt</path>
+<type>file</type>
+<content>
+1: color = red
+
+(End of file - total 1 lines)
+</content>
+
+（用户这时在编辑器里给 a.txt 加了一行 size = 3）
+
+4. 拿着旧版本去改
+  edit {"file_path":"a.txt","old_string":"red","new_string":"blue"}
+  报错 [FS_STALE_VERSION]：Error: cannot edit "<ws>/a.txt": file changed since it was read — re-read the file, then retry
+
+5. 重新读
+  read {"file_path":"a.txt"}
+  成功：<path><ws>/a.txt</path>
+<type>file</type>
+<content>
+1: color = red
+2: size = 3
+
+(End of file - total 2 lines)
+</content>
+
+6. 再改
+  edit {"file_path":"a.txt","old_string":"red","new_string":"blue"}
+  成功：The file <ws>/a.txt has been updated successfully.
+
+最终文件内容："color = blue\nsize = 3\n"

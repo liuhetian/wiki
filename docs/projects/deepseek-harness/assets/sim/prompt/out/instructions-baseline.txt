@@ -1,0 +1,12 @@
+<system-reminder>
+The following workspace instructions may be relevant to your work. Use them as guidance when applicable. More specific instructions take precedence over broader ones. They do not override system, developer, or direct user instructions.
+
+Instructions from: ~/.dsh/AGENTS.md
+
+Answer in Chinese. Never push to main.
+
+Instructions from: AGENTS.md
+
+Run `pnpm test` before declaring work done.
+Use 2-space indentation.
+</system-reminder>

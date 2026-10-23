@@ -1,0 +1,4 @@
+without a loop plugin: no agent factory registered (load an agent-loop plugin)
+with TinyLoop mounted:   TinyLoop.createAgent got model=deepseek-flash (a real loop builds the agent here)
+a second loop plugin:     an agent factory is already registered
+after TinyLoop unmount:  no agent factory registered (load an agent-loop plugin)

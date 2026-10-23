@@ -1,16 +1,25 @@
 ---
-description: "项目拆解板块：别人的一个项目实际在干什么、哪些归程序哪些归模型、作者的心思花在哪，先读源码和 git 历史再讲；一个项目一个目录，入口页四百字粗讲，挑中的方向各一页细讲"
+description: "项目拆解板块：别人的一个项目属于什么领域、从这个领域最简单的做法出发遇到什么问题引入什么功能，先读源码和 git 历史再讲；一个项目一个目录，入口页写功能线，每条线一页细讲"
 ---
 
 # 项目拆解
 
-拆别人的项目：它实际在干什么、哪些是程序做的哪些留给模型、作者的心思花在哪。每篇都用[粗讲项目](../skills/collab/chat-prompts/project-gist.md)做出来——选「先探索」，AI 读源码和 git 历史、列出亮点，再照[盘问我](../skills/collab/grilling.md)一轮轮定下深挖哪几个方向。
+拆别人的项目：它属于什么领域，从这个领域最简单的做法出发，一步步遇到了什么问题、所以引入了什么功能。怎么读、怎么写照[细讲项目](../skills/project-research/dissect.md)：先定领域和 baseline，照[盘问我](../skills/collab/grilling.md)一轮轮定下功能线，再按论文的骨架写。
 
-- **一个项目一个目录**：`index.md` 是四百字以内的粗讲，末尾略讲读到的缺陷；挑中的方向各写一页
-- **以代码为准**：README 只当线索，结论落到文件路径和 commit 上，引用钉在读的那个 commit
+- **一个项目一个目录**：`index.md` 先说领域，再按功能线写「问题 → 功能」，每一步的问题要具体到一个案例，只写现状、不写作者的心路历程；每条功能线一页细讲，同样只写现状。小 bug 不记，说不定哪天就修了，只写主线
+- **以代码为准**：README 只当线索，结论落到文件路径上；读的是哪个 commit、许可、素材从哪来，写进[维护](../maintenance/index.md#projects)一篇，正文不逐处标版本
+- **能跑就实跑**：拼 prompt 这类事，每一步贴两样——源码里的模版（存档一份同版源码，snippet 按行引用）和用这段代码真跑出来的效果；实验设置和脚本写进维护记录
+- **只粗讲的项目只有一页**：目录里只放 `index.md`，正文就是照[粗讲项目](../skills/project-research/gist.md)讲的三四段话，不套论文骨架；读的 commit 写进脚注，不另开维护记录。讲完的追问在正文后开「追问」一节按问答补，一问一个三级标题，问题照提问的原话，答案不限字数 —— 活例 [Teable](teable/index.md#qa)。要细讲时整页按上面重写
 - **和别处的分界**：自己项目的复盘归[文章](../posts/index.md)，自己 skill 背后的事归[维护](../maintenance/index.md)
 
 ## 已拆 { #projects }
 
-- [梨园 Liyuan](liyuan/index.md) —— 把 pi 这个 coding agent 改成演角色扮演的 agent：正文像代码一样用工具写在稿纸上，收笔后另一个模型记账；设计重心是 harness 该替模型管多少，作者加了一个月门禁又全拆掉。六个方向细讲：分权、场记账本、跨局记忆、酒馆兼容、写小说模式与沙箱、作者怎么用 AI 开发
+- [梨园 Liyuan](liyuan/index.md) —— 领域是 AI 角色扮演，它把角色扮演从一次生成改成 agent 循环；以网页版 ChatGPT 为 baseline，按设定、状态、长对话、分支、正文、定制、数据七条功能线讲问题和功能，每步配源码模版和实跑效果，结论是能搬走的设计
+- [酒馆 SillyTavern](sillytavern/index.md) —— 领域是 AI 角色扮演，它把网页版 ChatGPT 的一段 system prompt 换成每轮重拼的上下文；按角色卡、世界书、现拼 prompt、喂各种模型、重来分叉、聊久了、群聊、自加规则八条功能线讲问题和功能，每步配源码模版和实跑效果，结论是能搬走的设计
+- [DeepSeek Harness](deepseek-harness/index.md) —— DeepSeek Harness 拆解：领域是 agent harness，以 pi 为 baseline，按插件、会话日志、拼 prompt、压缩、工具与沙箱、多 agent 六条线讲问题和功能，配源码模版和实跑；重心是请求从会话日志现算
+- [OpenAI Evals](openai-evals/index.md) —— OpenAI Evals 拆解：领域是大模型评测框架，以 for 循环评测脚本为 baseline，按登记、判分、被测对象、多轮、跑和记五条线讲问题和功能，配源码模版；重心是一个 eval 等于数据加 YAML 里选一个模板类
+- [Teable](teable/index.md) —— 粗讲：不是又一个在线表格，是套了表格外壳的 Postgres；程序管结构和联动计算，模型只填 AI 字段；重心是改一格后跨表连锁重算；追问两条：更像 Airtable，计算字段不靠触发器、在应用层算
+- [Coolify](coolify/index.md) —— 粗讲：和 Podman 不在一层，它不是容器引擎，是坐在 Docker 之上的自托管 Heroku；主路径是 SSH 进目标机起 helper 容器构建镜像，用带 Traefik label 的 compose 拉起
+- [Pyodide](pyodide/index.md) —— 粗讲：不是把 Python 翻译成 JS，是把 CPython 解释器编译成 WebAssembly；Python 的 import 是同步的、下载只能异步，所以包要先 loadPackage 解进内存文件系统，.so 提前 dlopen
+- [Frappe Gantt](frappe-gantt/index.md) —— 粗讲：给网页用的甘特图组件，只画图、改内存里的任务，不存也不排期；主路径是日期和像素按列宽互换，拖一条任务时依赖它的下游跟着平移，存回后端靠 on_date_change 交给用的人
 - [DeepSeek 视频问答](deepseek-video-rag/index.md) —— 粗讲：给 agent 挂的 skill，模型不收视频，就把录像拆成带时间标签的帧逐帧做卡片、拼成 30 秒一段；提问时 TF-IDF 粗筛、模型挑段、开推理深读，答案带时刻，准不准由人回放片段核对

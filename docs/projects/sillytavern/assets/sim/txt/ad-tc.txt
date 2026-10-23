@@ -1,0 +1,11 @@
+<|im_start|>system
+Write 塞拉菲娜's next reply in a fiction……<|im_end|>
+……（中间几条聊天，格式同下）
+<|im_start|>user
+你的魔法真厉害。我的伤要多久才能好？我还得赶去北边的镇子。<|im_end|>
+<|im_start|>assistant
+*塞拉菲娜眉头微微蹙起，语气温和却带着一丝担忧。* “你的伤不轻，至少要……<|im_end|>
+
+<|im_start|>assistant
+
+停止串：["\n<|im_end|>", "\n<|im_start|>user", "\n<|im_start|>assistant", "\n<|im_start|>system"]

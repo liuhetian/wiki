@@ -1,0 +1,228 @@
+{
+ "steps": [
+  {
+   "chatLength": 1,
+   "last": "我们从这道暗门下到地牢。",
+   "activated": [
+    "地牢规则"
+   ],
+   "timed": {
+    "sticky": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 1,
+      "end": 3,
+      "protected": false
+     }
+    },
+    "cooldown": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 1,
+      "end": 4,
+      "protected": false
+     }
+    }
+   }
+  },
+  {
+   "chatLength": 2,
+   "last": "石阶又湿又滑，她举着荧光走在前面。",
+   "activated": [
+    "地牢规则"
+   ],
+   "timed": {
+    "sticky": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 1,
+      "end": 3,
+      "protected": false
+     }
+    },
+    "cooldown": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 1,
+      "end": 4,
+      "protected": false
+     }
+    }
+   }
+  },
+  {
+   "chatLength": 3,
+   "last": "前面有条走廊。",
+   "activated": [],
+   "timed": {
+    "sticky": {},
+    "cooldown": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 3,
+      "end": 6,
+      "protected": true
+     }
+    }
+   }
+  },
+  {
+   "chatLength": 4,
+   "last": "走廊很长，尽头隐约有火光。",
+   "activated": [],
+   "timed": {
+    "sticky": {},
+    "cooldown": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 3,
+      "end": 6,
+      "protected": true
+     }
+    }
+   }
+  },
+  {
+   "chatLength": 5,
+   "last": "继续往前，沿着地牢的走廊走。",
+   "activated": [],
+   "timed": {
+    "sticky": {},
+    "cooldown": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 3,
+      "end": 6,
+      "protected": true
+     }
+    }
+   }
+  },
+  {
+   "chatLength": 6,
+   "last": "脚步声在石壁间回荡。",
+   "activated": [
+    "地牢规则",
+    "伏兵"
+   ],
+   "timed": {
+    "sticky": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 6,
+      "end": 8,
+      "protected": false
+     }
+    },
+    "cooldown": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 6,
+      "end": 9,
+      "protected": false
+     }
+    }
+   }
+  },
+  {
+   "chatLength": 7,
+   "last": "还在地牢里吗？",
+   "activated": [
+    "地牢规则"
+   ],
+   "timed": {
+    "sticky": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 6,
+      "end": 8,
+      "protected": false
+     }
+    },
+    "cooldown": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 6,
+      "end": 9,
+      "protected": false
+     }
+    }
+   }
+  },
+  {
+   "chatLength": 8,
+   "last": "是的，四周仍是潮湿的石墙。",
+   "activated": [],
+   "timed": {
+    "sticky": {},
+    "cooldown": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 8,
+      "end": 11,
+      "protected": true
+     }
+    }
+   }
+  }
+ ],
+ "swipe": {
+  "first": {
+   "activated": [
+    "地牢规则"
+   ],
+   "timed": {
+    "sticky": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 1,
+      "end": 3,
+      "protected": false
+     }
+    },
+    "cooldown": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 1,
+      "end": 4,
+      "protected": false
+     }
+    }
+   }
+  },
+  "again": {
+   "activated": [
+    "地牢规则"
+   ],
+   "timed": {
+    "sticky": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 1,
+      "end": 3,
+      "protected": false
+     }
+    },
+    "cooldown": {
+     "演示·定时.0": {
+      "hash": 155117607671687,
+      "start": 1,
+      "end": 4,
+      "protected": false
+     }
+    }
+   },
+   "trace": [
+    "[WI] Processing sticky entry 演示·定时.0",
+    "[WI] Removing sticky entry 演示·定时.0 from timedWorldInfo: chat not advanced",
+    "[WI] Processing cooldown entry 演示·定时.0",
+    "[WI] Removing cooldown entry 演示·定时.0 from timedWorldInfo: chat not advanced",
+    "[WI] Timed effect \"delay\" applied to entry",
+    "[WI] Entry 1 suppressed by delay",
+    "[WI] Entry 1 suppressed by delay",
+    "[WI] Adding sticky entry 演示·定时.0: start=1, end=3, protected=false",
+    "[WI] Adding cooldown entry 演示·定时.0: start=1, end=4, protected=false"
+   ]
+  }
+ }
+}

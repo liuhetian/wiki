@@ -1,0 +1,35 @@
+用户批准一次
+  审计：asked → decided allowed-once
+  结果：放行，本次按 danger-full-access 跑
+
+用户拒绝
+  审计：asked → decided rejected
+  结果：报错 the user rejected escalating this command to "danger-full-access"; it stays denied, so stop and explain instead of working around it
+
+没人回答（没有界面）
+  审计：asked → decided unavailable
+  结果：报错 sandbox escalation to "danger-full-access" requires approval, but no approval channel is available
+
+回答方抛错
+  审计：asked → decided unavailable
+  结果：报错 sandbox escalation to "danger-full-access" requires approval, but no approval channel is available
+
+回答方返回词表外的值
+  审计：asked → decided unavailable
+  结果：报错 sandbox escalation to "danger-full-access" requires approval, but no approval channel is available
+
+会话策略是 never：回答方想批也没用
+  审计：asked → decided rejected
+  结果：报错 the user rejected escalating this command to "danger-full-access"; it stays denied, so stop and explain instead of working around it
+
+申请和当前一样的档：不问
+  审计：（没有问）
+  结果：放行，本次按 workspace-write 跑
+
+申请更窄的档：拒收
+  审计：（没有问）
+  结果：报错 sandbox escalation to "read-only" is not strictly wider than this call's current "workspace-write" mode
+
+没装审批服务
+  审计：（没有问）
+  结果：报错 sandbox escalation to "danger-full-access" requires approval, but no approval service is composed

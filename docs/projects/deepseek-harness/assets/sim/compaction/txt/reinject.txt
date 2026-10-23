@@ -1,0 +1,7 @@
+agent-instructions: seq 6 被检查点 seq 78 遮住 = True；seq 81 重发，正文与 seq 6 相同 = True
+runtime-context: seq 7 被检查点 seq 78 遮住 = True；seq 82 重发，正文与 seq 7 相同 = True
+
+重发的 runtime-context 正文：
+Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
+
+Current working directory: "/tmp/dsh-lab/compaction/ws".

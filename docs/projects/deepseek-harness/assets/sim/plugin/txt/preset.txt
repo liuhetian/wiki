@@ -1,0 +1,7 @@
+a1: tools ["read","bash","web_fetch"]
+a2: tools ["read","bash","web_fetch"]
+b1: tools ["read"]
+shell inside preset standard: LocalBashExecutor
+shell inside preset minimal: DryRunBash
+shell at the root realm: (none)
+without isolate, second shell provider: service "shell" has been registered at <LocalBashExecutor>

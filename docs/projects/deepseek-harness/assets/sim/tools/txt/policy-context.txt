@@ -1,0 +1,34 @@
+# 新会话，用部署默认值
+会话日志：
+(空)
+
+模型看到：
+Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
+
+Current DSH file policy: workspace-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: "/home/me/project". Some platform temporary areas may also be writable.
+
+Approval policy: ask. Operations that require approval may ask through the configured answerers; without an available answerer, the request fails closed.
+
+# 用户切到 read-only
+会话日志：
+sandbox/mode {"mode":"read-only"}
+
+模型看到：
+Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
+
+Current DSH file policy: read-only. Any available operation enforced by the DSH file sandbox cannot modify files in the standing mode. Do not refuse a required modification from this policy alone: try an available tool normally and follow any denial and escalation guidance it returns.
+
+Approval policy: ask. Operations that require approval may ask through the configured answerers; without an available answerer, the request fails closed.
+
+# 用户切到 danger-full-access + never
+会话日志：
+sandbox/mode {"mode":"read-only"}
+sandbox/mode {"mode":"danger-full-access"}
+approval/policy {"policy":"never"}
+
+模型看到：
+Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
+
+Current DSH file policy: danger-full-access. The DSH file sandbox does not restrict file modifications by available operations.
+
+Approval prompts are disabled in this session: actions that require approval are rejected automatically — do not request sandbox escalation (do not set `sandbox_permissions`).

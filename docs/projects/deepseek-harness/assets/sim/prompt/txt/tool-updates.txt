@@ -1,0 +1,9 @@
+  8 system/message     system-prompt     append         {{system}}
+  9 user/message       user              append         Read task.txt, call the newly available snapshot_ping tool once, then reply DONE.
+ 10 user/message       runtime-context   append         Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
+ 11 request/header
+ 19 system/message     system-prompt     append         {{system}}
+ 20 request/header
+ 21 developer/message  tool-registry     append         [{"type": "tool-addition", "toolName": "snapshot_ping"}]
+ 27 request/header
+ 28 developer/message  tool-registry     append         [{"type": "tool-removal", "toolName": "snapshot_ping"}]

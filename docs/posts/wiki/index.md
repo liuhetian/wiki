@@ -367,9 +367,21 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 > 如果全部用 zx-no-copy 来控制呢，这样可以直接看出哪些部分对AI隐藏。 data-when 也通过 zx-no-copy 间接控制可见性
 
-`<div data-when="名=值" markdown>` 包起来的内容，名为「名」的控件选了「值」才复制；只写「名」就是那个框填了才复制。`vendor/md-copy.js` 打开页面和每次填写时算一遍条件，不成立的块挂上 `zx-no-copy`，网页上和写死的那种一个样子；复制时拿源文件里的条件用同一个函数再算一遍，不成立的整块去掉，成立的只去掉外壳 div，不复制的块里的 `required` 不拦。起初复制时是按顺序去网页上查哪个块挂了 class，多一种「对不上就报错」的失败，换成直接算，结果逐字节一样，少 12 行。`zx-theme.css` 新增第 12 节：`zx-no-copy` 块左边一道虚线、上方一个「不复制」小字，没选中的分支另外变淡。不藏起来，是为了让读者看了分支内容再选，脚本出错时内容也照常可读。原有 17 个页尾维护记录块跟着有了这个样子。什么时候才值得分支、模板能力的上限，单开一篇写作规范的引用，只有写 prompt 分支时才读；[粗讲项目](../../skills/collab/chat-prompts/project-gist.md)改成新写法当活例。
+`<div data-when="名=值" markdown>` 包起来的内容，名为「名」的控件选了「值」才复制；只写「名」就是那个框填了才复制。`vendor/md-copy.js` 打开页面和每次填写时算一遍条件，不成立的块挂上 `zx-no-copy`，网页上和写死的那种一个样子；复制时拿源文件里的条件用同一个函数再算一遍，不成立的整块去掉，成立的只去掉外壳 div，不复制的块里的 `required` 不拦。起初复制时是按顺序去网页上查哪个块挂了 class，多一种「对不上就报错」的失败，换成直接算，结果逐字节一样，少 12 行。`zx-theme.css` 新增第 12 节：`zx-no-copy` 块左边一道虚线、上方一个「不复制」小字，没选中的分支另外变淡。不藏起来，是为了让读者看了分支内容再选，脚本出错时内容也照常可读。原有 17 个页尾维护记录块跟着有了这个样子。什么时候才值得分支、模板能力的上限，单开一篇写作规范的引用，只有写 prompt 分支时才读；[粗讲项目](../../skills/project-research/gist.md)改成新写法当活例。
 
 详见[分支](../../skills/wiki-guide/reference/branch.md)。
+
+### 2026-10-20 · 照片三栏网格 {: data-kind="前端" }
+
+> 把这里面全部收集到本wiki的gallery吧
+
+`zx-theme.css` 加了 `.gallery-grid`：`<div class="gallery-grid" markdown>` 包一组图，固定三栏，窄屏两栏。起因是收小红书的拍照姿势，59 组每组 9 张；原有的 `gallery-pair` 固定两栏，9 张要排 5 行，整页太长。写作规范的语法表补了这种排法，活例是 [ins风拍照姿势](../../gallery/images/xhs-poses/gallery-ins-poses.md)。
+
+### 2026-10-20 · 点图放大：开 Zensical 自带的灯箱 {: data-kind="配置 + 前端" }
+
+> 我发现本wiki点击图片，就会直接进入图片页面，而不是简单的放大图片遮罩后面，帮我看看呢？这种基础功能zensical没有吗？
+
+`mkdocs.yml` 开了 `glightbox` 插件。它是 Zensical 内置的，把正文里没套链接的图包成 `a.glightbox`，点一下弹出遮罩放大，可以左右翻同页的其他图。它的加载器跟 mermaid 一样写死了 unpkg，`GLightbox` 未定义时才去拉，所以 GLightbox 3.3.1 的 JS 和 CSS 收进了 `vendor/glightbox/`：`overrides/main.html` 只给有这种链接的页面引入，`fetch-vendor.sh` 记上版本。拍照姿势三页原先每张图都套了指向图片本身的链接，点了直接跳到图片文件，这次去掉了。写作规范的语法表加了一句：别给图套指向它自己的链接。
 
 </div>
 

@@ -1,0 +1,22 @@
+{
+ "message4": {
+  "swipe_id": 1,
+  "swipes": [
+   "*塞拉菲娜眉头微微蹙起，语气温和却带着一丝担忧。* “你的伤不轻，至少要静养两三",
+   "*塞拉菲娜眉头一皱，握着你的手不觉紧了些。* “北边的镇子？” *她缓缓摇头，眼"
+  ],
+  "swipe_info": [
+   {
+    "send_date": "2026-10-20T11:40:11.421Z",
+    "model": "deepseek-flash"
+   },
+   {
+    "send_date": "2026-10-20T11:40:14.068Z",
+    "model": "deepseek-flash"
+   }
+  ],
+  "mes": "*塞拉菲娜眉头一皱，握着你的手不觉紧了些。* “北边的镇子？” *她缓缓摇头，眼"
+ },
+ "nextRoundHasSwipe0": false,
+ "nextRoundHasSwipe1": true
+}

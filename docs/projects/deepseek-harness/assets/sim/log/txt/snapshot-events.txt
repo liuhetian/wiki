@@ -1,0 +1,24 @@
+(header) version=4
+permission/preset
+sandbox/mode
+approval/policy
+agent/inbox/spliced
+turn/start
+agent/inbox/spliced
+step/start
+system/message       append  "{{system}}"
+user/message         append  source=user: "Use the bash tool to run exactly: echo TERMINAL_OK. The
+user/message         append  source=runtime-context: "Current runtime context. This snapshot supersedes earli
+request/header               reason=initial
+request/context
+session/title
+assistant/message    append  reasoning + tool-call bash
+tool/call
+job/registered
+job/settled
+tool/result          append  "TERMINAL_OK\n"
+step/end
+step/start
+assistant/message    append  reasoning + text
+step/end
+turn/end                     reason=completed

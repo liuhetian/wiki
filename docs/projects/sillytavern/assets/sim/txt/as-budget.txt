@@ -1,0 +1,6 @@
+上下文 4095（可用 3795）：合计 1935 token，示范对话 4 段，进上下文的聊天消息 11/11 条
+   main:34 charDescription:131 charPersonality:11 scenario:21 newChat:4 ex0-0:9 ex0-1:201 ex0-2:10 ex0-3:191 newMainChat:6 h1:163 h2:19 h3:140 h4:21 h5:135 h6:16 h7:265 h8:17 h9:65 h10:322 h11:17 h12:119 jailbreak:18
+上下文 2048（可用 1748）：合计 1520 token，示范对话 0 段，进上下文的聊天消息 11/11 条
+   main:34 charDescription:131 charPersonality:11 scenario:21 newMainChat:6 h1:163 h2:19 h3:140 h4:21 h5:135 h6:16 h7:265 h8:17 h9:65 h10:322 h11:17 h12:119 jailbreak:18
+上下文 1400（可用 1100）：合计 1042 token，示范对话 0 段，进上下文的聊天消息 6/11 条
+   main:34 charDescription:131 charPersonality:11 scenario:21 newMainChat:6 h6:16 h7:265 h8:17 h9:65 h10:322 h11:17 h12:119 jailbreak:18

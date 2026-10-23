@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 uv run zensical serve              # 本地预览（Python ≥3.13，依赖由 uv 管）
 uv run zensical build              # 构建到 site/
-python3 scripts/check-links.py     # AI 链路校验：父级链接 + 死链 + nav 注册 + 笔记未答题 + 图片/demo 资源死链 + 入口的复制带源地址标记；写完文章必跑
+python3 scripts/check-links.py     # AI 链路校验：父级链接 + 死链 + nav 注册 + 笔记未答题 + 图片/demo 资源死链 + 入口的复制带源地址标记 + 源码存档无人引用；写完文章必跑
 ./deploy.sh                        # git pull --ff-only → check-links → 构建 → md 源镜像 + llms.txt + skill 整包 → 同步 COS
 node scripts/validate-lieflat-charts.mjs   # 只在改 data-visualization/lieflat-charts 时跑：48 篇 reference ↔ 48 个 demo 一一对应
 python3 scripts/check-leetcode.py         # 只在改 notes/leetcode 时跑：每篇 python 块拼起来真跑 assert + 五段骨架 + 热题 100 覆盖
@@ -35,7 +35,7 @@ bash scripts/course-smoke.sh               # 只在改 courses-src/git/assets/ �
 
 **首页有两个身子。** 浏览器里 `docs/index.md` 由 `overrides/home.html` 的开屏模板渲染，正文不上屏；但正文照样发布为 `/index.md` 与 `/llms.txt` 给 AI 读。改首页内容两边要同步。
 
-**运行时全在本地 vendor。** `docs/vendor/` 里有 React UMD + htm、React ESM、three/r3f、MathJax、ECharts、Chart.js、Mermaid、Maple Mono 字体，线上不走任何 CDN，demo 引 `/vendor/...` 根绝对路径。真身大的按需加载，不给无关页面付代价：MathJax（2MB）由 `vendor/mathjax-init.js` 查到 `.arithmatex` 才拉，ECharts 由 `vendor/echarts-init.js` 查到 ```echarts 块才拉，`overrides/main.html` 只给含 mermaid 块的页面同步引入 mermaid 真身。升级 vendor 版本用 `scripts/fetch-vendor.sh`，换字体版本用 `scripts/build-fonts.py`（中文按 GB2312 + 本站用字子集化），两者只在升级时跑一次。
+**运行时全在本地 vendor。** `docs/vendor/` 里有 React UMD + htm、React ESM、three/r3f、MathJax、ECharts、Chart.js、Mermaid、GLightbox、Maple Mono 字体，线上不走任何 CDN，demo 引 `/vendor/...` 根绝对路径。真身大的按需加载，不给无关页面付代价：MathJax（2MB）由 `vendor/mathjax-init.js` 查到 `.arithmatex` 才拉，ECharts 由 `vendor/echarts-init.js` 查到 ```echarts 块才拉，`overrides/main.html` 只给含 mermaid 块的页面同步引入 mermaid 真身，只给有图的页面引入点图放大的 GLightbox（`glightbox` 插件是 Zensical 内置的，它的加载器同样写死 unpkg）。升级 vendor 版本用 `scripts/fetch-vendor.sh`，换字体版本用 `scripts/build-fonts.py`（中文按 GB2312 + 本站用字子集化），两者只在升级时跑一次。
 
 **打码靠密文直接进源文件。** `vendor/age-init.js` 在浏览器里把 `` `age:…` `` 和 ```` ```age ```` 块打码、解锁后还原，按需加载 `vendor/age-core.js`（age 解密核心，口令 / X25519 两种模式）；命令行读 `.md` 源时用 `scripts/age-open.py` 整页解开，口令走环境变量 `WIKI_AGE_PASS`，不收命令行参数。私钥在部署机 `~/.config/age/wiki.key`，不进仓库；用口令锁住的副本内嵌在 `age-init.js`。encryptcontent 这类插件只加密 HTML，`.md` 镜像照样明文，所以不能用。写法见写作规范「打码」一节，来龙去脉见 `posts/wiki/age-mosaic.md`。
 
@@ -47,4 +47,4 @@ bash scripts/course-smoke.sh               # 只在改 courses-src/git/assets/ �
 
 ## 两道链接校验
 
-zensical 自带的 `invalid_links` 设为 `warn`，报错带 `文件:行:列`，`serve` 时当场可见。阻断部署只靠 check-links.py —— 父级索引挂载、nav 注册、笔记未答题、资源死链、入口的复制带源地址标记这五项只有它管。
+zensical 自带的 `invalid_links` 设为 `warn`，报错带 `文件:行:列`，`serve` 时当场可见。阻断部署只靠 check-links.py —— 父级索引挂载、nav 注册、笔记未答题、资源死链、入口的复制带源地址标记、源码存档无人引用这六项只有它管。

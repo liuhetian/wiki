@@ -1,0 +1,41 @@
+ 0  agent/inbox/spliced         
+ 1  turn/start                 turn 1
+ 2  agent/inbox/spliced         
+ 3  step/start                 turn 1 step 1
+ 4  system/message     append  "You are an AI agent powered by DeepSeek
+ 5  user/message       append  user: "go"
+ 6  request/header             reason=initial
+ 7  request/context            
+ 8  assistant/message  append  "calling echo" + tool-call echo
+ 9  tool/call                  echo
+10  tool/result        append  "echo: one"
+11  step/end                   turn 1 step 1
+12  step/start                 turn 1 step 2
+13  assistant/message  append  "done"
+14  step/end                   turn 1 step 2
+15  turn/end                   reason=completed
+16  agent/inbox/spliced         
+17  turn/start                 turn 2
+18  agent/inbox/spliced         
+19  step/start                 turn 2 step 1
+20  user/message       append  user: "again"
+21  assistant/attempt          stream 1 段，不进模型视图
+22  assistant/message  append  "ok"
+23  step/end                   turn 2 step 1
+24  turn/end                   reason=completed
+25  agent/inbox/spliced         
+26  turn/start                 turn 3
+27  agent/inbox/spliced         
+28  step/start                 turn 3 step 1
+29  user/message       append  user: "讲讲三点"
+30  assistant/message  append  "第一点是"  interrupted
+31  step/end                   turn 3 step 1
+32  turn/end                   reason=aborted
+33  agent/inbox/spliced         
+34  turn/start                 turn 4
+35  agent/inbox/spliced         
+36  step/start                 turn 4 step 1
+37  user/message       append  user: "第二点展开讲讲"
+38  assistant/message  append  "第二点是……"
+39  step/end                   turn 4 step 1
+40  turn/end                   reason=completed

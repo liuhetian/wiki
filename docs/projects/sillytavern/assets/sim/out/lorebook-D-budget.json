@@ -1,0 +1,38 @@
+{
+ "25%": {
+  "activated": [
+   "埃尔多利亚",
+   "影牙",
+   "力量",
+   "林间空地"
+  ],
+  "trace": [
+   "[WI] Context size: 3795; WI budget: 949 (max% = 25%, cap = 0)",
+   "[WI] --- LOOP #1 START ---",
+   "[WI] Entry 0 activation successful, adding to prompt",
+   "[WI] Entry 1 activation successful, adding to prompt",
+   "[WI] Entry 3 activation successful, adding to prompt",
+   "[WI] --- LOOP #1 RESULT ---",
+   "[WI] Successfully activated 3 new entries to prompt. 3 total entries activated.",
+   "[WI] --- LOOP #2 START ---",
+   "[WI] Entry 2 activation successful, adding to prompt",
+   "[WI] --- LOOP #2 RESULT ---",
+   "[WI] Successfully activated 1 new entries to prompt. 4 total entries activated.",
+   "[WI] --- LOOP #3 START ---",
+   "[WI] --- LOOP #3 RESULT ---"
+  ]
+ },
+ "10%": {
+  "activated": [
+   "埃尔多利亚"
+  ],
+  "trace": [
+   "[WI] Context size: 3795; WI budget: 380 (max% = 10%, cap = 0)",
+   "[WI] --- LOOP #1 START ---",
+   "[WI] Entry 0 activation successful, adding to prompt",
+   "[WI] budget of 380 reached, stopping after 1 entries",
+   "[WI] --- LOOP #1 RESULT ---",
+   "[WI] Successfully activated 3 new entries to prompt. 1 total entries activated."
+  ]
+ }
+}

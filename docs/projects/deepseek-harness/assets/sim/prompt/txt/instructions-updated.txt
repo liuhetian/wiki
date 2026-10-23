@@ -1,0 +1,7 @@
+<system-reminder>
+Updated instructions from: AGENTS.md
+
+This file changed after it was loaded. Use the following content instead of the previously loaded instructions from this file.
+
+Run `pnpm test:unit` before declaring work done.
+</system-reminder>

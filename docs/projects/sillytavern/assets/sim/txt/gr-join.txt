@@ -1,0 +1,11 @@
+== swap（出厂）
+  charDescription  [洛恩的性格= "寡言", "粗声粗气", "护短", "多疑"]⏎[洛恩的外貌= "灰白胡子", "独眼", "旧皮甲", "背着长弓"]……
+  newMainChat      [Start a new group chat. Group members: 塞拉菲娜, 洛恩]
+
+== join
+  charDescription  [塞拉菲娜的性格= "体贴", "保护欲强", "富有同情心", "擅长治愈", "会照顾人", "有魔力", "警觉", "爱道歉", "……
+  newMainChat      [Start a new group chat. Group members: 塞拉菲娜, 洛恩]
+
+== join + 前缀（构造）
+  charDescription  【塞拉菲娜】[塞拉菲娜的性格= "体贴", "保护欲强", "富有同情心", "擅长治愈", "会照顾人", "有魔力", "警觉", "爱……
+  newMainChat      [Start a new group chat. Group members: 塞拉菲娜, 洛恩]

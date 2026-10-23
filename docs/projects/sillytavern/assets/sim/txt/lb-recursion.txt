@@ -1,0 +1,32 @@
+== 默认  →  激活：银溪谷、荆棘魔、影牙的来历
+   [WI] Entry 0 activated by primary key match 银溪谷
+   [WI] Entry 2 suppressed by delay until recursion
+   [WI] Entry 0 activation successful, adding to prompt
+   [WI] --- LOOP #1 RESULT ---
+   [WI] Successfully activated 1 new entries to prompt. 1 total entries activated.
+   [WI] Found 1 new entries for recursion
+   [WI] Entry 1 activated by primary key match 荆棘魔
+   [WI] Entry 1 activation successful, adding to prompt
+   [WI] --- LOOP #2 RESULT ---
+   [WI] Successfully activated 1 new entries to prompt. 2 total entries activated.
+   [WI] Found 1 new entries for recursion
+   [WI] Entry 2 activated by primary key match 影牙
+   [WI] Entry 2 activation successful, adding to prompt
+   [WI] --- LOOP #3 RESULT ---
+   [WI] Successfully activated 1 new entries to prompt. 3 total entries activated.
+   [WI] Found 1 new entries for recursion
+   [WI] --- LOOP #4 RESULT ---
+   [WI] No new entries activated.
+   [WI] Scan done. No new entries to prompt. Stopping.
+== 银溪谷设 preventRecursion  →  激活：银溪谷
+   [WI] Entry 0 activated by primary key match 银溪谷
+   [WI] Entry 2 suppressed by delay until recursion
+   [WI] Entry 0 activation successful, adding to prompt
+   [WI] --- LOOP #1 RESULT ---
+   [WI] Successfully activated 1 new entries to prompt. 1 total entries activated.
+   [WI] Scan done. No new entries to prompt. Stopping.
+== 直接提到影牙  →  激活：（无）
+   [WI] Entry 2 suppressed by delay until recursion
+   [WI] --- LOOP #1 RESULT ---
+   [WI] No new entries activated.
+   [WI] Scan done. No new entries to prompt. Stopping.

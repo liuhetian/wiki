@@ -5,7 +5,7 @@
 给人的策展层、不在 AI 链路上。所以一篇文章漏挂链接 = 对 AI 不存在，nav 里有它
 也没用。这个校验就是那道闸门，在 deploy.sh 构建前跑，不过就不许部署。
 
-六项检查：
+七项检查：
 
 1. 父级链接 —— 每篇 .md 必须被**某个祖先目录**的索引页用 markdown 链接直接指向。
    索引页指 index.md / SKILL.md 两种：SKILL.md 是上游主文件，照样承担链接责任。
@@ -42,13 +42,19 @@
    写在源文件里，复制时不用去抓子页（一个入口最多链了上百篇），本地预览和线上一样。
    首页没有复制按钮，不查。
 
+7. 源码存档只存被引的 —— 项目拆解的 projects/<项目>/assets/<名>-src/ 是从上游仓库逐字拷来的
+   原件，只给页面的 `--8<--` 当真身。每个文件都要有页面用 `--8<--` 或链接引到：没人引的文件
+   AI 顺链接走不到，其中的 .md 还会被 zensical 建成孤儿页、进站内搜索，原文里指向没拷的
+   文件的相对链接全成了构建警告。正文里写一句路径不算引用 —— 那指的是原仓库同版本，
+   读的哪个 commit 写在维护记录里。许可文件（LICENSE*）随附，不算。
+
 豁免：文件顶部（前 5 行内）写 `<!-- link-check-ok: 理由 -->` 可跳过检查 1 和 3。
 理由写在文件里而不是脚本白名单里 —— 挪文件不会让豁免失效，读到那个文件的人也
 立刻知道为什么。注意：本 wiki 不给旧路径留存根页，旧网址靠 mkdocs.yml 的 redirects 兜，
 所以「已迁移存根」不是正当豁免理由。
 
-assets/ 下的 .md 整体排除：按规范那里只放资产真身（含 clone 进来的外部存档），
-不是文章，本来就不进 nav、不上链路。
+assets/ 下的 .md 不当文章查：那里只放被页面引用的原件（`--8<--` 引的源码、iframe 的 demo），
+AI 从引用它的那一页走过去，不靠索引页挂链、不进 nav。源码存档有没有人引，归检查 7。
 """
 import re
 import sys
@@ -73,6 +79,9 @@ NAV_ENTRY = re.compile(r"^\s*-\s+(?:[^:\n]*:\s+)?([^\s\"']+\.md)\s*$", re.M)
 INDEX_NAMES = ("index.md", "SKILL.md")
 # 检查 6 用：frontmatter 里的复制带源地址标记
 COPY_SOURCE = re.compile(r"^copy_source:\s*true\s*$", re.M)
+# 检查 7 用：--8<-- 引用行（代码块里也算，snippet 在代码块里照样展开）与源码存档的位置
+SNIPPET = re.compile(r"""^[ \t]*--8<--\s+(["'])(.+?)\1\s*$""", re.M)
+ARCHIVES = "projects/*/assets/*-src"
 
 
 def rel(p: Path) -> Path:
@@ -175,6 +184,27 @@ def asset_refs(md: Path) -> list:
     return missing
 
 
+def snippet_target(spec: str):
+    """--8<-- 引号里的路径 → 真实文件。先去掉 :起:止 / :段名，按 docs/、仓库根的顺序找。"""
+    for cand in (spec, re.sub(r"(:[^/:]*){1,2}$", "", spec)):
+        for base in (DOCS, ROOT):
+            if (base / cand).is_file():
+                return (base / cand).resolve()
+    return None
+
+
+def cited_files(md: Path) -> set:
+    """该文件用 --8<-- 或代码块之外的链接、src、href 引到的本地文件。"""
+    text = md.read_text(encoding="utf-8")
+    out = {snippet_target(m.group(2)) for m in SNIPPET.finditer(text)} - {None}
+    for m in ASSET_REF.finditer(prose(text)):
+        target = (m.group(1) or m.group(2) or "").split("#")[0].split("?")[0].strip()
+        if not target or target.startswith(("http://", "https://", "mailto:", "data:", "{{", "//")):
+            continue
+        out.add((DOCS / target.lstrip("/") if target.startswith("/") else md.parent / target).resolve())
+    return out
+
+
 def responsible_pages(md: Path) -> list:
     """该文件的责任索引页：自身目录及各级祖先目录下的 index/SKILL。"""
     out, d = [], md.parent
@@ -217,6 +247,13 @@ def main() -> int:
     }
     missing_source = sorted(linked_back - marked)
     extra_source = sorted(marked - linked_back)
+
+    # 7. 源码存档里每个文件都要有页面引到
+    cited = set().union(*(cited_files(md) for md in outgoing))
+    uncited = sorted(
+        rel(f) for f in DOCS.glob(f"{ARCHIVES}/**/*")
+        if f.is_file() and not f.name.startswith("LICENSE") and f.resolve() not in cited
+    )
 
     orphans, unregistered, unresolved, dead_assets = [], [], [], {}
     for md in all_md:
@@ -276,6 +313,11 @@ def main() -> int:
         extra_source,
         "删掉 frontmatter 里的 copy_source: true",
     )
+    report(
+        "源码存档里有没被引用的文件 —— 没有页面 --8<-- 或链接指向它，AI 顺链接走不到",
+        uncited,
+        "正文要用就 --8<-- 按行引；用不到就删，要引原文就摘句，钉 commit 的永链写进脚注",
+    )
     if dead_assets:
         print(f"\n✗ 引用了不存在的本地资源（{len(dead_assets)} 个文件）", file=sys.stderr)
         for md, targets in dead_assets.items():
@@ -289,7 +331,7 @@ def main() -> int:
 
     failed = (len(orphans) + len(unregistered) + len(dead_links)
               + len(unresolved) + len(dead_assets)
-              + len(missing_source) + len(extra_source))
+              + len(missing_source) + len(extra_source) + len(uncited))
     checked = sum(1 for m in all_md if "assets" not in rel(m).parts)
     if failed:
         print(f"\n链路校验未通过：{failed} 处问题（检查了 {checked} 篇）", file=sys.stderr)

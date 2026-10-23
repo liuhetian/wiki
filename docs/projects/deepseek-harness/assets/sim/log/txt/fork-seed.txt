@@ -1,0 +1,10 @@
+A: buildForkSeed(log, 15) -> 17 events; tail:
+  16 session/end-seed {"inherited":true}
+  child messages start with the parent's 5 messages byte-for-byte: true
+B: buildForkSeed(log, 9) -> 15 events; tail:
+  10 session/end-seed {"inherited":true}
+  11 tool/result c1 TOOL_OUTCOME_UNKNOWN: "The history inherited by this branch records this tool call starting but does not include its re…"
+  12 tool/result c2 TOOL_NOT_STARTED: "The history inherited by this branch has no record of this tool call starting. The parent sessio…"
+  13 step/end {"turn":1,"step":1}
+  14 turn/end {"turn":1,"reason":{"kind":"forked"}}
+  child messages start with the parent's 3 messages byte-for-byte: true

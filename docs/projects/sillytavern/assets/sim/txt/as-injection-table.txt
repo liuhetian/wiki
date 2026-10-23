@@ -1,0 +1,6 @@
+2_floating_prompt    位置=1 深度=4 角色=0  （作者注释：塞拉菲娜这几轮话少一些。）
+DEPTH_PROMPT         位置=1 深度=4 角色=0  （夜里塞拉菲娜的魔法会变弱，她不愿让人知道。）
+PERSONA_DESCRIPTION  位置=1 深度=2 角色=0  {{user}}是二十出头的猎人。
+customDepthWI_4_0    位置=1 深度=4 角色=0  （世界书 @深度 4：天快黑了。）
+customDepthWI_4_1    位置=1 深度=4 角色=1  （世界书 @深度 4，user：我得早点上路。）
+script_inject_伏笔     位置=1 深度=4 角色=2  （/inject：窗外有什么东西在看着这间屋子。）

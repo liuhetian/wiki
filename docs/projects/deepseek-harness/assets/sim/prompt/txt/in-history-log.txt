@@ -1,0 +1,8 @@
+  7 step/start
+  8 system/message     system-prompt     append         {{system}}
+  9 user/message       user              append         Read task.txt with the read tool, then reply DONE.
+ 10 user/message       runtime-context   append         Current runtime context. This snapshot supersedes earlier ru
+ 11 request/header
+ 16 tool/result
+ 18 step/start
+ 19 system/message     system-prompt     append         {{system}}

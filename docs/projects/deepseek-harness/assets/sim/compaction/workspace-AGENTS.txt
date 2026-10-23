@@ -1,0 +1,5 @@
+# Workspace notes
+
+- TypeScript monorepo: every package lives under `packages/<group>/<name>/src`.
+- This checkout is read-only. Do not try to edit or write files.
+- When you explain code, cite `path:line` for every claim.

@@ -1,0 +1,3 @@
+assembled by the in-process Web composition: 5632 bytes
+snapshots/web/fresh-round-trip/system-prompt.expected.md: 5632 bytes
+byte-identical: True

@@ -50,18 +50,19 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 ## Gallery
 
-成品参考，别人的原样收录、本站自己做的链到做法 skill，按媒介分图片、排版、色彩、视频、音频、网页六区，全部在 [Gallery 索引](gallery/index.md)：
+成品参考，别人的原样收录、本站自己做的链到做法 skill，按媒介分图片、排版、色彩、视频、音频、网页六区，另有人设一区，全部在 [Gallery 索引](gallery/index.md)：
 
-- [图片](gallery/images/index.md) —— 一张图配一段生成它的 prompt，7 大类共 175 条：GPT Image 2 的 163 条（译成中文）+ [二次元平面设计风格](gallery/images/linux-do-style/gallery-anime-graphic-design.md) 12 组；另有把照片做成[旧刊物海报](gallery/images/collected/gallery-pulp-posters.md)的整套做法
+- [图片](gallery/images/index.md) —— 一张图配一段生成它的 prompt，7 大类共 175 条：GPT Image 2 的 163 条（译成中文）+ [二次元平面设计风格](gallery/images/linux-do-style/gallery-anime-graphic-design.md) 12 组；另有把照片做成[旧刊物海报](gallery/images/collected/gallery-pulp-posters.md)的整套做法，和小红书收来的[拍照姿势](gallery/images/index.md#poses)实拍图 59 组
 - [网页](gallery/web/index.md) —— [前端风格收集](gallery/web/frontend-styles/index.md)：有特色的前端美学，一种风格一个可抄的活 demo
 - [视频](gallery/video/index.md) —— 视频成品配制作方法：本站自己做的[花卉动态生长海报](gallery/video/flower-growth-poster.md)，收录的[彩色手绘三维穿梭视频](gallery/video/collected/gallery-parallax-ink.md)，做法都写在成品下面
+- [人设](gallery/personas/index.md) —— 角色设定一人一页：[SEOA｜徐星澄](gallery/personas/seoa.md)，24 岁，主舞兼创作型歌手
 - 音频区还没有收录
 
 ## 项目拆解
 
-别人的项目实际在干什么、哪些归程序哪些归模型、作者的心思花在哪，先读源码和 git 历史再讲，全部在[项目拆解索引](projects/index.md)：
+别人的项目属于什么领域、从最简单的做法出发遇到什么问题引入什么功能，先读源码和 git 历史再讲，全部在[项目拆解索引](projects/index.md)：
 
-- [梨园 Liyuan](projects/liyuan/index.md) —— 把 pi 这个 coding agent 改成演角色扮演的 agent；设计重心是 harness 该替模型管多少，六个方向各一页细讲
+- [梨园 Liyuan](projects/liyuan/index.md) —— 把角色扮演从一次生成改成 agent 循环：以网页版 ChatGPT 为 baseline，按七条功能线讲每个具体问题引入了什么功能，结论是能搬走的设计
 
 ## 维护
 

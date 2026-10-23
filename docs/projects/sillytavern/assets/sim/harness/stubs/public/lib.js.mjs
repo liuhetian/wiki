@@ -1,0 +1,31 @@
+// public/lib.js 的桩：浏览器包里纯逻辑的库换成同名 npm 包，碰 DOM 的库给空桩。
+import { anyStub } from '../../shims.mjs';
+import lodash from 'lodash';
+import Fuse from 'fuse.js';
+import Handlebars from 'handlebars';
+import moment from 'moment';
+import seedrandom from 'seedrandom';
+import droll from 'droll';
+import * as chevrotain from 'chevrotain';
+
+export { lodash, Fuse, Handlebars, moment, seedrandom, droll, chevrotain };
+export const DOMPurify = anyStub('DOMPurify');
+export const hljs = anyStub('hljs');
+export const localforage = anyStub('localforage');
+export const css = anyStub('css');
+export const Bowser = anyStub('Bowser');
+export const DiffMatchPatch = anyStub('DiffMatchPatch');
+export const Readability = anyStub('Readability');
+export const isProbablyReaderable = anyStub('isProbablyReaderable');
+export const SVGInject = anyStub('SVGInject');
+export const showdown = anyStub('showdown');
+export const Popper = anyStub('Popper');
+export const morphdom = anyStub('morphdom');
+export const slideToggle = anyStub('slideToggle');
+export const chalk = anyStub('chalk');
+export const yaml = anyStub('yaml');
+export const gzipSync = anyStub('gzipSync');
+export const gzip = anyStub('gzip');
+export const sha256 = anyStub('sha256');
+export const initLibraryShims = () => {};
+export default {};

@@ -1,0 +1,12 @@
+ 26  tool/call          read {"file_path": "packages/compaction/compaction-basic/src/config.ts"}
+ 27  tool/result        16084 字符
+ 28  step/end           
+ 29  compaction/prune   shadowedSeqs=[13] shadowedTokenCount=2609
+ 30  tool/result        replace 13，5159 字符
+ 31  compaction/prune   shadowedSeqs=[14] shadowedTokenCount=6664
+ 32  tool/result        replace 14，5159 字符
+ 33  compaction/prune   shadowedSeqs=[27] shadowedTokenCount=4029
+ 34  tool/result        replace 27，5159 字符
+ 35  step/start         
+ 36  request/header     
+（seq 29–36 之间没有 compaction/start：裁完已低于阈值，这一步不摘要）

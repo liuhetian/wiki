@@ -1,0 +1,14 @@
+# 子进程 false：提示行 + 退出 1
+  退出码 1，stderr："landlock-run: partial enforcement (older Landlock ABI)\n"
+  真规则      → 命令跑了（不算启动器失败）
+  只认前缀    → 启动器失败：landlock-run: partial enforcement (older Landlock ABI)
+
+# 子进程自选退出 125：只有提示行
+  退出码 125，stderr："landlock-run: partial enforcement (older Landlock ABI)\n"
+  真规则      → 命令跑了（不算启动器失败）
+  只认前缀    → 启动器失败：landlock-run: partial enforcement (older Landlock ABI)
+
+# 启动器真坏了：退出 125 + 致命行
+  退出码 125，stderr："landlock-run: landlock ruleset error: Invalid argument\n"
+  真规则      → 启动器失败：landlock-run: landlock ruleset error: Invalid argument
+  只认前缀    → 启动器失败：landlock-run: landlock ruleset error: Invalid argument

@@ -1,0 +1,5 @@
+request                                   uncached  cache read  output
+turn 1 step 1                                  506        8064      52
+turn 1 step 2                                 8588        8576     377
+turn 2, changed prompt replaces node 0       18110           0     199
+turn 2, changed prompt appended in history    1706       17536     193

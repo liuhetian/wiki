@@ -1,0 +1,28 @@
+原始输出 20690 字节 / 400 行；落盘文件 20690 字节，与原始输出一致
+
+模型拿到：
+2026-10-20T12:00:00 worker-0 processed batch 0 ok
+2026-10-20T12:00:01 worker-1 processed batch 1 ok
+2026-10-20T12:00:02 worker-2 processed batch 2 ok
+2026-10-20T12:00:03 worker-3 processed batch 3 ok
+2026-10-20T12:00:04 worker-4 processed batch 4 ok
+2026-10-20T12:00:05 worker-5 processed batch 5 ok
+2026-10-20T12:00:06 worker-6 processed batch 6 ok
+2026-10-20T12:00:07 worker-0 processed batch 7 ok
+2026-10-20T12:00:08 worker-1 processed batch 8 ok
+2026-10-20T12:
+
+[...]
+
+-10-20T12:00:31 worker-6 processed batch 391 ok
+2026-10-20T12:00:32 worker-0 processed batch 392 ok
+2026-10-20T12:00:33 worker-1 processed batch 393 ok
+2026-10-20T12:00:34 worker-2 processed batch 394 ok
+2026-10-20T12:00:35 worker-3 processed batch 395 ok
+2026-10-20T12:00:36 worker-4 processed batch 396 ok
+2026-10-20T12:00:37 worker-5 processed batch 397 ok
+2026-10-20T12:00:38 worker-6 processed batch 398 ok
+2026-10-20T12:00:39 worker-0 processed batch 399 ok
+
+
+(Omitted 19762 bytes. Full formatted result stored at: <spill-root>/session-e8bc163c82ee/b05aada66e9d-fetch_log.txt. Use read with offset/limit, or grep this path to search within it.)

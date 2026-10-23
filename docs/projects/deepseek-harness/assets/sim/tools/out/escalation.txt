@@ -1,0 +1,179 @@
+## 用户批准一次
+{
+  "result": {
+    "granted": "danger-full-access"
+  },
+  "audit": [
+    {
+      "type": "approval/asked",
+      "data": {
+        "id": "8d646ce3-7e6e-434e-bdac-f7696da4de0f",
+        "toolName": "bash",
+        "callId": "call_1",
+        "reason": "escalate sandbox to danger-full-access: the user asked to write a file outside the workspace"
+      }
+    },
+    {
+      "type": "approval/decided",
+      "data": {
+        "id": "8d646ce3-7e6e-434e-bdac-f7696da4de0f",
+        "outcome": "allowed-once"
+      }
+    }
+  ]
+}
+
+## 用户拒绝
+{
+  "result": {
+    "thrown": "the user rejected escalating this command to \"danger-full-access\"; it stays denied, so stop and explain instead of working around it"
+  },
+  "audit": [
+    {
+      "type": "approval/asked",
+      "data": {
+        "id": "6aec2ee5-ca75-4c19-8b2d-212cc97ba7d1",
+        "toolName": "bash",
+        "callId": "call_1",
+        "reason": "escalate sandbox to danger-full-access: the user asked to write a file outside the workspace"
+      }
+    },
+    {
+      "type": "approval/decided",
+      "data": {
+        "id": "6aec2ee5-ca75-4c19-8b2d-212cc97ba7d1",
+        "outcome": "rejected"
+      }
+    }
+  ]
+}
+
+## 没人回答（没有界面）
+{
+  "result": {
+    "thrown": "sandbox escalation to \"danger-full-access\" requires approval, but no approval channel is available"
+  },
+  "audit": [
+    {
+      "type": "approval/asked",
+      "data": {
+        "id": "15d2c28e-c06c-4b0b-8eee-a920261cbf5e",
+        "toolName": "bash",
+        "callId": "call_1",
+        "reason": "escalate sandbox to danger-full-access: the user asked to write a file outside the workspace"
+      }
+    },
+    {
+      "type": "approval/decided",
+      "data": {
+        "id": "15d2c28e-c06c-4b0b-8eee-a920261cbf5e",
+        "outcome": "unavailable"
+      }
+    }
+  ]
+}
+
+## 回答方抛错
+{
+  "result": {
+    "thrown": "sandbox escalation to \"danger-full-access\" requires approval, but no approval channel is available"
+  },
+  "audit": [
+    {
+      "type": "approval/asked",
+      "data": {
+        "id": "246be3cc-17d8-4cdf-87af-e8795f70ee1c",
+        "toolName": "bash",
+        "callId": "call_1",
+        "reason": "escalate sandbox to danger-full-access: the user asked to write a file outside the workspace"
+      }
+    },
+    {
+      "type": "approval/decided",
+      "data": {
+        "id": "246be3cc-17d8-4cdf-87af-e8795f70ee1c",
+        "outcome": "unavailable"
+      }
+    }
+  ]
+}
+
+## 回答方返回词表外的值
+{
+  "result": {
+    "thrown": "sandbox escalation to \"danger-full-access\" requires approval, but no approval channel is available"
+  },
+  "audit": [
+    {
+      "type": "approval/asked",
+      "data": {
+        "id": "cf240425-3b51-426e-9abb-91f7d9c94f54",
+        "toolName": "bash",
+        "callId": "call_1",
+        "reason": "escalate sandbox to danger-full-access: the user asked to write a file outside the workspace"
+      }
+    },
+    {
+      "type": "approval/decided",
+      "data": {
+        "id": "cf240425-3b51-426e-9abb-91f7d9c94f54",
+        "outcome": "unavailable"
+      }
+    }
+  ]
+}
+
+## 会话策略是 never：回答方想批也没用
+{
+  "result": {
+    "thrown": "the user rejected escalating this command to \"danger-full-access\"; it stays denied, so stop and explain instead of working around it"
+  },
+  "audit": [
+    {
+      "type": "approval/policy",
+      "data": {
+        "policy": "never"
+      }
+    },
+    {
+      "type": "approval/asked",
+      "data": {
+        "id": "b8da9501-8491-4fe0-b238-863ae9376a6a",
+        "toolName": "bash",
+        "callId": "call_1",
+        "reason": "escalate sandbox to danger-full-access: the user asked to write a file outside the workspace"
+      }
+    },
+    {
+      "type": "approval/decided",
+      "data": {
+        "id": "b8da9501-8491-4fe0-b238-863ae9376a6a",
+        "outcome": "rejected"
+      }
+    }
+  ]
+}
+
+## 申请和当前一样的档：不问
+{
+  "result": {
+    "granted": "workspace-write"
+  },
+  "audit": []
+}
+
+## 申请更窄的档：拒收
+{
+  "result": {
+    "thrown": "sandbox escalation to \"read-only\" is not strictly wider than this call's current \"workspace-write\" mode"
+  },
+  "audit": []
+}
+
+## 没装审批服务
+{
+  "result": {
+    "thrown": "sandbox escalation to \"danger-full-access\" requires approval, but no approval service is composed"
+  },
+  "audit": []
+}

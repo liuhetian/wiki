@@ -1,0 +1,8 @@
+system (top-level)  default prompt, 5608 chars
+tools               31 schemas
+user      [text,text,text]  'Use the read tool to read packages/core/system-prompt/src/index.ts, th'
+assistant [thinking,text,tool_use]  "I'll read the file first."
+user      [tool_result]  ''
+assistant [thinking,text]  '- **Order:** Every section carries a numeric `order` — usually pulled '
+user      [text,text,text]  'Now plan how to add a TOOL_TODO section order between TOOL_JOBS and TO'
+system    [text]  plan-mode prompt, 7970 chars

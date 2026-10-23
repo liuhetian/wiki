@@ -1,0 +1,7 @@
+✓ each step request within a turn append-extends the previous, frozen end to end 18ms
+✓ a compaction replace rewrites the resend, and the log explains it 3ms
+✓ a mutation attempt on the frozen request content throws into the step (loud, not silent) 2ms
+✓ a delegating listener cannot mutate the seed through next() — the fold stays log-true 3ms
+✓ THEOREM: every request rebuilds byte-equal from the session log alone 5ms
+Test Files  1 passed (1)
+Tests  30 passed (30)

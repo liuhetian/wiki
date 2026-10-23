@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""上 25 端口之前的本地验收：在 8025 起收件端，自己投三封信验三条规矩。
+"""上 25 端口之前的本地验收：在 8025 起收件端，自己投信验五条规矩。
 
-验的是白名单拒收、正常落盘、中文头部与附件能解开 —— 不碰 DNS、不碰公网。
+验的是白名单拒收、正常落盘、两个域进同一个收件箱、重投只落一份、中文头部与附件能解开 —— 不碰 DNS、不碰公网。
 
     uv run --with aiosmtpd python smoke_intake.py
 """
@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from email import policy
 from email.message import EmailMessage
 from pathlib import Path
 
@@ -39,7 +40,8 @@ def main() -> int:
         MAIL_INTAKE_PORT=str(PORT),
         MAIL_INTAKE_BIND="127.0.0.1",
         MAIL_INTAKE_BANNER="mail.example.com",
-        MAIL_INTAKE_ALLOWED="data-7f3a@example.com",
+        MAIL_INTAKE_DOMAINS="example.com,mail.example.com",
+        MAIL_INTAKE_ALLOWED="data-7f3a",
     )
     proc = subprocess.Popen(
         [sys.executable, str(HERE / "mail_intake.py")], env=env, stderr=subprocess.PIPE, text=True
@@ -53,13 +55,17 @@ def main() -> int:
         client = smtplib.SMTP("127.0.0.1", PORT, timeout=10)
         print("[banner]", client.ehlo()[1].decode().splitlines()[0])
         try:
-            client.sendmail("sender@example.org", ["random@example.com"], b"x")
+            client.sendmail("sender@example.org", ["random@example.com", "data-7f3a@other.org"], b"x")
             print("!! 白名单外的地址被收了，规矩漏了")
             return 1
         except smtplib.SMTPRecipientsRefused as exc:
             print("[拒收非白名单]", exc.recipients)
-        client.send_message(build_mail())
+        raw = build_mail().as_bytes(policy=policy.SMTP)  # 行尾 \r\n，跟真实投递一样
+        client.sendmail("sender@example.org", ["data-7f3a@example.com"], raw)
         print("[投递成功]")
+        time.sleep(1.1)  # 跨过一秒，让重投拿到不同的时间戳
+        client.sendmail("sender@example.org", ["data-7f3a@mail.example.com"], raw)
+        print("[同一封换子域重投]")
         client.quit()
         time.sleep(0.5)
     finally:
@@ -67,7 +73,7 @@ def main() -> int:
         proc.wait(5)
     print("[日志]", proc.stderr.read().strip())
 
-    files = sorted(glob.glob(f"{inbox}/*/*.eml"))
+    files = sorted(glob.glob(f"{inbox}/*/*/*.eml"))
     if len(files) != 1:
         print("!! 落盘文件数不对：", files)
         return 1

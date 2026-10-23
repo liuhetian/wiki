@@ -1,0 +1,2 @@
+after create, round 1, two human messages, round 2: {"goal":{"id":"g1","revision":1,"objective":"Make every test in packages/foo pass","phase":"active","maxGoalRounds":3},"roundsStarted":2,"createdAt":1,"updatedAt":1,"lastRef":{"id":"g1","revision":1}}
+constructed: round 4 right after round 2 -> goal round at session event 5 is not the next admitted round of the active goal

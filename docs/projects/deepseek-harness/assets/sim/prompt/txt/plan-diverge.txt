@@ -1,0 +1,3 @@
+default prompt: 5609 chars; plan-mode prompt: 7971 chars; first difference at char 111
+...'ou are a coding agent powered by the deepseek-flash model.\n\n'
++  'You are in plan mode. Stay in plan mode until the user approves your plan through exit_pla'...

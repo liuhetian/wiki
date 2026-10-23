@@ -1,0 +1,18 @@
+1. no plugins
+   -> cache deleted
+2. + audit (wraps, calls next)
+   [audit] before rm_cache
+   [audit] decision allow
+   -> cache deleted
+3. + deny as a waterfall listener
+   [audit] before rm_cache
+   [audit] decision deny
+   -> isError: Error: rm_cache is disabled by policy
+4. + allow-all prepended outermost: the listener denial is skipped
+   -> cache deleted
+5. same denial as a guard, allow-all still mounted
+   -> isError: Error: rm_cache is disabled by policy
+6. guard and allow-all unmounted
+   [audit] before rm_cache
+   [audit] decision allow
+   -> cache deleted

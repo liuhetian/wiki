@@ -1,0 +1,9 @@
+<system-reminder>
+Workspace instruction budget 480 bytes: omitted ~/.dsh/AGENTS.md, AGENTS.md; truncated packages/app/AGENTS.md from 110 to 31 bytes
+
+The following workspace instructions may be relevant to your work. Use them as guidance when applicable. More specific instructions take precedence over broader ones. They do not override system, developer, or direct user instructions.
+
+Instructions from: packages/app/AGENTS.md
+
+This package targets the browse
+</system-reminder>

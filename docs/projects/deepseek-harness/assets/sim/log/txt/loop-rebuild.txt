@@ -1,0 +1,8 @@
+request 1: 2 messages, settled as assistant/message @8; rebuilt from log[0..7] equal=true; extends previous=-; frozen=true
+request 2: 4 messages, settled as assistant/message @13; rebuilt from log[0..12] equal=true; extends previous=true; frozen=true
+request 3: 6 messages, settled as assistant/attempt @21; rebuilt from log[0..20] equal=true; extends previous=true; frozen=true
+request 4: 6 messages, settled as assistant/message @22; rebuilt from log[0..21] equal=true; extends previous=true; frozen=true
+request 5: 8 messages, settled as assistant/message @30; rebuilt from log[0..29] equal=true; extends previous=true; frozen=true
+request 6: 10 messages, settled as assistant/message @38; rebuilt from log[0..37] equal=true; extends previous=true; frozen=true
+last request carries the interrupted prefix: true
+mutation: TypeError: Cannot add property 2, object is not extensible

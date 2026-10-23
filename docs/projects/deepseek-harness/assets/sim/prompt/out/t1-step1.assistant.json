@@ -1,0 +1,47 @@
+{
+  "content": [
+    {
+      "type": "reasoning",
+      "text": ""
+    },
+    {
+      "type": "text",
+      "text": "I'll read the file first."
+    },
+    {
+      "type": "tool-call",
+      "id": "call_00_ET_0csOHjO1OnAgdj3rcihl0120",
+      "name": "read",
+      "arguments": "{\"file_path\": \"packages/core/system-prompt/src/index.ts\"}"
+    }
+  ],
+  "replayState": {
+    "response": {
+      "kind": "deepseek-messages",
+      "version": 1,
+      "model": "deepseek-flash"
+    },
+    "blocks": [
+      {
+        "type": "reasoning",
+        "signature": "e35a37dc-e477-402b-aa46-6df5022b3e41"
+      },
+      {
+        "type": "text"
+      },
+      {
+        "type": "tool-call"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 506,
+    "outputTokens": 52,
+    "cacheReadTokens": 8064,
+    "cacheWriteTokens": 0,
+    "totalTokens": 8622
+  },
+  "finish": {
+    "kind": "tool-calls"
+  }
+}

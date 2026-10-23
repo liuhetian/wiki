@@ -1,0 +1,120 @@
+{
+ "entries": [
+  {
+   "comment": "苹果公司",
+   "key": [
+    "苹果"
+   ],
+   "keysecondary": [
+    "手机",
+    "发布会"
+   ],
+   "selectiveLogic": 0
+  },
+  {
+   "comment": "苹果树",
+   "key": [
+    "苹果"
+   ],
+   "keysecondary": [
+    "手机",
+    "发布会"
+   ],
+   "selectiveLogic": 2
+  }
+ ],
+ "runs": {
+  "新款苹果手机什么时候发布？": {
+   "activated": [
+    "苹果公司"
+   ],
+   "trace": [
+    "[WI] --- START WI SCAN (on 1 messages, trigger = normal) (DRY RUN) ---",
+    "[WI] Context size: 3795; WI budget: 949 (max% = 25%, cap = 0)",
+    "[WI] Global world info has 2 entries",
+    "[WI] Found 2 world lore entries. Sorted by strategy",
+    "[WI] --- SEARCHING ENTRIES (on 2 entries) ---",
+    "[WI] --- LOOP #1 START ---",
+    "[WI] Scan state",
+    "[WI] Entry 0 from '演示·次关键词' processing",
+    "[WI] Entry 0 Entry with primary key match 苹果 has secondary keywords. Checking with logic logic",
+    "[WI] Entry 0 activated. (AND ANY) Found match secondary keyword 手机",
+    "[WI] Entry 1 from '演示·次关键词' processing",
+    "[WI] Entry 1 Entry with primary key match 苹果 has secondary keywords. Checking with logic logic",
+    "[WI] Entry 1 skipped. Secondary keywords not satisfied",
+    "[WI] Search done. Found 1 possible entries.",
+    "[WI] --- INCLUSION GROUP CHECKS ---",
+    "[WI] No inclusion groups found",
+    "[WI] --- PROBABILITY CHECKS ---",
+    "[WI] Entry 0 activation successful, adding to prompt",
+    "[WI] --- LOOP #1 RESULT ---",
+    "[WI] Successfully activated 1 new entries to prompt. 1 total entries activated.",
+    "[WI] Found 1 new entries for recursion",
+    "[WI] Setting scan state",
+    "[WI] --- LOOP #2 START ---",
+    "[WI] Scan state",
+    "[WI] Entry 1 from '演示·次关键词' processing",
+    "[WI] Entry 1 Entry with primary key match 苹果 has secondary keywords. Checking with logic logic",
+    "[WI] Entry 1 skipped. Secondary keywords not satisfied",
+    "[WI] Search done. Found 0 possible entries.",
+    "[WI] --- INCLUSION GROUP CHECKS ---",
+    "[WI] No inclusion groups found",
+    "[WI] --- PROBABILITY CHECKS ---",
+    "[WI] No probability checks to do",
+    "[WI] --- LOOP #2 RESULT ---",
+    "[WI] No new entries activated.",
+    "[WI] Scan done. No new entries to prompt. Stopping.",
+    "[WI] Setting scan state",
+    "[WI] --- BUILDING PROMPT ---",
+    "[WI] Hypothetically adding 1 entries to prompt",
+    "[WI] --- DONE (DRY RUN) ---"
+   ]
+  },
+  "院子里的苹果熟了，摘几个吧。": {
+   "activated": [
+    "苹果树"
+   ],
+   "trace": [
+    "[WI] --- START WI SCAN (on 1 messages, trigger = normal) (DRY RUN) ---",
+    "[WI] Context size: 3795; WI budget: 949 (max% = 25%, cap = 0)",
+    "[WI] Global world info has 2 entries",
+    "[WI] Found 2 world lore entries. Sorted by strategy",
+    "[WI] --- SEARCHING ENTRIES (on 2 entries) ---",
+    "[WI] --- LOOP #1 START ---",
+    "[WI] Scan state",
+    "[WI] Entry 0 from '演示·次关键词' processing",
+    "[WI] Entry 0 Entry with primary key match 苹果 has secondary keywords. Checking with logic logic",
+    "[WI] Entry 0 skipped. Secondary keywords not satisfied",
+    "[WI] Entry 1 from '演示·次关键词' processing",
+    "[WI] Entry 1 Entry with primary key match 苹果 has secondary keywords. Checking with logic logic",
+    "[WI] Entry 1 activated. (NOT ANY) No secondary keywords found",
+    "[WI] Search done. Found 1 possible entries.",
+    "[WI] --- INCLUSION GROUP CHECKS ---",
+    "[WI] No inclusion groups found",
+    "[WI] --- PROBABILITY CHECKS ---",
+    "[WI] Entry 1 activation successful, adding to prompt",
+    "[WI] --- LOOP #1 RESULT ---",
+    "[WI] Successfully activated 1 new entries to prompt. 1 total entries activated.",
+    "[WI] Found 1 new entries for recursion",
+    "[WI] Setting scan state",
+    "[WI] --- LOOP #2 START ---",
+    "[WI] Scan state",
+    "[WI] Entry 0 from '演示·次关键词' processing",
+    "[WI] Entry 0 Entry with primary key match 苹果 has secondary keywords. Checking with logic logic",
+    "[WI] Entry 0 skipped. Secondary keywords not satisfied",
+    "[WI] Search done. Found 0 possible entries.",
+    "[WI] --- INCLUSION GROUP CHECKS ---",
+    "[WI] No inclusion groups found",
+    "[WI] --- PROBABILITY CHECKS ---",
+    "[WI] No probability checks to do",
+    "[WI] --- LOOP #2 RESULT ---",
+    "[WI] No new entries activated.",
+    "[WI] Scan done. No new entries to prompt. Stopping.",
+    "[WI] Setting scan state",
+    "[WI] --- BUILDING PROMPT ---",
+    "[WI] Hypothetically adding 1 entries to prompt",
+    "[WI] --- DONE (DRY RUN) ---"
+   ]
+  }
+ }
+}

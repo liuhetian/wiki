@@ -20,6 +20,7 @@ docs/vendor/mathjax/** filter=lfs diff=lfs merge=lfs -text
 docs/vendor/echarts/** filter=lfs diff=lfs merge=lfs -text
 docs/vendor/chartjs/** filter=lfs diff=lfs merge=lfs -text
 docs/vendor/mermaid/** filter=lfs diff=lfs merge=lfs -text
+docs/vendor/glightbox/** filter=lfs diff=lfs merge=lfs -text
 docs/vendor/three/** filter=lfs diff=lfs merge=lfs -text
 docs/vendor/react.production.min.js filter=lfs diff=lfs merge=lfs -text
 docs/vendor/react-dom.production.min.js filter=lfs diff=lfs merge=lfs -text

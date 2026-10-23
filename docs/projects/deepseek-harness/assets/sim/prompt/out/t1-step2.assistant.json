@@ -1,0 +1,38 @@
+{
+  "content": [
+    {
+      "type": "reasoning",
+      "text": "Explain in three short bullets how system prompt sections are ordered and joined.\n\nKey points:\n1. Ordering: sections sorted by ascending numeric `order` (from SECTION_ORDERS central table), ties broken by code-unit name comparison (comparePromptSections).\n2. Joining/rendering: renderPrompt maps each section, interpolating `{{variables}}` unless `interpolate: false`, drops empty sections, joins remaining with '\\n\\n' (blank line).\n3. Special cases: scoped sections shadow global ones with the same name before sorting; a `complete` section replaces the whole prompt as the sole section after the waterfall. Also runtime contexts are separate (joined with '\\n\\n' and prefixed by snapshot banner).\n\nThree short bullets."
+    },
+    {
+      "type": "text",
+      "text": "- **Order:** Every section carries a numeric `order` — usually pulled from the central `SECTION_ORDERS` table (`HARNESS_IDENTITY: -1000` … `HARNESS_SOURCE: 10000`). Assembly sorts ascending by `order`, with ties broken by code-unit name comparison (`comparePromptSections`, [index.ts:248](packages/core/system-prompt/src/index.ts#L248)), so the result is deterministic across machines.\n- **Join:** `renderPrompt` maps each section (interpolating `{{variables}}` unless `interpolate: false`), drops any that render to empty text, and concatenates the rest with a blank line (`'\\n\\n'`) — [index.ts:290](packages/core/system-prompt/src/index.ts#L290).\n- **Overrides:** Before sorting, scoped sections shadow global sections of the same name; and if any section is marked `complete`, that exact section is restored after the assembly waterfall as the *sole* prompt section, so nothing else is joined around it."
+    }
+  ],
+  "replayState": {
+    "response": {
+      "kind": "deepseek-messages",
+      "version": 1,
+      "model": "deepseek-flash"
+    },
+    "blocks": [
+      {
+        "type": "reasoning",
+        "signature": "d321bae9-4889-47a0-9d50-442ea71e9ef6"
+      },
+      {
+        "type": "text"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 8588,
+    "outputTokens": 377,
+    "cacheReadTokens": 8576,
+    "cacheWriteTokens": 0,
+    "totalTokens": 17541
+  },
+  "finish": {
+    "kind": "stop"
+  }
+}

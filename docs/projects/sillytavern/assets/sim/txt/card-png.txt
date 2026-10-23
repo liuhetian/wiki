@@ -1,0 +1,8 @@
+IHDR  13 字节
+IDAT  511505 字节
+tEXt  keyword=chara  base64 18912 字符  → spec=chara_card_v3 3.0，name=塞拉菲娜
+tEXt  keyword=ccv3   base64 18912 字符  → spec=chara_card_v3 3.0，name=塞拉菲娜
+IEND  0 字节
+
+读回：spec=chara_card_v3，name=塞拉菲娜
+字段：name, description, personality, scenario, first_mes, mes_example, creator_notes, system_prompt, post_history_instructions, tags, creator, character_version, alternate_greetings, extensions, character_book, group_only_greetings

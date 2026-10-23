@@ -1,0 +1,183 @@
+{
+ "defaultOrder": [
+  "main",
+  "writing-rules",
+  "worldInfoBefore",
+  "personaDescription",
+  "charDescription",
+  "charPersonality",
+  "scenario",
+  "enhanceDefinitions（关）",
+  "nsfw",
+  "worldInfoAfter",
+  "dialogueExamples",
+  "chatHistory",
+  "jailbreak"
+ ],
+ "runs": {
+  "relative": [
+   {
+    "identifier": "main",
+    "role": "system",
+    "content": "Write 塞拉菲娜's next reply in a fictional c"
+   },
+   {
+    "identifier": "writing-rules",
+    "role": "system",
+    "content": "每次回复不超过三段。"
+   },
+   {
+    "identifier": "worldInfoBefore",
+    "role": "system",
+    "content": "旅人: “林间空地是什么？”\n塞拉菲娜: *塞拉菲娜温柔地笑了，眼里闪着暖意，点"
+   },
+   {
+    "identifier": "personaDescription",
+    "role": "system",
+    "content": ""
+   },
+   {
+    "identifier": "charDescription",
+    "role": "system",
+    "content": "[塞拉菲娜的性格= \"体贴\", \"保护欲强\", \"富有同情心\", \"擅长治愈\","
+   },
+   {
+    "identifier": "charPersonality",
+    "role": "system",
+    "content": ""
+   },
+   {
+    "identifier": "scenario",
+    "role": "system",
+    "content": ""
+   },
+   {
+    "identifier": "nsfw",
+    "role": "system",
+    "content": ""
+   },
+   {
+    "identifier": "worldInfoAfter",
+    "role": "system",
+    "content": ""
+   },
+   {
+    "identifier": "newMainChat",
+    "role": "system",
+    "content": "[Start a new Chat]"
+   },
+   {
+    "identifier": "chatHistory-1",
+    "role": "assistant",
+    "content": "*你猛地惊醒，想起自己是怎么走进森林深处、又是怎么被野兽围攻的。随着眼睛适应了屋"
+   },
+   {
+    "identifier": "chatHistory-2",
+    "role": "user",
+    "content": "*我撑起身子，接过茶杯* 谢谢你……这片森林里到底有什么怪物？"
+   },
+   {
+    "identifier": "chatHistory-3",
+    "role": "assistant",
+    "content": "*塞拉菲娜在床边坐下，双手交叠放在膝上，神色变得严肃。* “这片森林里潜藏着许多"
+   },
+   {
+    "identifier": "chatHistory-4",
+    "role": "user",
+    "content": "你的魔法真厉害。我的伤要多久才能好？我还得赶去北边的镇子。"
+   },
+   {
+    "identifier": "chatHistory-5",
+    "role": "assistant",
+    "content": "*塞拉菲娜眉头微微蹙起，语气温和却带着一丝担忧。* “你的伤不轻，至少要静养两三"
+   },
+   {
+    "identifier": "jailbreak",
+    "role": "system",
+    "content": ""
+   }
+  ],
+  "in-chat@1": [
+   {
+    "identifier": "main",
+    "role": "system",
+    "content": "Write 塞拉菲娜's next reply in a fictional c"
+   },
+   {
+    "identifier": "worldInfoBefore",
+    "role": "system",
+    "content": "旅人: “林间空地是什么？”\n塞拉菲娜: *塞拉菲娜温柔地笑了，眼里闪着暖意，点"
+   },
+   {
+    "identifier": "personaDescription",
+    "role": "system",
+    "content": ""
+   },
+   {
+    "identifier": "charDescription",
+    "role": "system",
+    "content": "[塞拉菲娜的性格= \"体贴\", \"保护欲强\", \"富有同情心\", \"擅长治愈\","
+   },
+   {
+    "identifier": "charPersonality",
+    "role": "system",
+    "content": ""
+   },
+   {
+    "identifier": "scenario",
+    "role": "system",
+    "content": ""
+   },
+   {
+    "identifier": "nsfw",
+    "role": "system",
+    "content": ""
+   },
+   {
+    "identifier": "worldInfoAfter",
+    "role": "system",
+    "content": ""
+   },
+   {
+    "identifier": "newMainChat",
+    "role": "system",
+    "content": "[Start a new Chat]"
+   },
+   {
+    "identifier": "chatHistory-1",
+    "role": "assistant",
+    "content": "*你猛地惊醒，想起自己是怎么走进森林深处、又是怎么被野兽围攻的。随着眼睛适应了屋"
+   },
+   {
+    "identifier": "chatHistory-2",
+    "role": "user",
+    "content": "*我撑起身子，接过茶杯* 谢谢你……这片森林里到底有什么怪物？"
+   },
+   {
+    "identifier": "chatHistory-3",
+    "role": "assistant",
+    "content": "*塞拉菲娜在床边坐下，双手交叠放在膝上，神色变得严肃。* “这片森林里潜藏着许多"
+   },
+   {
+    "identifier": "chatHistory-4",
+    "role": "user",
+    "content": "你的魔法真厉害。我的伤要多久才能好？我还得赶去北边的镇子。"
+   },
+   {
+    "identifier": "chatHistory-5",
+    "role": "system",
+    "content": "每次回复不超过三段。"
+   },
+   {
+    "identifier": "chatHistory-6",
+    "role": "assistant",
+    "content": "*塞拉菲娜眉头微微蹙起，语气温和却带着一丝担忧。* “你的伤不轻，至少要静养两三"
+   },
+   {
+    "identifier": "jailbreak",
+    "role": "system",
+    "content": ""
+   }
+  ]
+ }
+}

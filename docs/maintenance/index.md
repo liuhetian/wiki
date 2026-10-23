@@ -1,5 +1,5 @@
 ---
-description: "维护板块：skill 和 Agent 能力背后的事，分两部分：Agent 基础能力背后的选型实测、上游来源和没做的事，一个能力一篇；外部 skill 的吸纳记录，一个 skill 一篇；Gallery 收录的来源和改动，一个来源一篇；实测流水线用的示例 skill。AI 正常使用不用看，出问题或要改做法时再看"
+description: "维护板块：skill 和 Agent 能力背后的事，分两部分：Agent 基础能力背后的选型实测、上游来源和没做的事，一个能力一篇；外部 skill 的吸纳记录，一个 skill 一篇；Gallery 收录的来源和改动，一个来源一篇；项目拆解读的版本和素材来源，一个项目一篇；实测流水线用的示例 skill。AI 正常使用不用看，出问题或要改做法时再看"
 ---
 
 # 维护
@@ -33,14 +33,18 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [整理视频为笔记（video-note）](skills/video-note.md) —— 吸纳自 Rimagination/bili-note，钉在 08fe812；2026-10-17 改名，拆成下载、分析、输出三段，前两段并进 agent-io，本 skill 只留证据索引、篇幅预算和打分
 - [花卉动态生长海报（flower-growth-poster）](skills/flower-growth-poster.md) —— 整理自抖音「小洁AI实战」的设计教程；即梦平台存技能的操作和 Seedream、Seedance 的型号跳过，模型换成 agent-io 的 gpt-image-2.5 和 MiniMax H3 首尾帧；prompt 照画面关键词自己写，首帧改成截海报纸纹，补了接成循环一步
 - [anidoodle 代码手绘](skills/anidoodle.md) —— 吸纳自 alexgreensh/anidoodle，钉在 25aae33，73 篇文档全文中译；6 个撞网址或当不了索引的文件改名，正文路径改成相对链接，风格索引加配方列；registry.mjs 不再覆盖中文索引，docs-check.mjs 和 README 演示素材跳过
-- [对话提示词（chat-prompts）](skills/chat-prompts.md) —— 取自 prompt-cards.cyanfish.site 的 17 段对话 prompt，钉在 JS 包 index-IivKxZ0S.js；去掉卡牌包装按场景重组，修补了架构先知和深度天赋挖掘机各一处；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录；粗讲项目由 2026-10-19 介绍 bili-note 的对话提炼
+- [对话提示词（chat-prompts）](skills/chat-prompts.md) —— 取自 prompt-cards.cyanfish.site 的 17 段对话 prompt，钉在 JS 包 index-IivKxZ0S.js；去掉卡牌包装按场景重组，修补了架构先知和深度天赋挖掘机各一处；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录
+- [调研项目（project-research）](skills/project-research.md) —— 粗讲项目由 2026-10-19 介绍 bili-note 的对话提炼，细讲项目由 2026-10-20 拆解梨园的对话提炼，没有外部上游；2026-10-20 从对话提示词挪出来单独成 skill
 - [HyperFrames 视频（hyperframes）](skills/hyperframes.md) —— 吸纳自 heygen-com/hyperframes，钉在 46f6cb3，21 个 skill、330 篇全文中译，脚本模板原样随附；FRAME.md 的 frontmatter 不译，各子 skill 入口末尾加文件清单
 - [去 AI 味（qu-ai-wei）](skills/qu-ai-wei.md) —— 吸纳自 LifelongLazyLearner/qu-ai-wei，钉在 ed35e74；上游本来是中文，SKILL.md 和九份规则表原文照录，只把外链挪进脚注
 - [檄文（xi-wen）](skills/xi-wen.md) —— 吸纳自 YuanZHAO321/XiWen，钉在 eb32d38；上游本来是中文，主文件、四份精讲、五篇底本古檄原文照录，入口的文件路径改成链接
 - [Dashboard（open-dashboard）](skills/dashboard.md) —— 蓝本 ahpxex/open-dashboard，钉在 aa9815f；Invariants 提炼成各篇「规矩」，实现换成自研 demo，原文不存档，只留两份系统级契约
 - [Lieflat Charts（lieflat-charts）](skills/lieflat-charts.md) —— 蓝本 larashero3-dotcom/lieflat-charts，钉在 e5b369d；48 张图拆成一图一页，每页嵌可运行 demo、文末钉模板永链
 - [手绘风格出图（handraw-style）](skills/handdraw.md) —— 吸纳自 yang0/handraw-style（MIT），钉在 2a25a07（1.9.1）；skill 全文中译重组，Gallery 的手绘风格库、排版、色彩三区是它的数据，收录记录写在同一篇
+- [配图：手绘信息图](skills/infographic.md) —— 写作规范的配图做法，2026-10-20 拆解梨园时定下，替换马克笔草图；拼法取自手绘风格库，梨园 11 张图各用的排版、改字和返工的经过、为什么不检查
 - [写真拍摄企划（photo-shoot）](skills/photo-shoot.md) —— 吸纳自 yang0/handraw-style 的 couple-photo-orchestrator（MIT 带署名），钉在 2a25a07；入口和总控 zongkong 合并，CORE_REQUIREMENTS 的规则并进各页，7 个子 skill 重组成入口加 6 个子 skill，生图换成 agent-io，9 个脚本随附、只改三行
+- [东方仙侠视觉导演（xianxia-visual-director）](skills/xianxia-visual-director.md) —— 吸纳自 liyue-aigc/xianxia-visual-director（未附许可证），钉在 bd88617；SKILL.md 和 8 篇 reference 全文中译，放进新建的抽象 skill 视频生成，直接出图接 agent-io
+- [获取热点（hot-topics）](skills/hot-topics.md) —— 2026-10-21 用户提议单开成标准 skill，一个信息源一篇；AIHOT 读的是接口 2.0.0，官方 Agent 使用说明存档，没装它的 Skill、没接 MCP 和 RSS，实测条件请求、links.story 还指旧域名；linux.do 日报只取小宇宙上的音频，为什么不走 linux.do 和汇总站
 
 ## Gallery 收录 { #gallery }
 
@@ -49,10 +53,20 @@ Gallery 里别人的成品从哪来、收的时候改了什么、上游更新了
 - [GPT Image 2 图库](gallery/gpt-image2.md) —— 收录自 wuyoscar/GPT-Image2-Skill（MIT），钉在 05cb113；只收图库部分，31 页全文中译、只留图和 prompt，混进来的 prompt-cards 条目不算上游
 - [prompt-cards 生图条目](gallery/prompt-cards.md) —— 取自 prompt-cards.cyanfish.site 的内置卡组，10 条追加在 GPT Image 2 各页末尾；站点没仓库，版本钉 JS 包的文件名和哈希，6 条英文原文照录
 - [二次元平面设计风格](gallery/linux-do-style.md) —— 整理自 linux.do @sallyn 的帖子，23 张配图、原帖全文和主楼附件存档在 assets/；第 21 楼以后没抓到
+- [小红书拍照姿势](gallery/xhs-poses.md) —— 取自小红书「我的id是江苏美人」的 59 篇图文，经 agent-io 取原图，529 张原样收录；57 篇首图是拼图，没收
 - [手绘风格库、排版、经典主题色](skills/handdraw.md) —— 收录自 yang0/handraw-style，和 skill 的吸纳记录写在同一篇
 - [图片区零散收集](gallery/images-collected.md) —— 人像写真模板、一杯狗海报、旧刊物海报，单条收进来的 prompt 各自的出处和改动
 - [色彩区零散收集](gallery/colors-collected.md) —— 意象渐变配色，抖音图文原图原样收录，主题色 prompt 照色卡转录
 - [视频区零散收集](gallery/video-collected.md) —— 彩色手绘三维穿梭视频，收录自 makerjackie/parallax-ink-video-skill，渲染工程原样收录，配乐配音换成 agent-io
+
+## 项目拆解 { #projects }
+
+[项目拆解](../projects/index.md)每个项目一篇：读的哪个版本、许可、存档和素材从哪来、实验怎么跑的。
+
+- [梨园 Liyuan](projects/liyuan.md) —— 读的是 1e9448e（2026-10-19 读），PolyForm Noncommercial 许可；源码存档、行号、截图、配图各从哪来；细讲页的效果块怎么实跑出来的，脚本附后
+- [酒馆 SillyTavern](projects/sillytavern.md) —— 读的是 06bde93（1.19.0，2026-10-20 读），AGPL-3.0 许可；源码存档和行号；效果块怎么实跑出来的：Node 加载钩子原样加载酒馆前端模块、界面依赖换成桩，模型请求另起进程发；脚本附后
+- [DeepSeek Harness](projects/deepseek-harness.md) —— DeepSeek Harness 拆解的维护记录：读的是 687f282（2026-10-20 读），MIT 许可、Landlock 启动器子包 BSD-3；存档和行号怎么对；六条线怎么实跑、密钥怎么隔离、模型用量多少，脚本附后
+- [OpenAI Evals](projects/openai-evals.md) —— OpenAI Evals 拆解的维护记录：读的是 8eac7a7（2026-10-20 读），MIT 许可；源码存档和行号怎么对、几份题库样本怎么从 LFS 取的；注册 eval 的计数口径；只读源码，没有实跑
 
 ## 实测用的示例 { #fixtures }
 

@@ -1,66 +1,244 @@
 ---
-description: "梨园的卡级跨会话记忆：一张卡演过的每一局写成复盘，合并成手册和每拍注入的常驻摘要，触发全归程序、内容全归模型；照搬 Codex 的按来源遗忘，但删项目那条路多删了一条清单记录，遗忘从不触发"
+description: "梨园怎么应付聊久了：剧情压缩保留最近 6 轮、更早的写成五节前情提要并以一条 user 消息回放；不用 coding agent 自带的压缩；可选向量记忆；跨局记忆把每局复盘合并成手册和常驻摘要，共用一份预算，删掉一局只删由它支撑的条目。每一步给出拼接模版和实跑效果"
 ---
 
-# 跨局记忆照搬 Codex：复盘、合并、按来源遗忘
+<figure markdown>
+  ![记忆分三层：最近 6 轮原文、本局前情提要、往局常驻摘要，越早压得越狠；旁边是可选的向量记忆库](assets/memory-layers-infographic.png)
+</figure>
 
-最简单的聊天网页每开一个新对话都从零开始。梨园里一张卡可以演很多局——一个子项目就是一局，上一局发生过什么、用户喜欢怎么玩，下一局开场时会作为「往局记忆」出现在模型眼前。形状照搬 OpenAI Codex 的 memories：分层存放，删掉来源就忘掉只由它支撑的事。
+# 聊久了：越早的事压得越狠
 
-## 一张卡的记忆住在卡目录里 { #layout }
+网页版 ChatGPT 每轮把历史全量回放，聊长了要么上下文爆掉，要么前面的事被截掉；开个新对话又从零开始。梨园按「越早压得越狠」分层：最近几轮留原文，更早的压成摘要，往局的事合并成一张卡的跨局记忆。下面每一步都给出梨园源码里的拼接模版，和同一段代码真跑出来的效果。
 
-都在 `cards/<卡>/记忆/` 下，人可读、可改、可删（`src/paths.ts:121`）[^repo]：
+## 剧情压缩：更早的写成五节摘要 { #compact }
 
-- `局/<局id>.md`：一局一份复盘
-- `记忆.md`：手册，按局分块，每块末尾写来源 `来源：局/<局id>.md`
-- `常驻摘要.md`：不超过 1200 字，每拍随上下文送给主演
-- `.清单.json`：程序的账——每局的指纹，和上次合并时见过的复盘哈希
+**问题**：历史全量回放，聊几百轮上下文就爆。
 
-## 同步分两段，触发全归程序 { #sync }
+每轮场记记完账后判断一次：没被摘要覆盖的轮数达到「保留 6 轮 + 周期 30 轮」，而且能裁的正文不少于 2000 字，就压（`src/stage/compact.ts:41`）。周期在配置里改，填 0 关闭；手动 `/compact` 不等周期，500 字就能压。最近 6 轮逐字保留——续演必须从原文接；更早的交给旁路模型写成五节：
 
-进入会话（启动、切会话、换子项目）、删会话、删项目之后，后台给整张卡跑一次同步；不是每拍跑。`src/card-memory.ts:20` 写明「触发＝结构信号……不是模型决策；模型不知道这套存在」。用的是旁路模型，关思考，超时 300 秒。
+```ts title="模版 · src/scribe.ts:280-314"
+--8<-- "projects/liyuan/assets/liyuan-src/src/scribe.ts:280:314"
+```
 
-1. **复盘**：每个子项目算一个指纹，就是各会话文件的「文件名:大小:修改时间」拼起来（`card-memory.ts:127`），和清单里一样就跳过。变了，就把各会话当前分支重建出的正文、【前情提要】、账本快照交给模型，超过六万字只裁最早的原文。旧复盘一并带进去，附一句「把它的内容合并进本次复盘，不要丢弃其中的事实、人物与未了之事」。复盘分五节：剧情脉络、人物与关系、既定事实、未了之事、用户玩法偏好
-2. **合并**：`diffRecaps`（`card-memory.ts:330`）拿复盘的哈希和清单里的合并哈希比：不一样算增改；清单里有合并哈希、盘上却没了，算删除，进遗忘队列。有变化才调模型，模型一次输出两份全文——手册和常驻摘要。跨局汇总的条目末尾标 `[局:<局id>]`
-3. **送到模型眼前**：常驻摘要接在本局【前情提要】后面，借现成的槽位，没给模型新增一句话。摘要、世界状态、名录共用 4300 字预算，超了在段落边界截断，剩不到 200 字就整段退场——长局里往局记忆给本局账本让位。`memory_search` 能搜手册、常驻摘要和本局的复盘，别的局的复盘对本局不可见
+实跑只演了三轮，凑不够 6 轮，演示时把开场白和前两轮全部交给场记，用的是梨园自己的 `serializeForSummary` 和 `buildRpSummaryPrompt`：
 
-## 遗忘：来源靠标注，判断在模型 { #forget }
+??? abstract "效果 · 压缩的完整 prompt"
 
-`card-memory.ts:17` 直接引了 Codex 的原话：
+    ```text
+    --8<-- "projects/liyuan/assets/sim/txt/summary-prompt.txt"
+    ```
 
-> Delete only memory supported by deleted inputs
+旁路模型交回的摘要：
 
-设计的遗忘路径（`b4bfe7b`，9/07）：
+```markdown title="效果 · 五节接力摘要"
+--8<-- "projects/liyuan/assets/sim/txt/summary.txt"
+```
 
-1. 用户手动删掉 `局/<局id>.md`
-2. 下次合并认出「上次并过、盘上没了」，这局进遗忘队列
-3. 合并 prompt 要求「从两份文件里删掉**只由**这些局支撑的条目；同时有别的局支撑的条目只去掉对应的 `[局:…]` 标注」
-4. 清单丢掉这局的合并哈希、留下指纹（`card-memory.ts:574`），防止下次复盘把它当新局复活
+「承诺与伏笔」列了六条，连「旅人心里一沉」这种只出现过一次的反应都记下了——提示词那句「宁多勿漏」在起作用。摘要还把工具账本当成了「仅供参考」，和 user 段那行括注的意思一致。
 
-`[局:id]` 只是 prompt 里的约定，代码不解析——删哪条、留哪条由模型判断。另有一条不靠模型的硬路径：模型或用户调 `memory_update / memory_delete` 时走 `changeCardMemory`，清掉全部合并哈希，把两份汇总挪进 `.history`，下次从剩下的复盘整份重建。`docs/PI-RETURN-KNIFE3.md:59` 说明了为什么要持久标记：「后台在途复盘/合并也不能覆盖后来的手工决定」。
+## 被压掉的部分换成一条【前情提要】 { #replay }
 
-## 删项目这条路，遗忘从不触发 { #defect }
+**问题**：摘要写好了，放在哪、怎么让模型当它是真事。
 
-10/10 的 `95cb962` 上线了「删项目」，commit 标题里写着「删除遗忘核心缺陷修复」，`server/main.ts:2051` 的 `deleteChat` 按这个顺序做：
+摘要作为一条 `rp-summary` 追加进会话树，记下覆盖到哪一条（`coversThroughId`）。组装上下文时，被覆盖的历史直接不进来，开头换成一条 user 消息，后面接保留的历史和本轮末端消息；本局摘要和[往局常驻摘要](#cross)用同一句开场：
 
-1. 删掉整个子项目目录（`:2098`）
-2. 删掉这局的复盘文件（`:2101`）
-3. **从清单里删掉这局的记录**（`:2106`）
-4. 把这局加进遗忘名单，触发同步（`:2110`、`:2117`）
+```ts title="模版 · src/stage/engine.ts:1056-1078"
+--8<-- "projects/liyuan/assets/liyuan-src/src/stage/engine.ts:1056:1078"
+```
 
-问题出在第 3 步。合并认「删除」只看清单里带合并哈希的记录（`card-memory.ts:351`），记录刚被删掉，遗忘队列是空的；别的局没变化，同步直接返回「无变化」。结果：
+实跑压完，再来一条新的用户消息，重新组装出的历史只剩两条：
 
-- `记忆.md` 和 `常驻摘要.md` 一字不动，常驻摘要每拍照常注入
-- 遗忘名单只过滤带局 id 的复盘，手册不带局 id，`memory_search` 照样搜得到
-- 以后别的局触发合并，旧手册原样喂给模型，没有删除指令，prompt 里还有一句「手改的内容视为有效记忆」——推断残留会一直带下去
+```text title="效果 · 压缩后组装出的历史"
+--8<-- "projects/liyuan/assets/sim/txt/summary-history.txt"
+```
 
-README 写的是「删除对话同步触发事实的物理遗忘」，对外文档还写着「从清单中注销……彻底抹除」——「从清单中注销」恰恰就是让遗忘失效的那一步。相关测试（`test/agent-mode.test.ts:251`）只断言复盘文件消失，没查手册和常驻摘要。做对了这件事的 `forgetChatRecap`（`card-memory.ts:610`）清掉全部合并哈希、把两份汇总挪走等重建，9/07 写好后一直没有调用方。
+树只追加，被覆盖的原文还在树上；分支上只认最后一份摘要，下次压缩时上一份整份并进新的（模版里的 `<previous-summary>`）。
 
-删单个会话也进不了遗忘队列：子项目里还有别的会话就重新复盘，但旧复盘被要求「不要丢弃」地带进去——推断被删会话里的事实大概率还留着。
+## 不用 coding agent 自带的压缩 { #why-own }
+
+**问题**：pi 自带的压缩是给写代码设计的。
+
+- 它的摘要模板会把陈旧的时间、场景当成关键上下文保留，压完剧情场景倒回去。所以上面五节里的「当前场景」专门写明：「必须以对话记录中**最新**的场景为准……写成更早的场景会导致剧情倒退」
+- 它压的是 pi 自己那份消息副本，看不见梨园写进树里的场景快照、稿件补丁、引擎直接落下的回复
+
+所以扮演时 pi 的压缩钩子被直接取消：
+
+```ts title="模版 · .liyuan/extensions/roleplay.ts:1279"
+--8<-- "projects/liyuan/assets/liyuan-src/extensions/roleplay.ts:1279:1279"
+```
+
+`compact.ts` 开头一句话说清了分工：「压缩权跟着上下文权走——谁装配，谁压缩」。
+
+## 向量记忆：摘要丢的细节存进库 { #vector }
+
+**问题**：五节摘要必然丢细节，某个早期的小道具、一句台词，后面想用就没了。
+
+可选功能，默认关闭。打开后，压缩前被裁掉的原文先归档进向量库；每轮按用户原话召回，作为【剧情记忆】接在设定集索引后面：
+
+```ts title="模版 · src/stage/assemble.ts:525-527"
+--8<-- "projects/liyuan/assets/liyuan-src/src/stage/assemble.ts:525:527"
+```
+
+召回最多等 5 秒，超时这一轮就不出这一块；只取当前分支上的内容，见[重来和回档](branch.md#vector)。实跑没开向量记忆，上面几轮的注入里都没有这一块。
+
+## 跨局记忆：每局写复盘 { #cross }
+
+<figure markdown>
+  ![一张卡的跨局记忆：一局演完、写复盘、合并成手册、常驻摘要、新的一局带上；删掉一局只删只由它支撑的条目](assets/cross-session-memory-infographic.png)
+</figure>
+
+**问题**：同一张卡开新的一局，又从零开始。
+
+记忆住在 `cards/<卡>/记忆/` 下，人可读、可改、可删：每局一份复盘 `局/<局id>.md`、合并后的手册 `记忆.md`、每轮注入的 `常驻摘要.md`。进入会话、删会话之后，后台给整张卡同步一次；模型不知道这套存在。
+
+第一步，给每局写复盘。每局算一个指纹，没变就跳过；变了就把当前分支的正文、前情提要、场景快照交给模型：
+
+```ts title="模版 · src/card-memory.ts:278-316"
+--8<-- "projects/liyuan/assets/liyuan-src/src/card-memory.ts:278:316"
+```
+
+实跑拿前面那局（局 id 记作 `jA`）走一遍：
+
+??? abstract "效果 · 复盘的完整 prompt"
+
+    ```text
+    --8<-- "projects/liyuan/assets/sim/txt/recap-prompt.txt"
+    ```
+
+??? abstract "效果 · 局 jA 的复盘"
+
+    ```markdown
+    --8<-- "projects/liyuan/assets/sim/txt/recap-A.txt"
+    ```
+
+为了演示「跨局」和下面的遗忘，另手写了一局 `jB` 的复盘，里面有几件 jA 里没有的事：
+
+```markdown title="手写的另一局 jB"
+--8<-- "projects/liyuan/assets/sim/txt/recap-B.txt"
+```
+
+## 合并成手册和常驻摘要 { #merge }
+
+**问题**：复盘一局一份，每轮全塞进去太长，也没有跨局的视角。
+
+复盘有增改删时调一次模型，同时输出两份全文：手册按局分块，跨局汇总的条目标 `[局:<局id>]`；常驻摘要不超过 1200 字，每轮注入：
+
+```ts title="模版 · src/card-memory.ts:372-395"
+--8<-- "projects/liyuan/assets/liyuan-src/src/card-memory.ts:372:395"
+```
+
+两份复盘交进去：
+
+??? abstract "效果 · 首次合并的完整 prompt"
+
+    ```text
+    --8<-- "projects/liyuan/assets/sim/txt/merge-prompt.txt"
+    ```
+
+??? abstract "效果 · 合并出的手册 记忆.md"
+
+    ```markdown
+    --8<-- "projects/liyuan/assets/sim/txt/handbook-1.txt"
+    ```
+
+```markdown title="效果 · 合并出的常驻摘要.md"
+--8<-- "projects/liyuan/assets/sim/txt/resident-1.txt"
+```
+
+两局的事并成了一份：jA 的沈怀瑾、旧伞，jB 的明前龙井、老梨树、茶田来信，都在。新开一局时，这份常驻摘要接在【前情提要】那条消息里本局摘要的后面（上面 `engine.ts` 模版里的 `residentSummary`）。
+
+## 常驻摘要和账本共用一份预算 { #budget }
+
+**问题**：常驻摘要、场景快照、登场名录每轮都要注入，一起挤占上下文。
+
+三者共用 4300 字。超了在段落边界截断；截完剩不到 200 字，就整段不送：
+
+```ts title="模版 · src/card-memory.ts:433-444"
+--8<-- "projects/liyuan/assets/liyuan-src/src/card-memory.ts:433:444"
+```
+
+拿上面那份常驻摘要，假设本局账本和名录分别占去 3900 字和 4200 字：
+
+```text title="效果 · fitResidentSummary 的两次截断"
+--8<-- "projects/liyuan/assets/sim/txt/fit.txt"
+```
+
+剩 400 字时截在段落边界、末尾标「余下内容因篇幅略」；剩 100 字时返回空，整段退场。长局里往局记忆给本局的账本让位。
+
+## 按来源遗忘 { #forget }
+
+**问题**：删掉一局，它的事实还留在手册和常驻摘要里，每轮照常注入。
+
+形状照搬 OpenAI Codex 的 memories，`src/card-memory.ts:17` 直接引了原话「Delete only memory supported by deleted inputs」。程序这边只认一件事：清单里合并过、盘上的复盘却没了，就是删了：
+
+```ts title="模版 · src/card-memory.ts:351-353"
+--8<-- "projects/liyuan/assets/liyuan-src/src/card-memory.ts:351:353"
+```
+
+这些局进遗忘队列，在合并 prompt 里多出一个 `<deleted-chats>` 块；删哪条由模型按 `[局:id]` 判断，规则写在合并模版的第 380 行：
+
+```ts title="模版 · src/card-memory.ts:380"
+--8<-- "projects/liyuan/assets/liyuan-src/src/card-memory.ts:380:380"
+```
+
+实跑删掉 jB 的复盘，再合并一次。user 段末尾是这样的：
+
+```text title="效果 · 遗忘时合并 prompt 的末尾"
+--8<-- "projects/liyuan/assets/sim/txt/forget-prompt-user.txt:94:98"
+```
+
+??? abstract "效果 · 遗忘时合并 prompt 的 user 段全文"
+
+    ```text
+    --8<-- "projects/liyuan/assets/sim/txt/forget-prompt-user.txt"
+    ```
+
+前后两份常驻摘要：
+
+<div class="grid" markdown>
+
+```markdown title="效果 · 删 jB 前"
+--8<-- "projects/liyuan/assets/sim/txt/resident-1.txt"
+```
+
+```markdown title="效果 · 删 jB 后"
+--8<-- "projects/liyuan/assets/sim/txt/resident-2.txt"
+```
+
+</div>
+
+jB 那行简介，连同只由它支撑的几条——镇南茶田、老梨树、明前龙井、捎信去镇北、「喜欢慢节奏的日常对话」——都没了；jA 的内容一字不动。
+
+??? abstract "效果 · 删 jB 后的手册"
+
+    ```markdown
+    --8<-- "projects/liyuan/assets/sim/txt/handbook-2.txt"
+    ```
+
+另有一条硬路径：调 `memory_update` / `memory_delete` 改记忆时，清掉全部合并记录，把两份汇总挪进 `.history`，下次从剩下的复盘整份重建，不靠模型挑条目。
+
+## agent 模式的讨论也会压 { #discussion }
+
+**问题**：agent 模式里讨论区越聊越长；按「字符数 ÷ 4」估 token，中文会低估近一倍，估算永远落在溢出之后。
+
+讨论层按最近一次请求的真实 token 用量判断，超过「上下文窗口 − 预留」才压，从末尾按整轮切（`src/stage/discussion.ts:139`）；没有用量数据时才退回估算。
 
 ## 谁管什么 { #split }
 
-- **程序**：何时同步、指纹、哈希比对、预算截断、两份文件的切分和落盘
-- **模型**：写复盘、合并手册、按 `[局:id]` 判断删哪条
-- **用户**：直接改 `记忆.md` 和常驻摘要，手删某局复盘来遗忘
+- **程序**：何时压缩、切点、何时同步、指纹比对、谁算删了、预算截断、硬路径重建
+- **模型**：写摘要、写复盘、合并手册、按 `[局:id]` 判断删哪条
+- **用户**：开不开向量记忆、改压缩周期、直接改手册和常驻摘要、手删某局复盘
 
-[^repo]: [weidu12123/Liyuan](https://github.com/weidu12123/Liyuan/tree/1e9448e2057dd99baa57642f4383aca9a8b9b9ce)，钉 `1e9448e`（2026-10-16），2026-10-19 读；文中文件路径和行号都相对这个 commit 的仓库根。
+## 实跑原件 { #sim-files }
+
+??? abstract "剧情压缩：prompt、摘要、压缩后的历史"
+
+    ```json
+    --8<-- "projects/liyuan/assets/sim/out/compact.json"
+    ```
+
+??? abstract "跨局记忆：复盘、合并、遗忘、预算截断"
+
+    ```json
+    --8<-- "projects/liyuan/assets/sim/out/memory.json"
+    ```

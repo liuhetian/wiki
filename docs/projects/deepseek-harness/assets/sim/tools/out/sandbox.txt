@@ -1,0 +1,144 @@
+## confine(["bash","-c","echo hi"], workspace-write)
+{
+  "argv": [
+    "<landlock-run>",
+    "--ro",
+    "/",
+    "--rw",
+    "/dev/null",
+    "--rw",
+    "/tmp",
+    "--rw",
+    "<ws>",
+    "--",
+    "bash",
+    "-c",
+    "echo hi"
+  ],
+  "enforcement": "partial",
+  "denialSignatures": [
+    "permission denied"
+  ],
+  "runnerFailureRules": [
+    {
+      "allowedExitCodes": [
+        125
+      ],
+      "fatalSignatures": [
+        "landlock-run: "
+      ],
+      "informationalLines": [
+        "landlock-run: partial enforcement (older Landlock ABI)"
+      ]
+    }
+  ]
+}
+
+## 工作区内写：echo inside > inside.txt && cat inside.txt
+{
+  "exitCode": 0,
+  "stderr": "landlock-run: partial enforcement (older Landlock ABI)\n",
+  "sandbox": {
+    "mode": "workspace-write",
+    "denied": false,
+    "enforcement": "partial"
+  },
+  "modelSees": "inside\n[stderr]\nlandlock-run: partial enforcement (older Landlock ABI)\n"
+}
+
+## 工作区外写（$HOME）：echo outside > $HOME/dsh-landlock-outside.txt
+{
+  "exitCode": 1,
+  "stderr": "landlock-run: partial enforcement (older Landlock ABI)\nbash: line 1: $HOME/dsh-landlock-outside.txt: Permission denied\n",
+  "sandbox": {
+    "mode": "workspace-write",
+    "denied": true,
+    "enforcement": "partial"
+  },
+  "modelSees": "[stderr]\nlandlock-run: partial enforcement (older Landlock ABI)\nbash: line 1: $HOME/dsh-landlock-outside.txt: Permission denied\n[sandbox: file access denied under workspace-write mode]\n[sandbox: escalation available — retry this exact command once with sandbox_permissions (the narrowest wider mode that suffices) + justification; the approval prompt asks the user]\n[exit code: 1]"
+}
+
+## 读不受限：wc -l < /etc/hosts
+{
+  "exitCode": 0,
+  "stderr": "landlock-run: partial enforcement (older Landlock ABI)\n",
+  "sandbox": {
+    "mode": "workspace-write",
+    "denied": false,
+    "enforcement": "partial"
+  },
+  "modelSees": "12\n[stderr]\nlandlock-run: partial enforcement (older Landlock ABI)\n"
+}
+
+## 命令自己失败：false：false
+{
+  "exitCode": 1,
+  "stderr": "landlock-run: partial enforcement (older Landlock ABI)\n",
+  "sandbox": {
+    "mode": "workspace-write",
+    "denied": false,
+    "enforcement": "partial"
+  },
+  "modelSees": "[stderr]\nlandlock-run: partial enforcement (older Landlock ABI)\n[exit code: 1]"
+}
+
+## 命令自己失败：grep 没匹配（同 ripgrep 无匹配退出 1）：grep -q no-such-text /etc/hosts
+{
+  "exitCode": 1,
+  "stderr": "landlock-run: partial enforcement (older Landlock ABI)\n",
+  "sandbox": {
+    "mode": "workspace-write",
+    "denied": false,
+    "enforcement": "partial"
+  },
+  "modelSees": "[stderr]\nlandlock-run: partial enforcement (older Landlock ABI)\n[exit code: 1]"
+}
+
+## read-only 下连工作区也不能写：echo x > ro.txt
+{
+  "exitCode": 1,
+  "stderr": "landlock-run: partial enforcement (older Landlock ABI)\nbash: line 1: ro.txt: Permission denied\n",
+  "sandbox": {
+    "mode": "read-only",
+    "denied": true,
+    "enforcement": "partial"
+  },
+  "modelSees": "[stderr]\nlandlock-run: partial enforcement (older Landlock ABI)\nbash: line 1: ro.txt: Permission denied\n[sandbox: file access denied under read-only mode]\n[sandbox: escalation available — retry this exact command once with sandbox_permissions (the narrowest wider mode that suffices) + justification; the approval prompt asks the user]\n[exit code: 1]"
+}
+
+## $HOME 下的文件被写出来了吗
+false
+
+## classifyRunnerFailure：真规则 vs 只认前缀
+[
+  {
+    "input": "子进程 false：提示行 + 退出 1",
+    "real": "(不是启动器失败)",
+    "prefixOnly": {
+      "detail": "landlock-run: partial enforcement (older Landlock ABI)"
+    }
+  },
+  {
+    "input": "子进程自选退出 125：只有提示行",
+    "real": "(不是启动器失败)",
+    "prefixOnly": {
+      "detail": "landlock-run: partial enforcement (older Landlock ABI)"
+    }
+  },
+  {
+    "input": "启动器真坏了：退出 125 + 致命行",
+    "real": {
+      "detail": "landlock-run: landlock ruleset error: Invalid argument"
+    },
+    "prefixOnly": {
+      "detail": "landlock-run: landlock ruleset error: Invalid argument"
+    }
+  }
+]
+
+## 没有后端时 confine() 抛出
+{
+  "name": "SandboxUnavailableError",
+  "code": "SANDBOX_UNAVAILABLE",
+  "message": "sandbox mode \"workspace-write\" is requested but no sandbox backend is usable on this host; refusing to run the command unconfined. Install bubblewrap or run a Landlock-enforcing kernel (Linux), ensure sandbox-exec is usable (macOS), or ensure the ACL restricted-token runner can start (Windows) — otherwise switch the consumer to danger-full-access."
+}

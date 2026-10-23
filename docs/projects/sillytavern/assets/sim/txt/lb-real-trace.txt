@@ -1,0 +1,24 @@
+[WI] --- START WI SCAN (on 2 messages, trigger = normal) (DRY RUN) ---
+[WI] Context size: 3795; WI budget: 949 (max% = 25%, cap = 0)
+[WI] --- LOOP #1 START ---
+[WI] Entry 0 activated by primary key match 森林
+[WI] Entry 1 activated by primary key match 野兽
+[WI] Entry 3 activated by primary key match 魔法
+[WI] Entry 0 activation successful, adding to prompt
+[WI] Entry 1 activation successful, adding to prompt
+[WI] Entry 3 activation successful, adding to prompt
+[WI] --- LOOP #1 RESULT ---
+[WI] Successfully activated 3 new entries to prompt. 3 total entries activated.
+[WI] Found 3 new entries for recursion
+[WI] --- LOOP #2 START ---
+[WI] Entry 2 activated by primary key match 林间空地
+[WI] Entry 2 activation successful, adding to prompt
+[WI] --- LOOP #2 RESULT ---
+[WI] Successfully activated 1 new entries to prompt. 4 total entries activated.
+[WI] Found 1 new entries for recursion
+[WI] --- LOOP #3 START ---
+[WI] --- LOOP #3 RESULT ---
+[WI] No new entries activated.
+[WI] Scan done. No new entries to prompt. Stopping.
+[WI] Hypothetically adding 4 entries to prompt
+[WI] --- DONE (DRY RUN) ---

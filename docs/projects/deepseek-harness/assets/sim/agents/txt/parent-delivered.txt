@@ -1,0 +1,8 @@
+seq 45, opens turn 2 step 4, source agent-message:
+Agent 38f22412-4c7e-411e-9f79-6e4cf04f830c sent a message: 
+According to the design document, the `agent/turn-stopping` event lets a listener stop a turn, and it is a serial agent event with no `next()` (unlike the waterfalls — `agent/pre-step`, `agent/request`, `llm/stream`, and the three `tools/*` events — which require listeners to call `next()`).
+
+seq 52, opens turn 2 step 5, source subagent-settled:
+Background subagent 38f22412-4c7e-411e-9f79-6e4cf04f830c finished and will do no further work unless you send it more.
+Its closing message:
+The `agent/turn-stopping` event lets a listener stop a turn, and it is a serial agent event with no `next()` (unlike the waterfall events, whose listeners must call `next()` to delegate).

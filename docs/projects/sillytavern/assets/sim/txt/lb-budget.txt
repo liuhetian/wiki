@@ -1,0 +1,14 @@
+== 世界书预算 25%  →  激活：埃尔多利亚、影牙、力量、林间空地
+   [WI] Context size: 3795; WI budget: 949 (max% = 25%, cap = 0)
+   [WI] Entry 0 activation successful, adding to prompt
+   [WI] Entry 1 activation successful, adding to prompt
+   [WI] Entry 3 activation successful, adding to prompt
+   [WI] Successfully activated 3 new entries to prompt. 3 total entries activated.
+   [WI] Entry 2 activation successful, adding to prompt
+   [WI] Successfully activated 1 new entries to prompt. 4 total entries activated.
+
+== 世界书预算 10%  →  激活：埃尔多利亚
+   [WI] Context size: 3795; WI budget: 380 (max% = 10%, cap = 0)
+   [WI] Entry 0 activation successful, adding to prompt
+   [WI] budget of 380 reached, stopping after 1 entries
+   [WI] Successfully activated 3 new entries to prompt. 1 total entries activated.

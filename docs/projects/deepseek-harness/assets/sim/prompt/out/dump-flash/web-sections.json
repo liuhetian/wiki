@@ -1,0 +1,90 @@
+[
+  {
+    "name": "harness:identity",
+    "chars": 48
+  },
+  {
+    "name": "deployment:persona-prefix",
+    "chars": 54
+  },
+  {
+    "name": "plan:policy",
+    "chars": 0
+  },
+  {
+    "name": "context:file-reference",
+    "chars": 407
+  },
+  {
+    "name": "tool:bash",
+    "chars": 92
+  },
+  {
+    "name": "tool:read",
+    "chars": 126
+  },
+  {
+    "name": "tool:write",
+    "chars": 140
+  },
+  {
+    "name": "tool:edit",
+    "chars": 132
+  },
+  {
+    "name": "tool:glob",
+    "chars": 71
+  },
+  {
+    "name": "tool:grep",
+    "chars": 129
+  },
+  {
+    "name": "tool:jobs",
+    "chars": 382
+  },
+  {
+    "name": "tool:web_search",
+    "chars": 215
+  },
+  {
+    "name": "tool:web_fetch",
+    "chars": 150
+  },
+  {
+    "name": "tool:goal",
+    "chars": 528
+  },
+  {
+    "name": "tool:workflow",
+    "chars": 325
+  },
+  {
+    "name": "tool:subagent",
+    "chars": 139
+  },
+  {
+    "name": "tool:subagent_fork",
+    "chars": 0
+  },
+  {
+    "name": "mcp-resource-servers",
+    "chars": 0
+  },
+  {
+    "name": "ui:deliverable-file-references",
+    "chars": 1304
+  },
+  {
+    "name": "harness:source",
+    "chars": 325
+  },
+  {
+    "name": "app:web-surface",
+    "chars": 1002
+  },
+  {
+    "name": "deployment:persona-suffix",
+    "chars": 0
+  }
+]

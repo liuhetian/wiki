@@ -1,0 +1,12 @@
+before mount
+   tools: []
+   prompt sections: ["harness:identity","deployment:persona-prefix","deployment:persona-suffix"]
+   effect: open cache
+after mount
+   tools: ["weather"]
+   prompt sections: ["harness:identity","deployment:persona-prefix","weather:guidance","deployment:persona-suffix"]
+   weather plugin heard ping
+   effect: close cache
+after dispose
+   tools: []
+   prompt sections: ["harness:identity","deployment:persona-prefix","deployment:persona-suffix"]

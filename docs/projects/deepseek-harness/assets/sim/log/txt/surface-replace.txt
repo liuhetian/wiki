@@ -1,0 +1,29 @@
+seeded 41 events; Session.create appended session/end-seed @41
+before: nodes [4, 5, 8, 10, 13, 20, 22, 29, 30, 37, 38]
+  system    "You are an AI agent powered by DeepSeek Harness.\
+  user      "go"
+  assistant "calling echo[tool-call echo]"
+  tool      "echo: one"
+  assistant "done"
+  user      "again"
+  assistant "ok"
+  user      "讲讲三点"
+  assistant "第一点是"
+  user      "第二点展开讲讲"
+  assistant "第二点是……"
+
+append user/message @42 with surfaceOp replace 5..13, sourceEventSeqs [5, 8, 10, 13]
+after:  nodes [4, 42, 20, 22, 29, 30, 37, 38]
+  system    "You are an AI agent powered by DeepSeek Harness.\
+  user      "SUMMARY: user said go; echo returned one; assista
+  user      "again"
+  assistant "ok"
+  user      "讲讲三点"
+  assistant "第一点是"
+  user      "第二点展开讲讲"
+  assistant "第二点是……"
+log still holds seq 8: assistant/message "calling echo[tool-call echo]"
+log length 43; foldSurface(log).nodes = [4, 42, 20, 22, 29, 30, 37, 38]
+
+replace node 0 (system prompt) with a user/message: surface replace: node 0 holds the system prompt and may be rewritten only by a system/message over exactly that node
+replace 20..22 without citing them: surface replace: sourceEventSeqs must include every shadowed surface node; missing 20, 22

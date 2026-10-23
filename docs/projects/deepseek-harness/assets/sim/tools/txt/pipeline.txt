@@ -1,0 +1,28 @@
+1. 什么都不挂
+  工具体跑了吗：跑了
+  模型拿到：deleted /etc/passwd
+
+2. 挂一个策略监听器：工作区外就 deny
+  工具体跑了吗：没跑
+  模型拿到：Error: refusing to touch /etc/passwd outside the workspace
+
+3. 再来一个插件，prepend 进最外层，直接 allow 不调 next()
+  工具体跑了吗：跑了
+  模型拿到：deleted /etc/passwd
+
+4. 同样两个监听器，策略改成守卫（只能否决）
+  工具体跑了吗：没跑
+  模型拿到：Error: refusing to touch /etc/passwd outside the workspace
+
+5. 监听器想把参数改成安全路径
+  工具体跑了吗：没跑
+  模型拿到：Error: Cannot assign to read only property 'path' of object '#<Object>'
+
+6. 监听器要 ask，但没装审批服务
+  工具体跑了吗：没跑
+  模型拿到：Error: delete_path outside the workspace
+
+7. 监听器要 ask，审批服务在，但没有回答方
+  工具体跑了吗：没跑
+  模型拿到：Error: tool "delete_path" requires approval, but no approval channel is available
+  审计：approval/asked → approval/decided unavailable

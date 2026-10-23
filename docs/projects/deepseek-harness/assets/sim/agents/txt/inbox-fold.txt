@@ -1,0 +1,25 @@
+seq 3 next-turn insert -> next-turn ["Read the following design document carefully and keep it in "] next-step []
+seq 4 turn/start {"turn":1}
+seq 5 next-turn claim  -> next-turn [] next-step []
+seq 6 step/start {"turn":1,"step":1}
+seq 15 step/end {"turn":1,"step":1}
+seq 16 turn/end {"turn":1,"reason":{"kind":"completed"}}
+seq 18 next-turn insert -> next-turn ["Use the subagent_fork tool exactly once to delegate this que"] next-step []
+seq 19 turn/start {"turn":2}
+seq 20 next-turn claim  -> next-turn [] next-step []
+seq 21 step/start {"turn":2,"step":1}
+seq 29 step/end {"turn":2,"step":1}
+seq 30 step/start {"turn":2,"step":2}
+seq 35 step/end {"turn":2,"step":2}
+seq 36 step/start {"turn":2,"step":3}
+seq 37 next-step insert -> next-turn [] next-step ["Agent 38f22412-4c7e-411e-9f79-6e4cf04f830c sent a message:  According to the design document, the `agent/turn-stopping` "]
+seq 42 step/end {"turn":2,"step":3}
+seq 43 next-step claim  -> next-turn [] next-step []
+seq 44 step/start {"turn":2,"step":4}
+seq 46 next-step insert -> next-turn [] next-step ["Background subagent 38f22412-4c7e-411e-9f79-6e4cf04f830c fin Its closing message: The `agent/turn-stopping` event lets a listener stop a turn,"]
+seq 49 step/end {"turn":2,"step":4}
+seq 50 next-step claim  -> next-turn [] next-step []
+seq 51 step/start {"turn":2,"step":5}
+seq 55 step/end {"turn":2,"step":5}
+seq 56 turn/end {"turn":2,"reason":{"kind":"completed"}}
+constructed: the same pending message spliced again -> invalid persisted inbox splice at session seq 1 <- message "aac229e6-6e44-427b-bfa3-40cdefeac2f4" is already pending

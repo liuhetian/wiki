@@ -1,1 +1,1 @@
-description: "梨园 Liyuan 拆解引用的原件：仓库根 CLAUDE.md（梨园铁律，原文照录）和 README 的四张截图，钉 commit 1e9448e；摘句与分析在 ../ 下各页"
+description: "梨园 Liyuan 拆解用到的图和原件：README 的四张截图；十一张本站用 gpt-image-2.5 生成的功能线信息图；liyuan-src/ 是部分源码存档（读的版本见 maintenance/projects/liyuan.md），细讲页的拼接模版按行引用它，PolyForm Noncommercial 许可随附；sim/ 是实跑材料——lab.mjs、tail-merge.ts、run2.py 三个脚本和演示输入，out/ 是原始记录，txt/ 是页面上逐块引用的效果。分析在 ../ 下各页"

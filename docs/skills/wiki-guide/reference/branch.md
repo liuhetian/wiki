@@ -4,39 +4,37 @@ description: "prompt 页要按读者的选择决定哪段进对话框时读：�
 
 # 分支：按读者的选择复制
 
-**能用一句「如果……就……」说清的，写成句子，不做分支** —— 收到 prompt 的是大模型，句子里的条件它自己会判断。没选中的那支长到值得省掉，才用 `data-when` 替它先把选择落定：[粗讲项目](../../collab/chat-prompts/project-gist.md)选了「否」，「先探索」那四步就不进对话框。
+**能用一句「如果……就……」说清的，写成句子，不做分支** —— 收到 prompt 的是大模型，句子里的条件它自己会判断。没选中的那支长到值得省掉，才用 `data-when` 替它先把选择落定：[细讲项目](../../project-research/dissect.md)选了「否」，「实跑」那一节就不进对话框。
 
 ## 写法 { #syntax }
 
 ```markdown
-<div class="zx-no-copy" markdown>
+关键机制要不要实际跑一遍：<select name="实跑"><option>是</option><option>否</option></select>
 
-先探索一遍再讲：<select name="探索"><option>否</option><option>是</option></select>
+<div data-when="实跑=是" markdown>
 
-</div>
+## 实跑
 
-<div data-when="探索=否" markdown>
-
-读完直接讲，不用先问我。
+- 拆出要演示的关键片段单独跑……
 
 </div>
 
-<div data-when="探索=是" markdown>
+<div data-when="实跑=否" markdown>
 
-读完先别讲，先……
+不实跑：每节只贴模版，效果块省掉。
 
 </div>
 ```
 
-- **`data-when="名=值"`**：名为「名」的控件当前值等于「值」才复制；下拉框有几个选项就写几个块
+- **`data-when="名=值"`**：名为「名」的控件当前值等于「值」才复制；哪个选项有话要对 AI 说就给哪个写块，没话说的不写
 - **`data-when="名"`**：那个框填了才复制 —— 可选的空连同它那句话包起来，空着就不会复制出【可选：……】
-- **开关行包 `zx-no-copy`，只给人看**：某个选项要告诉 AI 什么，写进那个选项自己的分支；分支开头不写「如果选了……」，读 `.md` 源的 AI 从 `data-when` 就看得懂
+- **开关那句复制不复制，看 AI 要不要知道选了什么**：选的值本身是给 AI 的答复（「关键机制要不要实际跑一遍：否」），写成 prompt 里的一句照常复制；开关只管哪段进对话框（「要不要收纳进本 wiki」），包 `zx-no-copy` 只给人看。某个选项要 AI 多做什么，写进那个选项自己的分支，分支开头不写「如果选了……」，读 `.md` 源的 AI 从 `data-when` 就看得懂
 - **源文件里 `data-when` 块不写 `zx-no-copy`**：条件不成立时脚本给它挂上，网页上和[写死的那种](components.md#no-copy)一个样子，另外变淡；只是提示，不藏、不禁用，块里的控件照常能填
 - **条件里用到的控件要写 `name`**
 - **块放顶层，里面不缩进**：缩进 4 格就成了代码块，和提示框、选项卡正好相反；放进提示框、列表里，HTML 会漏出一个原样的 `markdown` 属性
 - 复制时条件成立的块只去掉外壳 div，里面照常复制
 
-活例：[粗讲项目](../../collab/chat-prompts/project-gist.md)，开关包 `zx-no-copy`，「先探索」两支各一个块，「我原来以为它是」填了才复制。
+活例：[细讲项目](../../project-research/dissect.md)，「实跑」开关是正文里的一句，两支各一个块；「收纳」开关包 `zx-no-copy`，只有「是」写块；「我原来以为它是」填了才复制。
 
 ## 上限 { #limit }
 

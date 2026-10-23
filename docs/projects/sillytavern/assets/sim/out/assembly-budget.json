@@ -1,0 +1,422 @@
+{
+ "1400": {
+  "budget": 1100,
+  "total": 1042,
+  "messagesInContext": 6,
+  "chatLength": 11,
+  "rows": [
+   {
+    "identifier": "main",
+    "role": "system",
+    "tokens": 34,
+    "head": "Write 塞拉菲娜's next reply "
+   },
+   {
+    "identifier": "worldInfoBefore",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "personaDescription",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "charDescription",
+    "role": "system",
+    "tokens": 131,
+    "head": "[塞拉菲娜的性格= \"体贴\", \"保护欲强\", "
+   },
+   {
+    "identifier": "charPersonality",
+    "role": "system",
+    "tokens": 11,
+    "head": "温柔、护短，总觉得是自己没把人照顾好。"
+   },
+   {
+    "identifier": "scenario",
+    "role": "system",
+    "tokens": 21,
+    "head": "旅人在塞拉菲娜的林间空地里养伤，窗外的森林被影牙"
+   },
+   {
+    "identifier": "nsfw",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "worldInfoAfter",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "newMainChat",
+    "role": "system",
+    "tokens": 6,
+    "head": "[Start a new Chat]"
+   },
+   {
+    "identifier": "chatHistory-6",
+    "role": "user",
+    "tokens": 16,
+    "head": "你一个人守在这里多久了？给我讲讲你是怎么成为森林"
+   },
+   {
+    "identifier": "chatHistory-7",
+    "role": "assistant",
+    "tokens": 265,
+    "head": "*塞拉菲娜沉默了片刻，望向窗外摇曳的树影，眼神变"
+   },
+   {
+    "identifier": "chatHistory-8",
+    "role": "system",
+    "tokens": 17,
+    "head": "（夜里塞拉菲娜的魔法会变弱，她不愿让人知道。）"
+   },
+   {
+    "identifier": "chatHistory-9",
+    "role": "user",
+    "tokens": 65,
+    "head": "*我把杯子捧在手里暖着，犹豫了一下，还是开口问。"
+   },
+   {
+    "identifier": "chatHistory-10",
+    "role": "assistant",
+    "tokens": 322,
+    "head": "*塞拉菲娜停下正要走开的脚步，回头看你，眼里闪过"
+   },
+   {
+    "identifier": "chatHistory-11",
+    "role": "user",
+    "tokens": 17,
+    "head": "……谢谢你愿意跟我说这些。等伤好了，我想陪你去点"
+   },
+   {
+    "identifier": "chatHistory-12",
+    "role": "assistant",
+    "tokens": 119,
+    "head": "*门外静了一瞬，随后传来塞拉菲娜轻轻的笑声，带着"
+   },
+   {
+    "identifier": "jailbreak",
+    "role": "system",
+    "tokens": 18,
+    "head": "用第三人称描写塞拉菲娜的动作，不替旅人说话或行动"
+   }
+  ]
+ },
+ "2048": {
+  "budget": 1748,
+  "total": 1520,
+  "messagesInContext": 11,
+  "chatLength": 11,
+  "rows": [
+   {
+    "identifier": "main",
+    "role": "system",
+    "tokens": 34,
+    "head": "Write 塞拉菲娜's next reply "
+   },
+   {
+    "identifier": "worldInfoBefore",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "personaDescription",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "charDescription",
+    "role": "system",
+    "tokens": 131,
+    "head": "[塞拉菲娜的性格= \"体贴\", \"保护欲强\", "
+   },
+   {
+    "identifier": "charPersonality",
+    "role": "system",
+    "tokens": 11,
+    "head": "温柔、护短，总觉得是自己没把人照顾好。"
+   },
+   {
+    "identifier": "scenario",
+    "role": "system",
+    "tokens": 21,
+    "head": "旅人在塞拉菲娜的林间空地里养伤，窗外的森林被影牙"
+   },
+   {
+    "identifier": "nsfw",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "worldInfoAfter",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "newMainChat",
+    "role": "system",
+    "tokens": 6,
+    "head": "[Start a new Chat]"
+   },
+   {
+    "identifier": "chatHistory-1",
+    "role": "assistant",
+    "tokens": 163,
+    "head": "*你猛地惊醒，想起自己是怎么走进森林深处、又是怎"
+   },
+   {
+    "identifier": "chatHistory-2",
+    "role": "user",
+    "tokens": 19,
+    "head": "*我撑起身子，接过茶杯* 谢谢你……这片森林里到"
+   },
+   {
+    "identifier": "chatHistory-3",
+    "role": "assistant",
+    "tokens": 140,
+    "head": "*塞拉菲娜在床边坐下，双手交叠放在膝上，神色变得"
+   },
+   {
+    "identifier": "chatHistory-4",
+    "role": "user",
+    "tokens": 21,
+    "head": "你的魔法真厉害。我的伤要多久才能好？我还得赶去北"
+   },
+   {
+    "identifier": "chatHistory-5",
+    "role": "assistant",
+    "tokens": 135,
+    "head": "*塞拉菲娜眉头一皱，握着你的手不觉紧了些。* “"
+   },
+   {
+    "identifier": "chatHistory-6",
+    "role": "user",
+    "tokens": 16,
+    "head": "你一个人守在这里多久了？给我讲讲你是怎么成为森林"
+   },
+   {
+    "identifier": "chatHistory-7",
+    "role": "assistant",
+    "tokens": 265,
+    "head": "*塞拉菲娜沉默了片刻，望向窗外摇曳的树影，眼神变"
+   },
+   {
+    "identifier": "chatHistory-8",
+    "role": "system",
+    "tokens": 17,
+    "head": "（夜里塞拉菲娜的魔法会变弱，她不愿让人知道。）"
+   },
+   {
+    "identifier": "chatHistory-9",
+    "role": "user",
+    "tokens": 65,
+    "head": "*我把杯子捧在手里暖着，犹豫了一下，还是开口问。"
+   },
+   {
+    "identifier": "chatHistory-10",
+    "role": "assistant",
+    "tokens": 322,
+    "head": "*塞拉菲娜停下正要走开的脚步，回头看你，眼里闪过"
+   },
+   {
+    "identifier": "chatHistory-11",
+    "role": "user",
+    "tokens": 17,
+    "head": "……谢谢你愿意跟我说这些。等伤好了，我想陪你去点"
+   },
+   {
+    "identifier": "chatHistory-12",
+    "role": "assistant",
+    "tokens": 119,
+    "head": "*门外静了一瞬，随后传来塞拉菲娜轻轻的笑声，带着"
+   },
+   {
+    "identifier": "jailbreak",
+    "role": "system",
+    "tokens": 18,
+    "head": "用第三人称描写塞拉菲娜的动作，不替旅人说话或行动"
+   }
+  ]
+ },
+ "4095": {
+  "budget": 3795,
+  "total": 1935,
+  "messagesInContext": 11,
+  "chatLength": 11,
+  "rows": [
+   {
+    "identifier": "main",
+    "role": "system",
+    "tokens": 34,
+    "head": "Write 塞拉菲娜's next reply "
+   },
+   {
+    "identifier": "worldInfoBefore",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "personaDescription",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "charDescription",
+    "role": "system",
+    "tokens": 131,
+    "head": "[塞拉菲娜的性格= \"体贴\", \"保护欲强\", "
+   },
+   {
+    "identifier": "charPersonality",
+    "role": "system",
+    "tokens": 11,
+    "head": "温柔、护短，总觉得是自己没把人照顾好。"
+   },
+   {
+    "identifier": "scenario",
+    "role": "system",
+    "tokens": 21,
+    "head": "旅人在塞拉菲娜的林间空地里养伤，窗外的森林被影牙"
+   },
+   {
+    "identifier": "nsfw",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "worldInfoAfter",
+    "role": "system",
+    "tokens": 0,
+    "head": ""
+   },
+   {
+    "identifier": "newChat",
+    "role": "system",
+    "tokens": 4,
+    "head": "[Example Chat]"
+   },
+   {
+    "identifier": "dialogueExamples 0-0",
+    "role": "system",
+    "tokens": 9,
+    "head": "“说说你是个什么样的人？”"
+   },
+   {
+    "identifier": "dialogueExamples 0-1",
+    "role": "system",
+    "tokens": 201,
+    "head": "*塞拉菲娜温和的笑意更深了，她想了一会儿，眼里闪"
+   },
+   {
+    "identifier": "dialogueExamples 0-2",
+    "role": "system",
+    "tokens": 10,
+    "head": "“说说你的身体和样貌。”"
+   },
+   {
+    "identifier": "dialogueExamples 0-3",
+    "role": "system",
+    "tokens": 191,
+    "head": "*塞拉菲娜轻声笑起来，笑声悦耳，在空气中跳动。她"
+   },
+   {
+    "identifier": "newMainChat",
+    "role": "system",
+    "tokens": 6,
+    "head": "[Start a new Chat]"
+   },
+   {
+    "identifier": "chatHistory-1",
+    "role": "assistant",
+    "tokens": 163,
+    "head": "*你猛地惊醒，想起自己是怎么走进森林深处、又是怎"
+   },
+   {
+    "identifier": "chatHistory-2",
+    "role": "user",
+    "tokens": 19,
+    "head": "*我撑起身子，接过茶杯* 谢谢你……这片森林里到"
+   },
+   {
+    "identifier": "chatHistory-3",
+    "role": "assistant",
+    "tokens": 140,
+    "head": "*塞拉菲娜在床边坐下，双手交叠放在膝上，神色变得"
+   },
+   {
+    "identifier": "chatHistory-4",
+    "role": "user",
+    "tokens": 21,
+    "head": "你的魔法真厉害。我的伤要多久才能好？我还得赶去北"
+   },
+   {
+    "identifier": "chatHistory-5",
+    "role": "assistant",
+    "tokens": 135,
+    "head": "*塞拉菲娜眉头一皱，握着你的手不觉紧了些。* “"
+   },
+   {
+    "identifier": "chatHistory-6",
+    "role": "user",
+    "tokens": 16,
+    "head": "你一个人守在这里多久了？给我讲讲你是怎么成为森林"
+   },
+   {
+    "identifier": "chatHistory-7",
+    "role": "assistant",
+    "tokens": 265,
+    "head": "*塞拉菲娜沉默了片刻，望向窗外摇曳的树影，眼神变"
+   },
+   {
+    "identifier": "chatHistory-8",
+    "role": "system",
+    "tokens": 17,
+    "head": "（夜里塞拉菲娜的魔法会变弱，她不愿让人知道。）"
+   },
+   {
+    "identifier": "chatHistory-9",
+    "role": "user",
+    "tokens": 65,
+    "head": "*我把杯子捧在手里暖着，犹豫了一下，还是开口问。"
+   },
+   {
+    "identifier": "chatHistory-10",
+    "role": "assistant",
+    "tokens": 322,
+    "head": "*塞拉菲娜停下正要走开的脚步，回头看你，眼里闪过"
+   },
+   {
+    "identifier": "chatHistory-11",
+    "role": "user",
+    "tokens": 17,
+    "head": "……谢谢你愿意跟我说这些。等伤好了，我想陪你去点"
+   },
+   {
+    "identifier": "chatHistory-12",
+    "role": "assistant",
+    "tokens": 119,
+    "head": "*门外静了一瞬，随后传来塞拉菲娜轻轻的笑声，带着"
+   },
+   {
+    "identifier": "jailbreak",
+    "role": "system",
+    "tokens": 18,
+    "head": "用第三人称描写塞拉菲娜的动作，不替旅人说话或行动"
+   }
+  ]
+ }
+}

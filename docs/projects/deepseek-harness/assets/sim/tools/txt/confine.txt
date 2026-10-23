@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "<landlock-run>",
+    "--ro",
+    "/",
+    "--rw",
+    "/dev/null",
+    "--rw",
+    "/tmp",
+    "--rw",
+    "<ws>",
+    "--",
+    "bash",
+    "-c",
+    "echo hi"
+  ],
+  "enforcement": "partial",
+  "denialSignatures": [
+    "permission denied"
+  ],
+  "runnerFailureRules": [
+    {
+      "allowedExitCodes": [
+        125
+      ],
+      "fatalSignatures": [
+        "landlock-run: "
+      ],
+      "informationalLines": [
+        "landlock-run: partial enforcement (older Landlock ABI)"
+      ]
+    }
+  ]
+}

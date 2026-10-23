@@ -1,0 +1,56 @@
+{
+ "scripts": [
+  {
+   "scriptName": "状态栏渲染",
+   "findRegex": "/<状态>([\\s\\S]*?)<\\/状态>/g",
+   "replaceString": "<div class=\"status\">$1</div>",
+   "markdownOnly": true,
+   "promptOnly": false,
+   "minDepth": null
+  },
+  {
+   "scriptName": "旧状态栏不发给模型",
+   "findRegex": "/\\n?<状态>[\\s\\S]*?<\\/状态>/g",
+   "replaceString": "",
+   "markdownOnly": false,
+   "promptOnly": true,
+   "minDepth": 1
+  }
+ ],
+ "stored": [
+  {
+   "index": 0,
+   "stored": "只有这么多。”\n<状态>好感：20｜伤势：昏迷刚醒</状态>"
+  },
+  {
+   "index": 2,
+   "stored": "们破不了。只要\n<状态>好感：30｜伤势：左腿未愈</状态>"
+  },
+  {
+   "index": 4,
+   "stored": "护身的东西。”\n<状态>好感：35｜伤势：左腿未愈</状态>"
+  }
+ ],
+ "display": [
+  {
+   "index": 0,
+   "depth": 4,
+   "shown": "\n<div class=\"status\">好感：20｜伤势：昏迷刚醒</div>"
+  },
+  {
+   "index": 2,
+   "depth": 2,
+   "shown": "\n<div class=\"status\">好感：30｜伤势：左腿未愈</div>"
+  },
+  {
+   "index": 4,
+   "depth": 0,
+   "shown": "\n<div class=\"status\">好感：35｜伤势：左腿未愈</div>"
+  }
+ ],
+ "sentToModel": [
+  "好好休息。你在这里很安全。我会照顾你，可你得休息。我的魔法能治的也只有这么多。”",
+  "怪物。” *她伸手轻轻覆上你的手背。* “但你不必担心。我的结界它们破不了。只要",
+  "可，至少让我给你留些护身的东西。”\n<状态>好感：35｜伤势：左腿未愈</状态>"
+ ]
+}

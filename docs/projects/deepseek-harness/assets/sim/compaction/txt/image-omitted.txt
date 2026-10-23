@@ -1,0 +1,5 @@
+# 纯文本模型收到一张图（textOnlyImageText）
+[image omitted because this model accepts text only; attachment sha256:9f2c41d0]
+
+# 图片预算超限、最早的图被替下（offloadedImageText，没有本地副本时）
+[image omitted to fit request image limits; "screenshot.png" (sha256:9f2c41d07ab35e18c4f0e3b2a1d6c7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4). No local normalized image path is available; ask the user to attach it again if needed.]

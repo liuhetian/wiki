@@ -1,0 +1,26 @@
+{
+ "sameLine": {
+  "id": "61183e42a558bf23",
+  "name": "直问生死",
+  "worldlineId": "w-main",
+  "worldlineName": "主线",
+  "parentSaveId": "s1",
+  "createdAt": 3
+ },
+ "fork": {
+  "id": "d357f6456693e6fc",
+  "name": "坦言来意",
+  "worldlineId": "f304cb5043ffb4fd",
+  "worldlineName": "从「雨夜问名」分出 · 线2",
+  "parentSaveId": "s1",
+  "forkFromSaveId": "s1",
+  "createdAt": 3
+ },
+ "first": {
+  "id": "90a5c5097ea1ed13",
+  "name": "开场",
+  "worldlineId": "32401a96fc97b5b5",
+  "worldlineName": "主线",
+  "createdAt": 0
+ }
+}

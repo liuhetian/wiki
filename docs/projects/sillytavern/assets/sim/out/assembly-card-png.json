@@ -1,0 +1,54 @@
+{
+ "chunks": [
+  {
+   "name": "IHDR",
+   "bytes": 13
+  },
+  {
+   "name": "IDAT",
+   "bytes": 511505
+  },
+  {
+   "name": "tEXt",
+   "keyword": "chara",
+   "base64Chars": 18912,
+   "spec": "chara_card_v3",
+   "spec_version": "3.0",
+   "name_in_card": "塞拉菲娜"
+  },
+  {
+   "name": "tEXt",
+   "keyword": "ccv3",
+   "base64Chars": 18912,
+   "spec": "chara_card_v3",
+   "spec_version": "3.0",
+   "name_in_card": "塞拉菲娜"
+  },
+  {
+   "name": "IEND",
+   "bytes": 0
+  }
+ ],
+ "readBack": {
+  "spec": "chara_card_v3",
+  "name": "塞拉菲娜",
+  "fields": [
+   "name",
+   "description",
+   "personality",
+   "scenario",
+   "first_mes",
+   "mes_example",
+   "creator_notes",
+   "system_prompt",
+   "post_history_instructions",
+   "tags",
+   "creator",
+   "character_version",
+   "alternate_greetings",
+   "extensions",
+   "character_book",
+   "group_only_greetings"
+  ]
+ }
+}

@@ -1,0 +1,7 @@
+  5 turn/start
+  7 step/start
+  8 system/message     system-prompt     append         {{system}}
+  9 user/message       user              append         Use the bash tool to run exactly: echo WEB_E2E_OK. Then reply with the single word DONE an
+ 10 user/message       runtime-context   append         Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
+ 11 user/message       time-context      append         Time sampled while preparing turn 1, step 1: {{timeContextTimestamp}}
+ 12 request/header

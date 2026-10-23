@@ -1,0 +1,21 @@
+According to the design document, which event lets a listener stop a turn, and what kind of event is it? Answer in one sentence.
+
+---
+
+Your parent agent id is "session-b41abf03-91fe-43db-86a0-ff44a6782dde". Before you finish, send your result to that agent with send_message({ agent_id: "session-b41abf03-91fe-43db-86a0-ff44a6782dde", message: "<self-contained result>" }). The parent shares your workspace but does not automatically receive your transcript, tool output, or reasoning. Send earlier messages as well when a finding changes what the parent should do next; sending a message does not end your turn.
+
+---
+
+Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
+
+Current working directory: "/tmp/dsh-lab/agents/scratch/ws".
+
+Current DSH file policy: workspace-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: "/tmp/dsh-lab/agents/scratch/ws". Some platform temporary areas may also be writable.
+
+Approval prompts are disabled in this session: actions that require approval are rejected automatically — do not request sandbox escalation (do not set `sandbox_permissions`).
+
+Delegation depth for `subagent`: current 1, maximum 1, remaining levels 0. Do not call `subagent` at this depth; carry out the work directly.
+
+Delegation depth for `subagent_fork`: current 1, maximum 1, remaining levels 0. Do not call `subagent_fork` at this depth; carry out the work directly.
+
+You are a delegated subagent: your permission scope was fixed when you were started and cannot be widened from inside this session — operations that require approval are rejected automatically. When the task needs access beyond that scope, do not retry the denied operation; state the limitation in your reply so the delegating agent can handle it.

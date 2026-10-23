@@ -1,0 +1,53 @@
+[
+ {
+  "step": "r1-塞拉菲娜",
+  "seconds": 1.9,
+  "usage": {
+   "prompt_tokens": 918,
+   "completion_tokens": 176,
+   "total_tokens": 1094,
+   "prompt_tokens_details": {
+    "cached_tokens": 768
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 94
+   },
+   "prompt_cache_hit_tokens": 768,
+   "prompt_cache_miss_tokens": 150
+  }
+ },
+ {
+  "step": "r1-洛恩",
+  "seconds": 1.9,
+  "usage": {
+   "prompt_tokens": 472,
+   "completion_tokens": 154,
+   "total_tokens": 626,
+   "prompt_tokens_details": {
+    "cached_tokens": 128
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 90
+   },
+   "prompt_cache_hit_tokens": 128,
+   "prompt_cache_miss_tokens": 344
+  }
+ },
+ {
+  "step": "r2-洛恩",
+  "seconds": 1.6,
+  "usage": {
+   "prompt_tokens": 548,
+   "completion_tokens": 163,
+   "total_tokens": 711,
+   "prompt_tokens_details": {
+    "cached_tokens": 384
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 95
+   },
+   "prompt_cache_hit_tokens": 384,
+   "prompt_cache_miss_tokens": 164
+  }
+ }
+]

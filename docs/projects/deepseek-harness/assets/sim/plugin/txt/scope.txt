@@ -1,0 +1,23 @@
+parent
+   tools: ["read","bash","web_fetch"]
+   prompt: "You are an AI agent powered by DeepSeek Harness.\n\nYou are a coding agent powered by the deepseek-flash model."
+   contexts: []
+child (persona + deny bash via applyChildComposition)
+   tools: ["read","web_fetch"]
+   prompt: "You are an AI agent powered by DeepSeek Harness.\n\nYou are a read-only reviewer subagent."
+   contexts: ["subagent:delegation"]
+other (own read shadows the global one)
+   tools: ["read","bash","web_fetch"]
+   prompt: "You are an AI agent powered by DeepSeek Harness.\n\nYou are a coding agent powered by the deepseek-flash model."
+   contexts: []
+parent calls read
+   -> read: global implementation
+other calls read
+   [other's listener] saw read
+   -> read: other agent's own implementation
+restrict on the global ctx:
+   tools.restrict() requires a scoped context (agent.ctx): a context-global restriction would mask every agent — deny the tool for the intended agent instead
+child after its scope is disposed
+   tools: ["read","bash","web_fetch"]
+   prompt: "You are an AI agent powered by DeepSeek Harness.\n\nYou are a coding agent powered by the deepseek-flash model."
+   contexts: []

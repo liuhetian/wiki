@@ -1,10 +1,10 @@
 ---
-description: "对话提示词（chat-prompts）的维护记录：17 段取自 prompt-cards.cyanfish.site，去掉卡牌包装按场景重组，钉在 JS 包 index-IivKxZ0S.js；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录的 assets/；粗讲项目由 2026-10-19 介绍 bili-note 的对话提炼"
+description: "对话提示词（chat-prompts）的维护记录：17 段取自 prompt-cards.cyanfish.site，去掉卡牌包装按场景重组，钉在 JS 包 index-IivKxZ0S.js；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录的 assets/"
 ---
 
 # 对话提示词（chat-prompts）
 
-[对话提示词](../../skills/collab/chat-prompts/index.md)的维护记录。19 段 prompt 来自三处。
+[对话提示词](../../skills/collab/chat-prompts/index.md)的维护记录。18 段 prompt 来自两处；粗讲项目、细讲项目原来也在这里，2026-10-20 挪成了顶层的[调研项目](project-research.md)。
 
 ## prompt-cards.cyanfish.site { #prompt-cards }
 
@@ -49,16 +49,6 @@ description: "对话提示词（chat-prompts）的维护记录：17 段取自 pr
 - **翻译之外的改动**：
     - prompt 一字没改；开头加一句「这一场对话都按下面这条规矩来」，照实事求是、范围铁闸的写法：作者说的用法是「存进常用提示词」，就是整场生效
 - **没做的**：没有实测；作者自己也说中文句子该卡多少字还没想好，原 prompt 没写句长上限
-
-## 本站对话 { #own }
-
-[粗讲项目](../../skills/collab/chat-prompts/project-gist.md)是从本站一次对话里提炼的，没有外部上游。
-
-- **来源**：2026-10-19 让 AI 介绍 Rimagination/bili-note。第一版分目录、四层、演进讲，太细，用户说「就很粗地讲就好，不需要整理目录，就直接几句话讲」；第二版四段话，用户认可：「很好，就是想要这种总结」
-- **怎么提炼的**：第二版成立靠读了源码 —— 用户以为它就是下载视频加转文本，代码里视频只在开关键帧时才下、转写是第三级兜底；取材那层代码最多，重心却在写前定篇幅。所以 prompt 要求先读源码，重心不按代码量判断。四段的骨架照第二版抽：先纠正原来的理解、说清程序和人的分工、点出重心配一个机制
-- **探索选项**：用户随即要求加的：「对于大型项目，需要AI先探索项目，然后寻找里面的亮点或者更多读者都不知道有的部分，这需要一步一步讨论，需要参考 盘问我 这个skill」。加了一个默认「否」的选择，选「是」就先摸遍项目、列亮点，照[盘问我](../../skills/collab/grilling.md)一轮轮挑方向，确认后再讲，挑中的方向各多给一段；同时按用户要求删掉「我和它的关系」那一栏
-- **改成分支写法**：同一天复制按钮加了[分支](../../skills/wiki-guide/reference/branch.md)，这页当活例，用户说「可以在这个skill上试试效果吗，几种场景都试一试」。试的时候加过「在哪用」两支（能读文件的 agent / 网页对话框，网页那支末尾带一个 `required` 的多行框），用户看过源文件说「把这一个写作方案沉淀到本wiki的对应位置，然后还原成正式版本」，正式版去掉了它。留下的：「先探索」的开关包 `zx-no-copy` 只给人看，「否」也写一支「读完直接讲，不用先问我」，原来靠复制出去的「：否」传话；「我原来以为它是」填了才复制
-- **没做的**：只在 bili-note 上用过这一次，别的项目还没试
 
 [^site]: [prompt-cards.cyanfish.site](https://prompt-cards.cyanfish.site/)，2026-10-16 读。
 [^xhs]: [让AI说人话，1.3万人收藏了这招](https://www.xiaohongshu.com/discovery/item/6abf6887000000000d02979c)，2026-10-17 读。

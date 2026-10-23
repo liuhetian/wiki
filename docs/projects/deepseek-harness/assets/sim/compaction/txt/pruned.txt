@@ -1,0 +1,18 @@
+seq 13 原文 10403 字符 → seq 30 替换后 5159 字符（头 4096 + 标记 + 尾 1024）
+surfaceOp: {"op": "replace", "startSeq": 13, "endSeq": 13}  sourceEventSeqs: [13]
+
+……（前面略）
+to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.'
+72: 
+73: /**
+74:  * The replayed conversation sur
+
+[... tool result middle pruned ...]
+
+or | undefined {
+198:   switch (finish.kind) {
+199:     case 'error':
+200:     case 'aborted': {
+201:       return new LlmError(finish.failure.message, finish.failure.code, finish.failure)
+202:     
+……（后面略）

@@ -1,0 +1,27 @@
+# 成功、没输出
+(no output)
+
+# 退出码非零
+[stderr]
+tsc: 3 errors
+[exit code: 2]
+
+# 输出太长被截到尾部
+…last lines of the build log
+
+[output truncated; full output: /tmp/dsh-spill/session-1/bash-stdout.txt]
+
+# 超时（不转后台的部署）
+(no output)
+[timed out after 60000ms]
+[killed by signal: SIGTERM]
+
+# 被人从界面上停掉
+(no output)
+[stopped: stopped by the user]
+[killed by signal: SIGTERM]
+
+# 超时转后台（默认）
+Compiling 412 modules...
+[still running after 60000ms; moved to background job job_3]
+The command keeps running in the background. You will be notified when it finishes; read newer output with job_output, stop it with job_kill.

@@ -1,0 +1,4 @@
+第 4 次调用（压缩）的返回：thinking, tool_use read, tool_use read；stop_reason=tool_use
+seq 38 compaction/start
+seq 39 compaction/end  error: summarization produced no text summary content
+seq 40 step/start  ← 本轮照常往下走

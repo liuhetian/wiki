@@ -1,0 +1,6 @@
+POST https://api.deepseek.com/beta/chat/completions
+{"model": "deepseek-flash", "temperature": 1, "max_tokens": 300, "stream": false, "presence_penalty": 0, "frequency_penalty": 0, "top_p": 1, "thinking": {"type": "enabled"}}
+messages：
+  system     2446 字  Write 塞拉菲娜's next reply in a fictional c……
+  assistant   259 字  *你猛地惊醒，想起自己是怎么走进森林深处、又是怎么被野兽围攻的。随着眼睛适应了屋……
+  user         31 字  *我撑起身子，接过茶杯* 谢谢你……这片森林里到底有什么怪物？

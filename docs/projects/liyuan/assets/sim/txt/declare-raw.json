@@ -1,0 +1,8 @@
+[
+  {"id":1,"station":"identity","note":"破限与作家身份设定"},
+  {"id":2,"station":"writing","note":"文风与正文写作规则"},
+  {"id":3,"station":"wrapper","note":"世界资料开闭包装标题"},
+  {"id":4,"station":"thinking","note":"纯思考模板与自检要求"},
+  {"id":5,"station":"output","note":"状态栏变量输出合约"},
+  {"id":6,"station":"memory","note":"定期剧情摘要留存"}
+]

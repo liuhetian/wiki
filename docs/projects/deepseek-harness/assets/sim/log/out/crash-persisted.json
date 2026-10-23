@@ -1,0 +1,285 @@
+[
+  {
+    "type": "agent/inbox/spliced",
+    "seq": 0,
+    "time": 1792499131141,
+    "data": {
+      "target": "next-turn",
+      "start": 0,
+      "inserted": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "deploy to prod, then confirm"
+            }
+          ],
+          "source": {
+            "kind": "user"
+          },
+          "role": "user",
+          "id": "12726a0f-10cb-4d96-ab91-6dc017182c76"
+        }
+      ]
+    }
+  },
+  {
+    "type": "turn/start",
+    "seq": 1,
+    "time": 1792499131141,
+    "data": {
+      "turn": 1
+    }
+  },
+  {
+    "type": "agent/inbox/spliced",
+    "seq": 2,
+    "time": 1792499131142,
+    "data": {
+      "target": "next-turn",
+      "start": 0,
+      "removedCount": 1,
+      "inserted": []
+    }
+  },
+  {
+    "type": "step/start",
+    "seq": 3,
+    "time": 1792499131142,
+    "data": {
+      "turn": 1,
+      "step": 1
+    }
+  },
+  {
+    "type": "system/message",
+    "seq": 4,
+    "time": 1792499131143,
+    "data": {
+      "turn": 1,
+      "step": 1,
+      "message": {
+        "role": "system",
+        "content": [
+          {
+            "type": "text",
+            "text": "You are an AI agent powered by DeepSeek Harness.\n\nYou are a test agent."
+          }
+        ],
+        "source": {
+          "kind": "system-prompt"
+        },
+        "id": "c3486ecb-ea11-4a8c-a8be-f6f17fd6b10a"
+      }
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "user/message",
+    "seq": 5,
+    "time": 1792499131143,
+    "data": {
+      "content": [
+        {
+          "type": "text",
+          "text": "deploy to prod, then confirm"
+        }
+      ],
+      "source": {
+        "kind": "user"
+      },
+      "role": "user",
+      "id": "12726a0f-10cb-4d96-ab91-6dc017182c76"
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "request/header",
+    "seq": 6,
+    "time": 1792499131143,
+    "data": {
+      "header": {
+        "config": {
+          "provider": "mock",
+          "model": "mock"
+        },
+        "tools": [
+          {
+            "name": "deploy",
+            "description": "deploy the service",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "env": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "name": "echo",
+            "description": "echo back",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "reason": "initial"
+    }
+  },
+  {
+    "type": "request/context",
+    "seq": 7,
+    "time": 1792499131143,
+    "data": {
+      "provider": "mock",
+      "model": "mock"
+    }
+  },
+  {
+    "type": "assistant/message",
+    "seq": 8,
+    "time": 1792499131144,
+    "data": {
+      "turn": 1,
+      "step": 1,
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "tool-call",
+            "id": "c1",
+            "name": "deploy",
+            "arguments": "{\"env\":\"prod\"}"
+          },
+          {
+            "type": "tool-call",
+            "id": "c2",
+            "name": "echo",
+            "arguments": "{\"text\":\"done?\"}"
+          }
+        ],
+        "source": {
+          "kind": "model",
+          "provider": "mock",
+          "model": "mock"
+        },
+        "id": "bee9714f-5d34-4bcd-90f9-17d793493200"
+      },
+      "usage": {
+        "inputTokens": 10,
+        "outputTokens": 5
+      },
+      "stream": [
+        {
+          "type": "chunk",
+          "time": 1792499131144,
+          "chunk": {
+            "type": "block-start",
+            "index": 0,
+            "blockType": "tool-call"
+          }
+        },
+        {
+          "type": "tool-call-chunks",
+          "time0": 1792499131144,
+          "index": 0,
+          "dt": [],
+          "id": "c1",
+          "name": "deploy",
+          "args": [
+            "{\"env\":\"prod\"}"
+          ]
+        },
+        {
+          "type": "chunk",
+          "time": 1792499131144,
+          "chunk": {
+            "type": "block-end",
+            "index": 0,
+            "block": {
+              "type": "tool-call",
+              "id": "c1",
+              "name": "deploy",
+              "arguments": "{\"env\":\"prod\"}"
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499131144,
+          "chunk": {
+            "type": "block-start",
+            "index": 1,
+            "blockType": "tool-call"
+          }
+        },
+        {
+          "type": "tool-call-chunks",
+          "time0": 1792499131144,
+          "index": 1,
+          "dt": [],
+          "id": "c2",
+          "name": "echo",
+          "args": [
+            "{\"text\":\"done?\"}"
+          ]
+        },
+        {
+          "type": "chunk",
+          "time": 1792499131144,
+          "chunk": {
+            "type": "block-end",
+            "index": 1,
+            "block": {
+              "type": "tool-call",
+              "id": "c2",
+              "name": "echo",
+              "arguments": "{\"text\":\"done?\"}"
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499131144,
+          "chunk": {
+            "type": "usage",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 5
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499131144,
+          "chunk": {
+            "type": "finish",
+            "reason": {
+              "kind": "tool-calls"
+            }
+          }
+        }
+      ]
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "tool/call",
+    "seq": 9,
+    "time": 1792499131145,
+    "data": {
+      "turn": 1,
+      "step": 1,
+      "callId": "c1",
+      "name": "deploy",
+      "arguments": "{\"env\":\"prod\"}"
+    }
+  }
+]

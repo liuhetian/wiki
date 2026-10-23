@@ -1,0 +1,57 @@
+# 工作区内写（workspace-write）
+$ echo inside > inside.txt && cat inside.txt
+sandbox: {"mode":"workspace-write","denied":false,"enforcement":"partial"}
+--- 模型拿到 ---
+inside
+[stderr]
+landlock-run: partial enforcement (older Landlock ABI)
+
+
+# 工作区外写（$HOME）（workspace-write）
+$ echo outside > $HOME/dsh-landlock-outside.txt
+sandbox: {"mode":"workspace-write","denied":true,"enforcement":"partial"}
+--- 模型拿到 ---
+[stderr]
+landlock-run: partial enforcement (older Landlock ABI)
+bash: line 1: $HOME/dsh-landlock-outside.txt: Permission denied
+[sandbox: file access denied under workspace-write mode]
+[sandbox: escalation available — retry this exact command once with sandbox_permissions (the narrowest wider mode that suffices) + justification; the approval prompt asks the user]
+[exit code: 1]
+
+# 读不受限（workspace-write）
+$ wc -l < /etc/hosts
+sandbox: {"mode":"workspace-write","denied":false,"enforcement":"partial"}
+--- 模型拿到 ---
+12
+[stderr]
+landlock-run: partial enforcement (older Landlock ABI)
+
+
+# 命令自己失败：false（workspace-write）
+$ false
+sandbox: {"mode":"workspace-write","denied":false,"enforcement":"partial"}
+--- 模型拿到 ---
+[stderr]
+landlock-run: partial enforcement (older Landlock ABI)
+[exit code: 1]
+
+# 命令自己失败：grep 没匹配（同 ripgrep 无匹配退出 1）（workspace-write）
+$ grep -q no-such-text /etc/hosts
+sandbox: {"mode":"workspace-write","denied":false,"enforcement":"partial"}
+--- 模型拿到 ---
+[stderr]
+landlock-run: partial enforcement (older Landlock ABI)
+[exit code: 1]
+
+# read-only 下连工作区也不能写（read-only）
+$ echo x > ro.txt
+sandbox: {"mode":"read-only","denied":true,"enforcement":"partial"}
+--- 模型拿到 ---
+[stderr]
+landlock-run: partial enforcement (older Landlock ABI)
+bash: line 1: ro.txt: Permission denied
+[sandbox: file access denied under read-only mode]
+[sandbox: escalation available — retry this exact command once with sandbox_permissions (the narrowest wider mode that suffices) + justification; the approval prompt asks the user]
+[exit code: 1]
+
+# 跑完检查：$HOME/dsh-landlock-outside.txt 不存在

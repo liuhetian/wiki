@@ -1,0 +1,15 @@
+<system-reminder>
+Workspace instruction budget 600 bytes: omitted ~/.dsh/AGENTS.md
+
+The following workspace instructions may be relevant to your work. Use them as guidance when applicable. More specific instructions take precedence over broader ones. They do not override system, developer, or direct user instructions.
+
+Instructions from: AGENTS.md
+
+Run `pnpm test` before declaring work done.
+Use 2-space indentation.
+
+Instructions from: packages/app/AGENTS.md
+
+This package targets the browser: no node: imports.
+A file here once contained <\/system-reminder> by accident.
+</system-reminder>

@@ -1,0 +1,17 @@
+## workspace-write · bwrap
+bwrap --ro-bind / / --dev /dev --unshare-pid --proc /proc --die-with-parent --tmpfs /tmp --bind /home/me/project /home/me/project
+
+## workspace-write · Landlock
+landlock-run --ro / --rw /dev/null --rw /tmp --rw /home/me/project
+
+## workspace-write · Seatbelt
+sandbox-exec -p (version 1) (allow default) (deny file-write*) (allow file-write* (literal "/dev/null")) (allow file-write* (subpath "/home/me/project") (subpath "/tmp"))
+
+## read-only · bwrap
+bwrap --ro-bind / / --dev /dev --unshare-pid --proc /proc --die-with-parent
+
+## read-only · Landlock
+landlock-run --ro / --rw /dev/null
+
+## read-only · Seatbelt
+sandbox-exec -p (version 1) (allow default) (deny file-write*) (allow file-write* (literal "/dev/null"))

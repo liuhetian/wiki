@@ -1,0 +1,105 @@
+{
+ "cases": [
+  {
+   "tool": "write",
+   "input": {
+    "path": "cards/青梧/补充设定集.json"
+   },
+   "verdict": {
+    "kind": "allow"
+   }
+  },
+  {
+   "tool": "read",
+   "input": {
+    "path": "assets/lorebooks/栖水镇.json"
+   },
+   "verdict": {
+    "kind": "allow"
+   }
+  },
+  {
+   "tool": "write",
+   "input": {
+    "path": "assets/lorebooks/栖水镇.json"
+   },
+   "verdict": {
+    "kind": "ask",
+    "tool": "write",
+    "target": "/tmp/liyuan-sim/v2/ws/assets/lorebooks/栖水镇.json",
+    "unit": "/tmp/liyuan-sim/v2/ws/assets/lorebooks"
+   }
+  },
+  {
+   "tool": "read",
+   "input": {
+    "path": "cards/青梧/对话/局B/会话/s.jsonl"
+   },
+   "verdict": {
+    "kind": "deny",
+    "reason": "cards/青梧/对话/局B/会话/s.jsonl 属于其他独立项目，当前项目无权访问。"
+   }
+  },
+  {
+   "tool": "write",
+   "input": {
+    "path": "cards/青梧/对话/局A/历史/检查点.jsonl"
+   },
+   "verdict": {
+    "kind": "deny",
+    "reason": "cards/青梧/对话/局A/历史/检查点.jsonl 属于梨园管理的数据（快照仓 / 会话树），原生 write 不能写。"
+   }
+  },
+  {
+   "tool": "write",
+   "input": {
+    "path": "notes.txt"
+   },
+   "verdict": {
+    "kind": "ask",
+    "tool": "write",
+    "target": "/tmp/liyuan-sim/v2/ws/notes.txt",
+    "unit": "/tmp/liyuan-sim/v2/ws/notes.txt"
+   }
+  },
+  {
+   "tool": "bash",
+   "input": {
+    "command": "ls cards"
+   },
+   "verdict": {
+    "kind": "allow"
+   }
+  },
+  {
+   "tool": "bash",
+   "input": {
+    "command": "cd cards && rm -rf 青梧"
+   },
+   "verdict": {
+    "kind": "ask-bash",
+    "command": "cd cards && rm -rf 青梧"
+   }
+  },
+  {
+   "tool": "bash",
+   "input": {
+    "command": "rm -rf /"
+   },
+   "verdict": {
+    "kind": "deny",
+    "reason": "已拦截：命中命令黑名单「rm -rf /」，梨园不允许执行。如确有需要，请向用户说明。"
+   }
+  },
+  {
+   "tool": "bash",
+   "input": {
+    "command": "python cleanup.py"
+   },
+   "verdict": {
+    "kind": "ask-bash",
+    "command": "python cleanup.py"
+   }
+  }
+ ]
+}

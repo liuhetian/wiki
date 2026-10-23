@@ -1,0 +1,990 @@
+[
+  {
+    "type": "agent/inbox/spliced",
+    "seq": 0,
+    "time": 1792499042229,
+    "data": {
+      "target": "next-turn",
+      "start": 0,
+      "inserted": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "go"
+            }
+          ],
+          "source": {
+            "kind": "user"
+          },
+          "role": "user",
+          "id": "562b50f5-c251-49ec-9700-af7e939e29c5"
+        }
+      ]
+    }
+  },
+  {
+    "type": "turn/start",
+    "seq": 1,
+    "time": 1792499042230,
+    "data": {
+      "turn": 1
+    }
+  },
+  {
+    "type": "agent/inbox/spliced",
+    "seq": 2,
+    "time": 1792499042230,
+    "data": {
+      "target": "next-turn",
+      "start": 0,
+      "removedCount": 1,
+      "inserted": []
+    }
+  },
+  {
+    "type": "step/start",
+    "seq": 3,
+    "time": 1792499042230,
+    "data": {
+      "turn": 1,
+      "step": 1
+    }
+  },
+  {
+    "type": "system/message",
+    "seq": 4,
+    "time": 1792499042231,
+    "data": {
+      "turn": 1,
+      "step": 1,
+      "message": {
+        "role": "system",
+        "content": [
+          {
+            "type": "text",
+            "text": "You are an AI agent powered by DeepSeek Harness.\n\nYou are a test agent."
+          }
+        ],
+        "source": {
+          "kind": "system-prompt"
+        },
+        "id": "532b0b0c-7e13-4ee6-8234-a429ff8d40ae"
+      }
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "user/message",
+    "seq": 5,
+    "time": 1792499042231,
+    "data": {
+      "content": [
+        {
+          "type": "text",
+          "text": "go"
+        }
+      ],
+      "source": {
+        "kind": "user"
+      },
+      "role": "user",
+      "id": "562b50f5-c251-49ec-9700-af7e939e29c5"
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "request/header",
+    "seq": 6,
+    "time": 1792499042231,
+    "data": {
+      "header": {
+        "config": {
+          "provider": "mock",
+          "model": "mock"
+        },
+        "tools": [
+          {
+            "name": "echo",
+            "description": "echo back",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "reason": "initial"
+    }
+  },
+  {
+    "type": "request/context",
+    "seq": 7,
+    "time": 1792499042232,
+    "data": {
+      "provider": "mock",
+      "model": "mock"
+    }
+  },
+  {
+    "type": "assistant/message",
+    "seq": 8,
+    "time": 1792499042233,
+    "data": {
+      "turn": 1,
+      "step": 1,
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "calling echo"
+          },
+          {
+            "type": "tool-call",
+            "id": "c1",
+            "name": "echo",
+            "arguments": "{\"text\":\"one\"}"
+          }
+        ],
+        "source": {
+          "kind": "model",
+          "provider": "mock",
+          "model": "mock"
+        },
+        "id": "5de51fe6-e57f-4bac-9a80-3fb6b0e22a22"
+      },
+      "usage": {
+        "inputTokens": 10,
+        "outputTokens": 5
+      },
+      "stream": [
+        {
+          "type": "chunk",
+          "time": 1792499042232,
+          "chunk": {
+            "type": "block-start",
+            "index": 0,
+            "blockType": "text"
+          }
+        },
+        {
+          "type": "text-chunks",
+          "time0": 1792499042232,
+          "index": 0,
+          "dt": [],
+          "texts": [
+            "calling echo"
+          ]
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042232,
+          "chunk": {
+            "type": "block-end",
+            "index": 0,
+            "block": {
+              "type": "text",
+              "text": "calling echo"
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042232,
+          "chunk": {
+            "type": "block-start",
+            "index": 1,
+            "blockType": "tool-call"
+          }
+        },
+        {
+          "type": "tool-call-chunks",
+          "time0": 1792499042232,
+          "index": 1,
+          "dt": [],
+          "id": "c1",
+          "name": "echo",
+          "args": [
+            "{\"tex"
+          ]
+        },
+        {
+          "type": "tool-call-chunks",
+          "time0": 1792499042232,
+          "index": 1,
+          "dt": [],
+          "id": "c1",
+          "args": [
+            "t\":\"one\"}"
+          ]
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042232,
+          "chunk": {
+            "type": "block-end",
+            "index": 1,
+            "block": {
+              "type": "tool-call",
+              "id": "c1",
+              "name": "echo",
+              "arguments": "{\"text\":\"one\"}"
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042232,
+          "chunk": {
+            "type": "usage",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 5
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042232,
+          "chunk": {
+            "type": "finish",
+            "reason": {
+              "kind": "tool-calls"
+            }
+          }
+        }
+      ]
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "tool/call",
+    "seq": 9,
+    "time": 1792499042233,
+    "data": {
+      "turn": 1,
+      "step": 1,
+      "callId": "c1",
+      "name": "echo",
+      "arguments": "{\"text\":\"one\"}"
+    }
+  },
+  {
+    "type": "tool/result",
+    "seq": 10,
+    "time": 1792499042234,
+    "data": {
+      "turn": 1,
+      "step": 1,
+      "message": {
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "c1"
+        },
+        "toolCallId": "c1",
+        "content": [
+          {
+            "type": "text",
+            "text": "echo: one"
+          }
+        ],
+        "isError": false,
+        "id": "280c8346-5fd4-424e-8ea1-f6ff3e87b2e4"
+      }
+    },
+    "sourceEventSeqs": [
+      9
+    ],
+    "surfaceOp": "append"
+  },
+  {
+    "type": "step/end",
+    "seq": 11,
+    "time": 1792499042234,
+    "data": {
+      "turn": 1,
+      "step": 1
+    }
+  },
+  {
+    "type": "step/start",
+    "seq": 12,
+    "time": 1792499042235,
+    "data": {
+      "turn": 1,
+      "step": 2
+    }
+  },
+  {
+    "type": "assistant/message",
+    "seq": 13,
+    "time": 1792499042235,
+    "data": {
+      "turn": 1,
+      "step": 2,
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "done"
+          }
+        ],
+        "source": {
+          "kind": "model",
+          "provider": "mock",
+          "model": "mock"
+        },
+        "id": "d056df26-feb1-4614-b98a-8d686b834872"
+      },
+      "usage": {
+        "inputTokens": 10,
+        "outputTokens": 4
+      },
+      "stream": [
+        {
+          "type": "chunk",
+          "time": 1792499042235,
+          "chunk": {
+            "type": "block-start",
+            "index": 0,
+            "blockType": "text"
+          }
+        },
+        {
+          "type": "text-chunks",
+          "time0": 1792499042235,
+          "index": 0,
+          "dt": [
+            0,
+            0,
+            0
+          ],
+          "texts": [
+            "d",
+            "o",
+            "n",
+            "e"
+          ]
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042235,
+          "chunk": {
+            "type": "block-end",
+            "index": 0,
+            "block": {
+              "type": "text",
+              "text": "done"
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042235,
+          "chunk": {
+            "type": "usage",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 4
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042235,
+          "chunk": {
+            "type": "finish",
+            "reason": {
+              "kind": "stop"
+            }
+          }
+        }
+      ]
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "step/end",
+    "seq": 14,
+    "time": 1792499042235,
+    "data": {
+      "turn": 1,
+      "step": 2
+    }
+  },
+  {
+    "type": "turn/end",
+    "seq": 15,
+    "time": 1792499042235,
+    "data": {
+      "turn": 1,
+      "reason": {
+        "kind": "completed"
+      }
+    }
+  },
+  {
+    "type": "agent/inbox/spliced",
+    "seq": 16,
+    "time": 1792499042236,
+    "data": {
+      "target": "next-turn",
+      "start": 0,
+      "inserted": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "again"
+            }
+          ],
+          "source": {
+            "kind": "user"
+          },
+          "role": "user",
+          "id": "35e2a228-9379-41e2-afea-e7350961d14a"
+        }
+      ]
+    }
+  },
+  {
+    "type": "turn/start",
+    "seq": 17,
+    "time": 1792499042236,
+    "data": {
+      "turn": 2
+    }
+  },
+  {
+    "type": "agent/inbox/spliced",
+    "seq": 18,
+    "time": 1792499042236,
+    "data": {
+      "target": "next-turn",
+      "start": 0,
+      "removedCount": 1,
+      "inserted": []
+    }
+  },
+  {
+    "type": "step/start",
+    "seq": 19,
+    "time": 1792499042236,
+    "data": {
+      "turn": 2,
+      "step": 1
+    }
+  },
+  {
+    "type": "user/message",
+    "seq": 20,
+    "time": 1792499042236,
+    "data": {
+      "content": [
+        {
+          "type": "text",
+          "text": "again"
+        }
+      ],
+      "source": {
+        "kind": "user"
+      },
+      "role": "user",
+      "id": "35e2a228-9379-41e2-afea-e7350961d14a"
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "assistant/attempt",
+    "seq": 21,
+    "time": 1792499042236,
+    "data": {
+      "turn": 2,
+      "step": 1,
+      "stream": [
+        {
+          "type": "chunk",
+          "time": 1792499042236,
+          "chunk": {
+            "type": "finish",
+            "reason": {
+              "kind": "error",
+              "failure": {
+                "message": "busy",
+                "code": "RATE_LIMIT"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "type": "assistant/message",
+    "seq": 22,
+    "time": 1792499042236,
+    "data": {
+      "turn": 2,
+      "step": 1,
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "ok"
+          }
+        ],
+        "source": {
+          "kind": "model",
+          "provider": "mock",
+          "model": "mock"
+        },
+        "id": "0816cbc8-f9e3-4c36-afd0-939f167c571f"
+      },
+      "usage": {
+        "inputTokens": 10,
+        "outputTokens": 2
+      },
+      "stream": [
+        {
+          "type": "chunk",
+          "time": 1792499042236,
+          "chunk": {
+            "type": "block-start",
+            "index": 0,
+            "blockType": "text"
+          }
+        },
+        {
+          "type": "text-chunks",
+          "time0": 1792499042236,
+          "index": 0,
+          "dt": [
+            0
+          ],
+          "texts": [
+            "o",
+            "k"
+          ]
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042236,
+          "chunk": {
+            "type": "block-end",
+            "index": 0,
+            "block": {
+              "type": "text",
+              "text": "ok"
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042236,
+          "chunk": {
+            "type": "usage",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 2
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042236,
+          "chunk": {
+            "type": "finish",
+            "reason": {
+              "kind": "stop"
+            }
+          }
+        }
+      ]
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "step/end",
+    "seq": 23,
+    "time": 1792499042236,
+    "data": {
+      "turn": 2,
+      "step": 1
+    }
+  },
+  {
+    "type": "turn/end",
+    "seq": 24,
+    "time": 1792499042237,
+    "data": {
+      "turn": 2,
+      "reason": {
+        "kind": "completed"
+      }
+    }
+  },
+  {
+    "type": "agent/inbox/spliced",
+    "seq": 25,
+    "time": 1792499042237,
+    "data": {
+      "target": "next-turn",
+      "start": 0,
+      "inserted": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "讲讲三点"
+            }
+          ],
+          "source": {
+            "kind": "user"
+          },
+          "role": "user",
+          "id": "47e9f7cc-b406-4ede-a4d7-46ce7e92ef1a"
+        }
+      ]
+    }
+  },
+  {
+    "type": "turn/start",
+    "seq": 26,
+    "time": 1792499042237,
+    "data": {
+      "turn": 3
+    }
+  },
+  {
+    "type": "agent/inbox/spliced",
+    "seq": 27,
+    "time": 1792499042237,
+    "data": {
+      "target": "next-turn",
+      "start": 0,
+      "removedCount": 1,
+      "inserted": []
+    }
+  },
+  {
+    "type": "step/start",
+    "seq": 28,
+    "time": 1792499042237,
+    "data": {
+      "turn": 3,
+      "step": 1
+    }
+  },
+  {
+    "type": "user/message",
+    "seq": 29,
+    "time": 1792499042237,
+    "data": {
+      "content": [
+        {
+          "type": "text",
+          "text": "讲讲三点"
+        }
+      ],
+      "source": {
+        "kind": "user"
+      },
+      "role": "user",
+      "id": "47e9f7cc-b406-4ede-a4d7-46ce7e92ef1a"
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "assistant/message",
+    "seq": 30,
+    "time": 1792499042268,
+    "data": {
+      "turn": 3,
+      "step": 1,
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "第一点是"
+          }
+        ],
+        "source": {
+          "kind": "model",
+          "provider": "mock",
+          "model": "mock"
+        },
+        "id": "1efaba76-8071-4560-b571-b30599162a95"
+      },
+      "interrupted": true,
+      "stream": [
+        {
+          "type": "chunk",
+          "time": 1792499042237,
+          "chunk": {
+            "type": "block-start",
+            "index": 0,
+            "blockType": "text"
+          }
+        },
+        {
+          "type": "text-chunks",
+          "time0": 1792499042237,
+          "index": 0,
+          "dt": [],
+          "texts": [
+            "第一点是"
+          ]
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042237,
+          "chunk": {
+            "type": "block-end",
+            "index": 0,
+            "block": {
+              "type": "text",
+              "text": "第一点是"
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042237,
+          "chunk": {
+            "type": "block-start",
+            "index": 1,
+            "blockType": "tool-call"
+          }
+        },
+        {
+          "type": "tool-call-chunks",
+          "time0": 1792499042237,
+          "index": 1,
+          "dt": [],
+          "id": "c2",
+          "name": "echo",
+          "args": [
+            "{\"te"
+          ]
+        }
+      ]
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "step/end",
+    "seq": 31,
+    "time": 1792499042268,
+    "data": {
+      "turn": 3,
+      "step": 1
+    }
+  },
+  {
+    "type": "turn/end",
+    "seq": 32,
+    "time": 1792499042268,
+    "data": {
+      "turn": 3,
+      "reason": {
+        "kind": "aborted",
+        "reason": {
+          "kind": "user"
+        }
+      }
+    }
+  },
+  {
+    "type": "agent/inbox/spliced",
+    "seq": 33,
+    "time": 1792499042268,
+    "data": {
+      "target": "next-turn",
+      "start": 0,
+      "inserted": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "第二点展开讲讲"
+            }
+          ],
+          "source": {
+            "kind": "user"
+          },
+          "role": "user",
+          "id": "1d99f704-030c-4cd1-a9fc-94ae294efabd"
+        }
+      ]
+    }
+  },
+  {
+    "type": "turn/start",
+    "seq": 34,
+    "time": 1792499042268,
+    "data": {
+      "turn": 4
+    }
+  },
+  {
+    "type": "agent/inbox/spliced",
+    "seq": 35,
+    "time": 1792499042268,
+    "data": {
+      "target": "next-turn",
+      "start": 0,
+      "removedCount": 1,
+      "inserted": []
+    }
+  },
+  {
+    "type": "step/start",
+    "seq": 36,
+    "time": 1792499042268,
+    "data": {
+      "turn": 4,
+      "step": 1
+    }
+  },
+  {
+    "type": "user/message",
+    "seq": 37,
+    "time": 1792499042269,
+    "data": {
+      "content": [
+        {
+          "type": "text",
+          "text": "第二点展开讲讲"
+        }
+      ],
+      "source": {
+        "kind": "user"
+      },
+      "role": "user",
+      "id": "1d99f704-030c-4cd1-a9fc-94ae294efabd"
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "assistant/message",
+    "seq": 38,
+    "time": 1792499042269,
+    "data": {
+      "turn": 4,
+      "step": 1,
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "第二点是……"
+          }
+        ],
+        "source": {
+          "kind": "model",
+          "provider": "mock",
+          "model": "mock"
+        },
+        "id": "afc335c5-b171-42f9-8f19-f4b311e6e9d8"
+      },
+      "usage": {
+        "inputTokens": 10,
+        "outputTokens": 6
+      },
+      "stream": [
+        {
+          "type": "chunk",
+          "time": 1792499042269,
+          "chunk": {
+            "type": "block-start",
+            "index": 0,
+            "blockType": "text"
+          }
+        },
+        {
+          "type": "text-chunks",
+          "time0": 1792499042269,
+          "index": 0,
+          "dt": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "texts": [
+            "第",
+            "二",
+            "点",
+            "是",
+            "…",
+            "…"
+          ]
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042269,
+          "chunk": {
+            "type": "block-end",
+            "index": 0,
+            "block": {
+              "type": "text",
+              "text": "第二点是……"
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042269,
+          "chunk": {
+            "type": "usage",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 6
+            }
+          }
+        },
+        {
+          "type": "chunk",
+          "time": 1792499042269,
+          "chunk": {
+            "type": "finish",
+            "reason": {
+              "kind": "stop"
+            }
+          }
+        }
+      ]
+    },
+    "surfaceOp": "append"
+  },
+  {
+    "type": "step/end",
+    "seq": 39,
+    "time": 1792499042269,
+    "data": {
+      "turn": 4,
+      "step": 1
+    }
+  },
+  {
+    "type": "turn/end",
+    "seq": 40,
+    "time": 1792499042269,
+    "data": {
+      "turn": 4,
+      "reason": {
+        "kind": "completed"
+      }
+    }
+  }
+]

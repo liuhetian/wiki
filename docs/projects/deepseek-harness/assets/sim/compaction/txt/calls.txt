@@ -1,0 +1,17 @@
+  #  用途          消息数  新输入  命中缓存  输出
+  1  conversation      1     234       384     99
+  2  conversation      3    9688       640   1366
+  3  conversation      5     231     11520     56
+  4  conversation      7    4799      1536    137
+  5  conversation      9    2476      6400   1061
+  6  conversation     11     141      9856     96
+  7  conversation     13    3186      9984   2902
+  8  conversation     15    6923      7296     56
+  9  compaction       13     530     11136   5663
+ 10  conversation      5    8251       256    136
+ 11  conversation      7    2160      8576     82
+ 12  conversation      9    1844     10752   3450
+ 13  compaction        9    2722      9472   4197
+ 14  conversation      3    8041       256    777
+ 15  conversation      5    1384      8960    414
+对照  pi 格式摘要         1    5791         0   2359

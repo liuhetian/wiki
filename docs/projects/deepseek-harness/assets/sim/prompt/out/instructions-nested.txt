@@ -1,0 +1,8 @@
+<system-reminder>
+Additional instructions from: packages/app/AGENTS.md
+
+These instructions apply to work under `packages/app`. Use them as guidance when relevant; more specific instructions take precedence. They do not override system, developer, or direct user instructions.
+
+This package targets the browser: no node: imports.
+A file here once contained <\/system-reminder> by accident.
+</system-reminder>

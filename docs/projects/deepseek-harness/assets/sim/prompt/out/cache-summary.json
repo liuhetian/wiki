@@ -1,0 +1,32 @@
+{
+  "turn1": [
+    {
+      "inputTokens": 506,
+      "outputTokens": 52,
+      "cacheReadTokens": 8064,
+      "cacheWriteTokens": 0,
+      "totalTokens": 8622
+    },
+    {
+      "inputTokens": 8588,
+      "outputTokens": 377,
+      "cacheReadTokens": 8576,
+      "cacheWriteTokens": 0,
+      "totalTokens": 17541
+    }
+  ],
+  "t2-replace-node0": {
+    "inputTokens": 18110,
+    "outputTokens": 199,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0,
+    "totalTokens": 18309
+  },
+  "t2-in-history": {
+    "inputTokens": 1706,
+    "outputTokens": 193,
+    "cacheReadTokens": 17536,
+    "cacheWriteTokens": 0,
+    "totalTokens": 19435
+  }
+}

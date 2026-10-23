@@ -1,0 +1,23 @@
+[
+  {
+    "name": "working-directory:current"
+  },
+  {
+    "name": "sandbox:policy"
+  },
+  {
+    "name": "approval:policy"
+  },
+  {
+    "name": "tool:subagent_fork:depth"
+  },
+  {
+    "name": "tool:subagent:depth"
+  },
+  {
+    "name": "harness:source"
+  },
+  {
+    "name": "app:web-surface"
+  }
+]

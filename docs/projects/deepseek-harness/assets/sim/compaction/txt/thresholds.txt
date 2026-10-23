@@ -1,0 +1,9 @@
+contextWindow = 1000000, reservedCompletionTokens = 256000
+
+# 产品默认（base 组合包不给 compaction-basic 配置）
+thresholdRatio=0.8 headroomTokens=65536 retainRatio=0.16 maxTokens=65536
+thresholdTokens=678464 retainTokens=119040 compactionRetries=1 maxOverflowRetries=1
+
+# run.ts 的演示配置
+thresholdRatio=0.015 headroomTokens=65536 retainTokens=3000 maxTokens=65536
+thresholdTokens=15000 retainTokens=3000 compactionRetries=1 maxOverflowRetries=1

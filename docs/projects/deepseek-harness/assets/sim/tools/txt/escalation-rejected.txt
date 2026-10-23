@@ -1,0 +1,10 @@
+ 1 permission/preset  {"preset": "workspace-write"}
+ 2 sandbox/mode       {"mode": "workspace-write"}
+ 3 approval/policy    {"policy": "ask"}
+14 assistant/message  (tool call)
+15 tool/call          bash  command="printf 'escalated\\n' > /tmp/dsh-escalated.txt && cat /tmp/dsh-escalated.txt && rm /tmp/dsh-escalated.txt"
+      sandbox_permissions='danger-full-access'  justification='the user asked to write a file outside the workspace'
+16 approval/asked     reason='escalate sandbox to danger-full-access: the user asked to write a file outside the workspace'
+17 approval/decided   outcome=rejected
+18 tool/result        isError=True  'Error: the user rejected escalating this command to "danger-full-access"; it stays denied, so stop and explain instead of working around it'
+21 assistant/message  text='The user rejected the permission escalation, so this command cannot be run.'

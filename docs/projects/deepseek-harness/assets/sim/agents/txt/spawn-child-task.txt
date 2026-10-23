@@ -1,0 +1,3 @@
+According to the DeepSeek Harness architecture design document, which event lets a listener stop a turn, and what kind of event is it? Answer in one sentence.
+
+Context from the design document (quote): "`agent/pre-step`, `agent/request`, `llm/stream`, and the three `tools/*` events are waterfalls, whose listeners must call `next()` to delegate; `agent/turn-stopping` is serial and has no `next()`."

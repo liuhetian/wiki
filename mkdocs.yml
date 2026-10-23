@@ -92,6 +92,10 @@ plugins:
   # deploy.sh 那行只捞 *.md 的 rsync 带上桶。
   - meta
 
+  # 点图片弹出遮罩放大，左右翻同页的其他图，Esc 关掉。Zensical 内置，把正文里没套链接的图包成
+  # a.glightbox；套了链接的图点了照旧跳转。灯箱的 JS 和 CSS 由 overrides/main.html 从 vendor/glightbox/ 引入，不走 CDN
+  - glightbox
+
   # 挪文件时留重定向，替代旧地址存根页。左旧右新，都写 docs/ 内的相对路径；
   # 支持 old.md#anchor 形式的锚点级重定向（0.0.61+），改标题不炸别人的书签。
   # 注意它只修好人那一半：产物是 site/<旧路径>/index.html 里一条 meta refresh，
@@ -139,7 +143,8 @@ plugins:
         skills/wiki-guide/mkdocs-wiki/index.md#age-mosaic: skills/wiki-guide/reference/components.md#age-mosaic
         skills/wiki-guide/mkdocs-wiki/index.md#timeline: skills/wiki-guide/reference/components.md#timeline
         skills/wiki-guide/mkdocs-wiki/index.md#no-copy: skills/wiki-guide/reference/components.md#no-copy
-        skills/wiki-guide/mkdocs-wiki/index.md#marker-doodle-images: skills/wiki-guide/reference/marker-doodle.md
+        skills/wiki-guide/mkdocs-wiki/index.md#marker-doodle-images: skills/wiki-guide/reference/infographic.md
+        skills/wiki-guide/reference/marker-doodle.md: skills/wiki-guide/reference/infographic.md
         skills/wiki-guide/mkdocs-wiki/index.md#absorbed-skill: skills/wiki-guide/skill.md#principles
         skills/wiki-guide/course-page.md: skills/wiki-guide/course.md
         skills/wiki-guide/remote-skill.md: skills/wiki-guide/skill.md#principles
@@ -197,6 +202,12 @@ plugins:
         # 2026-10-19 取消视频笔记板块：魔术题进 notes 智力题，花卉笔记并进 Gallery 成品页
         posts/video-notes/five-card-trick.md: notes/probability/five-card-trick.md
         posts/video-notes/flower-growth-poster.md: gallery/video/flower-growth-poster.md
+        # 2026-10-20 粗讲项目、细讲项目从对话提示词挪出来，单独成顶层 skill「调研项目」
+        skills/collab/chat-prompts/project-gist.md: skills/project-research/gist.md
+        skills/collab/chat-prompts/project-dissect.md: skills/project-research/dissect.md
+        # 2026-10-20 AI 调研写手册退役，调研仓库改用「调研项目」；SillyTavern 调研计划的成品在项目拆解
+        skills/book-writer/index.md: skills/project-research/index.md
+        skills/book-writer/reference/goal-st.md: projects/sillytavern/index.md
         posts/video-notes/index.md: posts/index.md
         # 2026-10-17 视频笔记改名整理视频为笔记、拆成下载分析输出三段，B站接口笔记并进 agent-io
         skills/video-note/references/bilibili-api-notes.md: skills/agent-io/reference/share-link/bilibili.md
@@ -614,7 +625,7 @@ nav:
           - skills/wiki-guide/index.md
           - 自研组件: skills/wiki-guide/reference/components.md
           - 分支: skills/wiki-guide/reference/branch.md
-          - 配图: skills/wiki-guide/reference/marker-doodle.md
+          - 配图: skills/wiki-guide/reference/infographic.md
           - 课程页怎么写: skills/wiki-guide/course.md
           - 收纳 skill: skills/wiki-guide/skill.md
           - 精简检查（按需引用）: skills/wiki-guide/trim.md
@@ -631,6 +642,7 @@ nav:
               - 抖音: skills/agent-io/reference/share-link/douyin.md
               - B 站: skills/agent-io/reference/share-link/bilibili.md
               - 微信公众号: skills/agent-io/reference/share-link/wechat-mp.md
+          - 读取邮箱: skills/agent-io/reference/mail.md
           - 生成语音: skills/agent-io/reference/tts.md
           - 生成音乐: skills/agent-io/reference/music.md
           - 生成、编辑图片: skills/agent-io/reference/image.md
@@ -642,6 +654,14 @@ nav:
               - 动作迁移: skills/agent-io/reference/video/motion-transfer.md
           - 调用 DeepSeek: skills/agent-io/reference/deepseek.md
           - 结构化判断: skills/agent-io/reference/jev.md
+      - 获取热点:
+          - skills/hot-topics/index.md
+          - AIHOT: skills/hot-topics/reference/aihot.md
+          - linux.do 日报: skills/hot-topics/reference/linuxdo-daily.md
+      - 调研项目:
+          - skills/project-research/index.md
+          - 粗讲项目: skills/project-research/gist.md
+          - 细讲项目: skills/project-research/dissect.md
       - 整理视频为笔记: skills/video-note/index.md
       - HyperFrames 视频:
           - skills/hyperframes/index.md
@@ -1128,6 +1148,18 @@ nav:
               - 情侣写真骨架: skills/photo-shoot/shooting/reference/couple-prompt.md
               - 婚纱骨架: skills/photo-shoot/shooting/reference/wedding-prompt.md
               - 单人与群像骨架: skills/photo-shoot/shooting/reference/group-prompt.md
+      - 视频生成:
+          - skills/video-gen/index.md
+          - 东方仙侠视觉导演:
+              - skills/video-gen/xianxia-visual-director/index.md
+              - 视觉 DNA: skills/video-gen/xianxia-visual-director/reference/visual-dna.md
+              - 仙侠总则: skills/video-gen/xianxia-visual-director/reference/xianxia-master-rules.md
+              - 画幅: skills/video-gen/xianxia-visual-director/reference/aspect-ratios.md
+              - 构图、色彩与光线库: skills/video-gen/xianxia-visual-director/reference/composition-color-light.md
+              - 东方苍穹巨构: skills/video-gen/xianxia-visual-director/reference/eastern-sky-megastructure-style.md
+              - 神域聚居地: skills/video-gen/xianxia-visual-director/reference/celestial-realm-route.md
+              - 仙界大境原典: skills/video-gen/xianxia-visual-director/reference/celestial-grand-realm-canon.md
+              - 提示词示例: skills/video-gen/xianxia-visual-director/reference/prompt-examples.md
       - FastAPI 后端:
           - skills/fastapi/index.md
           - 项目布局: skills/fastapi/reference/项目布局.md
@@ -1296,7 +1328,6 @@ nav:
               - 查证与研究:
                   - 事实核查: skills/collab/chat-prompts/fact-check.md
                   - 纵横分析法: skills/collab/chat-prompts/cross-axis.md
-                  - 粗讲项目: skills/collab/chat-prompts/project-gist.md
                   - 根因追踪: skills/collab/chat-prompts/root-cause.md
                   - 实事求是: skills/collab/chat-prompts/seek-truth.md
               - 学概念:
@@ -1319,9 +1350,6 @@ nav:
                   - 分析框架: skills/collab/image-prompt-reverse/get-prompt-from-image/references/analysis-framework.md
                   - 题材与媒介: skills/collab/image-prompt-reverse/get-prompt-from-image/references/category-guides.md
                   - 插画风格: skills/collab/image-prompt-reverse/get-prompt-from-image/references/illustration-style.md
-      - AI 调研写手册:
-          - skills/book-writer/index.md
-          - SillyTavern 调研计划: skills/book-writer/reference/goal-st.md
   - Gallery:
       - gallery/index.md
       - 图片:
@@ -1354,6 +1382,10 @@ nav:
               - gallery/images/gpt-image2/gallery-cinematic-and-animation.md
               - gallery/images/gpt-image2/gallery-cinematic-film-references.md
               - gallery/images/collected/gallery-portrait-templates.md
+          - 拍照姿势:
+              - gallery/images/xhs-poses/gallery-ins-poses.md
+              - gallery/images/xhs-poses/gallery-faceless-poses.md
+              - gallery/images/xhs-poses/gallery-lifestyle-poses.md
           - 产品与空间:
               - gallery/images/gpt-image2/gallery-product-and-food.md
               - gallery/images/gpt-image2/gallery-architecture-and-interior.md
@@ -1438,16 +1470,48 @@ nav:
                   - Wearable 一幕: gallery/web/frontend-styles/oryzo/wearable-scene.md
                   - RGB 呼吸光边: gallery/web/frontend-styles/oryzo/rgb-glow-border.md
           - Sandboard WebGPU 沙盘: gallery/web/sandboard/index.md
+      - 人设:
+          - gallery/personas/index.md
+          - gallery/personas/seoa.md
   - 项目拆解:
       - projects/index.md
       - 梨园 Liyuan:
           - projects/liyuan/index.md
-          - 分权的反复: projects/liyuan/harness.md
-          - 场记账本: projects/liyuan/scribe.md
-          - 跨局记忆: projects/liyuan/memory.md
-          - 酒馆资产兼容: projects/liyuan/tavern.md
-          - agent 模式与沙箱: projects/liyuan/agent-mode.md
-          - 作者怎么用 AI 开发: projects/liyuan/ai-dev.md
+          - 设定从哪来: projects/liyuan/setting.md
+          - 状态别漂移: projects/liyuan/state.md
+          - 聊久了: projects/liyuan/memory.md
+          - 重来和回档: projects/liyuan/branch.md
+          - 正文怎么产出: projects/liyuan/prose.md
+          - 谁来定制，能改到哪: projects/liyuan/custom.md
+      - 酒馆 SillyTavern:
+          - projects/sillytavern/index.md
+          - 角色卡: projects/sillytavern/card.md
+          - 世界书: projects/sillytavern/lorebook.md
+          - 每轮现拼 prompt: projects/sillytavern/assembly.md
+          - 一份内容喂各种模型: projects/sillytavern/adapt.md
+          - 重来、分叉、改历史: projects/sillytavern/branch.md
+          - 聊久了: projects/sillytavern/memory.md
+          - 多角色同场: projects/sillytavern/group.md
+          - 用户自己加规则: projects/sillytavern/rules.md
+      - DeepSeek Harness:
+          - projects/deepseek-harness/index.md
+          - 插件: projects/deepseek-harness/plugin.md
+          - 会话日志: projects/deepseek-harness/log.md
+          - 拼 prompt: projects/deepseek-harness/prompt.md
+          - 压缩与补丁文本: projects/deepseek-harness/compaction.md
+          - 工具与安全边界: projects/deepseek-harness/tools.md
+          - 多 agent 与长时工作: projects/deepseek-harness/agents.md
+      - OpenAI Evals:
+          - projects/openai-evals/index.md
+          - 登记: projects/openai-evals/registry.md
+          - 判分: projects/openai-evals/grading.md
+          - 被测对象: projects/openai-evals/solver.md
+          - 多轮: projects/openai-evals/multiturn.md
+          - 跑和记: projects/openai-evals/record.md
+      - Teable: projects/teable/index.md
+      - Coolify: projects/coolify/index.md
+      - Pyodide: projects/pyodide/index.md
+      - Frappe Gantt: projects/frappe-gantt/index.md
       - DeepSeek 视频问答: projects/deepseek-video-rag/index.md
   - 维护:
       - maintenance/index.md
@@ -1469,6 +1533,7 @@ nav:
           - 从图反推 prompt: maintenance/skills/get-prompt-from-image.md
           - 七维拆解: maintenance/skills/seven-dimensions.md
           - 对话提示词: maintenance/skills/chat-prompts.md
+          - 调研项目: maintenance/skills/project-research.md
           - 整理视频为笔记: maintenance/skills/video-note.md
           - 花卉动态生长海报: maintenance/skills/flower-growth-poster.md
           - anidoodle 代码手绘: maintenance/skills/anidoodle.md
@@ -1479,13 +1544,22 @@ nav:
           - Lieflat Charts: maintenance/skills/lieflat-charts.md
           - 手绘风格出图: maintenance/skills/handdraw.md
           - 写真拍摄企划: maintenance/skills/photo-shoot.md
+          - 东方仙侠视觉导演: maintenance/skills/xianxia-visual-director.md
+          - 配图：手绘信息图: maintenance/skills/infographic.md
+          - 获取热点: maintenance/skills/hot-topics.md
       - Gallery 收录:
           - GPT Image 2 图库: maintenance/gallery/gpt-image2.md
           - prompt-cards 生图条目: maintenance/gallery/prompt-cards.md
           - 二次元平面设计风格: maintenance/gallery/linux-do-style.md
+          - 小红书拍照姿势: maintenance/gallery/xhs-poses.md
           - 图片区零散收集: maintenance/gallery/images-collected.md
           - 色彩区零散收集: maintenance/gallery/colors-collected.md
           - 视频区零散收集: maintenance/gallery/video-collected.md
+      - 项目拆解:
+          - 梨园 Liyuan: maintenance/projects/liyuan.md
+          - 酒馆 SillyTavern: maintenance/projects/sillytavern.md
+          - DeepSeek Harness: maintenance/projects/deepseek-harness.md
+          - OpenAI Evals: maintenance/projects/openai-evals.md
       - 实测用的示例:
           - 测试skill:
               - maintenance/mock-bundle/index.md

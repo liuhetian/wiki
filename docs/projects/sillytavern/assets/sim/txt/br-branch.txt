@@ -1,0 +1,29 @@
+目录里：塞拉菲娜 - 实跑 - Branch #1.jsonl、塞拉菲娜 - 实跑.jsonl
+父聊天 12 行，分支 6 行（第一行是文件头）
+
+分支的文件头：
+{
+ "chat_metadata": {
+  "note_prompt": "",
+  "note_interval": 1,
+  "note_position": 1,
+  "note_depth": 4,
+  "note_role": 0,
+  "tainted": true,
+  "timedWorldInfo": {
+   "sticky": {},
+   "cooldown": {}
+  },
+  "integrity": "57d90292-993b-4dea-a805-cd36f1ab4fe1",
+  "variables": {
+   "好感": 35
+  },
+  "main_chat": "塞拉菲娜 - 实跑"
+ },
+ "user_name": "unused",
+ "character_name": "unused"
+}
+
+分支第 4 条：*塞拉菲娜眉头微微蹙起，语气温和却带着一丝担忧。* “你的伤不轻，至少要静养两三天才能再赶路。” *她停顿片刻，琥珀色的……
+父聊天第 4 条：*塞拉菲娜眉头一皱，握着你的手不觉紧了些。* “北边的镇子？” *她缓缓摇头，眼里掠过一丝忧虑。* “旅人，北边的路已经……
+父聊天第 4 条的 extra.branches = ["塞拉菲娜 - 实跑 - Branch #1"]

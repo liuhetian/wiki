@@ -1,0 +1,8 @@
+fork:  parent, turn 2 step 1 (calls the tool) #2   messages  3  input  10015  cache hit   9856  uncached   159
+fork:  child, first request                  #4   messages  3  input  10367  cache hit   9856  uncached   511
+spawn: parent, turn 2 step 1 (calls the tool) #10  messages  3  input  10036  cache hit   9856  uncached   180
+spawn: child, first request                  #12  messages  1  input   6051  cache hit   5376  uncached   675
+
+fork child  vs its parent: tools equal True, system equal True, first 2 messages equal True
+spawn child vs its parent: tools equal True, system equal True, first message equal False
+model deepseek-flash, thinking {'type': 'enabled'}, output_config {'effort': 'high'}, max_tokens 256000
