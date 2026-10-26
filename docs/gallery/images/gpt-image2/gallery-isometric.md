@@ -2,13 +2,13 @@
 
 ### 等距视角微缩咖啡街区
 
-<img src="assets/isometric/isometric-cafe.png" alt="isometric cafe" width="420" loading="lazy" decoding="async"/>
+<img src="assets/isometric/isometric-cafe.webp" alt="isometric cafe" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一个精细的等距视角 3D 微缩场景，表现一个占两个街区的咖啡街区，几何形体干净，严格对齐 30° 等距透视。街角一家咖啡馆，门外有带遮阳伞的座位；隔壁是一家书店，透过橱窗能看到成摞的书；一家面包店，橱窗里陈列着糕点；路边停着一辆自行车；小广场上有一座小喷泉；种着小树的花箱；街角有一辆卖咖啡的餐车；姿态各异的风格化微缩行人；带通风细节的瓦片屋顶。柔和的环境光从左上方照来，没有生硬的阴影，粉彩加低饱和的配色（赤陶色屋顶、奶油色墙面、鼠尾草绿、灰蓝点缀），轻微的大气薄雾，角落里细微的环境光遮蔽（ambient occlusion），高细节的微缩材质。专业级渲染质量，适合杂志或营销物料。背景是单一柔和奶油色的纯色平涂，没有地面阴影，场景像微缩模型（diorama）一样悬浮。
 ```
 
-<img src="assets/isometric/cafe-cutaway-sunburst.png" alt="Sunburst night cafe district with cutaway interiors and rooftop greenhouse" width="420" loading="lazy" decoding="async"/>
+<img src="assets/isometric/cafe-cutaway-sunburst.webp" alt="Sunburst night cafe district with cutaway interiors and rooftop greenhouse" width="420" loading="lazy" decoding="async"/>
 
 ```text
 以参考图作为布局锚点，制作一个细节丰富的等距视角咖啡街区（两个街区），时间是蓝调时刻。保留可辨认的街道占地、街角咖啡馆、隔壁书店、面包店和喷泉广场。把它改造成三层楼的建筑剖面微缩模型，保持统一的 30 度等距几何。
@@ -20,7 +20,7 @@
 
 ### 等距视角奇幻村庄地图
 
-<img src="assets/isometric/isometric-fantasy-village.png" alt="isometric fantasy village" width="420" loading="lazy" decoding="async"/>
+<img src="assets/isometric/isometric-fantasy-village.webp" alt="isometric fantasy village" width="420" loading="lazy" decoding="async"/>
 
 ```text
 制作一张色彩鲜明的等距视角奇幻村庄地图，采用干净的网格布局，每格 3x3 米。包含茅草屋顶的木屋、鹅卵石小路和一座位于中央的石头喷泉。地图的一角隆起成一座约 2 米高的长草小山丘，有台阶连到下方的地面。等距角度要精确，可直接用于游戏。温暖的阳光投下清晰的光束，在屋顶上拉出长长的影子。让场景读起来像一张手工制作的策略游戏地图，格子逻辑清晰，环境细节讨喜，色彩丰富但有节制。

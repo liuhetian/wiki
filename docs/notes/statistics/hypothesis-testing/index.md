@@ -6,7 +6,7 @@ description: "p 值只度量数据与零假设的冲突，不等于效应大小�
 
 假设检验把一个可反驳的零假设放在台上，问：**若零假设和分析假设都成立，当前或更极端的数据有多罕见？** 它不计算零假设为真的概率。
 
-![p 值关注零假设分布尾部中与观测同样极端的结果](assets/p-value-tail-marker-doodle.png)
+![p 值关注零假设分布尾部中与观测同样极端的结果](assets/p-value-tail-marker-doodle.webp)
 
 ## 一次检验的六个部件
 

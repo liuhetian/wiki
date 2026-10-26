@@ -37,7 +37,7 @@ AI 角色扮演（LLM roleplay，RP）· 角色扮演前端（RP frontend）· r
 - **梨园自称 RP agent**：沿用酒馆的卡、世界书、预设格式，把生成那一步换成 coding agent 的架构——工具循环、文件、会话树
 
 <figure markdown>
-  ![梨园主界面：左栏角色卡库，中间是最近会话，顶栏有「扮演 / 工作」两种模式，底部是世界状态条和输入框](assets/home.png)
+  ![梨园主界面：左栏角色卡库，中间是最近会话，顶栏有「扮演 / 工作」两种模式，底部是世界状态条和输入框](assets/home.webp)
   <figcaption>主界面，取自梨园 README</figcaption>
 </figure>
 
@@ -47,7 +47,7 @@ AI 角色扮演（LLM roleplay，RP）· 角色扮演前端（RP frontend）· r
 ### 一、设定从哪来 { #setting }
 
 <figure markdown>
-  ![每轮的设定分四层：常驻的角色卡和蓝灯条目、命中只给标题的绿灯条目、模型按需检索的正文、模型新写的补充设定集](assets/setting-sources-infographic.png)
+  ![每轮的设定分四层：常驻的角色卡和蓝灯条目、命中只给标题的绿灯条目、模型按需检索的正文、模型新写的补充设定集](assets/setting-sources-infographic.webp)
 </figure>
 
 1. 每开一个对话都要重贴人设 → **角色卡**：人设和开场白打包成一个文件，兼容酒馆的卡
@@ -61,7 +61,7 @@ AI 角色扮演（LLM roleplay，RP）· 角色扮演前端（RP frontend）· r
 ### 二、状态别漂移 { #state }
 
 <figure markdown>
-  ![一个场景由地点、时间、人物（好感、处境、备注、所在地）、离场、物品、零散事实、伏笔和登场名录组成](assets/scene-state-infographic.png)
+  ![一个场景由地点、时间、人物（好感、处境、备注、所在地）、离场、物品、零散事实、伏笔和登场名录组成](assets/scene-state-infographic.webp)
 </figure>
 
 1. 谁拿着什么、现在几点，全靠模型从聊天记录里回忆，否定的事最容易丢：礼物被拒了，下一轮东西已经在对方手里 → **场景快照**：记时间、地点、人物好感和所在地、物品归属、伏笔，每轮放在用户原话前面注入
@@ -75,7 +75,7 @@ AI 角色扮演（LLM roleplay，RP）· 角色扮演前端（RP frontend）· r
 ### 三、聊久了 { #long }
 
 <figure markdown>
-  ![记忆分三层：最近 6 轮原文、本局前情提要、往局常驻摘要，越早压得越狠；旁边是可选的向量记忆库](assets/memory-layers-infographic.png)
+  ![记忆分三层：最近 6 轮原文、本局前情提要、往局常驻摘要，越早压得越狠；旁边是可选的向量记忆库](assets/memory-layers-infographic.webp)
 </figure>
 
 1. 历史全量回放，聊长了上下文就爆 → **剧情压缩**：最近 6 轮留原文，更早的交给旁路模型写成五节摘要，开头以一条【前情提要】回放
@@ -90,7 +90,7 @@ AI 角色扮演（LLM roleplay，RP）· 角色扮演前端（RP frontend）· r
 ### 四、重来和回档 { #branch }
 
 <figure markdown>
-  ![会话是一棵树：每轮挂一份场景快照，重新生成是同级分支，废弃分支的账留在原地，从存档可以分出新世界线](assets/branch-tree-infographic.png)
+  ![会话是一棵树：每轮挂一份场景快照，重新生成是同级分支，废弃分支的账留在原地，从存档可以分出新世界线](assets/branch-tree-infographic.webp)
 </figure>
 
 1. 有了账本以后，被废掉的那版已经记过账 → **会话树**：重新生成是同级分支，快照和摘要存成树上的条目、按当前分支现算，废分支的账天然不在新分支上
@@ -103,7 +103,7 @@ AI 角色扮演（LLM roleplay，RP）· 角色扮演前端（RP frontend）· r
 ### 五、正文怎么产出 { #prose }
 
 <figure markdown>
-  ![扮演模式一轮的七步：用户说一句、先查、写在稿纸上、定点改、ask 决策卡、收笔、场记记账](assets/beat-flow-infographic.png)
+  ![扮演模式一轮的七步：用户说一句、先查、写在稿纸上、定点改、ask 决策卡、收笔、场记记账](assets/beat-flow-infographic.webp)
 </figure>
 
 1. 回复一生成就定了，模型为了一次写对在思考里反复打草稿 → **稿纸**：正文写在引擎保管的草稿区，带版本号，能续写、定点改；`draft_seal` 收笔，这一轮就此结束
@@ -118,7 +118,7 @@ AI 角色扮演（LLM roleplay，RP）· 角色扮演前端（RP frontend）· r
 ### 六、谁来定制，能改到哪 { #custom }
 
 <figure markdown>
-  ![system prompt 由 SYSTEM.md、全局 APPEND_SYSTEM.md、卡级 APPEND_SYSTEM.md、卡的 AGENTS.md 四层拼成；酒馆预设被拆开分流，思考、草稿、输出格式、记账几类停用](assets/prompt-layers-infographic.png)
+  ![system prompt 由 SYSTEM.md、全局 APPEND_SYSTEM.md、卡级 APPEND_SYSTEM.md、卡的 AGENTS.md 四层拼成；酒馆预设被拆开分流，思考、草稿、输出格式、记账几类停用](assets/prompt-layers-infographic.webp)
 </figure>
 
 1. 引擎规则、角色设定、用户的规矩混在一段 prompt 里 → **提示词分层**：环境说明、扮演定义、卡的身份、卡的世界规则各一个文件；文件是正本，界面上是可开关的条目
@@ -132,7 +132,7 @@ AI 角色扮演（LLM roleplay，RP）· 角色扮演前端（RP frontend）· r
 ### 七、数据带得走 { #storage }
 
 <figure markdown>
-  ![一张卡就是一个文件夹：角色卡本体、卡.json、补充设定集、记忆、技能、每局一个对话目录、改卡的创作工程](assets/card-folder-infographic.png)
+  ![一张卡就是一个文件夹：角色卡本体、卡.json、补充设定集、记忆、技能、每局一个对话目录、改卡的创作工程](assets/card-folder-infographic.webp)
 </figure>
 
 1. 一张卡的会话、账本、记忆散在全局目录里，换电脑带不走 → **卡就是工作空间**：全部收进 `cards/<卡>/`，整个目录拷走就能接着玩。只有这一项，不另开页

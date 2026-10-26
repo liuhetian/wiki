@@ -2,7 +2,7 @@
 
 ### 宋朝人的朋友圈
 
-<img src="assets/infographics-field-guides/song-dynasty-feed.png" alt="song dynasty feed" width="420" loading="lazy" decoding="async"/>
+<img src="assets/infographics-field-guides/song-dynasty-feed.webp" alt="song dynasty feed" width="420" loading="lazy" decoding="async"/>
 
 ```text
 "Song Dynasty People's Moments"/"SONG DYNASTY SOCIAL MEDIA FEED"，古今穿越幽默融合的界面设计风格，画面模拟手机社交媒体界面，但内容全是宋代场景，头像是一位宋代文人的肖像，用户名 "Su Dongpo SuShi_Official"，动态正文 "Just arrived in Huangzhou, demoted but feeling okay. Made Dongpo pork myself today, tastes amazing, recipe attached:"，配图是一张工笔画风格的东坡肉特写，点赞列表 "Huang Tingjian, Qin Guan, Fo Yin etc. 126 people"，评论区 "Wang Anshi: Hehe" "Sima Guang: Still the same taste"，点赞图标等界面元素替换为宋代纹样，状态栏显示 "Great Song Mobile 5G" 和 "Third Year of Yuanfeng"，配色为手机深色模式搭配雅致的宋代色调，一件历史与社交媒体趣味碰撞的杰作
@@ -10,7 +10,7 @@
 
 ### 博物馆图录式拆解信息图（唐代襦裙）
 
-<img src="assets/infographics-field-guides/museum-infographic.png" alt="museum infographic" width="420" loading="lazy" decoding="async"/>
+<img src="assets/infographics-field-guides/museum-infographic.webp" alt="museum infographic" width="420" loading="lazy" decoding="async"/>
 
 ```text
 请根据【主题】自动生成一张 "博物馆图录式中文拆解信息图"。
@@ -33,7 +33,7 @@
 
 ### 百科图鉴（大熊猫）
 
-<img src="assets/infographics-field-guides/encyclopedia-panda.png" alt="encyclopedia panda" width="420" loading="lazy" decoding="async"/>
+<img src="assets/infographics-field-guides/encyclopedia-panda.webp" alt="encyclopedia panda" width="420" loading="lazy" decoding="async"/>
 
 ```text
 为【主题】生成一张高质量的竖版百科式信息图。
@@ -57,7 +57,7 @@
 
 ### 首尔周末旅行攻略海报
 
-<img src="assets/infographics-field-guides/seoul-travel-guide.png" alt="seoul travel guide" width="420" loading="lazy" decoding="async"/>
+<img src="assets/infographics-field-guides/seoul-travel-guide.webp" alt="seoul travel guide" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张精致的单页中文旅行攻略海报，主题是五月从南京到首尔的周末快闪游。使用大号、高度易读的中文文字，只用短语，不要成段文字。重点放在购物、护肤和一条时髦的圣水洞（Seongsu-dong）路线上。版式：大标题，只有 4 个模块（行程 / 区域推荐 / 购物清单 / 美妆护肤），每个模块 2 到 4 条简短要点，再加一张带图标的可爱小路线图。干净的杂志风信息图风格，柔和的马卡龙色，间距整齐，可读性高，现代小红书旅行卡片美学。避免小字，避免密集的解释，避免乱码。
@@ -65,7 +65,7 @@
 
 ### 模块化百科信息卡片
 
-<img src="assets/infographics-field-guides/snow-leopard-encyclopedia-card.png" alt="snow leopard encyclopedia card" width="420" loading="lazy" decoding="async"/>
+<img src="assets/infographics-field-guides/snow-leopard-encyclopedia-card.webp" alt="snow leopard encyclopedia card" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张关于 "雪豹 Snow Leopard" 的高质量竖版科普百科卡片。它应该像一张可收藏的模块化知识信息图，而不是普通海报。包含一幅精美的主视觉插画、若干放大的细节标注、圆角信息模块、清晰的标题层级、紧凑的百科内容、评分卡片和一个 Top 5 冷知识模块。建议板块：基本档案、栖息地、外观、捕猎行为、保护风险、气候适应、适宜环境和速览评分卡。视觉风格：干净的浅色背景，柔和的配色，细微的阴影，精致的图标，圆角信息框，信息密集但可读，精致的杂志式版式，收藏价值高。
@@ -73,7 +73,7 @@
 
 ### 小红书菜谱教程卡片
 
-<img src="assets/infographics-field-guides/cooking-tutorial-card.png" alt="cooking tutorial card" width="420" loading="lazy" decoding="async"/>
+<img src="assets/infographics-field-guides/cooking-tutorial-card.webp" alt="cooking tutorial card" width="420" loading="lazy" decoding="async"/>
 
 ```text
 为家常葱油拌面制作一张小红书风格的爆款菜谱教程图，3:4 竖版。温馨的家常烹饪氛围，温暖诱人的生活方式美学，4 到 6 步的宫格版式，间距干净，写实美食摄影，柔和自然光，轻微胶片色调，暖色调色，可见油光、热气、酱汁质感，以及与食物互动的手部动作。加入少量中文小标注，例如 切葱、熬油、拌面、出锅。避免过于拥挤或文字过多。
@@ -81,7 +81,7 @@
 
 ### 给 iPhone 摄影爱好者的相机风格参考板
 
-<img src="assets/infographics-field-guides/camera-styles-infographic.png" alt="camera styles infographic" width="420" loading="lazy" decoding="async"/>
+<img src="assets/infographics-field-guides/camera-styles-infographic.webp" alt="camera styles infographic" width="420" loading="lazy" decoding="async"/>
 
 ```text
 给我做一张 35 mm 胶片风格的图，内容是一张图解，讲清楚相机风格、预设，以及一个想追求摄影爱好的 iPhone 摄影新人需要了解的相关知识。把它做成一块内容丰富的多面板参考板，带有标注的分区：胶片质感、数码预设、人像拍法、街头摄影风格、色温、颗粒、对比度、闪光灯、取景构图和常见错误。每种相机和预设风格都要以它本身的真实风格呈现，而不是统一用一种风格渲染。让它视觉上信息密集、极具教育意义、设计精美、便于快速浏览。
@@ -89,7 +89,7 @@
 
 ### 中文濒危动物信息图
 
-<img src="assets/infographics-field-guides/endangered-animal-chinese-infographic.png" alt="endangered animal chinese infographic" width="420" loading="lazy" decoding="async"/>
+<img src="assets/infographics-field-guides/endangered-animal-chinese-infographic.webp" alt="endangered animal chinese infographic" width="420" loading="lazy" decoding="async"/>
 
 ```text
 用中文创作一张视觉丰富的濒危动物信息图。先在网上找一种濒危动物，研究它的栖息地、食性和独特特征。通过带标注的图像和结构化的标注框来呈现信息，而不是千篇一律的分区。风格做成大胆的平面图形插画：以一只细节丰富、照片级写实的动物作为画面中心焦点，辅以图解、标注和简洁的文字元素。使用干净的背景，把照片级写实与强烈的图形元素（形状、图标、色块）混合在分层构图中。让它信息密集、有触感、像专业人士出品。

@@ -10,7 +10,7 @@
 
 ### *示例图：通用七维拆解*
 
-![02-general-example](02-general-example.jpeg)
+![02-general-example](02-general-example.webp)
 
 > **看图重点：** 主体是酒红色和纸折鹤；风格偏画册级静物摄影；配色为象牙白、暖灰与低饱和酒红；自然侧光配合轻微非对称构图；和纸纤维与洞石肌理清楚；氛围安静、克制、自信。
 
@@ -29,7 +29,7 @@
 设计类先看字形结构，再补材质、排版与配色，  
 提示词才更容易写准:
 
-![03-logo-example](03-logo-example.jpeg)
+![03-logo-example](03-logo-example.webp)
 
 > **看图重点：** 先辨认几何无衬线字形、字距与笔画比例，再观察石墨色拉丝金属、实体字标的空间关系、非对称留白、天然石材背景和柔和侧光。
 
@@ -49,7 +49,7 @@
 
 场景图重点看前中后景，再判断时间、天气与气氛，层次一理顺，画面就更容易被复现:
 
-![04-landscape-example](04-landscape-example.jpeg)
+![04-landscape-example](04-landscape-example.webp)
 
 > **看图重点：** 前景看岩石和芒草，中景看湖面与木屋，远景看山峰和云层；再判断蓝调时刻、地平线暖光、薄雾和广角镜头。
 
@@ -69,7 +69,7 @@
 
 摄影反推要优先锁定镜头、光线、景深和人物状态，把拍摄语言说清，AI才更容易对味:
 
-![05-portrait-example](05-portrait-example.jpeg)
+![05-portrait-example](05-portrait-example.webp)
 
 > **看图重点：** 观察 85mm 视角、浅景深、窗边侧逆光、发丝轮廓光、暖肤色与冷灰蓝环境，以及人物安静坚定的情绪。
 
@@ -89,7 +89,7 @@
 
 3D图要拆建模、材质、灯光、渲染器和后期，真实感往往就藏在这几项里
 
-![06-3d-example](06-3d-example.jpeg)
+![06-3d-example](06-3d-example.webp)
 
 > **看图重点：** 对比哑光黏土、镜面金属和磨砂玻璃，继续判断三点布光、反射/透光、体积光、台面布局与景深。
 
@@ -109,7 +109,7 @@
 
 角色类先看比例和五官，再看服装、材质与动作，辨识度高不高，通常就卡在这些地方
 
-![07-ip-character-example](07-ip-character-example.jpeg)
+![07-ip-character-example](07-ip-character-example.webp)
 
 > **看图重点：** 先看约 2.5 头身比例、烟熏玻璃圆眼和极简嘴型，再看低饱和鼠尾草绿/陶土橙配色、哑光 PVC 质感、三分之四挥手站姿、洞石台座与画册式留白。
 

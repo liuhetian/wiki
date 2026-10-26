@@ -1,7 +1,7 @@
 // age v1 解密核心：口令模式（scrypt）和公钥模式（X25519）都能解。纯函数，不碰 DOM。
 // 对照规范读：https://age-encryption.org/v1 。用的人：
 //   - vendor/age-init.js：全站打码（`age:…` 小字和 ```age 块），按需加载本文件
-//   - posts/wiki/assets/age-passphrase.html：解密演示页
+//   - projects/wiki/assets/age-passphrase.html：解密演示页
 // SHA-256 系（HMAC / HKDF / PBKDF2）用浏览器自带的 Web Crypto；scrypt、ChaCha20-Poly1305、
 // X25519、bech32 Web Crypto 没有（或不是每个浏览器都有），手写，不压缩，一眼能对上规范。
 (function () {

@@ -3,7 +3,7 @@ description: "梨园怎么让剧情状态不漂移：每轮一份场景快照，
 ---
 
 <figure markdown>
-  ![一个场景由地点、时间、人物（好感、处境、备注、所在地）、离场、物品、零散事实、伏笔和登场名录组成](assets/scene-state-infographic.png)
+  ![一个场景由地点、时间、人物（好感、处境、备注、所在地）、离场、物品、零散事实、伏笔和登场名录组成](assets/scene-state-infographic.webp)
 </figure>
 
 # 状态别漂移：每轮一份场景快照
@@ -43,7 +43,7 @@ description: "梨园怎么让剧情状态不漂移：每轮一份场景快照，
 ## 场记：收笔后另一次调用专门记账 { #scribe }
 
 <figure markdown>
-  ![每轮记一次账：上一份快照注入、主演收笔、场记读稿出 patch、程序按规则合并、新快照存进会话树，再进入下一轮](assets/scribe-loop-infographic.png)
+  ![每轮记一次账：上一份快照注入、主演收笔、场记读稿出 patch、程序按规则合并、新快照存进会话树，再进入下一轮](assets/scribe-loop-infographic.webp)
 </figure>
 
 **问题**：让主演一边写戏一边记账，它顾着写戏就漏记。
@@ -117,7 +117,7 @@ description: "梨园怎么让剧情状态不漂移：每轮一份场景快照，
 ## 登场名录：只增不删，记首次登场 { #roster }
 
 <figure markdown>
-  ![角色详情页右栏的登场名录：人物、地点、物品、事件四张表](assets/character-detail-roster.png)
+  ![角色详情页右栏的登场名录：人物、地点、物品、事件四张表](assets/character-detail-roster.webp)
 </figure>
 
 **问题**：快照只记当前值，模型分不清一个名字是新登场的还是早就出现过的老熟人。

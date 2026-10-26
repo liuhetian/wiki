@@ -14,6 +14,7 @@ copy_source: true
 
 ## 调研与收集
 
+- [收纳导诊](collect-triage.md) —— 要把外面的仓库、网站、帖子、视频或一批图收进本 wiki、还没想好怎么收时用：看来源到能分诊为止，文章线（给人读）和 skill 线（给 AI 读）分开判，一个来源可以两边都收；只问我能定的几件事，交出一份给下一个 agent 的交接 prompt —— 每条线用哪个 skill、收到哪、收多深、两边怎么互链，另附几句给人看的理由；只分诊，不动手
 - [调研项目](project-research/index.md) —— 要弄懂、拆解或复刻别人的项目时用：只想知道它是什么，用粗讲项目讲三四段大白话；要学它的设计，用细讲项目照论文骨架写一组文档；要从零复刻、对比同领域几个项目或做实验，用写书写成一本书。都先读源码，文档只当线索
 - [整理视频为笔记](video-note/index.md) —— 要把视频或图文帖整理成学习笔记时用：分下载、分析、输出三段，前两段跑 agent-io 的平台下载脚本和 video_read，取下内容、出关键帧和转写；输出段出证据索引和篇幅预算，Agent 按预算写学习型笔记，写完打分验收（吸纳自 Rimagination/bili-note）
 - [获取热点](hot-topics/index.md) —— 想知道 AI 圈此刻在热什么、最近发生了什么时用：当前热点榜和事件来龙去脉、过去 24 小时或一周的精选、按公司模型人物搜最近动态、日报周报月报；一个信息源一篇，现在接了 AIHOT 和 linux.do 日报（音频）
@@ -34,6 +35,7 @@ copy_source: true
 
 - [手绘风格出图](handdraw/index.md) —— 从 365 种画风、167 种版式、36 种主题色里挑组合拼成生图 prompt：单张图、海报、文章或视频封面、长文配图、两种画风融合、IP 形象全套卡片；数据在 Gallery 的手绘风格库，吸纳自 yang0/handraw-style
 - [写真拍摄企划](photo-shoot/index.md) —— 要策划人像拍摄、出写真样片时用：个人写真、情侣、婚纱、亲子、全家福、古风、Cosplay 等任意题材和人数；首轮出三张时空方向卡，选定后逐人定服装发型妆容、编 8 张 Shot，出一张 8 宫格预览和分享文案；出图走 agent-io，保存工程时带 9 个脚本（吸纳自 yang0/handraw-style 的 couple-photo-orchestrator，MIT）
+- [旧刊物海报](pulp-poster.md) —— 要把一张照片做成九十年代旧刊物电影海报时用：读图填场景卡，按有没有要认出来的脸选主体档位，在变化引擎里配方，编四段 prompt 调 gpt-image-2.5 编辑接口改图，质检后最多定向修正一次；交成图加几句创作思路（吸纳自 Nealsun1993/neil-quentin，MIT，中译）
 - [图片提示词反推](image-prompt-reverse/index.md) —— 从参考图反推生图 prompt：简化版[七维拆解](image-prompt-reverse/seven-dimensions/index.md)，人弄懂拆法、自己跟看图模型分两轮问（整理自 linux.do 帖子；[维护记录](../maintenance/skills/seven-dimensions.md)）；完整版[从图反推 prompt](image-prompt-reverse/get-prompt-from-image/index.md)，AI 直接产出中英正向 prompt 和负向词（吸纳自 wuyoscar/GPT-Image2-Skill，原作者 LunarXuan，MIT，中译；[维护记录](../maintenance/skills/get-prompt-from-image.md)）
 - [anidoodle 代码手绘](anidoodle/index.md) —— 要用代码画画、做动画时用：32 种画风的静帧、自己画出来的延时、任意长度的影片、讲解片、发布片和响应页面操作的网页动画，配乐也用代码作曲；能仿用户给的图的画风、跨镜头保持角色一致、教人画画。同一份源码到哪都出同样的像素和声音，不用任何生成素材；带 Node 引擎和 30 篇画风配方（吸纳自 alexgreensh/anidoodle，Apache-2.0）
 - [视频生成](video-gen/index.md) —— 用生图、生视频模型做 AI 视频时用：按题材和环节挑子 skill；已收东方仙侠视觉导演，给仙侠场景写单张画面和视频关键帧的生图提示词（吸纳自 liyue-aigc/xianxia-visual-director）

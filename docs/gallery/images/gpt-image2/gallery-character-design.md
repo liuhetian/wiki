@@ -2,7 +2,7 @@
 
 ### 官方风格角色设定表
 
-<img src="assets/character-design/character-sheet.png" alt="character sheet" width="420" loading="lazy" decoding="async"/>
+<img src="assets/character-design/character-sheet.webp" alt="character sheet" width="420" loading="lazy" decoding="async"/>
 
 ```text
 根据这个角色和背景，制作一张类似官方设定资料的角色设定表。
@@ -16,7 +16,7 @@
 
 ### 精灵弓箭手速写本概念设定页
 
-<img src="assets/character-design/elven-archer-sheet.png" alt="elven archer sheet" width="420" loading="lazy" decoding="async"/>
+<img src="assets/character-design/elven-archer-sheet.webp" alt="elven archer sheet" width="420" loading="lazy" decoding="async"/>
 
 ```text
 制作一页奇幻概念设计速写本，中心是一位身披飘逸长袍的神秘精灵弓箭手。主体人物用松弛的石墨笔触绘制，辅以精确的墨线细节。主角速写周围环绕着：探索斗篷变体的侧面图、一张标有尺寸的半成品弓的研究稿、动作姿势小草图、关于附魔刺绣图案的手写注释，以及渗进页边的淡淡森林绿和银色水彩试色。这一页要像一张真正的美术总监开发稿：有探索性、优美、清晰可读、充满手作质感。

@@ -3,7 +3,7 @@ description: "梨园里谁来定制、能改到哪：system 由 SYSTEM.md、全�
 ---
 
 <figure markdown>
-  ![system prompt 由 SYSTEM.md、全局 APPEND_SYSTEM.md、卡级 APPEND_SYSTEM.md、卡的 AGENTS.md 四层拼成；酒馆预设被拆开分流，思考、草稿、输出格式、记账几类停用](assets/prompt-layers-infographic.png)
+  ![system prompt 由 SYSTEM.md、全局 APPEND_SYSTEM.md、卡级 APPEND_SYSTEM.md、卡的 AGENTS.md 四层拼成；酒馆预设被拆开分流，思考、草稿、输出格式、记账几类停用](assets/prompt-layers-infographic.webp)
 </figure>
 
 # 谁来定制，能改到哪
@@ -127,7 +127,7 @@ system 分两半拼。前一半是 pi 自己的：有 `SYSTEM.md` 就整份当�
 ## 工作模式：模型自己切进去改卡 { #work-mode }
 
 <figure markdown>
-  ![角色卡工坊：左边是剧情推演，右边是创作大纲十个板块和世界书条目编辑器](assets/card-studio.png)
+  ![角色卡工坊：左边是剧情推演，右边是创作大纲十个板块和世界书条目编辑器](assets/card-studio.webp)
   <figcaption>角色卡工坊和剧情推演并排，工作模式下 agent 改的就是这些资源</figcaption>
 </figure>
 
@@ -144,7 +144,7 @@ system 分两半拼。前一半是 pi 自己的：有 `SYSTEM.md` 就整份当�
 ## 沙箱：每次调用工具前判一次 { #sandbox }
 
 <figure markdown>
-  ![改卡时的权限分区：卡目录随便读写，公共库写要申请，其他位置都要申请，同卡别的子项目和会话是禁区，bash 另有黑名单和免问前缀，素材有快照兜底](assets/sandbox-zones-infographic.png)
+  ![改卡时的权限分区：卡目录随便读写，公共库写要申请，其他位置都要申请，同卡别的子项目和会话是禁区，bash 另有黑名单和免问前缀，素材有快照兜底](assets/sandbox-zones-infographic.webp)
 </figure>
 
 **问题**：模型拿到读写文件、跑 bash 的工具后，可能改到卡以外的地方。

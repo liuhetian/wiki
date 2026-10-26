@@ -3,7 +3,7 @@ description: "梨园怎么应付聊久了：剧情压缩保留最近 6 轮、更
 ---
 
 <figure markdown>
-  ![记忆分三层：最近 6 轮原文、本局前情提要、往局常驻摘要，越早压得越狠；旁边是可选的向量记忆库](assets/memory-layers-infographic.png)
+  ![记忆分三层：最近 6 轮原文、本局前情提要、往局常驻摘要，越早压得越狠；旁边是可选的向量记忆库](assets/memory-layers-infographic.webp)
 </figure>
 
 # 聊久了：越早的事压得越狠
@@ -84,7 +84,7 @@ description: "梨园怎么应付聊久了：剧情压缩保留最近 6 轮、更
 ## 跨局记忆：每局写复盘 { #cross }
 
 <figure markdown>
-  ![一张卡的跨局记忆：一局演完、写复盘、合并成手册、常驻摘要、新的一局带上；删掉一局只删只由它支撑的条目](assets/cross-session-memory-infographic.png)
+  ![一张卡的跨局记忆：一局演完、写复盘、合并成手册、常驻摘要、新的一局带上；删掉一局只删只由它支撑的条目](assets/cross-session-memory-infographic.webp)
 </figure>
 
 **问题**：同一张卡开新的一局，又从零开始。

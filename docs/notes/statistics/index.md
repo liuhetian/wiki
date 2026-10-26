@@ -18,6 +18,7 @@ flowchart LR
 ## 一、基础：先认识数据与随机性
 
 - [描述统计](data-description/index.md) —— 中心、散布、分布形状和异常要一起看；一个平均数通常不够
+- [如何分析数据](data-analysis/index.md) —— 描述性分析就两种：单变量分析和分组聚合；先分清指标是外延的还是内涵的，再看辛普森悖论、透视表与长宽表；附一份成绩长表，用 pandas pivot_table 走完[单维度分布](data-analysis/distribution.md)和[联合分析](data-analysis/cross-analysis.md)两篇案例
 - [概率模型](probability-models/index.md) —— 条件概率、独立性、Bayes 公式、大数定律和中心极限定理组成推断的语法
 - [常见分布](distributions/index.md) —— 从数据生成机制识别 Bernoulli、Binomial、Poisson、Normal、Gamma、Beta、t、卡方和 F
 - [抽样](sampling/index.md) —— 标准误来自抽样设计；样本再大，也修不好覆盖偏差和自选择

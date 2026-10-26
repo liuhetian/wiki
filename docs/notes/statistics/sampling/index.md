@@ -6,7 +6,7 @@ description: "标准误来自抽样设计；样本再大，也修不好覆盖偏
 
 抽样不是从总体里随便拿一点数据。它要让总体单位以已知或可解释的机会进入样本，统计量的波动才有办法计算。**假设检验能处理抽样误差，不能替抽样设计补洞。**
 
-![从一大堆总体单位里舀出一个样本](assets/random-sample-marker-doodle.png)
+![从一大堆总体单位里舀出一个样本](assets/random-sample-marker-doodle.webp)
 
 ## 先分清五个对象
 
@@ -24,7 +24,7 @@ description: "标准误来自抽样设计；样本再大，也修不好覆盖偏
 
 ## 标准误是重复抽样造成的波动
 
-![从同一总体反复抽样，会得到略有不同的样本](assets/repeated-samples-marker-doodle.png)
+![从同一总体反复抽样，会得到略有不同的样本](assets/repeated-samples-marker-doodle.webp)
 
 样本抽出后，样本均值 $\bar X$ 是一个数；抽样前，它是随机变量。设总体均值为 $\mu$、总体方差为 $\sigma^2$。独立同分布抽样时：
 
@@ -61,7 +61,7 @@ $$
 | 整群抽样 | 先抽学校、门店等群，再调查群内单位 | 同群单位相似，普通独立样本标准误会偏小 |
 | 系统抽样 | 随机起点后每隔 $k$ 个抽一个 | 名单若有周期，样本会撞上周期 |
 
-![每一层都各自抽取一小部分单位](assets/stratified-sample-marker-doodle.png)
+![每一层都各自抽取一小部分单位](assets/stratified-sample-marker-doodle.webp)
 
 分层的目标是让每类重要单位都入样。若第 $h$ 层占总体比例 $W_h=N_h/N$，总体均值可估为：
 
@@ -104,7 +104,7 @@ $$
 
 ## 大样本只压方差，不消除偏差
 
-![抽样框只覆盖了总体的一部分](assets/coverage-bias-marker-doodle.png)
+![抽样框只覆盖了总体的一部分](assets/coverage-bias-marker-doodle.webp)
 
 均方误差把两件事分开：
 

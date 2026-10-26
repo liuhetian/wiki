@@ -50,7 +50,7 @@
           </h1>
 
           <p class="zx-hero__lede" data-reveal style="--reveal-delay: 120ms">
-            项目复盘、学科笔记、动手做的课程、可挂载执行的 AI skills，和图配 prompt 的图库。写给人看，也写给 agent 读：
+            一个问题一篇的文章、自己做和拆别人的项目、学科笔记、图配 prompt 的图库，和可挂载执行的 AI skills。写给人看，也写给 agent 读：
             每个页面在同域提供 Markdown 源，整站可以当作你的 agent 的远程知识库。
           </p>
 
@@ -59,7 +59,7 @@
               从文章开始读
               <span class="zx-btn__icon">{% include ".icons/material/arrow-right.svg" %}</span>
             </a>
-            <a class="zx-btn zx-btn--pill" href="{{ 'posts/wiki/cos-deploy/' | url }}">这套建站方案</a>
+            <a class="zx-btn zx-btn--pill" href="{{ 'projects/wiki/cos-deploy/' | url }}">这套建站方案</a>
           </div>
         </div>
 
@@ -109,15 +109,15 @@ curl https://wiki.liuhetian.work/index.md</code></pre>
         <ul class="zx-expect">
           <li class="zx-expect__item" data-reveal>
             <span class="zx-expect__icon">{% include ".icons/material/book-open-variant.svg" %}</span>
-            <div><h3>完整的复盘</h3><p>每篇文章可独立阅读：背景、决策、踩坑和结论一次讲完，不发碎片。</p></div>
+            <div><h3>一篇讲透一个问题</h3><p>每篇文章像一篇论文：先把问题定义清楚，再给解决方案和依据；论文笔记也是文章。</p></div>
+          </li>
+          <li class="zx-expect__item" data-reveal>
+            <span class="zx-expect__icon">{% include ".icons/material/puzzle-outline.svg" %}</span>
+            <div><h3>拼起来的项目</h3><p>为交付同一个东西把互相牵连的问题收在一起，自己做的和拆别人的都讲清各块怎么拼起来。</p></div>
           </li>
           <li class="zx-expect__item" data-reveal>
             <span class="zx-expect__icon">{% include ".icons/material/school-outline.svg" %}</span>
             <div><h3>推导出来的笔记</h3><p>算法、概率、统计、机器学习，从具体问题一步步推到结论，跟着走一遍就是一次练习。</p></div>
-          </li>
-          <li class="zx-expect__item" data-reveal>
-            <span class="zx-expect__icon">{% include ".icons/material/console.svg" %}</span>
-            <div><h3>动手做的课程</h3><p>讲解在前、题在后：前半把心智模型讲透，后半的题不自己算出数来就答不过去。</p></div>
           </li>
           <li class="zx-expect__item" data-reveal>
             <span class="zx-expect__icon">{% include ".icons/material/toolbox-outline.svg" %}</span>
@@ -164,7 +164,7 @@ curl https://wiki.liuhetian.work/index.md</code></pre>
               <pre><code><span class="k">$</span> curl wiki.liuhetian.work/llms.txt
 <span class="c"># 牛合天's wiki</span>
 <span class="c">&gt; AI 友好的个人知识库：每个页面在同域提供 .md 源…</span>
-<span class="c">## 文章 / ## 笔记 / ## 课程 / ## Skills …</span></code></pre>
+<span class="c">## 文章 / ## 项目 / ## 笔记 / ## Gallery …</span></code></pre>
             </div>
           </div>
         </div>
@@ -237,8 +237,8 @@ curl https://wiki.liuhetian.work/index.md</code></pre>
             <h3>条 curl</h3><p>/llms.txt 一口气拿到全站地图。</p>
           </div>
           <div class="zx-statcard" data-drag-var data-reveal style="--tilt:-.8deg; --reveal-delay:180ms">
-            <span class="zx-statcard__num">7</span>
-            <h3>个板块</h3><p>文章、笔记、课程、skills、gallery、项目拆解、维护，各管一摊。</p>
+            <span class="zx-statcard__num">6</span>
+            <h3>个板块</h3><p>文章、项目、笔记、gallery、skills、维护，各管一摊。</p>
           </div>
           <div class="zx-statcard" data-drag-var data-reveal style="--tilt:1.6deg; --reveal-delay:270ms">
             <span class="zx-statcard__num">∞</span>
@@ -256,11 +256,10 @@ curl https://wiki.liuhetian.work/index.md</code></pre>
           <p>人从索引读，AI 从 .md 读，殊途同归。</p>
           <div class="zx-stage__actions">
             <a class="zx-btn zx-btn--stage" href="{{ 'posts/' | url }}">文章索引</a>
+            <a class="zx-btn zx-btn--stage" href="{{ 'projects/' | url }}">项目索引</a>
             <a class="zx-btn zx-btn--stage" href="{{ 'notes/' | url }}">笔记索引</a>
-            <a class="zx-btn zx-btn--stage" href="{{ 'courses/' | url }}">课程索引</a>
-            <a class="zx-btn zx-btn--stage" href="{{ 'skills/' | url }}">Skills 索引</a>
             <a class="zx-btn zx-btn--stage" href="{{ 'gallery/' | url }}">Gallery 索引</a>
-            <a class="zx-btn zx-btn--stage" href="{{ 'projects/' | url }}">项目拆解索引</a>
+            <a class="zx-btn zx-btn--stage" href="{{ 'skills/' | url }}">Skills 索引</a>
             <a class="zx-btn zx-btn--stage" href="{{ 'maintenance/' | url }}">维护索引</a>
           </div>
         </div>

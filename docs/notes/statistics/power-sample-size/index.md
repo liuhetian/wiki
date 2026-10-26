@@ -6,7 +6,7 @@ description: "研究开始前先定义最小实际重要效应，再权衡 $\\al
 
 样本量不是“越多越好”，也不能只由预算拍脑袋。设计时要把**最小实际重要效应、噪声、第一类错误和漏检风险**放进同一张账。
 
-![要分辨更小的效应，通常需要更多观测](assets/small-effect-large-sample-marker-doodle.png)
+![要分辨更小的效应，通常需要更多观测](assets/small-effect-large-sample-marker-doodle.webp)
 
 ## 功效是在某个具体效应下拒绝零假设的概率
 

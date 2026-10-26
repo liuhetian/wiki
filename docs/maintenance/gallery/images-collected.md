@@ -22,10 +22,10 @@ description: "图片区零散收集的维护记录：人像写真模板、一杯
 - 「旧刊物海报」不是一条 prompt，是一个 Codex skill 的整套做法，整页中译并改写：
     - **怎么找到的**：视频只演示在 Agent 客户端里选 6 张照片、输入 `neil-quentin` 调用，口播没给出处；画面里的会话标题是「GitHub下载技能」，按 skill 名搜到了仓库。视频用 agent-io 的 `douyin.py` 经中转取下，没直接访问抖音；它是成品演示不是教程，没整理成视频笔记
     - **没收**：`README.md`（Codex 的安装方法和目录结构，特点和限制在 SKILL 里都有）；`agents/openai.yaml`（客户端显示名和默认调用语句，意思已经在页首介绍里）；视频里的 6 张成品（只有录屏画面）
-    - **结构**：标题从「neil-quentin v0.3」改成「旧刊物海报」；12 步流程提到前面当地图；「输出格式」改写成「交付什么」，授权与隐私并进去；「编译字段」和「提示词结构」合成「编四段 prompt」；硬性避免单独成节；定向修正改成两列表
+    - **结构**：标题从「neil-quentin v0.3」改成「旧刊物海报」；12 步流程提到前面当地图；「输出格式」改写成「交付什么」，授权与隐私并进去；「编译字段」和「提示词结构」合成「编四段 prompt」；硬性避免单独成节；定向修正改成两列表。2026-10-26 守则（交付什么到定向修正）拆成 skill [旧刊物海报](../../skills/pulp-poster.md)，Gallery 页只留三图对比、风格介绍和实测
     - **接口**：上游只说「拿照片当参考去生成」，改成调 agent-io 的 gpt-image-2.5 编辑接口，写明 `size`、分辨率和耗时；加了一句 prompt 用中文写、英文单独成行
     - **实测**：新增一节，拿上游示例原图（裁掉右边约 175 px 宽的黑边）跑了一次，又按定向修正改了一次小字。修正表后加了一句：小字个别字母拼错不算失败，别为它花掉唯一一次修正——依据是专门修小字只少了一个错字，上游的修正表只管小字成了噪点、乱码的情况
-    - **图**：`pulp-poster-towers-photo.jpg`、`pulp-poster-dusk-circuit.png` 是仓库 `examples/` 下的 `01-architecture-before.jpg`、`01-architecture-after.png`；`pulp-poster-tower-hours.webp` 是我们实测的
+    - **图**：`pulp-poster-towers-photo.webp`、`pulp-poster-dusk-circuit.webp` 是仓库 `examples/` 下的 `01-architecture-before.jpg`、`01-architecture-after.png`；`pulp-poster-tower-hours.webp` 是我们实测的
 
     ??? abstract "neil-quentin 的 MIT 许可证原文，按条款随收录保留"
 

@@ -6,7 +6,7 @@ description: "中心、散布、分布形状和异常要一起看；一个平均
 
 描述统计不是把数据压成几个数字。它要回答四件事：**中心在哪里、散布有多大、分布长什么样、哪些观测值得回头检查。** 一个均值通常不够。
 
-![两组数据中心相同，一组集中而另一组分散](assets/same-center-different-spread-marker-doodle.png)
+![两组数据中心相同，一组集中而另一组分散](assets/same-center-different-spread-marker-doodle.webp)
 
 ```mermaid
 flowchart LR

@@ -6,7 +6,7 @@ description: "从潜在结果和 DAG 说清反事实、混杂、识别与常用�
 
 相关性描述变量一起变化；因果效应比较同一对象在不同处理下本会发生什么。**因果结论来自研究设计、假设与数据的组合，不来自某个回归系数的名字。**
 
-![同一对象在处理与未处理下有两个潜在结果，但只能观察一个](assets/potential-outcomes-marker-doodle.png)
+![同一对象在处理与未处理下有两个潜在结果，但只能观察一个](assets/potential-outcomes-marker-doodle.webp)
 
 ## 因果问题是两个潜在结果之差
 

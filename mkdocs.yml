@@ -38,7 +38,7 @@ extra_javascript:
                              #   SVG 输出免字体文件）2MB，只有含 .arithmatex 的页面才拉，不出外网
   - vendor/echarts-init.js   # ```echarts 代码块渲染器；真身按需动态加载，无图页面零开销
   - vendor/js-runner.js      # ```{.js .run} 代码块的运行器：Worker 沙箱执行 + 输出面板；零依赖，无可运行块的页面直接返回
-  - vendor/conflict-init.js  # ```conflict 代码块（课程页的提问）染成上问下答两半；无此类块的页面直接返回
+  - vendor/conflict-init.js  # ```conflict 代码块（笔记里给自己出的题）染成上问下答两半；无此类块的页面直接返回
   - vendor/md-copy.js        # 「复制本页 Markdown 源」按钮：复制 .md 源文件，相对链接和 --8<-- 改成绝对地址；页头没有发现链接就不出按钮
   - vendor/age-init.js       # 打码：`age:…` 小字和 ```age 块显示成马赛克，解锁后还原；有密文才按需加载 vendor/age-core.js
 
@@ -68,7 +68,7 @@ markdown_extensions:
         - name: echarts   # 声明式图表：fence 里写 ECharts option JSON，vendor/echarts-init.js 渲染
           class: echarts
           format: !!python/name:pymdownx.superfences.fence_code_format
-        - name: conflict  # 课程提问：fence 里写 git 冲突标记，上半是问、下半是答（见 courses/index.md）
+        - name: conflict  # 提问块：fence 里写 git 冲突标记，上半是问、下半是答（见 skills/wiki-guide/course.md）
           class: conflict
           format: !!python/name:pymdownx.superfences.fence_code_format
         - name: age       # 打码大段内容：fence 里放 age -a 的 armor 密文，vendor/age-init.js 显示成马赛克
@@ -113,26 +113,26 @@ plugins:
         gallery/images/handdraw-style/colors.md: gallery/colors/classic.md
         # 例：posts/old-name.md: posts/new-name.md
         # 2026-10-01 本 wiki 的技术归成一个系列 posts/wiki-tech/，建站手记删掉
-        posts/cos-wiki-deploy/index.md: posts/wiki/cos-deploy/index.md
-        posts/cos-wiki-deploy/reference/deploy.md: posts/wiki/cos-deploy/reference/deploy.md
-        posts/cos-wiki-deploy/reference/wiki-build-log.md: posts/wiki/index.md#timeline   # 2026-10-14 改指能力时间线
+        posts/cos-wiki-deploy/index.md: projects/wiki/cos-deploy/index.md
+        posts/cos-wiki-deploy/reference/deploy.md: projects/wiki/cos-deploy/reference/deploy.md
+        posts/cos-wiki-deploy/reference/wiki-build-log.md: projects/wiki/index.md#timeline   # 2026-10-14 改指能力时间线
         # 2026-10-14 能力时间线并进 wiki-tech 索引页，单独那页只活了一天
-        posts/wiki-tech/timeline.md: posts/wiki/index.md#timeline
-        posts/git-lfs-cos.md: posts/wiki/git-lfs.md
+        posts/wiki-tech/timeline.md: projects/wiki/index.md#timeline
+        posts/git-lfs-cos.md: projects/wiki/git-lfs.md
         # 2026-10-01 新机器配开发环境挪进「搭建 AI 助手」当第一篇
-        posts/dev-env.md: posts/ai-assistant/dev-env.md
+        posts/dev-env.md: projects/ai-assistant/dev-env.md
         # 2026-10-01 存 key 那篇和打码合成一篇，key 本身改成打码写进 API 中转
-        posts/ai-assistant/key-storage.md: posts/wiki/age-mosaic.md
+        posts/ai-assistant/key-storage.md: projects/wiki/age-mosaic.md
         # 2026-10-17 wiki-tech、目标与计划、远程 skill 三篇合成一个目录 posts/wiki/（wiki 介绍）
-        posts/wiki-tech/index.md: posts/wiki/index.md
-        posts/wiki-tech/cos-deploy/index.md: posts/wiki/cos-deploy/index.md
-        posts/wiki-tech/cos-deploy/reference/deploy.md: posts/wiki/cos-deploy/reference/deploy.md
-        posts/wiki-tech/git-lfs.md: posts/wiki/git-lfs.md
-        posts/wiki-tech/age-mosaic.md: posts/wiki/age-mosaic.md
-        posts/wiki-tech/md-copy.md: posts/wiki/md-copy.md
-        posts/wiki-tech/zensical-upgrade/index.md: posts/wiki/zensical-upgrade/index.md
-        posts/wiki-roadmap.md: posts/wiki/roadmap.md
-        posts/everything-skill.md: posts/wiki/everything-skill.md
+        posts/wiki-tech/index.md: projects/wiki/index.md
+        posts/wiki-tech/cos-deploy/index.md: projects/wiki/cos-deploy/index.md
+        posts/wiki-tech/cos-deploy/reference/deploy.md: projects/wiki/cos-deploy/reference/deploy.md
+        posts/wiki-tech/git-lfs.md: projects/wiki/git-lfs.md
+        posts/wiki-tech/age-mosaic.md: projects/wiki/age-mosaic.md
+        posts/wiki-tech/md-copy.md: projects/wiki/md-copy.md
+        posts/wiki-tech/zensical-upgrade/index.md: projects/wiki/zensical-upgrade/index.md
+        posts/wiki-roadmap.md: projects/wiki/roadmap.md
+        posts/everything-skill.md: projects/wiki/everything-skill.md
         # 2026-10-15 吸纳记录从 skill 目录里的 MIRROR.md 挪进维护目录
         skills/collab/grilling/MIRROR.md: maintenance/skills/grilling.md
         #     posts/guide.md#installation: posts/guide.md#getting-started
@@ -370,6 +370,34 @@ plugins:
         # 2026-10-23 ppt-master 的风格目录按分组拆页，入口放进目录的 index.md；版型页挪进 deck-image-types/ 后网页地址不变，不用跳转
         gallery/images/ppt-master/gallery-deck-visual-styles.md: gallery/images/ppt-master/index.md#visual-styles
         gallery/images/ppt-master/gallery-deck-renderings.md: gallery/images/ppt-master/index.md#renderings
+        # 2026-10-26 板块重排：自己做的四个项目搬进 projects/，如何分析数据搬进 notes/statistics/
+        posts/wiki/age-mosaic.md: projects/wiki/age-mosaic.md
+        posts/wiki/cos-deploy/assets/llm-wiki.md: projects/wiki/cos-deploy/assets/llm-wiki.md
+        posts/wiki/cos-deploy/assets/llms-txt.md: projects/wiki/cos-deploy/assets/llms-txt.md
+        posts/wiki/cos-deploy/index.md: projects/wiki/cos-deploy/index.md
+        posts/wiki/cos-deploy/reference/deploy.md: projects/wiki/cos-deploy/reference/deploy.md
+        posts/wiki/everything-skill.md: projects/wiki/everything-skill.md
+        posts/wiki/git-lfs.md: projects/wiki/git-lfs.md
+        posts/wiki/index.md: projects/wiki/index.md
+        posts/wiki/init-check.md: projects/wiki/init-check.md
+        posts/wiki/md-copy.md: projects/wiki/md-copy.md
+        posts/wiki/roadmap.md: projects/wiki/roadmap.md
+        posts/wiki/sections.md: projects/wiki/sections.md
+        posts/wiki/zensical-upgrade/assets/releases.md: projects/wiki/zensical-upgrade/assets/releases.md
+        posts/wiki/zensical-upgrade/index.md: projects/wiki/zensical-upgrade/index.md
+        posts/kindle-dashboard/index.md: projects/kindle-dashboard/index.md
+        posts/kindle-dashboard/reference/decision-log.md: projects/kindle-dashboard/reference/decision-log.md
+        posts/kindle-dashboard/reference/jailbreak.md: projects/kindle-dashboard/reference/jailbreak.md
+        posts/kindle-dashboard/reference/report-api.md: projects/kindle-dashboard/reference/report-api.md
+        posts/ai-assistant/api-gateway.md: projects/ai-assistant/api-gateway.md
+        posts/ai-assistant/dev-env.md: projects/ai-assistant/dev-env.md
+        posts/ai-assistant/index.md: projects/ai-assistant/index.md
+        posts/ai-assistant/mail-intake.md: projects/ai-assistant/mail-intake.md
+        posts/animated-ppt/assets/prompt-v0.md: projects/animated-ppt/assets/prompt-v0.md
+        posts/animated-ppt/index.md: projects/animated-ppt/index.md
+        posts/data-analysis/cross-analysis.md: notes/statistics/data-analysis/cross-analysis.md
+        posts/data-analysis/distribution.md: notes/statistics/data-analysis/distribution.md
+        posts/data-analysis/index.md: notes/statistics/data-analysis/index.md
 
 # 链接校验。0.0.53 及更早版本有并行竞态：同一份内容偶发（约 1/15 次构建）误报大量
 # "page does not exist"，产物 HTML 实测无差异，只能关掉。0.0.62 上复现不出来了 ——
@@ -386,55 +414,91 @@ nav:
       - index.md
   - 文章:
       - posts/index.md
-      - 搭建一个:
-          - Wiki:
-              - posts/wiki/index.md
-              - 本 wiki 的目标与计划: posts/wiki/roadmap.md
-              - 把 wiki 当远程 skill: posts/wiki/everything-skill.md
-              - 对象存储部署: posts/wiki/cos-deploy/index.md
-              - 部署实操手册: posts/wiki/cos-deploy/reference/deploy.md
-              - 自建 git-lfs 后端: posts/wiki/git-lfs.md
-              - 打码：key 和小字: posts/wiki/age-mosaic.md
-              - 复制本页 Markdown 源: posts/wiki/md-copy.md
-              - Zensical 升级评估: posts/wiki/zensical-upgrade/index.md
-              - 新机器初始化自检: posts/wiki/init-check.md
-          - AI 助手:
-              - posts/ai-assistant/index.md
-              - 新机器配开发环境: posts/ai-assistant/dev-env.md
-              - API 中转：Caddy 换 key: posts/ai-assistant/api-gateway.md
-              - 邮件采集：自己说 SMTP: posts/ai-assistant/mail-intake.md
-          - Kindle 常显信息屏:
-              - posts/kindle-dashboard/index.md
-              - 越狱与显示通道: posts/kindle-dashboard/reference/jailbreak.md
-              - 上报接口交接: posts/kindle-dashboard/reference/report-api.md
-              - 决策日志: posts/kindle-dashboard/reference/decision-log.md
-          - 动画网页 PPT:
-              - posts/animated-ppt/index.md
-      - 项目复盘:
+      - 全部文章:
           - 预测项目闭环: posts/prediction-loop.md
           - AI 时代的产品经理: posts/ai-pm.md
           - 超级轻量的自用AI编程Harness框架:
               - posts/ai-code-skeleton/index.md
           - 上线前的三层验收: posts/release-acceptance.md
-      - 方法:
-          - 如何分析数据:
-              - posts/data-analysis/index.md
-              - 单维度分布: posts/data-analysis/distribution.md
-              - 联合分析: posts/data-analysis/cross-analysis.md
-          - 工作方法:
-              - posts/methods/index.md
-              - 精力管理:
-                  - posts/methods/energy/index.md
-                  - 神经系统降载: posts/methods/energy/nervous-system-regulation.md
-              - 推进执行:
-                  - posts/methods/execution/index.md
-                  - 如果—那么计划: posts/methods/execution/if-then-plans.md
-                  - 限制同时开工: posts/methods/execution/wip-limits.md
-                  - 每周清仓: posts/methods/execution/weekly-review.md
-              - 做出决策:
-                  - posts/methods/decisions/index.md
-                  - 单向门与双向门: posts/methods/decisions/two-way-door-decisions.md
-                  - 事前验尸: posts/methods/decisions/premortem.md
+  - 项目:
+      - projects/index.md
+      - AI 角色扮演:
+          - 梨园 Liyuan:
+              - projects/liyuan/index.md
+              - 设定从哪来: projects/liyuan/setting.md
+              - 状态别漂移: projects/liyuan/state.md
+              - 聊久了: projects/liyuan/memory.md
+              - 重来和回档: projects/liyuan/branch.md
+              - 正文怎么产出: projects/liyuan/prose.md
+              - 谁来定制，能改到哪: projects/liyuan/custom.md
+          - 酒馆 SillyTavern:
+              - projects/sillytavern/index.md
+              - 角色卡: projects/sillytavern/card.md
+              - 世界书: projects/sillytavern/lorebook.md
+              - 每轮现拼 prompt: projects/sillytavern/assembly.md
+              - 一份内容喂各种模型: projects/sillytavern/adapt.md
+              - 重来、分叉、改历史: projects/sillytavern/branch.md
+              - 聊久了: projects/sillytavern/memory.md
+              - 多角色同场: projects/sillytavern/group.md
+              - 用户自己加规则: projects/sillytavern/rules.md
+          - PawzoChat:
+              - projects/pawzochat/index.md
+      - Agent 与评测:
+          - DeepSeek Harness:
+              - projects/deepseek-harness/index.md
+              - 插件: projects/deepseek-harness/plugin.md
+              - 会话日志: projects/deepseek-harness/log.md
+              - 拼 prompt: projects/deepseek-harness/prompt.md
+              - 压缩与补丁文本: projects/deepseek-harness/compaction.md
+              - 工具与安全边界: projects/deepseek-harness/tools.md
+              - 多 agent 与长时工作: projects/deepseek-harness/agents.md
+          - OpenAI Evals:
+              - projects/openai-evals/index.md
+              - 登记: projects/openai-evals/registry.md
+              - 判分: projects/openai-evals/grading.md
+              - 被测对象: projects/openai-evals/solver.md
+              - 多轮: projects/openai-evals/multiturn.md
+              - 跑和记: projects/openai-evals/record.md
+          - DeepSeek 视频问答:
+              - projects/deepseek-video-rag/index.md
+          - AI 助手:
+              - projects/ai-assistant/index.md
+              - 新机器配开发环境: projects/ai-assistant/dev-env.md
+              - API 中转：Caddy 换 key: projects/ai-assistant/api-gateway.md
+              - 邮件采集：自己说 SMTP: projects/ai-assistant/mail-intake.md
+      - 开发工具:
+          - Teable:
+              - projects/teable/index.md
+          - Coolify:
+              - projects/coolify/index.md
+          - Pyodide:
+              - projects/pyodide/index.md
+          - Frappe Gantt:
+              - projects/frappe-gantt/index.md
+      - 知识库:
+          - Wiki:
+              - projects/wiki/index.md
+              - 本 wiki 的目标与计划: projects/wiki/roadmap.md
+              - 板块怎么分: projects/wiki/sections.md
+              - 把 wiki 当远程 skill: projects/wiki/everything-skill.md
+              - 对象存储部署: projects/wiki/cos-deploy/index.md
+              - 部署实操手册: projects/wiki/cos-deploy/reference/deploy.md
+              - 自建 git-lfs 后端: projects/wiki/git-lfs.md
+              - 打码：key 和小字: projects/wiki/age-mosaic.md
+              - 复制本页 Markdown 源: projects/wiki/md-copy.md
+              - Zensical 升级评估: projects/wiki/zensical-upgrade/index.md
+              - 新机器初始化自检: projects/wiki/init-check.md
+          - Docmost:
+              - projects/docmost/index.md
+      - 硬件:
+          - Kindle 常显信息屏:
+              - projects/kindle-dashboard/index.md
+              - 越狱与显示通道: projects/kindle-dashboard/reference/jailbreak.md
+              - 上报接口交接: projects/kindle-dashboard/reference/report-api.md
+              - 决策日志: projects/kindle-dashboard/reference/decision-log.md
+      - 演示:
+          - 动画网页 PPT:
+              - projects/animated-ppt/index.md
   - 笔记:
       - notes/index.md
       - 数学与统计:
@@ -483,6 +547,10 @@ nav:
               - notes/statistics/index.md
               - 基础:
                   - 描述统计: notes/statistics/data-description/index.md
+                  - 如何分析数据:
+                      - notes/statistics/data-analysis/index.md
+                      - 单维度分布: notes/statistics/data-analysis/distribution.md
+                      - 联合分析: notes/statistics/data-analysis/cross-analysis.md
                   - 概率模型: notes/statistics/probability-models/index.md
                   - 常见分布: notes/statistics/distributions/index.md
                   - 抽样: notes/statistics/sampling/index.md
@@ -639,51 +707,151 @@ nav:
               - fork 后吸收上游: notes/git/fork-upstream-sync.md
               - stash 的心智模型: notes/git/stash.md
               - worktree 的心智模型: notes/git/worktree.md
-  - 课程:
-      - courses/index.md
-      - 在学:
-          - 统计学（教材伴读）:
-              - courses/statistics-book/index.md
-              - 第 1 章 总论: courses/statistics-book/ch01-overview.md
-              - 第 2 章 数据的收集、整理与显示: courses/statistics-book/ch02-collect-organize.md
-              - 第 3 章 统计指标: courses/statistics-book/ch03-indicators.md
-              - 第 4 章 时间序列分析: courses/statistics-book/ch04-time-series.md
-              - 第 5 章 统计指数与综合评价: courses/statistics-book/ch05-index-numbers.md
-              - 第 6 章 统计量与抽样分布: courses/statistics-book/ch06-sampling-distribution.md
-              - 第 7 章 参数估计: courses/statistics-book/ch07-estimation.md
-              - 第 8 章 假设检验与方差分析: courses/statistics-book/ch08-hypothesis-anova.md
-              - 第 9 章 相关与回归分析: courses/statistics-book/ch09-regression.md
-      - 队列:
-          - ISLP（统计学习）:
-              - courses/islp/index.md
-          - Blitzstein & Hwang（概率论）:
-              - courses/blitzstein-hwang/index.md
-          - Casella & Berger（数理统计）:
-              - courses/casella-berger/index.md
-          - Agresti（线性模型与 GLM）:
-              - courses/agresti-glm/index.md
-          - 曼昆 微观分册（初级微观）:
-              - courses/mankiw-micro/index.md
-          - Wooldridge（计量经济学）:
-              - courses/wooldridge/index.md
-          - What If（因果推断）:
-              - courses/what-if/index.md
-          - d2l（深度学习）:
-              - courses/d2l/index.md
-          - Givens & Hoeting（统计计算）:
-              - courses/givens-hoeting/index.md
-          - BDA3（贝叶斯）:
-              - courses/bda3/index.md
-          - Johnson & Wichern（多元统计）:
-              - courses/johnson-wichern/index.md
-          - 曼昆 宏观分册（初级宏观）:
-              - courses/mankiw-macro/index.md
-          - FPP3（时间序列）:
-              - courses/fpp3/index.md
-          - Lohr（抽样调查）:
-              - courses/lohr/index.md
-          - Kohavi 等（在线实验）:
-              - courses/kohavi/index.md
+  - Gallery:
+      - gallery/index.md
+      - 按媒介:
+          - 图片:
+              - gallery/images/index.md
+              - 动漫、角色与游戏:
+                  - gallery/images/gpt-image2/gallery-anime-and-manga.md
+                  - gallery/images/gpt-image2/gallery-character-design.md
+                  - gallery/images/gpt-image2/gallery-gaming.md
+                  - gallery/images/gpt-image2/gallery-retro-and-cyberpunk.md
+              - 插画与绘画:
+                  - gallery/images/gpt-image2/gallery-illustration.md
+                  - gallery/images/gpt-image2/gallery-more-illustration-styles.md
+                  - gallery/images/gpt-image2/gallery-watercolor.md
+                  - gallery/images/gpt-image2/gallery-ink-and-chinese.md
+                  - gallery/images/gpt-image2/gallery-pixel-art.md
+                  - gallery/images/gpt-image2/gallery-fine-art-painting.md
+                  - gallery/images/gpt-image2/gallery-tattoo-design.md
+                  - gallery/images/linux-do-style/gallery-anime-graphic-design.md
+              - 海报、字体与品牌:
+                  - gallery/images/gpt-image2/gallery-typography-and-posters.md
+                  - gallery/images/gpt-image2/gallery-brand-systems-and-identity.md
+                  - gallery/images/gpt-image2/gallery-events-and-experience.md
+                  - gallery/images/collected/gallery-brand-posters.md
+                  - gallery/images/collected/gallery-pulp-posters.md
+              - 摄影与电影感:
+                  - gallery/images/gpt-image2/gallery-photography.md
+                  - gallery/images/gpt-image2/gallery-fashion-editorial.md
+                  - gallery/images/gpt-image2/gallery-beauty-and-lifestyle.md
+                  - gallery/images/gpt-image2/gallery-screen-photography.md
+                  - gallery/images/gpt-image2/gallery-cinematic-and-animation.md
+                  - gallery/images/gpt-image2/gallery-cinematic-film-references.md
+                  - gallery/images/collected/gallery-portrait-templates.md
+              - 拍照姿势:
+                  - gallery/images/xhs-poses/gallery-ins-poses.md
+                  - gallery/images/xhs-poses/gallery-faceless-poses.md
+                  - gallery/images/xhs-poses/gallery-lifestyle-poses.md
+              - 产品与空间:
+                  - gallery/images/gpt-image2/gallery-product-and-food.md
+                  - gallery/images/gpt-image2/gallery-architecture-and-interior.md
+                  - gallery/images/gpt-image2/gallery-isometric.md
+              - 信息与知识:
+                  - gallery/images/gpt-image2/gallery-infographics-and-field-guides.md
+                  - gallery/images/gpt-image2/gallery-scientific-and-educational.md
+                  - gallery/images/gpt-image2/gallery-data-visualization.md
+                  - gallery/images/gpt-image2/gallery-research-paper-figures.md
+                  - gallery/images/gpt-image2/gallery-technical-illustration.md
+                  - gallery/images/gpt-image2/gallery-ui-ux-mockups.md
+              - 官方示例:
+                  - gallery/images/gpt-image2/gallery-official-openai-cookbook-examples.md
+                  - gallery/images/gpt-image2/gallery-edit-endpoint-showcase.md
+              - 手绘风格库:
+                  - gallery/images/handdraw-style/index.md
+                  - gallery/images/handdraw-style/styles-a.md
+                  - gallery/images/handdraw-style/styles-b.md
+                  - gallery/images/handdraw-style/styles-c.md
+                  - gallery/images/handdraw-style/styles-d.md
+                  - gallery/images/handdraw-style/styles-e.md
+                  - gallery/images/handdraw-style/styles-f.md
+                  - gallery/images/handdraw-style/styles-g.md
+                  - gallery/images/handdraw-style/styles-h.md
+                  - gallery/images/handdraw-style/styles-i.md
+              - PPT 风格库:
+                  - gallery/images/ppt-master/index.md
+                  - gallery/images/ppt-master/gallery-visual-styles-corporate.md
+                  - gallery/images/ppt-master/gallery-visual-styles-editorial.md
+                  - gallery/images/ppt-master/gallery-visual-styles-expressive.md
+                  - gallery/images/ppt-master/gallery-visual-styles-hand-drawn.md
+                  - gallery/images/ppt-master/gallery-visual-styles-specialty.md
+                  - gallery/images/ppt-master/gallery-renderings-modern.md
+                  - gallery/images/ppt-master/gallery-renderings-hand-drawn.md
+                  - gallery/images/ppt-master/gallery-renderings-narrative.md
+                  - gallery/images/ppt-master/gallery-renderings-specialty.md
+          - 排版:
+              - gallery/layouts/index.md
+              - gallery/layouts/social-cards.md
+              - gallery/layouts/infographics.md
+              - gallery/layouts/comic-storyboards.md
+              - gallery/layouts/ip-characters.md
+              - gallery/layouts/ecommerce.md
+              - PPT 配图版型:
+                  - gallery/layouts/deck-image-types/index.md
+                  - gallery/layouts/deck-image-types/sequence.md
+                  - gallery/layouts/deck-image-types/hierarchy.md
+                  - gallery/layouts/deck-image-types/comparison.md
+                  - gallery/layouts/deck-image-types/spatial.md
+          - 色彩:
+              - gallery/colors/index.md
+              - gallery/colors/classic.md
+              - gallery/colors/collected/gallery-imagery-gradients.md
+          - 视频:
+              - gallery/video/index.md
+              - 花卉动态生长海报: gallery/video/flower-growth-poster.md
+              - 彩色手绘三维穿梭视频: gallery/video/collected/gallery-parallax-ink.md
+          - 音频:
+              - gallery/audio/index.md
+          - 网页:
+              - gallery/web/index.md
+              - 前端风格收集:
+                  - gallery/web/frontend-styles/index.md
+                  - PIP-BOY 琥珀终端: gallery/web/frontend-styles/reference/pip-boy-terminal.md
+                  - Celestia 主题收藏卡: gallery/web/frontend-styles/reference/celestia-collection.md
+                  - Verdant Glass 苔光用量台: gallery/web/frontend-styles/reference/verdant-glass.md
+                  - Syzygy 克莱因蓝星穹: gallery/web/frontend-styles/reference/syzygy-astral.md
+                  - NEXUS 2030 酸绿深空首屏: gallery/web/frontend-styles/reference/nexus-2030.md
+                  - ATELIER 纸白动力学: gallery/web/frontend-styles/reference/atelier-kinetic.md
+                  - PLATTER 平面音乐档案: gallery/web/frontend-styles/reference/task1-platter.md
+                  - PARALLAX 三态作品档案: gallery/web/frontend-styles/reference/task2-parallax-archive.md
+                  - LINE//SYSTEM 线性工业图形: gallery/web/frontend-styles/reference/task3-line-system.md
+                  - WORLD FILES 档案袋叙事: gallery/web/frontend-styles/reference/task4-world-files.md
+                  - PIXEL BLOOM 网格揭示: gallery/web/frontend-styles/reference/task5-pixel-bloom.md
+                  - TINTORY 视觉考古编辑部: gallery/web/frontend-styles/reference/task6-tintory.md
+                  - NEAT ANNOTATIONS 手绘标注标本: gallery/web/frontend-styles/reference/task7-neat-annotations.md
+                  - One Hub 翡翠管理台: gallery/web/frontend-styles/reference/onehub-berry-admin.md
+                  - Vercel Lanyard 可拖拽 3D 工牌: gallery/web/frontend-styles/reference/vercel-lanyard.md
+                  - Open Design 官网拆解:
+                      - gallery/web/frontend-styles/open-design/index.md
+                      - 滚动感知吸顶导航: gallery/web/frontend-styles/open-design/headroom-nav.md
+                      - 标题逐词模糊入场: gallery/web/frontend-styles/open-design/blur-text.md
+                      - 滚动入场编排: gallery/web/frontend-styles/open-design/scroll-reveal.md
+                      - 宣言逐字点亮: gallery/web/frontend-styles/open-design/statement-reveal.md
+                      - 滚动锁定步骤联动: gallery/web/frontend-styles/open-design/scrolly-steps.md
+                      - 可拖拽贴纸: gallery/web/frontend-styles/open-design/drag-sticker.md
+                      - 磁性 Dock 预览切换: gallery/web/frontend-styles/open-design/magnetic-dock.md
+                      - 图标物理掉落: gallery/web/frontend-styles/open-design/falling-chips.md
+                      - 点阵地球与贡献者轨道: gallery/web/frontend-styles/open-design/globe-orbit.md
+                      - 贴纸统计卡与数字滚动: gallery/web/frontend-styles/open-design/stat-cards.md
+                      - 页底渐进高斯模糊: gallery/web/frontend-styles/open-design/gradual-blur.md
+                  - HAOQI 3D 官网拆解:
+                      - gallery/web/frontend-styles/haoqi/index.md
+                      - 3D 开场专题: gallery/web/frontend-styles/haoqi/01-opening.md
+                  - ORYZO 官网拆解:
+                      - gallery/web/frontend-styles/oryzo/index.md
+                      - 蓝图开场动画: gallery/web/frontend-styles/oryzo/blueprint-intro.md
+                      - 高斯泼溅渲染系统: gallery/web/frontend-styles/oryzo/splat-system.md
+                      - 滚动叙事与场景切换: gallery/web/frontend-styles/oryzo/scene-morph.md
+                      - Wearable 一幕: gallery/web/frontend-styles/oryzo/wearable-scene.md
+                      - RGB 呼吸光边: gallery/web/frontend-styles/oryzo/rgb-glow-border.md
+              - Sandboard WebGPU 沙盘: gallery/web/sandboard/index.md
+      - 角色:
+          - 人设:
+              - gallery/personas/index.md
+              - gallery/personas/seoa.md
+      - 收藏夹:
+          - 网站: bookmarks/websites.md
   - Skills:
       - skills/index.md
       - 基础:
@@ -721,6 +889,7 @@ nav:
               - 调用 DeepSeek: skills/agent-io/reference/deepseek.md
               - 结构化判断: skills/agent-io/reference/jev.md
       - 调研与收集:
+          - 收纳导诊: skills/collect-triage.md
           - 调研项目:
               - skills/project-research/index.md
               - 粗讲项目: skills/project-research/gist.md
@@ -842,6 +1011,7 @@ nav:
                   - 情侣写真骨架: skills/photo-shoot/shooting/reference/couple-prompt.md
                   - 婚纱骨架: skills/photo-shoot/shooting/reference/wedding-prompt.md
                   - 单人与群像骨架: skills/photo-shoot/shooting/reference/group-prompt.md
+          - 旧刊物海报: skills/pulp-poster.md
           - 图片提示词反推:
               - skills/image-prompt-reverse/index.md
               - 七维拆解: skills/image-prompt-reverse/seven-dimensions/index.md
@@ -1432,204 +1602,6 @@ nav:
               - L3 · 数据驱动节点图: skills/canvas/reference/l3-nodegraph.md
               - L4 · 白板: skills/canvas/reference/l4-whiteboard.md
           - 让布局说话: skills/ui-no-labels.md
-  - Gallery:
-      - gallery/index.md
-      - 按媒介:
-          - 图片:
-              - gallery/images/index.md
-              - 动漫、角色与游戏:
-                  - gallery/images/gpt-image2/gallery-anime-and-manga.md
-                  - gallery/images/gpt-image2/gallery-character-design.md
-                  - gallery/images/gpt-image2/gallery-gaming.md
-                  - gallery/images/gpt-image2/gallery-retro-and-cyberpunk.md
-              - 插画与绘画:
-                  - gallery/images/gpt-image2/gallery-illustration.md
-                  - gallery/images/gpt-image2/gallery-more-illustration-styles.md
-                  - gallery/images/gpt-image2/gallery-watercolor.md
-                  - gallery/images/gpt-image2/gallery-ink-and-chinese.md
-                  - gallery/images/gpt-image2/gallery-pixel-art.md
-                  - gallery/images/gpt-image2/gallery-fine-art-painting.md
-                  - gallery/images/gpt-image2/gallery-tattoo-design.md
-                  - gallery/images/linux-do-style/gallery-anime-graphic-design.md
-              - 海报、字体与品牌:
-                  - gallery/images/gpt-image2/gallery-typography-and-posters.md
-                  - gallery/images/gpt-image2/gallery-brand-systems-and-identity.md
-                  - gallery/images/gpt-image2/gallery-events-and-experience.md
-                  - gallery/images/collected/gallery-brand-posters.md
-                  - gallery/images/collected/gallery-pulp-posters.md
-              - 摄影与电影感:
-                  - gallery/images/gpt-image2/gallery-photography.md
-                  - gallery/images/gpt-image2/gallery-fashion-editorial.md
-                  - gallery/images/gpt-image2/gallery-beauty-and-lifestyle.md
-                  - gallery/images/gpt-image2/gallery-screen-photography.md
-                  - gallery/images/gpt-image2/gallery-cinematic-and-animation.md
-                  - gallery/images/gpt-image2/gallery-cinematic-film-references.md
-                  - gallery/images/collected/gallery-portrait-templates.md
-              - 拍照姿势:
-                  - gallery/images/xhs-poses/gallery-ins-poses.md
-                  - gallery/images/xhs-poses/gallery-faceless-poses.md
-                  - gallery/images/xhs-poses/gallery-lifestyle-poses.md
-              - 产品与空间:
-                  - gallery/images/gpt-image2/gallery-product-and-food.md
-                  - gallery/images/gpt-image2/gallery-architecture-and-interior.md
-                  - gallery/images/gpt-image2/gallery-isometric.md
-              - 信息与知识:
-                  - gallery/images/gpt-image2/gallery-infographics-and-field-guides.md
-                  - gallery/images/gpt-image2/gallery-scientific-and-educational.md
-                  - gallery/images/gpt-image2/gallery-data-visualization.md
-                  - gallery/images/gpt-image2/gallery-research-paper-figures.md
-                  - gallery/images/gpt-image2/gallery-technical-illustration.md
-                  - gallery/images/gpt-image2/gallery-ui-ux-mockups.md
-              - 官方示例:
-                  - gallery/images/gpt-image2/gallery-official-openai-cookbook-examples.md
-                  - gallery/images/gpt-image2/gallery-edit-endpoint-showcase.md
-              - 手绘风格库:
-                  - gallery/images/handdraw-style/index.md
-                  - gallery/images/handdraw-style/styles-a.md
-                  - gallery/images/handdraw-style/styles-b.md
-                  - gallery/images/handdraw-style/styles-c.md
-                  - gallery/images/handdraw-style/styles-d.md
-                  - gallery/images/handdraw-style/styles-e.md
-                  - gallery/images/handdraw-style/styles-f.md
-                  - gallery/images/handdraw-style/styles-g.md
-                  - gallery/images/handdraw-style/styles-h.md
-                  - gallery/images/handdraw-style/styles-i.md
-              - PPT 风格库:
-                  - gallery/images/ppt-master/index.md
-                  - gallery/images/ppt-master/gallery-visual-styles-corporate.md
-                  - gallery/images/ppt-master/gallery-visual-styles-editorial.md
-                  - gallery/images/ppt-master/gallery-visual-styles-expressive.md
-                  - gallery/images/ppt-master/gallery-visual-styles-hand-drawn.md
-                  - gallery/images/ppt-master/gallery-visual-styles-specialty.md
-                  - gallery/images/ppt-master/gallery-renderings-modern.md
-                  - gallery/images/ppt-master/gallery-renderings-hand-drawn.md
-                  - gallery/images/ppt-master/gallery-renderings-narrative.md
-                  - gallery/images/ppt-master/gallery-renderings-specialty.md
-          - 排版:
-              - gallery/layouts/index.md
-              - gallery/layouts/social-cards.md
-              - gallery/layouts/infographics.md
-              - gallery/layouts/comic-storyboards.md
-              - gallery/layouts/ip-characters.md
-              - gallery/layouts/ecommerce.md
-              - PPT 配图版型:
-                  - gallery/layouts/deck-image-types/index.md
-                  - gallery/layouts/deck-image-types/sequence.md
-                  - gallery/layouts/deck-image-types/hierarchy.md
-                  - gallery/layouts/deck-image-types/comparison.md
-                  - gallery/layouts/deck-image-types/spatial.md
-          - 色彩:
-              - gallery/colors/index.md
-              - gallery/colors/classic.md
-              - gallery/colors/collected/gallery-imagery-gradients.md
-          - 视频:
-              - gallery/video/index.md
-              - 花卉动态生长海报: gallery/video/flower-growth-poster.md
-              - 彩色手绘三维穿梭视频: gallery/video/collected/gallery-parallax-ink.md
-          - 音频:
-              - gallery/audio/index.md
-          - 网页:
-              - gallery/web/index.md
-              - 前端风格收集:
-                  - gallery/web/frontend-styles/index.md
-                  - PIP-BOY 琥珀终端: gallery/web/frontend-styles/reference/pip-boy-terminal.md
-                  - Celestia 主题收藏卡: gallery/web/frontend-styles/reference/celestia-collection.md
-                  - Verdant Glass 苔光用量台: gallery/web/frontend-styles/reference/verdant-glass.md
-                  - Syzygy 克莱因蓝星穹: gallery/web/frontend-styles/reference/syzygy-astral.md
-                  - NEXUS 2030 酸绿深空首屏: gallery/web/frontend-styles/reference/nexus-2030.md
-                  - ATELIER 纸白动力学: gallery/web/frontend-styles/reference/atelier-kinetic.md
-                  - PLATTER 平面音乐档案: gallery/web/frontend-styles/reference/task1-platter.md
-                  - PARALLAX 三态作品档案: gallery/web/frontend-styles/reference/task2-parallax-archive.md
-                  - LINE//SYSTEM 线性工业图形: gallery/web/frontend-styles/reference/task3-line-system.md
-                  - WORLD FILES 档案袋叙事: gallery/web/frontend-styles/reference/task4-world-files.md
-                  - PIXEL BLOOM 网格揭示: gallery/web/frontend-styles/reference/task5-pixel-bloom.md
-                  - TINTORY 视觉考古编辑部: gallery/web/frontend-styles/reference/task6-tintory.md
-                  - NEAT ANNOTATIONS 手绘标注标本: gallery/web/frontend-styles/reference/task7-neat-annotations.md
-                  - One Hub 翡翠管理台: gallery/web/frontend-styles/reference/onehub-berry-admin.md
-                  - Vercel Lanyard 可拖拽 3D 工牌: gallery/web/frontend-styles/reference/vercel-lanyard.md
-                  - Open Design 官网拆解:
-                      - gallery/web/frontend-styles/open-design/index.md
-                      - 滚动感知吸顶导航: gallery/web/frontend-styles/open-design/headroom-nav.md
-                      - 标题逐词模糊入场: gallery/web/frontend-styles/open-design/blur-text.md
-                      - 滚动入场编排: gallery/web/frontend-styles/open-design/scroll-reveal.md
-                      - 宣言逐字点亮: gallery/web/frontend-styles/open-design/statement-reveal.md
-                      - 滚动锁定步骤联动: gallery/web/frontend-styles/open-design/scrolly-steps.md
-                      - 可拖拽贴纸: gallery/web/frontend-styles/open-design/drag-sticker.md
-                      - 磁性 Dock 预览切换: gallery/web/frontend-styles/open-design/magnetic-dock.md
-                      - 图标物理掉落: gallery/web/frontend-styles/open-design/falling-chips.md
-                      - 点阵地球与贡献者轨道: gallery/web/frontend-styles/open-design/globe-orbit.md
-                      - 贴纸统计卡与数字滚动: gallery/web/frontend-styles/open-design/stat-cards.md
-                      - 页底渐进高斯模糊: gallery/web/frontend-styles/open-design/gradual-blur.md
-                  - HAOQI 3D 官网拆解:
-                      - gallery/web/frontend-styles/haoqi/index.md
-                      - 3D 开场专题: gallery/web/frontend-styles/haoqi/01-opening.md
-                  - ORYZO 官网拆解:
-                      - gallery/web/frontend-styles/oryzo/index.md
-                      - 蓝图开场动画: gallery/web/frontend-styles/oryzo/blueprint-intro.md
-                      - 高斯泼溅渲染系统: gallery/web/frontend-styles/oryzo/splat-system.md
-                      - 滚动叙事与场景切换: gallery/web/frontend-styles/oryzo/scene-morph.md
-                      - Wearable 一幕: gallery/web/frontend-styles/oryzo/wearable-scene.md
-                      - RGB 呼吸光边: gallery/web/frontend-styles/oryzo/rgb-glow-border.md
-              - Sandboard WebGPU 沙盘: gallery/web/sandboard/index.md
-      - 角色:
-          - 人设:
-              - gallery/personas/index.md
-              - gallery/personas/seoa.md
-      - 收藏夹:
-          - 网站: bookmarks/websites.md
-  - 项目拆解:
-      - projects/index.md
-      - AI 角色扮演:
-          - 梨园 Liyuan:
-              - projects/liyuan/index.md
-              - 设定从哪来: projects/liyuan/setting.md
-              - 状态别漂移: projects/liyuan/state.md
-              - 聊久了: projects/liyuan/memory.md
-              - 重来和回档: projects/liyuan/branch.md
-              - 正文怎么产出: projects/liyuan/prose.md
-              - 谁来定制，能改到哪: projects/liyuan/custom.md
-          - 酒馆 SillyTavern:
-              - projects/sillytavern/index.md
-              - 角色卡: projects/sillytavern/card.md
-              - 世界书: projects/sillytavern/lorebook.md
-              - 每轮现拼 prompt: projects/sillytavern/assembly.md
-              - 一份内容喂各种模型: projects/sillytavern/adapt.md
-              - 重来、分叉、改历史: projects/sillytavern/branch.md
-              - 聊久了: projects/sillytavern/memory.md
-              - 多角色同场: projects/sillytavern/group.md
-              - 用户自己加规则: projects/sillytavern/rules.md
-          - PawzoChat:
-              - projects/pawzochat/index.md
-      - Agent 与评测:
-          - DeepSeek Harness:
-              - projects/deepseek-harness/index.md
-              - 插件: projects/deepseek-harness/plugin.md
-              - 会话日志: projects/deepseek-harness/log.md
-              - 拼 prompt: projects/deepseek-harness/prompt.md
-              - 压缩与补丁文本: projects/deepseek-harness/compaction.md
-              - 工具与安全边界: projects/deepseek-harness/tools.md
-              - 多 agent 与长时工作: projects/deepseek-harness/agents.md
-          - OpenAI Evals:
-              - projects/openai-evals/index.md
-              - 登记: projects/openai-evals/registry.md
-              - 判分: projects/openai-evals/grading.md
-              - 被测对象: projects/openai-evals/solver.md
-              - 多轮: projects/openai-evals/multiturn.md
-              - 跑和记: projects/openai-evals/record.md
-          - DeepSeek 视频问答:
-              - projects/deepseek-video-rag/index.md
-      - 开发工具:
-          - Teable:
-              - projects/teable/index.md
-          - Coolify:
-              - projects/coolify/index.md
-          - Pyodide:
-              - projects/pyodide/index.md
-          - Frappe Gantt:
-              - projects/frappe-gantt/index.md
-      - 知识库:
-          - Docmost:
-              - projects/docmost/index.md
   - 维护:
       - maintenance/index.md
       - 能力与 skill:
@@ -1681,7 +1653,7 @@ nav:
               - 图片区零散收集: maintenance/gallery/images-collected.md
               - 色彩区零散收集: maintenance/gallery/colors-collected.md
               - 视频区零散收集: maintenance/gallery/video-collected.md
-          - 项目拆解:
+          - 项目:
               - 梨园 Liyuan: maintenance/projects/liyuan.md
               - 酒馆 SillyTavern: maintenance/projects/sillytavern.md
               - DeepSeek Harness: maintenance/projects/deepseek-harness.md

@@ -115,7 +115,7 @@ graph LR
 实物长这样——一张实际发到群里的进度卡片（内容已脱敏）：
 
 <figure markdown>
-  ![一张实际发群的进度卡片](assets/ai-pm/card-changelog.png){ width="680" }
+  ![一张实际发群的进度卡片](assets/ai-pm/card-changelog.webp){ width="680" }
   <figcaption>头部一句话状态、按域分区、编号 + 结论式标题 + 状态标签、黄色待办、时间轴 + 下周清单，一屏讲完</figcaption>
 </figure>
 
@@ -128,12 +128,12 @@ graph LR
 纪律 2 的实物：上一张卡片结尾挂着的黄色待调研项，在下一张卡片里变成了标题旁的「待决策项落定」标签——两张卡放在一起，进度不言自明。
 
 <figure markdown>
-  ![上一版卡片留的坑](assets/ai-pm/card-loop-before.png)
+  ![上一版卡片留的坑](assets/ai-pm/card-loop-before.webp)
   <figcaption>v0.4.6 卡片的结尾：坑先挂出来，标明「未拍板 · 调研中」</figcaption>
 </figure>
 
 <figure markdown>
-  ![下一版卡片打勾](assets/ai-pm/card-loop-after.png)
+  ![下一版卡片打勾](assets/ai-pm/card-loop-after.webp)
   <figcaption>v0.4.7 卡片：方案落定，顺手把上一版的坑打勾</figcaption>
 </figure>
 

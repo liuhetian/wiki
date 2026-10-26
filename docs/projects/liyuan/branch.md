@@ -3,7 +3,7 @@ description: "梨园怎么处理重来和回档：会话是一棵树，重新生
 ---
 
 <figure markdown>
-  ![会话是一棵树：每轮挂一份场景快照，重新生成是同级分支，废弃分支的账留在原地，从存档可以分出新世界线](assets/branch-tree-infographic.png)
+  ![会话是一棵树：每轮挂一份场景快照，重新生成是同级分支，废弃分支的账留在原地，从存档可以分出新世界线](assets/branch-tree-infographic.webp)
 </figure>
 
 # 重来和回档：会话是一棵树

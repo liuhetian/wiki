@@ -2,7 +2,7 @@
 
 ### 由刀版图生成 3D 产品包装盒
 
-<img src="assets/product-food/product-dieline-box.png" alt="product dieline box" width="420" loading="lazy" decoding="async"/>
+<img src="assets/product-food/product-dieline-box.webp" alt="product dieline box" width="420" loading="lazy" decoding="async"/>
 
 ```text
 把这张刀版图（dieline）组装成一个完美的 3D 包装盒：各面板准确、折痕干净、文字不变形，图案完全保留原样。将盒子直立摆放，以考究的四分之三角度拍摄，置于极简高级的影棚环境中：柔和的中性背景、漫射光、细微阴影、无道具、色彩真实、哑光纸板质感、写实的杂志级细节。盒子正面以干净的无衬线字体写着 "AURAE / COLD-BREW MATCHA / 12 fl oz"。侧面板上是 8pt 字号的小号配料表，以及营养成分表样式的信息块。干净、杂志感、获奖级的产品静物照（packshot）美学。
@@ -10,7 +10,7 @@
 
 ### 巧克力威化产品渲染（JSON 风格）
 
-<img src="assets/product-food/product-chocolate-wafer.png" alt="product chocolate wafer" width="420" loading="lazy" decoding="async"/>
+<img src="assets/product-food/product-chocolate-wafer.webp" alt="product chocolate wafer" width="420" loading="lazy" decoding="async"/>
 
 ```text
 /* 产品渲染配置：巧克力威化 榛子版
@@ -43,7 +43,7 @@
 
 ### 沙拉爆炸美食摄影（JSON 风格）
 
-<img src="assets/product-food/food-salad-explosion.png" alt="food salad explosion" width="420" loading="lazy" decoding="async"/>
+<img src="assets/product-food/food-salad-explosion.webp" alt="food salad explosion" width="420" loading="lazy" decoding="async"/>
 
 ```text
 {
@@ -73,10 +73,10 @@
 
 ### 通用商业海报模板
 
-<img src="assets/product-food/aurora-oolong-poster.png" alt="aurora oolong poster" width="420" loading="lazy" decoding="async"/>
+<img src="assets/product-food/aurora-oolong-poster.webp" alt="aurora oolong poster" width="420" loading="lazy" decoding="async"/>
 
 ```text
 为一款名为 "Aurora Oolong Cold Brew" 的产品设计一张高端商业海报。极简风格，画面干净，主角瓶身与茶杯居中，柔和的影棚光，写实的材质质感，优雅的冷凝水珠细节，大面积留白，高级品牌视觉语言，电影感光影，考究的包装字体排印，超精细的完成度。让它看起来像一支奢华饮品广告，可以投放在地铁灯箱或时尚杂志上。
 ```
 
-<img src="assets/product-food/aurora-oolong-sunburst.png" alt="Sunburst Aurora Oolong Cold Brew bottle and tea glass commercial scene" width="420" loading="lazy" decoding="async"/>
+<img src="assets/product-food/aurora-oolong-sunburst.webp" alt="Sunburst Aurora Oolong Cold Brew bottle and tea glass commercial scene" width="420" loading="lazy" decoding="async"/>

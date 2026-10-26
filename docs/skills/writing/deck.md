@@ -8,7 +8,7 @@ description: 滚动叙事 PPT 的完整工程手册。覆盖三块：视频处�
 > 本文件合并自 v0.2 的 `SKILL.md`（视频处理）、`SKILL-scene-anatomy.md`（背景图位置）、`SKILL-style.md`（视觉风格）。
 
 !!! info "出处"
-    源自 deck 项目 v0.3（2026-05-20），随本 wiki 作为活手册维护；可运行的 deck 真身在 [`posts/animated-ppt/assets/deck/`](../../posts/animated-ppt/assets/deck/index.html)。
+    源自 deck 项目 v0.3（2026-05-20），随本 wiki 作为活手册维护；可运行的 deck 真身在 [`projects/animated-ppt/assets/deck/`](../../projects/animated-ppt/assets/deck/index.html)。
 
 **目录**
 

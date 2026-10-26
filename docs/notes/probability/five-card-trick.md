@@ -25,7 +25,7 @@ description: "1 号藏 1 张、摆 4 张，2 号猜底牌；24 种排列看似�
 - **3 张牌的全序把 6 折成 1**：两人提前约定全序：先比点数，点数相同再按 ♠ > ♥ > ♣ > ♦ 比花色。剩下 3 张分出小、中、大，6 种排列固定对应 1–6。
 
 <figure markdown>
-  ![13 点圆环：任意两张牌两个方向的步数相加等于 13](assets/five-card-trick/ring.jpg){ width="520" }
+  ![13 点圆环：任意两张牌两个方向的步数相加等于 13](assets/five-card-trick/ring.webp){ width="520" }
   <figcaption>13 点圆环，K 的下一格接回 A</figcaption>
 </figure>
 
@@ -51,7 +51,7 @@ description: "1 号藏 1 张、摆 4 张，2 号猜底牌；24 种排列看似�
 3. 2 号看到第一位是 ♥10，知道底牌是红桃、起点 10；后三张是大小中，读出 5；从 10 顺时针数 5 步，报出 ♥2。
 
 <figure markdown>
-  ![算例：第一位 ♥10，后三张 K、3、7 是大小中，底牌 ♥2](assets/five-card-trick/example.jpg){ width="520" }
+  ![算例：第一位 ♥10，后三张 K、3、7 是大小中，底牌 ♥2](assets/five-card-trick/example.webp){ width="520" }
   <figcaption>第一位定花色和起点，后三张的顺序定步数</figcaption>
 </figure>
 

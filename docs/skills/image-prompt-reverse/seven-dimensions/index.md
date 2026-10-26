@@ -61,27 +61,27 @@ AI 拿到一张参考图时，按下面四步做：
 
 ??? example "原帖的六张示例图与「看图重点」"
 
-    ![通用七维拆解示例：酒红色和纸折鹤静物](assets/linux-do-2729491/02-general-example.jpeg)
+    ![通用七维拆解示例：酒红色和纸折鹤静物](assets/linux-do-2729491/02-general-example.webp)
 
     > **看图重点：** 主体是酒红色和纸折鹤；风格偏画册级静物摄影；配色为象牙白、暖灰与低饱和酒红；自然侧光配合轻微非对称构图；和纸纤维与洞石肌理清楚；氛围安静、克制、自信。
 
-    ![字体 Logo 示例：石墨色拉丝金属字标](assets/linux-do-2729491/03-logo-example.jpeg)
+    ![字体 Logo 示例：石墨色拉丝金属字标](assets/linux-do-2729491/03-logo-example.webp)
 
     > **看图重点：** 先辨认几何无衬线字形、字距与笔画比例，再观察石墨色拉丝金属、实体字标的空间关系、非对称留白、天然石材背景和柔和侧光。
 
-    ![风景示例：蓝调时刻的湖边木屋](assets/linux-do-2729491/04-landscape-example.jpeg)
+    ![风景示例：蓝调时刻的湖边木屋](assets/linux-do-2729491/04-landscape-example.webp)
 
     > **看图重点：** 前景看岩石和芒草，中景看湖面与木屋，远景看山峰和云层；再判断蓝调时刻、地平线暖光、薄雾和广角镜头。
 
-    ![人像示例：窗边侧逆光的浅景深人像](assets/linux-do-2729491/05-portrait-example.jpeg)
+    ![人像示例：窗边侧逆光的浅景深人像](assets/linux-do-2729491/05-portrait-example.webp)
 
     > **看图重点：** 观察 85mm 视角、浅景深、窗边侧逆光、发丝轮廓光、暖肤色与冷灰蓝环境，以及人物安静坚定的情绪。
 
-    ![3D 示例：黏土、金属与磨砂玻璃材质对比](assets/linux-do-2729491/06-3d-example.jpeg)
+    ![3D 示例：黏土、金属与磨砂玻璃材质对比](assets/linux-do-2729491/06-3d-example.webp)
 
     > **看图重点：** 对比哑光黏土、镜面金属和磨砂玻璃，继续判断三点布光、反射/透光、体积光、台面布局与景深。
 
-    ![IP 角色示例：2.5 头身潮玩站在洞石台座上](assets/linux-do-2729491/07-ip-character-example.jpeg)
+    ![IP 角色示例：2.5 头身潮玩站在洞石台座上](assets/linux-do-2729491/07-ip-character-example.webp)
 
     > **看图重点：** 先看约 2.5 头身比例、烟熏玻璃圆眼和极简嘴型，再看低饱和鼠尾草绿/陶土橙配色、哑光 PVC 质感、三分之四挥手站姿、洞石台座与画册式留白。
 

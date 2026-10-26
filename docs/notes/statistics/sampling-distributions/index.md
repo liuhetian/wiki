@@ -6,7 +6,7 @@ description: "区分总体、样本与统计量的分布，弄清标准误为什
 
 抽样分布不是样本中原始数据的分布。它描述**从同一总体反复抽样时，一个统计量会怎样波动**，是标准误、置信区间和检验的共同底座。
 
-![从同一总体反复取样，会得到略有不同的统计量](assets/repeated-statistics-marker-doodle.png)
+![从同一总体反复取样，会得到略有不同的统计量](assets/repeated-statistics-marker-doodle.webp)
 
 ```mermaid
 flowchart LR

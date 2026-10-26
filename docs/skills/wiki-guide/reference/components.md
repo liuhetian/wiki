@@ -26,8 +26,6 @@ description: "本 wiki 自研的写法和 mermaid 的坑：iframe 嵌交互单�
 - **`√` 别进标签**：Maple Mono 下它的字形像积分号 `∫`，写成文字「的平方根」
 - **渲染效果由用户自己在浏览器里看，AI 不截图**：上面两类问题 `zensical build` 和 check-links 都报不出来，mermaid 渲染在 closed shadow root 里、脚本也测不到；写了 mermaid 就提醒用户看一眼
 
-活例：[统计学第 6 章](../../../courses/statistics-book/ch06-sampling-distribution.md)的三大分布构造图，两处都踩过。
-
 ## 嵌入交互单页 { #iframe-demo }
 
 要展示交互效果（组件、可视化、小工具），把纯客户端的自包含单页放进所属 skill 或文章的 `assets/`，用原生 `<iframe>` 同域嵌入。AI 顺同一个 URL 能读到未压缩的源码。
@@ -95,7 +93,7 @@ bash scripts/age-seal.sh -a   # 粘贴多行、Ctrl-D 结束 → 打印 armor，
 - **wiki 钥匙对专用**：私钥在部署机 `~/.config/age/wiki.key`，公钥在 `scripts/age-seal.sh`，口令锁住的副本在 [`vendor/age-init.js`](../../../vendor/age-init.js) 的 `WIKI_KEY_AGE`；换钥匙对时三处一起改，旧密文重新加密
 - 命令行读 `.md` 源时，管道接 `uv run scripts/age-open.py` 整页解开；用法和凭据查找顺序写在脚本头部
 
-活例：[开发环境第 0 步](../../../posts/ai-assistant/dev-env.md#proxy)代码块里的服务器地址和登录密码。
+活例：[开发环境第 0 步](../../../projects/ai-assistant/dev-env.md#proxy)代码块里的服务器地址和登录密码。
 
 ## 时间线 `<div class="zx-timeline" markdown>` { #timeline }
 
@@ -116,7 +114,7 @@ bash scripts/age-seal.sh -a   # 粘贴多行、Ctrl-D 结束 → 打印 armor，
 - **日期写在标题最前面**，从旧到新往下排，新的追加在末尾
 - 样式在 `zx-theme.css` 第 10 节，纯 CSS
 
-活例：[wiki 介绍 · 能力时间线](../../../posts/wiki/index.md#timeline)。
+活例：[wiki 介绍 · 能力时间线](../../../projects/wiki/index.md#timeline)。
 
 ## 复制时跳过 `<div class="zx-no-copy" markdown>` { #no-copy }
 

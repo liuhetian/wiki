@@ -9,7 +9,7 @@ copy_source: true
 
 ## 写作流程 { #workflow }
 
-1. 按[七问](#where)定板块和位置
+1. 按[六问](#where)定板块和位置
 2. 写正文，顶部写一行 [`description`](#description)
 3. 在 `mkdocs.yml` 的 `nav:` 注册
 4. 在某个祖先目录的索引页（`index.md` / `SKILL.md`）挂一行带钩子的链接 —— nav 只给人看，AI 只顺相对链接走，没挂上的页面对 AI 等于不存在
@@ -18,28 +18,26 @@ copy_source: true
 
 ## 内容放哪个板块 { #where }
 
-顶层七个板块按用途分，主题只做板块内的二级目录。按顺序问：
+顶层六个板块，主题只做板块内的二级目录。下面六问定的是一页放哪。收外面的东西先走[收纳导诊](../collect-triage.md)：文章线（给人读）和 skill 线（给 AI 读）分开判，一个来源可以两边各落一页。按顺序问：
 
-1. 收录一件成品当参考 —— 一张图配 prompt、一种前端风格配 demo？→ [Gallery](../../gallery/index.md)，按媒介进 images / layouts / colors / video / audio / web 六区之一；角色设定进 personas（人设），一人一页，定妆照加基本资料，活例 [SEOA｜徐星澄](../../gallery/personas/seoa.md)。原样收录，只调排版和图片路径，来源和改动写进[维护 · Gallery 收录](../../maintenance/index.md#gallery)，一个来源一篇；本站自己做的，成品和做法写在同一页（[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)）；layouts 区的五个分类页和 colors 区的经典主题色页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改；两区的 `index.md` 手写。活例：[GPT Image 2 的动漫与漫画](../../gallery/images/gpt-image2/gallery-anime-and-manga.md)、[前端风格收集](../../gallery/web/frontend-styles/index.md)。只存链接、不存原件的整站收藏（好用的工具站、值得常看的博客）进 Gallery 侧栏「收藏夹」组的[网站](../../bookmarks/websites.md)，文件在顶层 `bookmarks/`：每条一行，链接、一句为什么收、收录日期；前端做得好、要当风格参考的照旧进 web 区存原件
-2. 给 agent 直接挂载的成套资产？→ [Skills](../index.md)
-3. 一个 skill 或 Agent 能力背后的事 —— 从哪来、为什么这么选、改过什么、实测过什么？→ [维护](../../maintenance/index.md)。skill 页只写怎么用，页尾链过来，写法见[收纳 skill · 维护记录](skill.md#maintenance-record)
-4. 跟着一本书或一套实操走、自己做完才算数？→ [课程](../../courses/index.md)
-5. 算法、机器学习、编程语言等专业科目的学习、推导、题解？→ [笔记](../../notes/index.md)
-6. 拆解别人的一个项目——它属于什么领域、为了解决什么问题引入了哪些功能？→ [项目拆解](../../projects/index.md)，一个项目一个目录：`index.md` 先说领域，再从这个领域最简单的做法出发按功能线写「具体问题 → 功能」，只写现状、不记小 bug；每条功能线一页细讲，能跑就实跑，每一步贴源码模版和跑出来的效果。怎么读、怎么写照[细讲项目](../project-research/dissect.md)：入口页按论文骨架排（摘要、关键词、术语、引言、局限、结论），功能线是引言的小节；读的哪个 commit、实验设置和脚本写进[维护](../../maintenance/index.md#projects)。活例：[梨园 Liyuan](../../projects/liyuan/index.md)。只照[粗讲项目](../project-research/gist.md)讲了几段的，目录里只放一页 `index.md`，不套论文骨架，commit 写进脚注 —— 活例：[Teable](../../projects/teable/index.md)
-7. 其余能独立阅读的复盘、观点和方法整理 → [文章](../../posts/index.md)
+1. 收录一件成品当参考 —— 一张图配 prompt、一种前端风格配 demo？→ [Gallery](../../gallery/index.md)，按媒介进 images / layouts / colors / video / audio / web 六区之一；角色设定进 personas（人设），一人一页，定妆照加基本资料，活例 [SEOA｜徐星澄](../../gallery/personas/seoa.md)。别人的东西：有上游仓库、直接能用的效果极简收，页面只有标题（写效果）、一个能跑的 demo 和一句「使用 owner/repo 仓库即可」，不写复现方式、不存档源码和脚本、不建维护记录，只收 demo 跑起来要的文件；图、版式、配色、视频原样收录，只调排版和图片路径，来源和改动写进[维护 · Gallery 收录](../../maintenance/index.md#gallery)，一个来源一篇；单条放该区的 `collected/gallery-<名>.md`，素材放同级 `assets/`，成套的才开目录，`index.md` 只当索引、内容页不占 —— 活例 [彩色手绘三维穿梭视频](../../gallery/video/collected/gallery-parallax-ink.md)；本站自己做的，成品和做法写在同一页（[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)）；layouts 区的五个分类页和 colors 区的经典主题色页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改；两区的 `index.md` 手写。活例：[GPT Image 2 的动漫与漫画](../../gallery/images/gpt-image2/gallery-anime-and-manga.md)、[前端风格收集](../../gallery/web/frontend-styles/index.md)。只存链接、不存原件的整站收藏（好用的工具站、值得常看的博客）进 Gallery 侧栏「收藏夹」组的[网站](../../bookmarks/websites.md)，文件在顶层 `bookmarks/`：每条一行，链接、一句为什么收、收录日期；前端做得好、要当风格参考的照旧进 web 区存原件
+2. 从文章提炼、给 agent 照着做的执行方式 —— 守则加脚本？→ [Skills](../index.md)
+3. 一个 skill、Gallery 收录或项目背后的事 —— 从哪来、为什么这么选、改过什么、实测过什么？→ [维护](../../maintenance/index.md)。skill 页只写怎么用，页尾链过来，写法见[收纳 skill · 维护记录](skill.md#maintenance-record)
+4. 为了交付同一个东西，把互相牵连的几个问题收在一起 —— 自己做的、拆别人的都算？→ [项目](../../projects/index.md)，一个项目一个目录，按领域进分组；只为这个项目写的操作手册、截图跟着项目放，不单独算 skill —— 活例：[Kindle 常显信息屏](../../projects/kindle-dashboard/index.md)的越狱实操。拆别人的项目：`index.md` 先说领域，再从这个领域最简单的做法出发按功能线写「具体问题 → 功能」，只写现状、不记小 bug；每条功能线一页细讲，能跑就实跑，每一步贴源码模版和跑出来的效果。怎么读、怎么写照[细讲项目](../project-research/dissect.md)：入口页按论文骨架排（摘要、关键词、术语、引言、局限、结论），功能线是引言的小节；读的哪个 commit、实验设置和脚本写进[维护](../../maintenance/index.md#projects)。活例：[梨园 Liyuan](../../projects/liyuan/index.md)。只照[粗讲项目](../project-research/gist.md)讲了几段的，目录里只放一页 `index.md`，不套论文骨架，commit 写进脚注 —— 活例：[Teable](../../projects/teable/index.md)
+5. 为了学会同一门学问，把一个领域的文章收在一起 —— 算法、统计、机器学习、编程语言的学习、推导、题解？→ [笔记](../../notes/index.md)。可以给自己出题：写一个 ```` ```conflict ```` 块，上半是问、下半留空，`python3 scripts/course.py status` 列出还空着的题，写法见[提问块](course.md#conflict-syntax)
+6. 其余：定义一个问题、提出解决方案，像一篇论文；论文笔记也算 → [文章](../../posts/index.md)
 
-- 能用在任意成品上的方法归 skill，只做一种成品的做法写在 Gallery 那页 —— [花卉动态生长海报](../../gallery/video/flower-growth-poster.md)的五步只做这一种海报，写在成品页；[图片提示词反推 · 七维拆解](../image-prompt-reverse/seven-dimensions/index.md)是 skill，它整理的合集进了 [Gallery](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)，两边互链
-- 课程是题、笔记是答卷：同名文件，答完才从 `courses/` 归档进 `notes/`
-- 文章和 skill 共生、单向链：复盘归文章，复盘里沉淀出的可复用手册归 skill；文章链到 skill，skill 不链回文章讲原理、背景和实现 —— skill 是给 AI 照着做的，为什么这样做它用不上。拿文章当写法活例、指向文章板块的不算。活例：[动画 PPT 复盘](../../posts/animated-ppt/index.md)链到它的[工程手册](../writing/deck.md)，手册不链回来
+- 能用在任意成品上的方法归 skill，只做一种成品的做法写在 Gallery 那页，只写本站经手过的，上游仓库里已有的指过去 —— [花卉动态生长海报](../../gallery/video/flower-growth-poster.md)的五步只做这一种海报，写在成品页；[图片提示词反推 · 七维拆解](../image-prompt-reverse/seven-dimensions/index.md)是 skill，它整理的合集进了 [Gallery](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)，两边互链
+- 文章和 skill 共生、单向链：文章讲原因，沉淀出的可复用手册归 skill；文章链到 skill，skill 不链回文章讲原理、背景和实现 —— skill 是给 AI 照着做的，为什么这样做它用不上。拿文章当写法活例、指向文章板块的不算。活例：[动画网页 PPT](../../projects/animated-ppt/index.md)链到它的[工程手册](../writing/deck.md)，手册不链回来
 - 归属变了就把文件真的搬过去，按下一节「挪文件」办
 
 ## 硬规矩 { #rules }
 
 - **挪文件不留存根页**：要保住旧 URL 就别挪；挪了就删原文件、站内引用一并改，`mkdocs.yml` 的 `redirects` 加一行兜站外书签（只管 HTML，旧 `.md` 地址照样 404）。存根页没人链、不进 nav，留着只会逼 check-links 开豁免口子
 - **引外部一手资料三步**：① 真身存档进 `assets/`，注明出处和获取日期，正文用 `??? abstract` 折叠 + `--8<--` 展示；② 正文用 `>` 摘关键原句；③ 每处引用跟自己的分析。活跃开源仓库、关键契约已经消化成自己的话的，可以用钉 commit 的 GitHub 永链代替存档 —— 活例：[Dashboard](../dashboard/index.md) 的蓝本吸收
-- **正文链接只指站内，外部来源进脚注**：正文留 `[^名]`，URL 和读取日期写进文末脚注 —— 活例：[对象存储部署](../../posts/wiki/cos-deploy/index.md)。收藏夹除外：条目本身就是外链，直接写在条目上
+- **正文链接只指站内，外部来源进脚注**：正文留 `[^名]`，URL 和读取日期写进文末脚注 —— 活例：[对象存储部署](../../projects/wiki/cos-deploy/index.md)。收藏夹和 Gallery 极简收的那句「使用 xxx 仓库即可」除外：链接本身就是收的内容，直接写在句子上
 - **别人的图和视频直接收原件**：本 wiki 自己看、不商用，忠实记录比避嫌要紧，不为避嫌改成自己重新生成；作者和出处写进维护记录或脚注 —— 活例：[二次元平面设计风格](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)的 23 张配图原样存档
-- **收录外部仓库只取核心文件**：挑对理解主题真正关键的几个进 `assets/`，其余钉 commit 永链。项目拆解的源码存档 `assets/<名>-src/` 只存页面 `--8<--` 引到的文件，上游的设计文档、README 不整篇嵌，摘句加永链脚注；没人引的文件 check-links 会拦 —— 活例：[梨园](../../projects/liyuan/index.md)的 `liyuan-src/`。吸纳来的 skill 例外，要收齐才能跑，见 [收纳 skill](skill.md)
+- **收录外部仓库只取核心文件**：挑对理解主题真正关键的几个进 `assets/`，其余不收、链上游；读的哪个 commit 只在维护记录写一次。项目的源码存档 `assets/<名>-src/` 只存页面 `--8<--` 引到的文件，上游的设计文档、README 不整篇嵌，摘句加脚注；没人引的文件 check-links 会拦 —— 活例：[梨园](../../projects/liyuan/index.md)的 `liyuan-src/`。吸纳来的 skill 例外，要收齐才能跑，见 [收纳 skill](skill.md)
 - **代码即引用**：展示仓库里的文件用 `--8<--` 引真身，不复制粘贴；路径先相对 `docs/`、再相对仓库根（`skills/.../x.css`、`mkdocs.yml`）。完整文件不单独成页，在讲它的页面文末 `??? abstract` 折叠引用
 - **缩进 4 空格**：折叠块、选项卡、提示框的子内容不缩 4 格就不被识别；代码块内部的缩进照原样
 - 代码块语言标识写 `python`，不写 `py`
@@ -112,5 +110,5 @@ AI 代笔时照此写：
 以下场景只有用户明确要求写作某个部分，或者进行精简检查才读：
 
 - [课程页怎么写](course.md) —— 如何写作一个`课程`，只有用户明确要求写一个课程时才查看。
-- [收纳 skill](skill.md) —— 在 `skills/` 下收纳或改 skill 时读：迷你、标准、抽象三种形态怎么判，所有来源共用的收纳步骤，插件仓库、提示词合集、教程、自己跑通的 prompt 各多做什么，带脚本的 skill 怎么发，nav 怎么挂，维护记录怎么写
+- [收纳 skill](skill.md) —— 在 `skills/` 下收纳或改 skill 时读：迷你、标准、抽象三种形态怎么判，所有来源共用的收纳步骤，插件仓库、脚本重的 skill、提示词合集、教程、自己跑通的 prompt 各怎么收，带脚本的 skill 怎么发，nav 怎么挂，维护记录怎么写
 - [精简检查](trim.md) —— 默认不用，用户手动复制粘贴才使用：逐段问「这是我们自己的，还是 AI 本来就会的」

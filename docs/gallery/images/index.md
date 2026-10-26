@@ -49,7 +49,7 @@ description: "图配 prompt 的图库，分 7 大类：动漫角色、插画绘�
 - [品牌系统与视觉识别](gpt-image2/gallery-brand-systems-and-identity.md) · 4 条
 - [活动与体验](gpt-image2/gallery-events-and-experience.md) · 2 条
 - [品牌海报](collected/gallery-brand-posters.md) · 1 条（一杯狗宠物咖啡店的喷枪手绘海报原图，prompt 是七维拆解反推的）
-- [旧刊物海报](collected/gallery-pulp-posters.md) · 1 套做法（把照片重构成 2:3 的九十年代 pulp 印刷电影海报：一色平涂底、主体压硬边、金黄粗标题、旧纸颗粒；给 Agent 照做的读图、选档、编 prompt、质检流程，附上游示例和本站实测）
+- [旧刊物海报](collected/gallery-pulp-posters.md) · 1 组样片（把照片重构成 2:3 的九十年代 pulp 印刷电影海报：一色平涂底、主体压硬边、金黄粗标题、旧纸颗粒；原图、上游示例和本站实测三张对比，附实测的配方和四段 prompt；照着做的守则在 skill [旧刊物海报](../../skills/pulp-poster.md)）
 
 ## 摄影与电影感
 

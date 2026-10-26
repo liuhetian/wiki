@@ -6,7 +6,7 @@ description: "用偏差、方差、MSE 和一致性评价估计量，理解矩�
 
 点估计用样本计算一个数去猜总体参数。评价它不能只看这次猜得准不准，要看重复抽样中的**偏差、方差、均方误差和大样本行为**。
 
-![点估计给出未知参数的大致位置，但仍带有不确定性](assets/estimate-uncertainty-marker-doodle.png)
+![点估计给出未知参数的大致位置，但仍带有不确定性](assets/estimate-uncertainty-marker-doodle.webp)
 
 ## 参数、估计量和估计值是三件事
 

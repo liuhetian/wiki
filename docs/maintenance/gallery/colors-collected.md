@@ -17,7 +17,7 @@ description: "色彩区零散收集的维护记录：意象渐变配色取自抖
 
 ## 存档时做了哪些改动
 
-- 10 张图原样收录，没裁没压。用 [解析分享链接 · 抖音](../../skills/agent-io/reference/share-link/douyin.md) 的脚本取的，是不带水印的 JPEG
+- 10 张图原样收录，没裁。用 [解析分享链接 · 抖音](../../skills/agent-io/reference/share-link/douyin.md) 的脚本取的，是不带水印的 JPEG，入库时按原尺寸转成 WebP
 - 原帖没有 prompt。每套下面那条主题色 prompt 是我们照色卡转录的：卡上的标题、副标题、主色和两种辅色的色名与 HEX。CMYK、RGB 和卡片底部的一句寓意只留在图里
 - 色名是从图上的小字认出来的，「葙雪蓝」「浅宛褐」「饵蓝色」「烟廖紫」几个字看不太清，以图为准
 - 原图的笔误照原样留在图里，prompt 里只用 HEX：甜筒粉的 RGB 写成「31 135 156」，按 HEX #E7879C 应是 231；CMYK 多写了一个数「5 60 20 0 2」；水基粉的 HEX 写成 #Ee8896，prompt 里统一成大写

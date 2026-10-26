@@ -1,5 +1,5 @@
 ---
-description: "维护板块：skill 和 Agent 能力背后的事，分两部分：Agent 基础能力背后的选型实测、上游来源和没做的事，一个能力一篇；外部 skill 的吸纳记录，一个 skill 一篇；Gallery 收录的来源和改动，一个来源一篇；项目拆解读的版本和素材来源，一个项目一篇；实测流水线用的示例 skill。AI 正常使用不用看，出问题或要改做法时再看"
+description: "维护板块：skill 和 Agent 能力背后的事，分两部分：Agent 基础能力背后的选型实测、上游来源和没做的事，一个能力一篇；外部 skill 的吸纳记录，一个 skill 一篇；Gallery 收录的来源和改动，一个来源一篇；细讲的项目读的版本和素材来源，一个项目一篇；实测流水线用的示例 skill。AI 正常使用不用看，出问题或要改做法时再看"
 ---
 
 # 维护
@@ -62,9 +62,9 @@ Gallery 里别人的成品从哪来、收的时候改了什么、上游更新了
 - [色彩区零散收集](gallery/colors-collected.md) —— 意象渐变配色，抖音图文原图原样收录，主题色 prompt 照色卡转录
 - [视频区零散收集](gallery/video-collected.md) —— 彩色手绘三维穿梭视频，收录自 makerjackie/parallax-ink-video-skill，渲染工程原样收录，配乐配音换成 agent-io
 
-## 项目拆解 { #projects }
+## 项目 { #projects }
 
-[项目拆解](../projects/index.md)每个项目一篇：读的哪个版本、许可、存档和素材从哪来、实验怎么跑的。
+[项目](../projects/index.md)里细讲的别人的项目每个一篇：读的哪个版本、许可、存档和素材从哪来、实验怎么跑的。
 
 - [梨园 Liyuan](projects/liyuan.md) —— 读的是 1e9448e（2026-10-19 读），PolyForm Noncommercial 许可；源码存档、行号、截图、配图各从哪来；细讲页的效果块怎么实跑出来的，脚本附后
 - [酒馆 SillyTavern](projects/sillytavern.md) —— 读的是 06bde93（1.19.0，2026-10-20 读），AGPL-3.0 许可；源码存档和行号；效果块怎么实跑出来的：Node 加载钩子原样加载酒馆前端模块、界面依赖换成桩，模型请求另起进程发；脚本附后

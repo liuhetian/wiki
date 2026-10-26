@@ -6,7 +6,7 @@ description: "零散收集的人像 prompt：写真助手模板，让模型先�
 
 ### 东方女性曲线型写真助手
 
-<img src="assets/curvy-portrait-assistant.png" alt="东方女性曲线型写真助手" width="420"/>
+<img src="assets/curvy-portrait-assistant.webp" alt="东方女性曲线型写真助手" width="420"/>
 
 ??? note "这张图用的生图 prompt：DeepSeek 按默认参数补全"
 
@@ -45,7 +45,7 @@ description: "零散收集的人像 prompt：写真助手模板，让模型先�
 
 ### 短视频主页自拍网格截图
 
-<img src="assets/short-video-selfie-grid.png" alt="短视频主页自拍网格截图" width="420"/>
+<img src="assets/short-video-selfie-grid.webp" alt="短视频主页自拍网格截图" width="420"/>
 
 ```{.text .wrap}
 生成一张竖版9:16的手机短视频作品网格截图，包含多张年轻成年女性的日常自拍，以及完整的点赞数字、心形图标和多图标识。所有画面由文字描述生成。

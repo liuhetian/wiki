@@ -3,7 +3,7 @@ description: "梨园的设定从哪来：角色卡投影进 system，蓝灯常�
 ---
 
 <figure markdown>
-  ![每轮的设定分四层：常驻的角色卡和蓝灯条目、命中只给标题的绿灯条目、模型按需检索的正文、模型新写的补充设定集](assets/setting-sources-infographic.png)
+  ![每轮的设定分四层：常驻的角色卡和蓝灯条目、命中只给标题的绿灯条目、模型按需检索的正文、模型新写的补充设定集](assets/setting-sources-infographic.webp)
 </figure>
 
 # 设定从哪来：越往下，越要模型自己动手

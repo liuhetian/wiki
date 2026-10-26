@@ -15,7 +15,7 @@ description: "Sandboard：WebGPU 写实沙盘，划沟、堆沙、扬沙，Start
 **只能跑 WebGPU**：需要支持 WebGPU 的浏览器，外加一块硬件 GPU（会主动拒绝软件模拟的适配器），
 所以老 Safari、部分 Firefox、没有 GPU 的机器会直接显示报错。跑不起来的话看这张截图：
 
-![Sandboard 截图](assets/screenshot.jpeg)
+![Sandboard 截图](assets/screenshot.webp)
 
 原作者 GitHub 账号 scottstts，线上原版在 sand.scottsun.io[^scottsun]，仓库是
 scottstts/Sandboard[^sandboard]，收录时钉在 commit

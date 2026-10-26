@@ -19,8 +19,8 @@
 3. nav 注册 —— 写作规范要求新增页面必须进 mkdocs.yml 的 nav。只认 nav 段里的条目，
    redirects 和注释里出现同一路径不算注册 —— 挪文件写了 redirect、忘了改 nav，正是要拦的情形。
 
-4. 笔记里的未解决课程提问 —— docs/notes/ 下代码块之外不允许出现 <<<<<<< 冲突标记。
-   课程页（docs/courses/）的提问本来就是这个形状，那是题；一旦这形状出现在笔记里，
+4. 笔记里的未解决提问 —— docs/notes/ 下代码块之外不允许出现 <<<<<<< 冲突标记。
+   ```conflict 块里的提问本来就是这个形状，那是题；一旦这形状漏到代码块之外，
    说明有题还空着没答就想发出去。归档要走 scripts/course.py add，它会逐题检查。
    代码块里的不算：git 笔记讲冲突时会原样贴冲突示例。
 
@@ -42,7 +42,7 @@
    写在源文件里，复制时不用去抓子页（一个入口最多链了上百篇），本地预览和线上一样。
    首页没有复制按钮，不查。
 
-7. 源码存档只存被引的 —— 项目拆解的 projects/<项目>/assets/<名>-src/ 是从上游仓库逐字拷来的
+7. 源码存档只存被引的 —— 项目的 projects/<项目>/assets/<名>-src/ 是从上游仓库逐字拷来的
    原件，只给页面的 `--8<--` 当真身。每个文件都要有页面用 `--8<--` 或链接引到：没人引的文件
    AI 顺链接走不到，其中的 .md 还会被 zensical 建成孤儿页、进站内搜索，原文里指向没拷的
    文件的相对链接全成了构建警告。正文里写一句路径不算引用 —— 那指的是原仓库同版本，
@@ -67,7 +67,7 @@ MKDOCS = ROOT / "mkdocs.yml"
 # markdown 链接 [text](target)，容忍 <> 包裹和 "title" 后缀
 LINK = re.compile(r"\[[^\]]*\]\(\s*<?([^)\s>]+)>?[^)]*\)")
 EXEMPT = re.compile(r"<!--\s*link-check-ok:")
-# 课程提问块的起始标记（与 scripts/course.py、vendor/conflict-init.js 同规则）
+# 提问块的起始标记（与 scripts/course.py、vendor/conflict-init.js 同规则）
 CONFLICT = re.compile(r"^<{7} ", re.M)
 # 检查 2、4、5 用：围栏代码块的开围栏（``` 或 ~~~，允许缩进）与行内 code
 FENCE = re.compile(r"^[ \t]*(`{3,}|~{3,})")
@@ -266,7 +266,7 @@ def main() -> int:
             dead_assets[md] = missing
         if md == root_index:
             continue
-        # 4. 笔记里不许有未解决的课程提问
+        # 4. 笔记里不许有未解决的提问
         if r.parts[0] == "notes" and CONFLICT.search(prose(md.read_text(encoding="utf-8"))):
             unresolved.append(r)
         head = "".join(md.read_text(encoding="utf-8").splitlines(keepends=True)[:5])
@@ -299,7 +299,7 @@ def main() -> int:
         "补进 nav；reference/ 一层按规范展平到父级",
     )
     report(
-        "笔记里还有未解决的课程提问",
+        "笔记里还有未解决的提问",
         unresolved,
         "把每道题答完，再跑 python3 scripts/course.py add <分类>/<slug> 归档",
     )

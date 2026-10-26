@@ -2,7 +2,7 @@
 
 ### Moss Radio 品牌识别展示板
 
-<img src="assets/brand-systems-identity/brand-identity-moss-radio.png" alt="brand identity moss radio" width="420" loading="lazy" decoding="async"/>
+<img src="assets/brand-systems-identity/brand-identity-moss-radio.webp" alt="brand identity moss radio" width="420" loading="lazy" decoding="async"/>
 
 ```text
 为一个名为 "Moss Radio" 的虚构品牌制作一张方形的高端品牌识别展示板。品牌要给人模拟时代、有文化、温暖、有触感、重设计的感觉。它经营独立音频硬件和咖啡零售，目标人群是创意从业者和音乐发烧友。整体氛围怀旧但现代。设计一个精致的模块化网格，由多个格子组成，每格展示同一套统一视觉识别系统的不同应用。包括标志探索稿、文字标（wordmark）、App 图标变体、杂志风海报、产品卡片、落地页片段、包装概念、字体样张、界面片段、配色展示、贴纸系统、图案、品牌样机（mockup），以及受动效启发的小型构图。使用瑞士风格的字体排印、圆润的工业感形状，以及苔藓绿 / 羊皮纸色 / 炭灰 / 铜色的配色。版式密集但优雅，对齐精准，层级分明，呈现高级案例研究的质感。
@@ -10,7 +10,7 @@
 
 ### PS1 怀旧重启品牌套件
 
-<img src="assets/brand-systems-identity/ps1-reboot-brand-kit.png" alt="ps1 reboot brand kit" width="420" loading="lazy" decoding="async"/>
+<img src="assets/brand-systems-identity/ps1-reboot-brand-kit.webp" alt="ps1 reboot brand kit" width="420" loading="lazy" decoding="async"/>
 
 ```text
 制作一套干净的品牌套件，以一张方形模块化展示板呈现，主题是一个虚构的 PlayStation One 时代复兴项目，名为 "PS1 1998 Reboot"。视觉识别要融合日式编辑设计、Y2K 怀旧、酸性绿点缀、VHS 质感、银色塑料、光盘菜单 UI 元素、零售贴纸、手柄包装、开机画面字体和记忆卡图标。展示多个相互协调的格子，包括海报、包装、界面片段、收藏卡、字体研究、图标和品牌样机。保持精致、统一、有美术指导感，情绪上充满怀旧，像一家真正顶级设计工作室的案例研究，而不是普通周边。
@@ -18,7 +18,7 @@
 
 ### 俏皮品牌套件：Mochi Metro
 
-<img src="assets/brand-systems-identity/playful-brand-kit-mochi-metro.png" alt="playful brand kit mochi metro" width="420" loading="lazy" decoding="async"/>
+<img src="assets/brand-systems-identity/playful-brand-kit-mochi-metro.webp" alt="playful brand kit mochi metro" width="420" loading="lazy" decoding="async"/>
 
 ```text
 为 "Mochi Metro" 制作一套俏皮的品牌套件，大胆的配色，有趣的字体，现代的版式，一张方形模块化展示板，包含标志研究、包装片段、海报、App 图标、贴纸、UI 片段，以及一套欢快的东京零食视觉系统。对齐利落，密集但干净，设计呈现高度精致。

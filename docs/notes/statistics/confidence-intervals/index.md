@@ -6,7 +6,7 @@ description: "区间是长期覆盖程序，不是“参数有 95% 概率在里�
 
 置信区间不是“参数有 95% 概率在里面”。频率学派的参数固定，随机的是造区间的程序：**若重复抽样并重复造区间，约 95% 的区间会覆盖真值。**
 
-![重复构造的置信区间大多覆盖固定参数，也会偶尔漏掉](assets/repeated-coverage-marker-doodle.png)
+![重复构造的置信区间大多覆盖固定参数，也会偶尔漏掉](assets/repeated-coverage-marker-doodle.webp)
 
 ## 通用骨架
 

@@ -4,7 +4,7 @@ description: "成品参考库，别人的原样收录、本站自己做的链到
 
 # Gallery
 
-收录的成品参考，分成七区。每条都是「成品 + 怎么做出来的」：图片配生成它的 prompt，网页配能跑的 demo 和源码，本站自己做的视频配五步做法。别人的原样收录，来源与授权记在[维护记录](../maintenance/index.md#gallery)里；本站自己做的，成品和做法写在同一页。
+收录的成品参考，分成七区。每条都是「成品 + 怎么做出来的」：图片配生成它的 prompt，网页配能跑的 demo，本站自己做的视频配五步做法。别人的原样收录，来源与授权记在[维护记录](../maintenance/index.md#gallery)里；有上游仓库、直接能用的效果只放 demo 加一句仓库地址；本站自己做的，成品和做法写在同一页。
 
 - [图片](images/index.md) —— 图配 prompt 的图库，7 大类 175 条：GPT Image 2 的 163 条（中译）+ linux.do 二次元平面设计风格 12 组，另有 prompt-cards.cyanfish.site 的 10 条生图 prompt和 1 条待出图的人像写真模板，以及一套把照片做成[旧刊物海报](images/collected/gallery-pulp-posters.md)的做法；另有小红书收来的[拍照姿势](images/index.md#poses)实拍图 59 组 529 张，只有图；还有给 PPT 挑风格的[PPT 风格库](images/index.md#ppt-master)：18 种视觉风格、20 种配图画风
 - [排版](layouts/index.md) —— 167 种版式：社媒卡、信息图、漫画分镜、IP 设计、电商，每条一张示意图加一段只管构图的排版 prompt；另有 11 种 PPT 配图版型

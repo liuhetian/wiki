@@ -10,7 +10,7 @@
 set -euo pipefail
 WIKI_PUB=age1clt8yf9p6yp6umdg6lyqzt7vgs0ht37c3zky4rtf43ygsyy8e55q55ucr6
 
-command -v age >/dev/null || { echo "没找到 age：装法见 docs/posts/wiki/age-mosaic.md#install" >&2; exit 1; }
+command -v age >/dev/null || { echo "没找到 age：装法见 docs/projects/wiki/age-mosaic.md#install" >&2; exit 1; }
 
 if [ "${1:-}" = "-a" ]; then
     age -r "$WIKI_PUB" -a

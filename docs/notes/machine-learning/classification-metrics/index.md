@@ -6,7 +6,7 @@ description: "三个指标的区别只在分母：全部西瓜、模型挑出的
 
 三个指标的区别，主要在**分母看的是哪堆西瓜**：准确率看全部西瓜，精确率看模型挑出的好瓜，召回率看真正的好瓜。
 
-![黑色马克笔随手画下的一块西瓜](assets/watermelon-marker-doodle.png)
+![黑色马克笔随手画下的一块西瓜](assets/watermelon-marker-doodle.webp)
 
 ## 先把「好瓜」定成正类
 
@@ -32,7 +32,7 @@ description: "三个指标的区别只在分母：全部西瓜、模型挑出的
 
 ## 准确率看全部西瓜
 
-![准确率把全部西瓜的正确与错误一起计算](assets/accuracy-marker-doodle.png)
+![准确率把全部西瓜的正确与错误一起计算](assets/accuracy-marker-doodle.webp)
 
 准确率（Accuracy）回答：**100 个西瓜里，模型一共判断对了多少个？**
 
@@ -50,7 +50,7 @@ $$
 
 ## 精确率看模型挑出的好瓜
 
-![精确率只看模型挑进篮子的西瓜](assets/precision-marker-doodle.png)
+![精确率只看模型挑进篮子的西瓜](assets/precision-marker-doodle.webp)
 
 精确率（Precision，也叫查准率）回答：**模型说是好瓜的那些西瓜里，真好瓜占多少？**
 
@@ -68,7 +68,7 @@ $$
 
 ## 召回率看真正的好瓜
 
-![召回率关注真正的好瓜有没有被漏在圈外](assets/recall-marker-doodle.png)
+![召回率关注真正的好瓜有没有被漏在圈外](assets/recall-marker-doodle.webp)
 
 召回率（Recall，也叫查全率）回答：**所有真正的好瓜里，模型找到了多少？**
 

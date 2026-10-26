@@ -24,8 +24,8 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![电商联动宣传物料 · 测试用例 1](01-heytea-collab-1.jpeg){ loading=lazy }
-![电商联动宣传物料 · 测试用例 2](01-heytea-collab-2.jpeg){ loading=lazy }
+![电商联动宣传物料 · 测试用例 1](01-heytea-collab-1.webp){ loading=lazy }
+![电商联动宣传物料 · 测试用例 2](01-heytea-collab-2.webp){ loading=lazy }
 
 </div>
 
@@ -43,8 +43,8 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![俄国解构主义 · 测试用例 1](02-constructivism-1.jpeg){ loading=lazy }
-![俄国解构主义 · 测试用例 2](02-constructivism-2.jpeg){ loading=lazy }
+![俄国解构主义 · 测试用例 1](02-constructivism-1.webp){ loading=lazy }
+![俄国解构主义 · 测试用例 2](02-constructivism-2.webp){ loading=lazy }
 
 </div>
 
@@ -56,8 +56,8 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![错位矩形风格第一版 · 测试用例 1](03-glitch-windows-v1-1.jpeg){ loading=lazy }
-![错位矩形风格第一版 · 测试用例 2](03-glitch-windows-v1-2.jpeg){ loading=lazy }
+![错位矩形风格第一版 · 测试用例 1](03-glitch-windows-v1-1.webp){ loading=lazy }
+![错位矩形风格第一版 · 测试用例 2](03-glitch-windows-v1-2.webp){ loading=lazy }
 
 </div>
 
@@ -69,8 +69,8 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![错位矩形风格第二版 · 测试用例 1](04-glitch-windows-v2-1.jpeg){ loading=lazy }
-![错位矩形风格第二版 · 测试用例 2](04-glitch-windows-v2-2.jpeg){ loading=lazy }
+![错位矩形风格第二版 · 测试用例 1](04-glitch-windows-v2-1.webp){ loading=lazy }
+![错位矩形风格第二版 · 测试用例 2](04-glitch-windows-v2-2.webp){ loading=lazy }
 
 </div>
 
@@ -82,8 +82,8 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![混合媒介-照片+素描 · 测试用例 1](05-mixed-media-sketch-1.jpeg){ loading=lazy }
-![混合媒介-照片+素描 · 测试用例 2](05-mixed-media-sketch-2.jpeg){ loading=lazy }
+![混合媒介-照片+素描 · 测试用例 1](05-mixed-media-sketch-1.webp){ loading=lazy }
+![混合媒介-照片+素描 · 测试用例 2](05-mixed-media-sketch-2.webp){ loading=lazy }
 
 </div>
 
@@ -100,7 +100,7 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![黑蓝红三色](06-black-blue-red.jpeg){ loading=lazy }
+![黑蓝红三色](06-black-blue-red.webp){ loading=lazy }
 
 </div>
 
@@ -112,8 +112,8 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![半调双色雕刻风格 · 测试用例 1](07-halftone-engraving-1.jpeg){ loading=lazy }
-![半调双色雕刻风格 · 测试用例 2](07-halftone-engraving-2.jpeg){ loading=lazy }
+![半调双色雕刻风格 · 测试用例 1](07-halftone-engraving-1.webp){ loading=lazy }
+![半调双色雕刻风格 · 测试用例 2](07-halftone-engraving-2.webp){ loading=lazy }
 
 </div>
 
@@ -125,8 +125,8 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![半调杂志风格 · 测试用例 1](08-risograph-magazine-1.jpeg){ loading=lazy }
-![半调杂志风格 · 测试用例 2](08-risograph-magazine-2.jpeg){ loading=lazy }
+![半调杂志风格 · 测试用例 1](08-risograph-magazine-1.webp){ loading=lazy }
+![半调杂志风格 · 测试用例 2](08-risograph-magazine-2.webp){ loading=lazy }
 
 </div>
 
@@ -139,7 +139,7 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![波普+水墨喷溅](09-pop-ink-splash.jpeg){ loading=lazy }
+![波普+水墨喷溅](09-pop-ink-splash.webp){ loading=lazy }
 
 </div>
 
@@ -152,8 +152,8 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![看门狗-DEDSEC · 测试用例 1](10-dedsec-1.jpeg){ loading=lazy }
-![看门狗-DEDSEC · 测试用例 2](10-dedsec-2.jpeg){ loading=lazy }
+![看门狗-DEDSEC · 测试用例 1](10-dedsec-1.webp){ loading=lazy }
+![看门狗-DEDSEC · 测试用例 2](10-dedsec-2.webp){ loading=lazy }
 
 </div>
 
@@ -165,8 +165,8 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![克莱因秩序 · 测试用例 1](11-klein-order-1.jpeg){ loading=lazy }
-![克莱因秩序 · 测试用例 2](11-klein-order-2.jpeg){ loading=lazy }
+![克莱因秩序 · 测试用例 1](11-klein-order-1.webp){ loading=lazy }
+![克莱因秩序 · 测试用例 2](11-klein-order-2.webp){ loading=lazy }
 
 </div>
 
@@ -178,8 +178,8 @@ GPT-Image-2 也出了有一段时间了。从一开始制作各种IP的联动图
 
 <div class="gallery-pair" markdown>
 
-![高对比度数字工业故障 · 测试用例 1](12-industrial-glitch-1.jpeg){ loading=lazy }
-![高对比度数字工业故障 · 测试用例 2](12-industrial-glitch-2.jpeg){ loading=lazy }
+![高对比度数字工业故障 · 测试用例 1](12-industrial-glitch-1.webp){ loading=lazy }
+![高对比度数字工业故障 · 测试用例 2](12-industrial-glitch-2.webp){ loading=lazy }
 
 </div>
 

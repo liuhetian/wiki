@@ -41,7 +41,7 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 
 按次数买额度，接口文档[^xiazaitool]里用到的是这几点：
 
-- `POST https://api.xiazaitool.com/api/parseVideoUrl`，JSON 正文 `{"url": …, "token": …}`。token 在正文里，不在请求头，所以中转用 `request_body` 改写正文，见 [API 中转的坑](../posts/ai-assistant/api-gateway.md#pitfalls)
+- `POST https://api.xiazaitool.com/api/parseVideoUrl`，JSON 正文 `{"url": …, "token": …}`。token 在正文里，不在请求头，所以中转用 `request_body` 改写正文，见 [API 中转的坑](../projects/ai-assistant/api-gateway.md#pitfalls)
 - 文档说失败不计费，实测也是这样
 - 文档示例里的 `www.xiazaitool.com` 和 `api.xiazaitool.com` 都能用，中转接的是 `api.`
 - **文档的字段表里没有正文**。实际返回比文档多 `remark`、`content`、`topic` 三个字段，小红书的这三个都是空的
@@ -51,7 +51,7 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 
 按接口计费，文档[^tikhub]按平台分好几代接口。用到的是这几点：
 
-- 认证是标准的 `Authorization: Bearer`，中转跟 DeepSeek 一样只换请求头，见 [API 中转](../posts/ai-assistant/api-gateway.md)
+- 认证是标准的 `Authorization: Bearer`，中转跟 DeepSeek 一样只换请求头，见 [API 中转](../projects/ai-assistant/api-gateway.md)
 - 2026-10-17 账单上的单价：
 
     | 接口 | 单价 |

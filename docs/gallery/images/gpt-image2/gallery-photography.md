@@ -2,7 +2,7 @@
 
 ### RAW 直出 iPhone：42 街地铁站
 
-<img src="assets/photography/photoreal-subway.png" alt="photoreal subway" width="420" loading="lazy" decoding="async"/>
+<img src="assets/photography/photoreal-subway.webp" alt="photoreal subway" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张完全 RAW 画质、未经处理、未经编辑的图片，具备完整的 iPhone 相机画质。美国的一座地铁站，一瞬间的动态模糊。地铁正在行驶。地铁前面有一位老妇人和一位老先生。
@@ -10,7 +10,7 @@
 
 ### 手写笔记本俯拍
 
-<img src="assets/photography/handwritten-notebook.png" alt="handwritten notebook" width="420" loading="lazy" decoding="async"/>
+<img src="assets/photography/handwritten-notebook.webp" alt="handwritten notebook" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张业余随手拍：一本摊平打开的笔记本，写满了黑色圆珠笔的手写笔记。字迹随意、略显潦草，像私人笔记，带有自然的瑕疵、划掉的词和加了下划线的小标题。从略高处俯拍，窗外进来的自然日光，不开闪光灯。随意的书桌环境，用 iPhone 拍摄
@@ -18,7 +18,7 @@
 
 ### 锦标赛中盘棋局
 
-<img src="assets/photography/chess-midgame.png" alt="chess midgame" width="420" loading="lazy" decoding="async"/>
+<img src="assets/photography/chess-midgame.webp" alt="chess midgame" width="420" loading="lazy" decoding="async"/>
 
 ```text
 生成一张照片级写实的照片：一场严肃锦标赛对局进行到中盘时的棋盘。俯视四分之三视角，浅景深。所有棋子清晰可辨、形状正确：兵、车、马（带马头剪影）、象（主教冠顶）、后、王（顶端带十字）。局面处于中盘：几枚棋子已被吃掉，放在棋盘右侧，一些兵已经挺进，棋子聚集在 d4-e5-f4 中心线周围。
@@ -28,7 +28,7 @@
 
 ### 360° 等距柱状投影丛林全景
 
-<img src="assets/photography/panorama-jungle.png" alt="panorama jungle" width="420" loading="lazy" decoding="async"/>
+<img src="assets/photography/panorama-jungle.webp" alt="panorama jungle" width="420" loading="lazy" decoding="async"/>
 
 ```text
 一张 360 度等距柱状投影（equirectangular）全景图，表现茂密的史前丛林。电影级细节。严格 2:1 画幅（例如 4096×2048）。接缝处不能有畸变，左右边缘必须无缝衔接。
@@ -40,7 +40,7 @@
 
 ### 自然感社交平台人像
 
-<img src="assets/photography/natural-sns-portrait.png" alt="Natural upper-body mirror selfie" width="420" loading="lazy" decoding="async"/>
+<img src="assets/photography/natural-sns-portrait.webp" alt="Natural upper-body mirror selfie" width="420" loading="lazy" decoding="async"/>
 
 ```text
 # 写实准则

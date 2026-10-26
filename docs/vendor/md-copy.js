@@ -1,5 +1,5 @@
 // 「复制本页 Markdown」按钮：复制的是这一页的 .md 源文件本身，不是从 HTML 转回来的版本——
-// 源文件由 AI 写、给 AI 读，原样最好（为什么不用官方 llmstxt 插件、原理和测试，见 posts/wiki/md-copy.md）。
+// 源文件由 AI 写、给 AI 读，原样最好（为什么不用官方 llmstxt 插件、原理和测试，见 projects/wiki/md-copy.md）。
 // 源文件地址由 overrides/main.html 写进页头 <link rel="alternate" type="text/markdown">，取自 page.edit_url
 // （mkdocs.yml 的 edit_uri 指向站点根，edit_url 就等于源文件地址）。取文件时只用它的路径、按当前站点去拿，
 // 本地预览也能用（zensical serve 不出源文件，要先把 .md 镜像进 site/）；改写链接时用它的原始地址，复制出去的链接都指向线上。

@@ -5,7 +5,7 @@ description: "SEOA｜徐星澄，24 岁，主舞兼创作型歌手：定妆照�
 # SEOA｜徐星澄
 
 <figure markdown>
-![SEOA｜徐星澄 定妆照](assets/seoa.png){ width="420" }
+![SEOA｜徐星澄 定妆照](assets/seoa.webp){ width="420" }
 </figure>
 
 - 年龄：24 岁
@@ -17,15 +17,15 @@ description: "SEOA｜徐星澄，24 岁，主舞兼创作型歌手：定妆照�
 
 <div class="gallery-grid" markdown>
 
-![朋友圈 · 1](assets/seoa-moments-01.png){ loading=lazy }
-![朋友圈 · 2](assets/seoa-moments-02.png){ loading=lazy }
-![朋友圈 · 3](assets/seoa-moments-03.png){ loading=lazy }
-![朋友圈 · 4](assets/seoa-moments-04.png){ loading=lazy }
-![朋友圈 · 5](assets/seoa-moments-05.png){ loading=lazy }
-![朋友圈 · 6](assets/seoa-moments-06.png){ loading=lazy }
-![朋友圈 · 7](assets/seoa-moments-07.png){ loading=lazy }
-![朋友圈 · 8](assets/seoa-moments-08.png){ loading=lazy }
-![朋友圈 · 9](assets/seoa-moments-09.png){ loading=lazy }
+![朋友圈 · 1](assets/seoa-moments-01.webp){ loading=lazy }
+![朋友圈 · 2](assets/seoa-moments-02.webp){ loading=lazy }
+![朋友圈 · 3](assets/seoa-moments-03.webp){ loading=lazy }
+![朋友圈 · 4](assets/seoa-moments-04.webp){ loading=lazy }
+![朋友圈 · 5](assets/seoa-moments-05.webp){ loading=lazy }
+![朋友圈 · 6](assets/seoa-moments-06.webp){ loading=lazy }
+![朋友圈 · 7](assets/seoa-moments-07.webp){ loading=lazy }
+![朋友圈 · 8](assets/seoa-moments-08.webp){ loading=lazy }
+![朋友圈 · 9](assets/seoa-moments-09.webp){ loading=lazy }
 
 </div>
 
@@ -35,9 +35,9 @@ description: "SEOA｜徐星澄，24 岁，主舞兼创作型歌手：定妆照�
 
 <div class="gallery-grid" markdown>
 
-![朋友圈 · 1](assets/seoa-moments-01.png){ loading=lazy }
-![参考：ins风 18/100 第 8 张](../images/xhs-poses/assets/ins-18-8.jpg){ loading=lazy }
-![参考：ins风 13/100 第 1 张](../images/xhs-poses/assets/ins-13-1.jpg){ loading=lazy }
+![朋友圈 · 1](assets/seoa-moments-01.webp){ loading=lazy }
+![参考：ins风 18/100 第 8 张](../images/xhs-poses/assets/ins-18-8.webp){ loading=lazy }
+![参考：ins风 13/100 第 1 张](../images/xhs-poses/assets/ins-13-1.webp){ loading=lazy }
 
 </div>
 
@@ -47,9 +47,9 @@ description: "SEOA｜徐星澄，24 岁，主舞兼创作型歌手：定妆照�
 
 <div class="gallery-grid" markdown>
 
-![朋友圈 · 2](assets/seoa-moments-02.png){ loading=lazy }
-![参考：ins风 4/100 第 5 张](../images/xhs-poses/assets/ins-04-5.jpg){ loading=lazy }
-![参考：ins 博主 sodaaam 第 2 张](../images/xhs-poses/assets/ins-sodaaam-2.jpg){ loading=lazy }
+![朋友圈 · 2](assets/seoa-moments-02.webp){ loading=lazy }
+![参考：ins风 4/100 第 5 张](../images/xhs-poses/assets/ins-04-5.webp){ loading=lazy }
+![参考：ins 博主 sodaaam 第 2 张](../images/xhs-poses/assets/ins-sodaaam-2.webp){ loading=lazy }
 
 </div>
 
@@ -59,8 +59,8 @@ description: "SEOA｜徐星澄，24 岁，主舞兼创作型歌手：定妆照�
 
 <div class="gallery-grid" markdown>
 
-![朋友圈 · 3](assets/seoa-moments-03.png){ loading=lazy }
-![参考：ins风 9/100 第 4 张](../images/xhs-poses/assets/ins-09-4.jpg){ loading=lazy }
+![朋友圈 · 3](assets/seoa-moments-03.webp){ loading=lazy }
+![参考：ins风 9/100 第 4 张](../images/xhs-poses/assets/ins-09-4.webp){ loading=lazy }
 
 </div>
 
@@ -70,8 +70,8 @@ description: "SEOA｜徐星澄，24 岁，主舞兼创作型歌手：定妆照�
 
 <div class="gallery-grid" markdown>
 
-![朋友圈 · 4](assets/seoa-moments-04.png){ loading=lazy }
-![参考：ins风 19/100 第 4 张](../images/xhs-poses/assets/ins-19-4.jpg){ loading=lazy }
+![朋友圈 · 4](assets/seoa-moments-04.webp){ loading=lazy }
+![参考：ins风 19/100 第 4 张](../images/xhs-poses/assets/ins-19-4.webp){ loading=lazy }
 
 </div>
 
@@ -81,8 +81,8 @@ description: "SEOA｜徐星澄，24 岁，主舞兼创作型歌手：定妆照�
 
 <div class="gallery-grid" markdown>
 
-![朋友圈 · 5](assets/seoa-moments-05.png){ loading=lazy }
-![参考：ins风 4/100 第 7 张](../images/xhs-poses/assets/ins-04-7.jpg){ loading=lazy }
+![朋友圈 · 5](assets/seoa-moments-05.webp){ loading=lazy }
+![参考：ins风 4/100 第 7 张](../images/xhs-poses/assets/ins-04-7.webp){ loading=lazy }
 
 </div>
 
@@ -92,8 +92,8 @@ description: "SEOA｜徐星澄，24 岁，主舞兼创作型歌手：定妆照�
 
 <div class="gallery-grid" markdown>
 
-![朋友圈 · 6](assets/seoa-moments-06.png){ loading=lazy }
-![参考：ins风 25/100 第 3 张](../images/xhs-poses/assets/ins-25-3.jpg){ loading=lazy }
+![朋友圈 · 6](assets/seoa-moments-06.webp){ loading=lazy }
+![参考：ins风 25/100 第 3 张](../images/xhs-poses/assets/ins-25-3.webp){ loading=lazy }
 
 </div>
 
@@ -103,8 +103,8 @@ description: "SEOA｜徐星澄，24 岁，主舞兼创作型歌手：定妆照�
 
 <div class="gallery-grid" markdown>
 
-![朋友圈 · 7](assets/seoa-moments-07.png){ loading=lazy }
-![参考：ins风 13/100 第 6 张](../images/xhs-poses/assets/ins-13-6.jpg){ loading=lazy }
+![朋友圈 · 7](assets/seoa-moments-07.webp){ loading=lazy }
+![参考：ins风 13/100 第 6 张](../images/xhs-poses/assets/ins-13-6.webp){ loading=lazy }
 
 </div>
 
@@ -114,8 +114,8 @@ description: "SEOA｜徐星澄，24 岁，主舞兼创作型歌手：定妆照�
 
 <div class="gallery-grid" markdown>
 
-![朋友圈 · 8](assets/seoa-moments-08.png){ loading=lazy }
-![参考：ins风 9/100 第 7 张](../images/xhs-poses/assets/ins-09-7.jpg){ loading=lazy }
+![朋友圈 · 8](assets/seoa-moments-08.webp){ loading=lazy }
+![参考：ins风 9/100 第 7 张](../images/xhs-poses/assets/ins-09-7.webp){ loading=lazy }
 
 </div>
 
@@ -125,8 +125,8 @@ description: "SEOA｜徐星澄，24 岁，主舞兼创作型歌手：定妆照�
 
 <div class="gallery-grid" markdown>
 
-![朋友圈 · 9](assets/seoa-moments-09.png){ loading=lazy }
-![参考：ins风 3/100 第 2 张](../images/xhs-poses/assets/ins-03-2.jpg){ loading=lazy }
+![朋友圈 · 9](assets/seoa-moments-09.webp){ loading=lazy }
+![参考：ins风 3/100 第 2 张](../images/xhs-poses/assets/ins-03-2.webp){ loading=lazy }
 
 </div>
 

@@ -4,7 +4,7 @@
 # ///
 """把 wiki 页面 Markdown 里打码的部分一口气解开：从标准输入读，解开后写到标准输出。
 
-    curl -fsSL https://wiki.liuhetian.work/<页面>.md | uv run https://wiki.liuhetian.work/posts/wiki/assets/age-open.py
+    curl -fsSL https://wiki.liuhetian.work/<页面>.md | uv run https://wiki.liuhetian.work/projects/wiki/assets/age-open.py
 
 认的密文和浏览器里的 vendor/age-init.js 一致：
   - 小字 age:<整个 age 文件的 base64>，解开后留在原来的反引号里

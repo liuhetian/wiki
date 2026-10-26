@@ -3,7 +3,7 @@ description: "梨园的正文怎么产出：一轮对话里模型能反复调工
 ---
 
 <figure markdown>
-  ![扮演模式一轮的七步：用户说一句、先查、写在稿纸上、定点改、ask 决策卡、收笔、场记记账](assets/beat-flow-infographic.png)
+  ![扮演模式一轮的七步：用户说一句、先查、写在稿纸上、定点改、ask 决策卡、收笔、场记记账](assets/beat-flow-infographic.webp)
 </figure>
 
 # 正文怎么产出：写在稿纸上的工件
@@ -127,7 +127,7 @@ description: "梨园的正文怎么产出：一轮对话里模型能反复调工
 ## 岔口交给用户 { #ask }
 
 <figure markdown>
-  ![决策卡：模型问是否把一条角色档案写入知识库，下面是「写入」「不写入」两个选项和一个自由输入框](assets/choice-card.png)
+  ![决策卡：模型问是否把一条角色档案写入知识库，下面是「写入」「不写入」两个选项和一个自由输入框](assets/choice-card.webp)
   <figcaption>ask 决策卡：选项之外还能自己写。这张是早期版本的界面</figcaption>
 </figure>
 
@@ -150,7 +150,7 @@ description: "梨园的正文怎么产出：一轮对话里模型能反复调工
 ## 写长篇：agent 模式，正文是文件 { #agent }
 
 <figure markdown>
-  ![agent 模式像一栋三层楼：楼上是讨论区，中层是一章一个文件的正文目录，地下是存检查点的历史目录](assets/agent-mode-infographic.png)
+  ![agent 模式像一栋三层楼：楼上是讨论区，中层是一章一个文件的正文目录，地下是存检查点的历史目录](assets/agent-mode-infographic.webp)
 </figure>
 
 **问题**：想写成一部长篇，要回头改第三章的某一句；扮演模式里正文是一轮轮的回复，改不到那么远。
