@@ -3,7 +3,6 @@ name: hyperframes-creative
 description: >
   HyperFrames 视频中动画之外的创意指导。用于设计规范（frame.md / design.md）的处理、色板、字体排印、旁白、段落节拍规划、音频响应式视觉、composition 模式，以及品牌 / 风格决策。原子级运动模式和场景蓝图请使用 `hyperframes-animation`。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新类命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装的则沿用下面的更新说明。
 

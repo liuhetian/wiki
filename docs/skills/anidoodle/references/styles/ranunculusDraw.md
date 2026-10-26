@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/ranunculusDraw.md -->
 # 铅笔加水彩，绘制过程（`ranunculusDraw.ts`）
 
 **媒介。** HB 铅笔和固体水彩，画在冷压纸上，是 `ranunculus.ts` 的手笔；这部影片原样复用它的几何、随机种子和调用（是重新编写的，所以主画面保持逐字节一致）。

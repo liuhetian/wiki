@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/compare-and-batch.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 对比与批量渲染
 
 这些命令用于有意为之的视觉对比，或变量驱动的模板输出。它们不能替代 `lint`、`check`、最终预览批准或输出验证。

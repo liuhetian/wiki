@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/intent-interview.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 意图层 —— 在任何工作流运行之前的一次对话
 
 仅限全新创作 —— SKILL.md 的状态表已经决定了这一层到底运不运行（编辑、项目操作、已有 brief 和可恢复的项目，以及明确的 Remotion 移植，都绝不进入这一层）。在入口处的一次对话，把"给我做个视频"变成一份确认过的 brief —— 路由、必答项的答案、运行的形态，以及用户脑子里的其他一切 —— 交给负责执行的那个工作流，并以 `BRIEF.md` 的形式持久保存。工作流负责执行；这一层负责理解。每个工作流的开篇规则都指回这里，所以无论用户从哪扇门进来，问题都只问一次。

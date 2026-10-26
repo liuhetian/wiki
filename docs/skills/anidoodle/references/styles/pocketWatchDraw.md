@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/pocketWatchDraw.md -->
 # 圆珠笔速写，绘制过程（`pocketWatchDraw`）
 
 `pocketWatch` 样张，边用圆珠笔画边拍下来。最后一帧逐字节就是样张。

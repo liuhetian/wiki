@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/midCentury.md -->
 # 世纪中期水粉（1950-60 年代绘本）
 
 模块：`engine/src/canvas-core/midCentury.ts`。主图：一个山坡上的村庄，一个女孩在放风筝。

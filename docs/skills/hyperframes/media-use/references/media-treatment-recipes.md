@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/media-treatment-recipes.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 媒体处理方案配方
 
 这些是可选的、经过测试的起点（seed），不是完整的能力面。先读共享的策略，再通过 `media-treatments.md` 选出一个相关的小节。agent 可以在检查媒体之后修改某个起点，或将其与兼容的规范控件组合；没有合适的起点时，也可以从 `hyperframes media-treatment --capabilities --json` 拼装一个定制的 payload。

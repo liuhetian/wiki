@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/lottie.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Lottie 翻译：@remotion/lottie → HF lottie adapter
 
 Lottie 动画是一个可以干净翻译的情形 —— HF 内置了一个 Lottie adapter[^lottie-ts]，同时支持 `lottie-web` 和 `@lottiefiles/dotlottie-web`。这个 adapter 会自动发现注册在 `window.__hfLottie` 上的动画，并通过 `goToAndStop` 逐帧 seek 它们。

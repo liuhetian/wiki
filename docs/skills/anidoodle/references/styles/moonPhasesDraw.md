@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/moonPhasesDraw.md -->
 # 黑板粉笔画，一笔笔写上去（`moonPhasesDraw.ts`）
 
 黑板样张的绘制过程版（样张是 `moonPhases.ts`，配方在 [style-guide.md](../style-guide.md)）。样张可以接收一个可选的 `Clock`（`(id) => progress`）；不传时它逐字节画出完成后的黑板（已验证：在 scale 1 和 2 下 md5 都不变），所以影片的最后 30 帧就是静帧。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/lambda.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 在 AWS 上用 Lambda 渲染
 
 当用户明确想要自行管理的 AWS 基础设施，或者需要分布式渲染时，使用 `hyperframes lambda`。它封装了 `@hyperframes/aws-lambda` 和 AWS SAM。

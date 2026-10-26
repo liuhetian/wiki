@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/review.md -->
 # 审片：四遍审读，一张清单，一道闸门
 
 [working-method.md](../working-method.md) 说要从渲染出的文件把整部影片审一遍。这里讲的就是那一次审片怎么进行。它不增加轮次：对同一个冻结的文件审读四遍，出一张排好序的修改清单，重建一次，再检查一次每项修改都落实了。

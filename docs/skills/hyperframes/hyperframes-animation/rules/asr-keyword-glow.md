@@ -5,7 +5,6 @@ description: >
 metadata:
   tags: asr, audio-sync, highlight, glow, keyword, text, speech, emphasis
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/asr-keyword-glow.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # ASR 关键词发光
 

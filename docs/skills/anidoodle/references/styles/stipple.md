@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/stipple.md -->
 # 点画（钢笔墨点）· `stipple.ts`
 
 **媒介的物理形态。** 一支针管笔（0.25 mm），从不更换，垂直点落在热压布里斯托卡纸上成千上万次。没有线，没有排线，没有淡彩。笔握得略微偏离垂直，所以每个点都有点椭圆、有点毛糙；偶尔抬笔时拖出一丝小尾巴，偶尔墨水不足，点出来是灰的。

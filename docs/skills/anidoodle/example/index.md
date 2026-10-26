@@ -2,7 +2,6 @@
 copy_source: true
 ---
 
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/example/README.md -->
 # MECHANICAL LEPIDOPTERA：完整范例
 
 1410 帧，30 fps 下 47.0 秒，1080x1080。一只发条蝴蝶在一张蓝图纸上被画出来，活过来，然后把它的蓝图留在草丛里。每一个像素、每一个音频采样都是代码画出来的。没有图片，没有字体，没有采样素材。

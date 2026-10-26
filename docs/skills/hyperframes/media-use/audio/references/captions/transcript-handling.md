@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/captions/transcript-handling.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 转写稿指南
 
 关于 `transcribe` CLI 的调用方式、`.en` 模型会翻译非英语内容这条规则，以及 whisper 模型的选择，见 [`../transcribe.md`](../transcribe.md)。本文件讲的是编写字幕时如何处理得到的转写稿：输入格式、必做的质量检查、清理代码、外部 API 兜底。

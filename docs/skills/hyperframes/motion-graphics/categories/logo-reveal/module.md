@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/categories/logo-reveal/module.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # logo-reveal —— category 模块
 
 一段 **logo sting / 品牌 lockup**。logo 由用户提供，或者对已知品牌通过解析获取（`resolve --type logo --entity <brand>`）；`asset_needs` = 一个 logo `source`。约 3–5 秒。常用 `export: alpha-overlay`（做成 sting，叠到其他素材画面上）。

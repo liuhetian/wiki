@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/sumiE.md -->
 # 水墨画（sumi-e，画在宣纸上）
 
 模块：`engine/src/canvas-core/sumiE.ts`（工具集：`sumiEKit.ts`）。主画面：风中的竹子和一只树麻雀。

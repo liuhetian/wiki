@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/theory/melody.md -->
 # 旋律：动机、轮廓、乐句
 
 本页的记谱法：音级（`1 2 3 ... 7`、`b3`、`#4`；`5,` = 低一个八度，`1'` = 高一个八度），时值以拍为单位写在冒号后面（`3:.5`）。这些是拿来套用的形状，绝不是拿来照抄的曲调。`node tools/music.mjs craft <score>` 会检测下面的每一条规则（**melody** 那一行以及 `CRAFT melody:` 的各项发现）。

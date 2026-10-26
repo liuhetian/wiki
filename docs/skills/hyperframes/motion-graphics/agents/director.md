@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/agents/director.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Motion-Graphics Director
 
 把一个请求变成一份 `shot-plan.json`，用于一段短小（约 3–30 秒）的**以设计为主导的动态图形**。你围绕获取素材这一步分**两部分**运行：获取素材之前跑 **Part 1（plan）**，之后跑 **Part 2（design）**。你**不**写 composition 代码 —— 那是 Builder 的事。Schema：`references/shot-plan-ir.md`。

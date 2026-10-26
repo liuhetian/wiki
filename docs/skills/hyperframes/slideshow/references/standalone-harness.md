@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/slideshow/references/standalone-harness.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 独立运行的 HyperFrames Slideshow Harness
 
 ## 1. 过渡定位 —— 它为什么存在

@@ -6,7 +6,6 @@ metadata:
   license: Apache-2.0
 copy_source: true
 ---
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/SKILL.md；开头一段、整包声明、写进 CLAUDE.md 的一步、文档链接是本站加的，docs-check.mjs 那一行删了 -->
 
 # anidoodle：用代码手绘插画、动画和配乐
 

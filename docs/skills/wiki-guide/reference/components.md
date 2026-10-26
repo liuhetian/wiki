@@ -132,7 +132,7 @@ bash scripts/age-seal.sh -a   # 粘贴多行、Ctrl-D 结束 → 打印 armor，
 
 网页上照常显示，左边一道虚线、上方一个「不复制」小字；读 `.md` 源的 AI 也看得到，只有复制按钮整块跳过；块放在页面任何位置都行。写法同时间线：开头结尾前后各空一行，里面不缩进。复制按钮另外还会去掉 frontmatter 和代码以外的 HTML 注释；目录下有页面链回的入口在 frontmatter 写 `copy_source: true`，复制时末尾带一行源地址，该写没写、不该写写了 check-links 都会拦。样式在 `zx-theme.css` 第 12 节。
 
-活例：[盘问我](../../collab/grilling.md)页尾的维护记录，写法见[收纳 skill · 维护记录](../skill.md#maintenance-record)。
+活例：[盘问我](../../grilling.md)页尾的维护记录，写法见[收纳 skill · 维护记录](../skill.md#maintenance-record)。
 
 要按读者的选择决定哪段复制，见[分支](branch.md)。
 
@@ -151,4 +151,4 @@ prompt 里要读者先填的空，直接写 HTML 输入框：网页上就地填�
 - **不另写「占位没填先问」这类说明**：输入框本身就说明了哪里要填 —— 复制出去空着的是【placeholder】，直接读 `.md` 源的 AI 看到的是带 placeholder 的标签
 - 单选、复选框不算填空；代码块里写的只是文字。样式在 `zx-theme.css` 第 11 节
 
-活例：[人话翻译](../../collab/chat-prompts/plain-talk.md)。
+活例：[人话翻译](../../chat-prompts/plain-talk.md)。

@@ -96,7 +96,6 @@ components:
     appliesTo: "Fredoka headlines on saturated surfaces (cream headlines sit flat)"
     description: "Makes the headline read 'outlined' like the shapes."
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/frame-presets/daisy-days/FRAME.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Daisy Days — Frame (video / frame layer)
 

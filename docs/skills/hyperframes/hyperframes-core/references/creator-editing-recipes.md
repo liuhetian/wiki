@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/references/creator-editing-recipes.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 创作者剪辑配方
 
 读完 `tracks-and-clips.md` 之后，使用这些可直接复制的契约。通用算式：**消耗的源素材 = timeline 时长 × 速率**；**自然 timeline 时长 = 剩余源素材 / 速率**。

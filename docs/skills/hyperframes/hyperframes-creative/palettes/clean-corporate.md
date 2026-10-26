@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/palettes/clean-corporate.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 简洁 / 企业（Clean / Corporate）
 
 讲解视频、教程、演示、专业内容。

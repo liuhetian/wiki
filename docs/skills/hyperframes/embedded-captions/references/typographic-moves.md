@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/typographic-moves.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 字体排印手法 —— 是色板，不是牢笼
 
 `cinematic-cream` 模板只锁定 DNA（font-family、动效、色板默认值）。它**不**强制规定槽位结构。agent 通过 plan.json 的 `css` 字段，从零开始为每个字幕分组编写字体排印。

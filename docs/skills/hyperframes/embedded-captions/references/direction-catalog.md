@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/direction-catalog.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 方向目录
 
 这个 skill 能表达的 10 种不同审美方向。每一种都是一套完整的外观：字体、动效、颜色、摆放、修辞默认值。agent 按**内容语气 × 镜头类型 × 平台**来挑，而不是按 preset 名字。

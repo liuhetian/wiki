@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/product-launch-video/references/story-design.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 故事设计 —— 产品发布视频
 
 产品发布流程的 Step 3。输出：`STORYBOARD.md`（叙事规划，每一拍一帧）和 `SCRIPT.md`（锁定的口播旁白）。

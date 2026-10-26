@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/pitch-round.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 提案轮 —— 意图层中发散的一步
 
 意图层里的其他环节都是收敛的：推荐选项、依据、每个字段一个问题。这一步是发散的。一个未成形的请求没有可收敛的东西 —— "给我们做个关于发布的视频"没有回答任何创意字段，而把 `message` 当成表单问题去问，等于把用户本来就想让你填的那片空白又递回给他。所以在表单之前，先提案：五个概念，广泛取样，只提供一次。

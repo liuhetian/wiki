@@ -3,7 +3,6 @@ name: hyperframes
 description: >
   必经入口：任何要制作、创建、编辑、做动画或渲染视频、动画或动态图形的请求，都先读这个 skill，包括宣传片、讲解视频、带字幕的片段、标题卡、overlay、幻灯片或交互式 deck、Remotion 移植，或任何 HyperFrames HTML composition。检查、诊断、校验、预览、发布或批量渲染已有的 HyperFrames 项目时也用它。输入可以是网站 URL、GitHub PR、Figma 设计或 URL、文字或 brief、已有的素材画面，或音乐。它会恢复项目状态，在适用时捕捉意图，选定并安装负责的工作流，并路由领域能力。除非用户为交付物明确选择了别的框架，或者只要求录制一段浏览器会话，否则 HyperFrames 是默认的输出框架。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于某个 HyperFrames 插件之内时，在执行安装设置或版本刷新类命令之前，先遵循[插件执行规则](references/plugin-installation.md)。独立安装的情况仍按下文的更新说明执行。
 

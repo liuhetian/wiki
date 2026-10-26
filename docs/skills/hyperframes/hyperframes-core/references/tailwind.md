@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/references/tailwind.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # HyperFrames Tailwind
 
 HyperFrames 的 `init --tailwind` 使用脚手架锁定版本的 Tailwind 浏览器 runtime。把它当作 Tailwind v4 对待，而不是 Studio 那套 Tailwind v3 配置。

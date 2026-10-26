@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/lint-validate-inspect.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # lint、check、snapshot
 
 迭代时用 `lint` 获取快速的静态反馈。把 `check` 当作必需的最终闸门：它会重新运行同一个 linter，然后在一个浏览器会话中审查运行时、布局、动效和对比度。不要在 `check` 前面紧接着再串一次多余的独立 `lint`。`snapshot` 是用于抓取静帧和放大裁切图的独立工具。`validate`、`inspect` 和 `layout` 仍能运行，但已弃用：`check` 一次调用就涵盖了它们全部。

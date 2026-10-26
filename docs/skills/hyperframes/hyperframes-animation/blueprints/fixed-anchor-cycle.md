@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/fixed-anchor-cycle.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # fixed-anchor-cycle — 固定锚点，轮换世界
 
 **intent**（意图）：一个元素被钉住 —— 一个 wordmark、一个输入框、一行锚定文字，它只进场一次，此后再也不动 —— 与此同时，相邻区域（或整个周边主题）围绕它轮换过许多离散状态，节奏常常被刻意操控（稳定步进、快速轮播，或由慢到快的密集连发），最后在一个强调段落节拍上收成一个完成的 lockup，或一个褪色的定格。锚点的静止本身就是主张：一切都在变，唯独这个不变。它不同于 `kinetic-type-beats` 的子形态 A —— 那里是一行居中文字里的某个词位在替换，句子本身就是主体，锚点是光秃秃文字场上的一个句子框架；这里的锚点是产品身份（PRODUCT identity），围绕它轮换的可以是非文字的东西（整套主题皮肤、外框 / logo 替换、带质感的标签 chip、轮播列表），轮换表达的是广度（「人人都在说 / 到处都能用 / 召集所有 X」），而收尾把锚点补全成一个 lockup。它也不同于 `ticker-takeover` —— 那里的轮换以一次碰撞结束，一个 hero 撞进来把文字挤开；这里没有任何东西会撞到锚点：轮换停下，最后一个元素悄悄加入它。

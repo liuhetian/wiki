@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/storybookDraw.md -->
 # 绘本铅笔加水彩，绘制过程（`storybookDraw.ts`）
 
 **媒介。** 软石墨和固体水彩，画在暖色的冷压纸上，是 `storybook.ts` 的手笔。角色是 `drawBit`，**原封不动**地通过 `Phase` 调用；`Phase` 是 `Gfx` 的一个子类，由它决定每一遍里画哪些组、每一笔画到多远（先跑一遍普查，一次性记下每个组的类型、包围盒和笔画数）。

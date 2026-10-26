@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/blueprint.md -->
 # 蓝晒蓝图（`blueprint.ts`，工具包在 `blueprintKit.ts`）
 
 **媒介，从物理上说。** 一支直线笔（ruling pen）和一只弹簧弓圆规，蘸白墨水，画在普鲁士蓝的蓝晒图纸上。这张图纸从来没有曝光均匀：弧光灯所在的那一侧更亮，带斑驳（`blueMottle`），有两道旧折痕，有灰尘。墨水在纸面的齿纹上断开（`draftTooth`），蓝底上的白色会晕开，所以每条线都带一圈淡淡的光晕（`inkGroup`）。

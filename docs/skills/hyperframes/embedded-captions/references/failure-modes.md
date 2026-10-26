@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/failure-modes.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 失败模式 —— 吃过苦头才学到的
 
 skill 开发过程中出过问题的地方。交付之前对照这份清单检查。

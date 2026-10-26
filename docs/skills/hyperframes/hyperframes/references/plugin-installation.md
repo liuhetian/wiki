@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/plugin-installation.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 从已安装的插件中运行
 
 检查已加载的 `SKILL.md` 往上两级的目录里，是否有标识为 `hyperframes` 的 `plugin.json`、`.claude-plugin/plugin.json`、`.codex-plugin/plugin.json` 或 `.cursor-plugin/plugin.json`，或者一个 Gemini 扩展清单。那个目录就是 `<PLUGIN_ROOT>`。如果都不存在，这就是一个独立安装的 skill；按常规的安装和版本刷新说明执行。

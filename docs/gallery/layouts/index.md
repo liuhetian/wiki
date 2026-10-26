@@ -1,5 +1,5 @@
 ---
-description: "排版参考：167 种版式，分社媒卡、信息图、漫画分镜、IP 设计、电商五类，每条一张版式示意图加一段中文排版 prompt，只管构图不管画风"
+description: "排版参考：167 种版式，分社媒卡、信息图、漫画分镜、IP 设计、电商五类，每条一张版式示意图加一段中文排版 prompt，只管构图不管画风；另有 PPT 配图版型 11 种"
 ---
 
 # 排版
@@ -14,3 +14,7 @@ description: "排版参考：167 种版式，分社媒卡、信息图、漫画�
 - [电商（24 种）](ecommerce.md) —— 单品主图、卖点标注、参数尺寸、场景图、SKU 差异、促销 KV……商品保持写实，周边场景才套画风
 
 收录自 yang0/handraw-style（MIT），来源见[维护记录](../../maintenance/skills/handdraw.md)。
+
+## PPT 配图版型
+
+- [PPT 配图版型（11 种）](deck-image-types/index.md) —— PPT 页面里局部结构信息图的构图骨架，按[顺序与流程](deck-image-types/sequence.md)、[结构与层级](deck-image-types/hierarchy.md)、[对比与汇总](deck-image-types/comparison.md)、[空间与场景](deck-image-types/spatial.md)分四页，每种一张对比图，分图里带字、不带字两种写法；配[配图画风](../images/ppt-master/index.md#renderings)用，收录自 hugohe3/ppt-master（MIT），来源见[维护记录](../../maintenance/skills/ppt-master.md)

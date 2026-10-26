@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/transitions/TRANSITION-REGISTRY.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 转场 registry——机器用的唯一事实来源
 
 **PLV 场景间转场**的唯一事实来源。确定性的注入器（`product-launch-video/scripts/inject-transitions.mjs`）读取下面的 JSON 块，把匹配的 `gsap_template` 打到主 timeline 上。规划者（`product-launch-video/agents/visual-design.md`）通过 `name` 点名一个转场；其余一切都由 harness 负责。

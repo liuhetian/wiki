@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/faceless-explainer/references/motion-language.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 运动语言 —— 运动词汇 + 运动准则 + seek 安全核心
 
 > 这是 **Step 4（视觉设计）** 的运动层。在你写一帧的**带时间码的镜头序列**时，你要**直接引用下面的词汇**来为每个场景的运动命名 —— 这是一套具名的运动色板，收录的是黄金语料实际用到的运动。每个运动都附带它在本 skill 本地 `../../hyperframes-animation/rules/` 里的**支撑规则 id**；引用这个 id，这样 **frame worker** 在 Step 5 实现它时，这个运动能落到一份真实的配方上（worker 会读 `../../hyperframes-animation/rules/<id>.md` 里的规则正文 —— 它复现这个运动，而不是根据名字去猜）。你按**角色 / 运动名**来命名运动，绝不写原始的 GSAP 曲线、毫秒数或错开公式 —— 曲线由 worker 来映射。帧与帧之间的**转场不归你管**：story 指定 `transition_in`，harness 注入它；这个被注入的转场**就是**这一帧的出场。至于 worker 在一帧**内部**构建的切（场景内替换、场景到场景的接缝），见 `cut-catalog.md` 里的目录。

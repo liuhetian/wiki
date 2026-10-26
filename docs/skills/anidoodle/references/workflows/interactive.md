@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/interactive.md -->
 # 交互式网页动画
 
 活在网页上、会回应使用者的手绘作品。它们跟随指针，对悬停和获得焦点的按钮做出反应，随着你滚动把自己画出来，还会跟着表单一起读。这些都不是视频，也不是嵌入的播放器：作品就是页面 UI 的一部分。

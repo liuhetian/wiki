@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/product-launch-video/references/visual-design.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 视觉设计 —— 产品发布的逐帧镜头方法
 
 > 这是 **Step 4（帧视觉设计）**背后的方法。你（编排者）读它，是为了**原地充实 `STORYBOARD.md` 里的各帧** —— story-design 已经写好了骨架（每帧的 `scene`、`voiceover`、`transition_in`、叙事字段、它的 `asset_candidates`，以及可选的一个候选蓝图 id）；你要补上每一帧**长什么样、怎么动**。你为每帧写的单位是一个**带时间码的镜头序列** —— 一个在整个时长内被导演的镜头，而不是一张静态幻灯片。你**不写 HTML**（那是 frame worker 的事），你**绝不读 `capture/`**（story 已经选好了素材），你也**不**挑选素材或指定转场（这两样都归 story）。`frame.md` 是你按角色取用的色板 / 字体的唯一依据。布局是本文件里的一套精简词表（下面的**布局**一节），在每个 Scene 里直接写明；运动词表 + 运动准则 + seek 安全核心 → `motion-language.md`；经过验证的形状 → `../../hyperframes-animation/blueprints-index.md` + `blueprints/<id>.md`；具体规则在 Step 5 从本 skill 本地的 `../../hyperframes-animation/rules/` 中解析。想在这里加色板理论或通用的字体规则？放错地方了 —— 应该放 `frame.md` + `hyperframes-creative`。

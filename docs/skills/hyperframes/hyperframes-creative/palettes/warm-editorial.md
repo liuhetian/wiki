@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/palettes/warm-editorial.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 暖调 / 编辑感（Warm / Editorial）
 
 讲故事、纪录片、案例研究、叙事类内容。

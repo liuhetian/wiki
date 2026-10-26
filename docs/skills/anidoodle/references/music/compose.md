@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/compose.md -->
 # 作曲：从 brief 到一份原创配乐
 
 风格是一套**词汇**。它给你：

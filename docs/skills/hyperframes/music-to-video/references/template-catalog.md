@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/references/template-catalog.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 模板 catalog —— 选择菜单（Step 3）
 
 经逆向工程得到的、无素材的 **group 模板**。规划者挑模板时**只**读这个文件 —— 你**不需要**打开模板的 `index.html` 来做选择。一个模板实现一个 frame 中的**一个 group**（一个 frame 可以堆叠好几个 group；品牌主干把它们统一起来）。

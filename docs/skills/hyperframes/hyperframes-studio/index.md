@@ -3,7 +3,6 @@ name: hyperframes-studio
 description: >
   在 Studio 里和一个人一起做 HyperFrames 项目时使用：首先，判断对方的消息到底是不是在要求改动（提问、零散的想法以及「什么都别改」得到的是回答和计划，而不是编辑）；对于一部新片，HyperFrames 发布片所遵循的计划、分镜和构建顺序；以及 timeline 应该如何布局才易读（一条字幕 track、每条 track 只放一种元素、每个场景都是一个 sub-composition），字幕和关键内容可以放在哪里（安全区）。不要用它来了解如何执行某一项具体编辑（分割、裁剪、改时间、音量、复制、替换）：那是 `/hyperframes-core` 里的 `creator-editing-recipes.md`。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-studio/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装配置或更新类命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/references/composition-patterns.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Composition 模式
 
 如何为项目搭架构：规模化时的 `index.html` 编排者，以及常见的 sub-composition 原型。与 `minimal-composition.md`（单文件形态）和 `sub-compositions.md`（sub-comp 文件的机制）搭配阅读。

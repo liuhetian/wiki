@@ -1,5 +1,4 @@
 // HYPERFRAMES ADAPTER. Hyperframes (@hyperframes/engine) drives a SEEKABLE page: headless Chrome,
-// (Wiki import: the adapters doc is cited as tools/adapters/index.md; upstream README.md.)
 // one deterministic seek per frame, captured through Chrome's BeginFrame rather than by letting a
 // clock run. Its page-side contract is a FRAME ADAPTER:
 //

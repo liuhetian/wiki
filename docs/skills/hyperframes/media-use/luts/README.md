@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/luts/README.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # LUT 库（编写说明）
 
 `index.json` 是供 agent 读取的调色风格目录。每个条目都按需解析 —— 仓库里不提交任何 `.cube` 正文。

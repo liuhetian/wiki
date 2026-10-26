@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/pixelArt.md -->
 # 像素画 · `pixelArt.ts`
 
 **媒介的物理形态。** 格子，在 120 x 120 的网格上（方形画幅）一次铺一格，每一格恰好是事先声明的十六种调色板颜色之一（`PALETTE`），网格按整数倍放大，关闭平滑（`pixelArtKit.ts` 里的 `blit`：格子尺寸是整数，每一段连续的格子用一次 `fillRect`，别的什么都不碰画布）。没有抗锯齿，没有收笔变细，没有抖动，没有纹理贴图，也没有纸：机器般的锐利就是媒介本身。

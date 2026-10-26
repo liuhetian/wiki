@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-registry/references/contributing.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 向 registry 贡献 block 或 component
 
 引导用户把一个新的 registry block 或 component 从构思一路推进到 PR 合并。

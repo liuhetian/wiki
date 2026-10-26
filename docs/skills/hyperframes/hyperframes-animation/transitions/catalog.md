@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/transitions/catalog.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 转场目录
 
 硬规则、场景模板，以及到实现代码的路由。只读你需要的那种转场类型的参考文件——不要全部加载。

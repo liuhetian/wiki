@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/prompt-type-submit-generate.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # prompt-type-submit-generate —— 输入提示词、提交、生成
 
 **intent / 意图**：AI 时代的演示镜头 —— 一段 `[prompt / query / command]` 逐字符地打进一个**真实的**产品输入框（聊天输入框、搜索栏、终端提示符、URL 栏、侧栏助手），然后机器作答：先是状态表演，再进入流式回答 / agent 动作日志 / diff 卡片 / 图表 / 生成的产物 —— 或者片段在提交那一刻就切走，提问本身就是看点。键盘是演员，产品是回应者。区别于 `typewriter-reveal`（一行字作为纯排版打在空白区域上 —— 没有产品界面，也没有任何东西作答），也区别于 `cursor-ui-demo`（光标点击一个重建的 UI，经过一个个状态 —— 那里每一次变化都由指针驱动；这里任何光标动作都只负责为输入框做准备或完成提交，之后的每一次状态变化都是机器自己做的）。

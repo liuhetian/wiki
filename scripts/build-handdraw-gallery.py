@@ -76,9 +76,9 @@ def style_image(num: str, root: Path = UP) -> str:
 
 
 def sync(src: Path):
-    """从上游 clone 重建 assets/：LICENSE、references/ 下的数据和版式 md、页面引用到的图片。"""
+    """从上游 clone 重建 assets/：references/ 下的数据和版式 md、页面引用到的图片。"""
     ref = src / UP_REF
-    keep = {"LICENSE": src / "LICENSE"}
+    keep = {}
     for f in DATA:
         keep[f"references/{f}"] = ref / f
     for f in (ref / "layouts").iterdir():

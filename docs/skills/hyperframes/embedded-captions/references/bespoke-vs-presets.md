@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/bespoke-vs-presets.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 定制设计 vs. preset —— 何时覆盖，何时克隆
 
 5 种 preset 样式（`intro / phrase / emph / dream / crown`）和 3 个模板（`wall-embed`、`corner-column-crown`、`portrait-header`）是**脚手架**，不是规则。我们交付过的最好的渲染，全都针对特定分组覆盖了 preset，因为**字体排印是按场景做的决定**，不是一条通用规则。

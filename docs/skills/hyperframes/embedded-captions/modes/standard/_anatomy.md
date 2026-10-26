@@ -5,7 +5,6 @@ description: >
 metadata:
   tags: caption, talking-head, matte, occlusion, verbatim, climax, gsap, hyperframes
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/modes/standard/_anatomy.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 字幕模板 —— 解剖（共享引擎）
 

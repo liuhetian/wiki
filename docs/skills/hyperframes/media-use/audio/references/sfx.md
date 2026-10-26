@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/sfx.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 音效（SFX）
 
 具名的音效，由共享的音频引擎（`scripts/audio.mjs` → `scripts/lib/sfx.mjs`）产出。由引擎唯一的开关进行**服务商分流**——是否存在 HeyGen 凭据，只判定一次（不是每个 cue 判定一次）：

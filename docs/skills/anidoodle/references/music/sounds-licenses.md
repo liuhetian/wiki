@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/sounds-licenses.md -->
 # 音源包许可证
 
 音源包要单独下载，由 `engine/tools/soundfetch.mjs` 安装。本仓库里的任何东西都不在这里授权；这一页写的是：如果你再分发这个音源包，或者再分发用它做出来的影片，必须随附哪些东西。简短版本也写在仓库的 `NOTICE` 里。

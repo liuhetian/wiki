@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/categories/charts/module.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # charts —— category 模块
 
 由数据生成的动画**数据可视化**。无素材（"输入"就是数据）。时长短时遵循"一张图表，一个信息"。

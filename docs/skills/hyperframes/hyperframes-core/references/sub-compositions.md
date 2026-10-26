@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/references/sub-compositions.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Sub-Composition
 
 sub-composition 是嵌入到宿主 composition 中的一个单独的 HTML 文件。HyperFrames 加载它、独立地 seek 它，并在 `data-start` 处把结果合成进宿主。

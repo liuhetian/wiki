@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/product-launch-video/sub-agents/frame-worker.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Frame worker —— 产品发布增量
 
 > 共享的规则是上面的核心契约（帧包构建器会把 `../../hyperframes/references/frame-worker-core.md` 作为 `_role.md` 拼接到本文件前面）—— 把两者当成同一个角色来读。本文件只承载产品发布帧特有的内容；你们是 N 个并行运行，**每人一帧** —— 你收到的派发里恰好只有一个帧包（packet）。想在这里加一条通用的 GSAP / timeline 规则？放错地方了 —— 它属于核心契约或 `hyperframes-core`。

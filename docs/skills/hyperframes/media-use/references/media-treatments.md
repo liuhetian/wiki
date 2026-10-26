@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/media-treatments.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 媒体处理方案
 
 媒体处理方案（media treatment）是一份感知源素材的计划，它组合 HyperFrames 现有的色彩、效果、timeline 和 Registry 基础构件。它不是第二套运行时 schema。用这个文件来选定一个主方向。匹配上的配方是一个可选的、经过测试的起点（seed）；定制化的请求可以从规范的能力目录里拼装出一个经过校验的处理方案。

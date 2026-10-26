@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/faceless-explainer/references/story-design.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 故事设计 —— 无人出镜讲解视频
 
 在 Step 3 用这份参考来为无人出镜讲解视频写 `STORYBOARD.md` 和 `SCRIPT.md` —— 这类视频讲一个话题、概念、操作方法、清单或叙事，全部基于文字构建，**没有产品、没有网站、也没有抓取来的素材**。

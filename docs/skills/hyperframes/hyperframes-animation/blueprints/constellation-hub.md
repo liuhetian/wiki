@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/constellation-hub.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # constellation-hub —— 星座 / 中枢 + 卫星
 
 **intent**（意图）：带标签/图标的节点以弹簧方式弹出，围绕一个中心形成环/簇，然后镜头收束到核心上 —— 要么把摄像机推**进**中心（景深向它坍缩），要么保持一个中枢标志，让卫星**环绕**它运行；这是"一切都连接到 / 围绕着一个中心"的段落节拍。

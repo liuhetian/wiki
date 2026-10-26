@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/gsap-effects.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # HyperFrames 的 GSAP 效果
 
 即插即用的动画模式。代码片段只展示机制，写在标准的场景 clip 内（hyperframes-core）；假定 `tl` 已存在。

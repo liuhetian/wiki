@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/pr-to-video/references/visual-design.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 视觉设计 —— PR-to-video 的逐帧镜头方法
 
 > **Step 4（帧的视觉设计）** 背后的方法。你（编排者）读它，是为了**就地充实 `STORYBOARD.md` 的各帧** —— story-design 已经写好了骨架（每一帧的 `scene`、`voiceover`、`transition_in`、叙事字段，以及可选的候选 blueprint id）；你补上每一帧**长什么样、怎么动**。你为每一帧写的单元是一段**带时间码的镜头序列** —— 一个贯穿整个时长去导演的镜头，而不是一张静态幻灯片。你**不写 HTML**（那是 frame worker 的事）。PR 视频**大部分是自创的** —— 文字排版、number-lockup、机制示意图 —— 所以这些元素由你来**设计**；两个例外是**代码段落节拍**（一个现成的 `code-*` registry block）和**片尾致谢**（真实的贡献者头像），下文都会讲到。`frame.md` 是你按角色取用色板 / 字体的唯一依据。布局是本文件里的一套精简词汇（下面的**布局**一节），在每个 Scene 内联说明；动效词汇 + 动效准则 + seek 安全的核心 → `motion-language.md`；现成的形状 → `../../hyperframes-animation/blueprints-index.md` + `blueprints/<id>.md`；`code-*` block → `code-vocabulary.md`；具体的 rule 在 Step 5 从本 skill 本地的 `../../hyperframes-animation/rules/` 解析。想在这里加色彩理论或一条通用字体规则？放错地方了 —— 应该放进 `frame.md` + `hyperframes-creative`。

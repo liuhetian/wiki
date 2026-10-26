@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/typewriter-reveal.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # typewriter-reveal —— 打字机揭示
 
 **intent / 意图**：一个活的文本插入符像真人一样打出（并编辑）一行字，然后要么把它收拢成一个点并弹出品牌收尾，要么让它停在一个常驻的品牌标志下方，同时一行副句打字 / 替换成最终的 CTA —— 让「有人正在打这行字」成为这个镜头的引擎。

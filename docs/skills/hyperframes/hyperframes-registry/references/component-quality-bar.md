@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-registry/references/component-quality-bar.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Component 质量门槛
 
 catalog 里的 component 必须达到什么程度，我们才会继续发布它。这里的每一条标准都来自在这个分支上发现并核实过的缺陷，而不是来自个人品味。

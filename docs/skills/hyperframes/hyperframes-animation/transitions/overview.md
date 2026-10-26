@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/transitions/overview.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 场景转场
 
 转场告诉观众两个场景之间是什么关系。交叉淡化说的是"这还在继续"。推移滑动说的是"下一个要点"。模糊交叉淡化说的是"随我漂流"。选择与内容在情绪上（而不只是技术上）所做之事相匹配的转场。

@@ -5,7 +5,6 @@ description: >
 metadata:
   tags: text, 3d, reveal, decode, hacker, randomization, perspective
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/hacker-flip-3d.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Hacker Flip 3D 揭示
 

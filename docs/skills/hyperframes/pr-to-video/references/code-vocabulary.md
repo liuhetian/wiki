@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/pr-to-video/references/code-vocabulary.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 代码词汇 —— `code-*` 动画 block
 
 <!-- registry-items: allow=data-duration,number-lockup,dark-plus,light-plus,dark-modern,light-modern,dark-2026,light-2026,solarized-light,visual-studio-dark,visual-studio-light,high-contrast,high-contrast-light,clear-dark,clear-light,man-page,red-sands,silver-aerogel,solid-colors -->

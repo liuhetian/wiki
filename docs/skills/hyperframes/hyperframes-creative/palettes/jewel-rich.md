@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/palettes/jewel-rich.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 宝石 / 浓郁（Jewel / Rich）
 
 奢侈品、活动、精致、高端内容。

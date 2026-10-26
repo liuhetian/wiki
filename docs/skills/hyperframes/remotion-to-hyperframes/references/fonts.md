@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/fonts.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 字体翻译
 
 字体是占主导地位的非翻译噪声底。在没有安装真实字体时，同样的 `font-weight: 800` 在 HF 的 `chrome-headless-shell` 上渲染出来，会比在 Remotion 自带的 Chromium 上明显更粗。验证表明，这在噪声底层面会造成约 0.025 的平均 SSIM 损失。

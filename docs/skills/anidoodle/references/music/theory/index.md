@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/theory/README.md -->
 # 写给作曲者的乐理
 
 这几页是 [../compose.md](../compose.md) 背后的手艺：是什么让一条旋律线优美、让一个和弦进行有推动力、让一段律动听着舒服、让一种情绪传达得准确。每页都注明出处，并以可以直接套用的规则收尾。例子用音级（scale degree）和形状来写，绝不给可以照抄的现成曲调。

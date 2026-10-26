@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/determinism-and-contract.md -->
 # 确定性：做不到，它就不是影片，而是一场现场表演
 
 > 这些信条是制作 MECHANICAL LEPIDOPTERA 时挣来的，那部影片就是 [example/](../example/index.md) 里的完整范例。下面每条规矩都在那部片子上付过代价；凡是导演自己犯的错，都照实写明，因为带着伤疤的规矩，人们才会守。

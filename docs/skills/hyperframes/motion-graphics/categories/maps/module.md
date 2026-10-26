@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/categories/maps/module.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # maps —— category 模块
 
 地理运动：高亮区域、连接地点、缩放到某个位置。**第一个决策：这个镜头需不需要真实底图**（卫星 / 街道 / 地形影像、地球仪，或者缩放到一个真实地址）？这决定走哪条通道。

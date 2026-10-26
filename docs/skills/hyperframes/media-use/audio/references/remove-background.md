@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/remove-background.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 背景移除
 
 制作一个透明的 overlay（典型场景：把一个口播人物叠在任意画面上）。使用 `u2net_human_seg`（Apache-2.0）。

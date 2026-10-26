@@ -5,7 +5,6 @@ description: >
 metadata:
   tags: text, 3d, depth, layers, shadow, typography, stacked, extrusion
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/3d-text-depth-layers.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 3D Text Depth Layers（3D 文字纵深图层）
 

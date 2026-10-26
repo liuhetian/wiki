@@ -17,9 +17,9 @@ skill 本质是渐进式披露的文档。markdown 里写的相对链接，渲�
 
 | 形态 | 结构 | 什么时候用 | 活例 |
 |---|---|---|---|
-| 迷你 skill | `<skill>.md` 一个文件 | 一页说得完，没有 reference 和 assets；常常就是一段 prompt，要读者填的空写成[填空模版](reference/components.md#fill) | [盘问我](../collab/grilling.md) |
+| 迷你 skill | `<skill>.md` 一个文件 | 一页说得完，没有 reference 和 assets；常常就是一段 prompt，要读者填的空写成[填空模版](reference/components.md#fill) | [盘问我](../grilling.md) |
 | 标准 skill | `<skill>/index.md` + `reference/` + `assets/` | 子页服务同一个主题，按需加载；就是 Anthropic 标准的 skill 目录，`SKILL.md` 改名 `index.md` | [FastAPI](../fastapi/index.md) |
-| 抽象 skill | `<skill>/index.md` + 几个子 skill（迷你的写成 `<skill>/a.md`，标准的写成 `<skill>/b/index.md`），可以顺带 `reference/`、`assets/` | 一套能力由几个独立 skill 组成；互不相干的 skill 归一类也是它，只是不解决一个具体问题 | [图片提示词反推](../collab/image-prompt-reverse/index.md)、[写作规范](index.md)（带 reference）、[和 AI 协作](../collab/index.md)（归类） |
+| 抽象 skill | `<skill>/index.md` + 几个子 skill（迷你的写成 `<skill>/a.md`，标准的写成 `<skill>/b/index.md`），可以顺带 `reference/`、`assets/` | 一套能力由几个独立 skill 组成；互不相干的 skill 归一类也是它，只是不解决一个具体问题 | [图片提示词反推](../image-prompt-reverse/index.md)、[写作规范](index.md)（带 reference）、[写作口味](../writing/index.md)（归类） |
 
 - **判形态问两句**：下面有没有子 skill？有就是抽象 skill。没有的话，有没有 reference 或 assets？有就是标准 skill，没有就是迷你 skill
 - **子页能单独拿出去用的是子 skill，不能的是 reference**：子 skill 有自己的 `name` 和 `description`，能单独被触发、单独复制进对话；reference 离开所属 skill 就不知道拿来干什么。把独立 skill 塞成别人的 reference 是层级错位
@@ -41,7 +41,7 @@ skill 本质是渐进式披露的文档。markdown 里写的相对链接，渲�
 3. **上游入口 `SKILL.md` 改名**：只有这一个文件的，改名成 `<名字>.md`（迷你 skill）；带 references、scripts、assets 的，改名成 `<名字>/index.md`（标准 skill），从而符合 wiki 的渲染规范
 4. **frontmatter 忠实保留**：`allowed-tools`、`model` 等字段原样不动；`name` 用和用户确认的能力名称，`description` 按能力名称改写成什么时候用、用了做什么，不照译原文。复制按钮会自动去掉 frontmatter。原文没有一级标题的补一个
 5. **深度收纳，不是简单翻译或原文照录**：内容全部译为中文，人称转换成对 AI 讲述。允许大幅改动，让它贴合本站 —— 换掉本站已有能力能替代的依赖，删掉用不上的路线，脚本一起改，改了什么写进维护记录。活例：[整理视频为笔记](../video-note/index.md)把下载视频和本地转写换成了 [Agent 基础能力](../agent-io/index.md)的接口，网页 AI 字幕整条删掉。它引用的 references 也要收齐并翻译为中文；README、安装器、CI、测试、运行方式（比如用 xxx 命令运行）跳过。处理好文件之间的路径引用，保证能通过相对路径访问到 skill 内部资源和依赖的其他 skill
-6. **prompt 里的占位改成填空**：上游的 `{{idea}}`、`[产品名]`、【…】这类，一律改成[填空](reference/components.md#fill)输入框，读者在网页上填好再复制；为占位写给 AI 的说明（「【】里的内容用户还没给，先问用户要，齐了再开始」这类）随之删掉，输入框本身就说明了哪里要填。活例：[人话翻译](../collab/chat-prompts/plain-talk.md)
+6. **prompt 里的占位改成填空**：上游的 `{{idea}}`、`[产品名]`、【…】这类，一律改成[填空](reference/components.md#fill)输入框，读者在网页上填好再复制；为占位写给 AI 的说明（「【】里的内容用户还没给，先问用户要，齐了再开始」这类）随之删掉，输入框本身就说明了哪里要填。活例：[人话翻译](../chat-prompts/plain-talk.md)
 7. **入口页说清拿到它之后要做什么**，可以补一两句原因给人看。顶层入口（收进来的抽象 skill 的 `index.md`，或者单个 skill 本身）开头写领域建模：本 skill 解决什么问题，可以参考原本 frontmatter 里的 description，也可以参考 README.md 里的描述。原文里的出处、作者、外链不留在入口页，挪进维护记录的「上游」，外链写成脚注 —— 同[写作规范的硬规矩](index.md#rules)
 8. **收尾**：上级入口加一行钩子（照抄 description，见[三种形态](#layout)最后一条），`mkdocs.yml` 注册 [nav](#nav)，顶层入口页尾链到[维护记录](#maintenance-record)，跑 `python3 scripts/check-links.py`
 
@@ -65,7 +65,7 @@ skill 本质是渐进式披露的文档。markdown 里写的相对链接，渲�
 
 ### 提示词合集、卡牌站
 
-来源自带的形式和框架不跟着进来：卡牌、稀有度、站点自己的分类、几套并存的占位写法这类包装一律丢掉，按本站的 skill 形态重新组织，分组按使用场景来。只收能直接拿来用的内容，分析来源本身的话（比如从写法推断出处）不进 skill，确实有用的写进维护记录的「上游」。活例：[对话提示词](../collab/chat-prompts/index.md)，原来是一套提示词卡牌。
+来源自带的形式和框架不跟着进来：卡牌、稀有度、站点自己的分类、几套并存的占位写法这类包装一律丢掉，按本站的 skill 形态重新组织，分组按使用场景来。只收能直接拿来用的内容，分析来源本身的话（比如从写法推断出处）不进 skill，确实有用的写进维护记录的「上游」。活例：[对话提示词](../chat-prompts/index.md)，原来是一套提示词卡牌。
 
 ### 教程、视频这类教人怎么做的内容
 
@@ -104,14 +104,15 @@ skill 本质是渐进式披露的文档。markdown 里写的相对链接，渲�
 reference 不在 nav 里单独成层，展平到所属 skill 的入口后面；子 skill 带 reference 的自成一组，不跟兄弟子 skill 混在一层；`assets/` 不进 nav。所以不需要 `reference/index.md`、`assets/index.md` 占位页。
 
 ```yaml
-- 和 AI 协作:                                            # 抽象 skill（归类）：入口在前
-    - skills/collab/index.md
-    - 盘问我: skills/collab/grilling.md                 # 迷你 skill：一个平条目
-    - 带文档盘问:                                        # 抽象 skill
-        - skills/collab/grill-with-docs/index.md
-        - 领域建模:                                      # 带 reference 的子 skill 自成一组
-            - skills/collab/grill-with-docs/domain-modeling/index.md
-            - GLOSSARY.md 格式: skills/collab/grill-with-docs/domain-modeling/reference/glossary-format.md
+- 写作口味:                                              # 抽象 skill（归类）：入口在前
+    - skills/writing/index.md
+    - 滚动 deck 工程手册: skills/writing/deck.md          # 迷你 skill：一个平条目
+- 盘问我: skills/grilling.md                             # 顶层的迷你 skill 也是一个平条目
+- 带文档盘问:                                            # 抽象 skill
+    - skills/grill-with-docs/index.md
+    - 领域建模:                                          # 带 reference 的子 skill 自成一组
+        - skills/grill-with-docs/domain-modeling/index.md
+        - GLOSSARY.md 格式: skills/grill-with-docs/domain-modeling/reference/glossary-format.md
 - FastAPI 后端:                                          # 标准 skill：reference 展平
     - skills/fastapi/index.md
     - 项目布局: skills/fastapi/reference/项目布局.md

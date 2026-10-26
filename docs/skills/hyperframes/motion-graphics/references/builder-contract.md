@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/references/builder-contract.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Builder 契约 —— composition 规则（agents/builder.md 背后的细节）
 
 ## 根节点必须有尺寸

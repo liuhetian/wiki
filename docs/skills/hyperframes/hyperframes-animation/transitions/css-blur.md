@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/transitions/css-blur.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 ## 模糊（Blur）
 
 所有模糊转场都随能量缩放。完整表格见 SKILL.md 的「Blur Intensity by Energy」（按能量划分的模糊强度）。

@@ -4,9 +4,9 @@ description: "从图反推 prompt（get-prompt-from-image）的维护记录：�
 
 # 从图反推 prompt（get-prompt-from-image）
 
-[从图反推 prompt](../../skills/collab/image-prompt-reverse/get-prompt-from-image/index.md)的维护记录，它是[图片提示词反推](../../skills/collab/image-prompt-reverse/index.md)的完整版。
+[从图反推 prompt](../../skills/image-prompt-reverse/get-prompt-from-image/index.md)的维护记录，它是[图片提示词反推](../../skills/image-prompt-reverse/index.md)的完整版。
 
-- **上游**：wuyoscar/GPT-Image2-Skill 的 `skills/get-prompt-from-image/`[^upstream]，作者 Wuyoscar，MIT，许可证原文随目录留在 `LICENSE`。原作者是 LunarXuan：最早是 LunarXuan/image-prompt-reverse[^origin]，2026-09-02 首发，原名 `image-prompt-reverse`，正文是中文；2026-09-04 贡献给 wuyoscar，改名 `get-prompt-from-image`，reference 译成英文，wuyoscar 的 README 写了致谢。原仓库后来加了 GPL-3.0，本地只用 wuyoscar 转收的 MIT 版，没拷原仓库的文件
+- **上游**：wuyoscar/GPT-Image2-Skill 的 `skills/get-prompt-from-image/`[^upstream]，作者 Wuyoscar，MIT，许可证原文不随附。原作者是 LunarXuan：最早是 LunarXuan/image-prompt-reverse[^origin]，2026-09-02 首发，原名 `image-prompt-reverse`，正文是中文；2026-09-04 贡献给 wuyoscar，改名 `get-prompt-from-image`，reference 译成英文，wuyoscar 的 README 写了致谢。原仓库后来加了 GPL-3.0，本地只用 wuyoscar 转收的 MIT 版，没拷原仓库的文件
 - **commit**：钉在 `05cb113`，2026-09-28 抓取；原仓库核对到 `4dead0a`（2026-09-06），两边结构、流程、输出格式和三份 reference 的章节一一对应
 - **跳过**：`agents/openai.yaml`（Codex 那一侧的清单，不是行为定义）；上游 README 里这个 skill 的演示图，同仓库的图库收在 [Gallery](../../gallery/images/index.md)
 - **翻译之外的改动**：

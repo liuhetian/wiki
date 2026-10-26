@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/brief-format.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Brief 格式 —— `BRIEF.md`
 
 定义**意图文档** —— 一份确认后的 brief 最终落成的那个文件。填写它的问题在意图层里（`/hyperframes` → `references/intent-interview.md` 及其 `references/routes/<workflow>.md`）；字段语义在 `brief-contract.md` § 2 里。本文件只定义这个产物本身：它的形状、它的位置，以及它的生命周期。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/categories/lower-thirds/module.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # lower-thirds —— category 模块
 
 <!-- registry-items: allow= -->

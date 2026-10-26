@@ -3,7 +3,6 @@ name: hyperframes-typegpu
 description: >
   HyperFrames 的 TypeGPU 与原生 WebGPU adapter 模式。在用 TypeGPU、原生 WebGPU、WGSL fragment shader、compute 管线、液态玻璃效果、粒子系统创建 GPU 渲染的 composition，或任何由 navigator.gpu 驱动并响应 HyperFrames hf-seek 事件的 canvas 图层时使用。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/typegpu.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # HyperFrames 中的 TypeGPU / WebGPU
 

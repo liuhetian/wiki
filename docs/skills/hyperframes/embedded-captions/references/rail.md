@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/rail.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Rail 轨 —— 标准的 lower-third 字幕
 
 **默认**的字幕轨，也是干主力活的那条：一条干净、可读的字幕，位于 lower third，**在**所有东西的**前面**（永远不会被 matte 遮挡）。它承载转写稿的**大部分**内容。它刻意保持**朴素** —— 电影感的工艺（plane、遮挡、Vogue 刊头、累积）只存在于*嵌入*轨（[composition-craft.md](composition-craft.md)）。

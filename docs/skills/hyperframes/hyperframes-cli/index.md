@@ -3,7 +3,6 @@ name: hyperframes-cli
 description: >
   使用 HyperFrames CLI 开发循环：init、add、catalog、capture、lint、check、snapshot、compare、grade-compare、preview、play、present、beats、keyframes、单个或批量 render、publish、cloud、cloudrun、feedback、lambda、doctor、browser、info、upgrade、skills、compositions、timeline、history、clean、docs、benchmark、telemetry、transcribe、auth、tts 和 remove-background。诊断构建或渲染失败时也使用本 skill。validate、inspect 和 layout 是已弃用的别名；请改用 check。涵盖本地、HeyGen 托管云、AWS Lambda 和 Google Cloud Run 渲染。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于某个 HyperFrames 插件内时，在运行安装配置或保持最新类的命令之前，遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装照常使用下面的更新说明。
 

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/palettes/nature-earth.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 自然 / 大地（Nature / Earth）
 
 可持续发展、户外、有机、健康养生内容。

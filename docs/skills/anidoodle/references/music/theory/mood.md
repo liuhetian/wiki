@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/theory/mood.md -->
 # 情绪映射：从一种感觉到一组数字
 
 对于一首曲子所*表达*的情绪，听众判断的一致程度远高于随机水平，而他们之所以一致，靠的是一小组结构性线索。这些线索以相加且冗余的方式组合：没有哪一条线索单独起决定作用，而几条线索指向同一方向时，情绪就确定无疑（Juslin 2001，透镜模型；Gabrielsson & Lindström 2010；Juslin & Laukka 2003）。为一种情绪作曲，就是让这些线索对齐。`craft` 的 **mood** 那一行会把速度、调式族、旋律音区、音符密度、和声节奏以及（在 `check` 里）明亮度，与你声明的那种情绪所在的那一行（`tables.ts` `MOODS`）相对照。

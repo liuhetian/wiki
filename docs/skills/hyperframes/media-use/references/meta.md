@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/meta.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 职责矩阵、使用统计、遥测、隐私
 
 面向维护者的参考。这里的内容都不会改变你解析或操作媒体的方式。

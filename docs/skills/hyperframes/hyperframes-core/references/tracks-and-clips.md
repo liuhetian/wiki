@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/references/tracks-and-clips.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Track 与 Clip
 
 clip 是 composition 中有计时的元素。track 是 Studio 的显示概念：渲染从不读取它。

@@ -42,8 +42,7 @@ scottstts/Sandboard[^sandboard]，收录时钉在 commit
 只改了一处：把三个写死成站点根的素材路径（两段 mp3、一个 glb）和 favicon 改成相对路径。
 改动全文见 [wiki-relative-paths.patch](assets/sandboard-demo/source/wiki-relative-paths.patch)。
 
-项目采用 GPL-3.0-only 许可。按许可证的要求，构建产物旁边附有对应的完整源码和
-[LICENSE](assets/sandboard-demo/source/LICENSE)：
+构建产物旁边附有对应的完整源码：
 
 - [运行入口](assets/sandboard-demo/index.html)
 - [启动与主循环](assets/sandboard-demo/source/src/runtime.ts)

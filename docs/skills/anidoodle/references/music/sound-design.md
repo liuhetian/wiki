@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/sound-design.md -->
 # 音效设计：音效套件，按帧放置，在配乐之上也听得见
 
 anidoodle 的每一个音效都是**用代码从零合成的**：没有采样，没有录音，永远没有。（音乐里的原声乐器可以播放可选音源包里的录音；音效永远不会。）每个音效都是确定性的：同样的 cue 和种子（seed）生成的采样点完全相同。

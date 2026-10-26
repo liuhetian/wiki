@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/routes/general-video.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 路由：general-video
 
 - **输入：** 任何没有被专门路由覆盖的定制创作或编辑：静态标题卡、较长的品牌片或 sizzle reel、多场景蒙太奇、静态循环 / 海报、类似 NLE 的素材画面混剪，或自由形式的 composition。它也执行所有 `flow: companion` 的 brief。

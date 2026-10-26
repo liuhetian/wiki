@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/adapt-a-style.md -->
 # 照着别人带来的图改编画风
 
 「这是一张图，照这个画风画。」规则是：**借手笔，绝不借画。** 手笔是一种落笔的方式：什么东西接触纸面，边缘怎么处理，各层按什么顺序落下，纸，配色。画则是题材、构图和版式，这些一样都不带过来。

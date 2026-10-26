@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/sequencing.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Sequencing 翻译：Sequence、Series、Composition 根
 
 Remotion 嵌套的 `Sequence` 树如何映射为根里每个场景一个 sub-composition 宿主，每个宿主都有自己按本地时间计时的暂停 GSAP timeline。

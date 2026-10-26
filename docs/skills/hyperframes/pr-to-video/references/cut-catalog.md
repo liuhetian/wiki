@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/pr-to-video/references/cut-catalog.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 切法目录 —— 帧内接缝（由 worker 构建）
 
 > **一份 worker 构建配方（Step 5）—— 是 `../../hyperframes-animation/rules/` 的同级文档，不是第二份动效文档。** 这些是 **frame worker 在它自己的 composition 内部构建**的帧内切换（Z 轴缩放 + 模糊 + 不透明度 tween，或者逐词的 x 方向错开，全都在这一帧自己那条暂停的 GSAP timeline 上）。它们**不是**帧与帧之间的转场：那由故事通过 `transition_in` 掌控，由 harness 的注入器从一套**独立的 registry 词汇**（`crossfade` / `blur-crossfade` / `push-slide` / `zoom-through` / `squeeze`）里盖印上去 —— 这里的目录名（**cut-the-curve / inverse-zoom / waterfall**）**不是**有效的 `transition_in` 取值。当一帧的镜头序列里有内部接缝 —— 场景内的文字 / 元素替换、一次 **Scene 到 Scene** 的切换（`Scene` 是一帧**之内**的一个时间窗口，**不是**帧与帧之间的边界），或者一次文字到文字的换行 —— 并且你希望它读起来是一个连续的运动，而不是生硬的幻灯片式切换时，就用这份目录。（`zoom-through` 两边都有：在 registry 里是整帧包裹层的转场，在这里是元素级的 Z 轴切换 —— 同一个思路，作用范围不同。）

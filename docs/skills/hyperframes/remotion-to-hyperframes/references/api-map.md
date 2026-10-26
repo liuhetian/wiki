@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/api-map.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Remotion → HyperFrames API 映射
 
 权威的翻译对照表。开始一次翻译时加载本参考文档，了解高层映射；涉及容易出错的细节（timing、转场等）时，再加载对应的分主题参考文档。

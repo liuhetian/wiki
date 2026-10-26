@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/koiDraw.md -->
 # 马克笔漫画，绘制过程（koiDraw）
 
 模块：`engine/src/canvas-core/koiDraw.ts`，建在 `koi.ts` 之上（`drawKoi` 的可选第 4 个参数 `KoiClock`；不传它时每个分支都走原来的调用，样张的 md5 不变：1x dfd5350f5c2b94d030d7c62e34d2dc7d，2x 27ebed84ad3a09aac4336d124d6e2707）。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/references/montage.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 素材处理方式 —— 把用户媒体编织到节拍主干上
 
 当用户提供了图片 / 视频时，一个 group 可以是一种**素材处理方式**，而不是字体排印类的模板 / 自由组合。素材是**同一条节拍主干上的附加配料** —— 绝不是一条单独的流水线。字体排印 / 模板始终是底线：如果没有素材适合某个 group，就回退为模板 / 自由组合 group（一支完整的视频不需要任何素材）。

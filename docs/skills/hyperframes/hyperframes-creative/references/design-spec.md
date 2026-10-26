@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/design-spec.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 设计规范 —— `frame.md` / `design.md`
 
 关于**设计规范是什么、去哪里找、怎么读**的唯一权威来源。其他参考文档在解析和格式问题上都以这里为准；*消费*契约（「是品牌，不是版式」）在 `video-composition.md` 里。

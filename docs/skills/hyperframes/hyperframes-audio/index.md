@@ -4,7 +4,6 @@ description: >
   在 HyperFrames composition 里已经放好的音频需要混音时使用：淡入/淡出、交叉淡化、track 增益或音量、音量自动化、闪避（ducking）、与旁白打架的音乐垫乐（旁白挖空，voiceover carve）、track 上的效果（EQ、压缩器、限幅器、噪声门、饱和、延迟、混响、合唱、移相、比特粉碎），画在 track 音量或任意效果参数上的自动化包络，或者用一条子混音总线同时为多条 track 承载一条效果链、一个推子和一个自动化时钟（`<hf-audio-group>`）。
   不要用于获取或生成音频——找 BGM、音效（SFX）或制作旁白归 `/media-use`。不要用于 clip 时间或 track 布局，那归 `/hyperframes-core`。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-audio/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新类命令之前，先遵守[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装的情况沿用下面的更新说明。
 

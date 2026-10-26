@@ -4,7 +4,7 @@ description: "盘问我（grilling）的维护记录：吸纳自 mattpocock/skil
 
 # 盘问我（grilling）
 
-[盘问我](../../skills/collab/grilling.md)的维护记录。
+[盘问我](../../skills/grilling.md)的维护记录。
 
 - **上游**：mattpocock/skills 的 `skills/productivity/grilling/SKILL.md`[^upstream]，作者 Matt Pocock，MIT
 - **commit**：钉在 `95249b0`（2026-10-07），2026-10-16 读时仍是最新

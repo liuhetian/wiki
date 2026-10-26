@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/transcript-scroll-artifact-reveal.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # transcript-scroll-artifact-reveal —— 对话记录滚动 + 产物揭示
 
 **intent / 意图**：画面沿着**一个**很长的内容表面纵向移动 —— 一段 agent 对话记录、一个持续运行的任务流、一份分析文档、一篇故事草稿 —— 它满版铺在平面画布上（没有设备边框，没有停留展示的样机），靠镜头平移或元素滚动来推进；穿行本身就是故事（「看看做了多少工作 / 这里有多少东西」），直到**一个**焦点交互 —— 点击文件 chip、高亮一段引文、展开一个可折叠行 —— 把镜头转向产物 / 细节揭示：工作背后的交付物。

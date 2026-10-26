@@ -6,11 +6,11 @@ description: "手绘风格出图的维护记录：吸纳自 yang0/handraw-style�
 
 [手绘风格出图](../../skills/handdraw/index.md)和它的数据 —— Gallery 的[手绘风格库](../../gallery/images/handdraw-style/index.md)、[排版](../../gallery/layouts/index.md)、[经典主题色](../../gallery/colors/classic.md) —— 的维护记录。同一个上游里的写真拍摄企划另成一个 skill，记录在 [photo-shoot](photo-shoot.md)。
 
-- **上游**：yang0/handraw-style[^repo]，作者 yang0，MIT，原文见 [`LICENSE`](../../gallery/images/handdraw-style/assets/LICENSE)，按条款随收录保留；上游 README 请求二次开发时保留作者和仓库地址，写在这里
+- **上游**：yang0/handraw-style[^repo]，作者 yang0，MIT，许可证原文不随附；上游 README 请求二次开发时保留作者和仓库地址，写在这里
 - **commit**：钉在 `2a25a07`[^commit]（2026-10-19，`version.json` 1.9.1），2026-10-19 吸纳；2026-09-29 首次以整仓镜像收进 Gallery，当时是 `b5c302e`（1.2.29）
 - **收成了什么**：
     - `skills/handdraw/`：抽象 skill，入口 + 6 个子 skill。入口收了上游根 `SKILL.md` 的路由表，和几个子 skill 共用的规矩（画风激活、垫样片、隔离声明、正面特征、智能推荐、编号不进 prompt）；出图提示词 ← `handdraw-style-prompter`，海报 ← `poster-prompt-generator`，文章与视频封面 ← `article-cover-designer`，长文配图 ← `article-illustration-planner`（带 `insert_illustrations.py`，原样随附），风格融合 ← `style-fusion-prompter`，IP 形象设计 ← `ip-designer`
-    - `gallery/images/handdraw-style/assets/`：只留数据和样图 —— `LICENSE`、`references/` 下 5 个 JSON（styles、layouts、colors、model_capabilities、style_alias_map）和 167 份版式 md，加上页面引用到的 568 张图，共 741 个文件、35MB
+    - `gallery/images/handdraw-style/assets/`：只留数据和样图 —— `references/` 下 5 个 JSON（styles、layouts、colors、model_capabilities、style_alias_map）和 167 份版式 md，加上页面引用到的 568 张图，共 740 个文件、35MB
 - **跳过**：
     - `custom-asset-manager` 和入口里的「自建图库工作流」：它把用户的角色、道具、场景存进用户本机的目录，聊天中由 AI 当场写入；网页上的 wiki 对 AI 只读，存不进去。上游库里只有 1 个预置角色。保持同一个角色的办法改成 IP 设计里「三视图定稿后垫图」
     - `community-share`：往上游作者的论坛 handraw-style.com 发帖、管帖，要那边的账号

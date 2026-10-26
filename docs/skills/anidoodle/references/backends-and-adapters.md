@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/backends-and-adapters.md -->
 # 后端与适配器
 
 一个美术核心，四个后端，而核心看不见其中任何一个。适配器是唯一知道影片如何变成像素的东西。

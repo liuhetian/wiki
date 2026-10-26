@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/theory/form.md -->
 # 曲式、编曲、配器、对位
 
 ## 1. 歌曲曲式（以及引擎的段落种类）

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/references/planning.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 规划（Step 3）—— 挑选品牌，填满每一个 frame
 
 在 Step 3，**你（编排者）**把 Step 2 的骨架变成一份完整的、获得批准的 `STORYBOARD.md`。你就地编辑**同一个文件**：先挑定品牌主干，然后为每个 frame 决定它的 **group**，给每个 group 一种处理方式，绑定真实的节拍锚点，并写好文案。

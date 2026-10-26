@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/css-marker-patterns.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 记号笔高亮的 CSS 模式
 
 用纯 CSS + GSAP 实现 MarkerHighlight.js 全部五种绘制模式 —— 不依赖外部库，完全由 timeline 控制。代码片段只展示机制相关的 DOM，放在一个标准的场景 clip 内（hyperframes-core）；假定 `tl` 已存在。

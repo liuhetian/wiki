@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/transitions/css-push.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 ## 线性 / 推移（Linear / Push）
 
 ### 推移滑动（Push Slide）

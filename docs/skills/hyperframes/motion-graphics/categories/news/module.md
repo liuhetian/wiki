@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/categories/news/module.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # news —— category 模块（搜索驱动）
 
 搜索一篇真实的新闻文章 → 把它做成**文章高亮（article-highlight）**动画 —— 这是对居中强调技法的忠实 HF 移植。标志性运动：文章文字以**可读的尺寸（不放大）**排版，向上滑动 + 淡入，然后**就地高亮关键词** —— 一条马克笔色带在它后面从左向右生长。不做放大特写。约 5–7 秒。

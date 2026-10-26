@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/theory/sound.md -->
 # 声音理论：作曲与混音用的心理声学
 
 你写音符，引擎负责混音。大多数"浑浊"、"单薄"或"被埋掉"的结果，其实是由音符决定的：音区、间距、密度，以及哪些声部相互重叠。本页讲的是这些选择背后的物理。引擎的守卫和 `craft` 检查的是你能从乐谱里控制的那部分。混音链本身在 `render.ts` 和 `mixProfiles.ts` 里（音效见 [../sound-design.md](../sound-design.md)）。

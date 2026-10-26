@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/upgrade-info-misc.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # info、upgrade、compositions、timeline、docs、benchmark、telemetry、素材预处理
 
 不属于主开发循环的那些命令的综合参考文档。

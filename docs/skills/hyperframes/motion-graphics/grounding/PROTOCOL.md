@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/grounding/PROTOCOL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # locate —— 在图片里找到 "X"（不假设有检测器 API）
 
 每一个使用方（asset-fusion 圆环、webpage 高亮、未来的讲解视频 / 重剪 overlay）都使用的唯一契约：

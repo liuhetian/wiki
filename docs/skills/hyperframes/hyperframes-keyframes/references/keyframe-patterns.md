@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-keyframes/references/keyframe-patterns.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 关键帧机制参考
 
 在 `SKILL.md` 之后、选择具体实现机制时使用。它是一个零件架，不是风格指南。先从一种主要机制开始；只有当辅助运动能让想法更清楚时才加上它。

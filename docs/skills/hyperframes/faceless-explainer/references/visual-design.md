@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/faceless-explainer/references/visual-design.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 视觉设计 —— faceless-explainer 的逐帧镜头方法
 
 > 这是 **Step 4（帧视觉设计）** 背后的方法。你（编排者）读它，是为了**就地充实 `STORYBOARD.md` 的各帧** —— story-design 已经写好了骨架（每一帧的 `scene`、`voiceover`、`transition_in`、叙事字段，以及可选的一个候选蓝图 id）；你补上每一帧**看起来什么样、怎么动**。你为每一帧写的单元是一个**带时间码的镜头序列** —— 一个贯穿整段时长被调度的镜头，而不是一张静态幻灯片。你**不写 HTML**（那是 frame worker 的事）。因为这是**无人出镜**讲解视频，**每一个视觉元素都是自创的** —— 字体排版、抽象图形、图示、数据可视化 —— 所以你是在**设计**视觉元素，而不是挑选抓取来的素材（没有 `capture/` 可读）。`frame.md` 是你按角色取用的色板 / 字体真相。布局是本文件里的一套精简词汇（下面的**布局**一节），在每个 Scene 里就地写明；运动词汇 + 运动准则 + seek 安全核心 → `motion-language.md`；经过验证的形状 → `../../hyperframes-animation/blueprints-index.md` + `blueprints/<id>.md`；具体规则在 Step 5 从本 skill 本地的 `../../hyperframes-animation/rules/` 解析。想在这里加色彩理论或一条通用字体规则？放错地方了 —— 应该放进 `frame.md` + `hyperframes-creative`。

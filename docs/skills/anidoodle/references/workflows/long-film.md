@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/long-film.md -->
 # 任意长度的影片
 
 一部影片的长度是 `meta.durationFrames`，这个数字来自故事，永远不来自模板。三分钟、五分钟、二十分钟：引擎逐帧流式输出，闸门逐帧测量，没有任何东西会把整部影片缓冲下来。随长度变化的，是你组织工作的方式。

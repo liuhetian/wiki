@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/typography-presets.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 字体排印 preset
 
 五种有名字的样式，对应 `cap-*` CSS 类。在 `plan.json` 里根据这一行的语义角色，为每个字幕分组挑一个。

@@ -6,7 +6,7 @@ description: "整理视频为笔记的维护记录：吸纳自 Rimagination/bili
 
 [整理视频为笔记](../../skills/video-note/index.md)的维护记录。下面「翻译之外的改动」记的是 2026-10-17 拆分之前那版，拆分本身见[最后一节](#three-stages)。
 
-- **上游**：Rimagination/bili-note[^upstream]，作者署名 Bili Note contributors，MIT，许可证原文随目录留在 `LICENSE`。上游是给 Codex 写的，命令都是 Windows PowerShell，和作者的另一个 skill DyNote（抖音笔记）共用 Qwen3-ASR 环境
+- **上游**：Rimagination/bili-note[^upstream]，作者署名 Bili Note contributors，MIT，许可证原文不随附。上游是给 Codex 写的，命令都是 Windows PowerShell，和作者的另一个 skill DyNote（抖音笔记）共用 Qwen3-ASR 环境
 - **commit**：钉在 `08fe812`（2026-09-22），2026-10-16 读时仍是最新
 - **跳过**：
     - `agents/openai.yaml`：Codex 的界面元数据（显示名、一句话简介、默认 prompt），不是 Claude Code 插件里的 agent

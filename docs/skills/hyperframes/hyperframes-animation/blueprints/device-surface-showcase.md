@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/device-surface-showcase.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # device-surface-showcase — 设备 / 界面展示
 
 **intent**（意图）：一个产品界面 —— 一个设备 mockup 或一个浮动的浏览器 / 应用窗口 —— 作为 hero 留在画面里，它的屏幕走过一个真实的流程，由一次镜头运动来展示，镜头运动的范围从静止保持到连续的 3D 推进。

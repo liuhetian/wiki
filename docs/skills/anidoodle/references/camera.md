@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/camera.md -->
 # 镜头：一台推轨车，关键帧对齐帧网格
 
 `engine/src/canvas-core/camera.ts` 就是镜头。影片要么在 `begin()`/`end()` 之间用世界坐标作画（变换路径：脏矩形不会出错，因为镜头骑在 `Gfx` 的变换栈上），要么问 `toScreen()` 某个世界坐标点落在屏幕哪里，再在那里画（投影路径）。两者出自同一份状态，所以钉在画框上的字幕和它浮在上面的世界永远不会对不上。一切都是帧号的纯函数：同一个镜头问题，在任何机器上、按任何顺序问，得到的都是同一个答案。

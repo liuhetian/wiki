@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/doctor-browser.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # doctor、browser
 
 环境诊断与随附 Chrome 的管理。渲染或预览失败时，先运行这些命令。

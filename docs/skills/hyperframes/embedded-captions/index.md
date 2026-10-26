@@ -3,7 +3,6 @@ name: embedded-captions
 description: >
   给现有的单人口播视频加字幕，不剪辑原片。用于普通的逐字字幕、嵌在主体身后的电影感字幕、VFX 字幕、「炸/特效/酷炫字幕」，或者 35 种风格目录里点名的某个风格（identity）。按视觉风格路由，而不是按后端引擎路由。默认是安静的 `anchor` rail；只有用户明确想要全程电影感处理时，才把每个词都嵌入。整个工作流从头到尾在本地运行，包括转录和主体抠像；多镜头素材要先拆分再使用。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 

@@ -3,7 +3,6 @@ name: hyperframes-gsap-adapter
 description: >
   HyperFrames 的 GSAP 动画 API 参考。在 HyperFrames composition 中编写可 seek 的 GSAP timeline 时使用，涵盖 gsap.to()、from()、fromTo()、set()、timeline 位置参数、label、easing、stagger、有限次重复，以及 transform 性能。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/gsap.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # HyperFrames GSAP
 

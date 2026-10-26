@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/composition-craft.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 构图工艺 —— 仅适用于嵌入轨
 
 这是一份深入的"如何把字幕放**进**场景里"手册 —— 它只管**嵌入**轨（合成在主体身后的字幕）。默认的 **rail**（标准的 lower-third 字幕，大部分文字都在这里）有它自己的、简单得多的规范 → [rail.md](rail.md)。在编写任何**被提升**的短语之前先读这份文档，无论用哪种编写模式（模板 Cinematic 的 `plan.json`，或 Standard 的 `index.html`）。

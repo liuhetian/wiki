@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/README.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Tier 2 — title-image-outro
 
 ## 测试内容

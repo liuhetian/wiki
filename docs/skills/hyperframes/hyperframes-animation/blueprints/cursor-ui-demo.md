@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/cursor-ui-demo.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # cursor-ui-demo — 光标驱动的 UI 演示
 
 **intent**（意图）：一个可见的自定义光标通过点击 / 悬停 / 拖拽驱动一个真实（重建的）应用 UI，让屏幕一个镜头接一个镜头地切换状态，同时镜头追着每一次交互走 —— 产品界面是主体，光标是演员。

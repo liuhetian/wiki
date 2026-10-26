@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/references/motion-blur.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 运动模糊 —— 任何动画元素上的快门拖影
 
 ## 给任何东西加模糊之前先读这一部分

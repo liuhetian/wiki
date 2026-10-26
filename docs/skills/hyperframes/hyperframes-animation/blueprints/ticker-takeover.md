@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/ticker-takeover.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # ticker-takeover —— 滚字被挤开 / 接管
 
 **intent / 意图**：一个语境短语打字出现，一个强调词像老虎机一样在几个选项间轮转，暗示「这可能是很多东西」，然后一个 hero 从画外**撞**进来，在物理上把文字推到一边 ——「其实，它是这个。」这是一次碰撞，不是一次淡变。

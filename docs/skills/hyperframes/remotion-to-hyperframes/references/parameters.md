@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/parameters.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 参数翻译：Zod schema、defaultProps、calculateMetadata
 
 一个带类型的 Remotion `<Composition schema={...} defaultProps={...} />` 如何变成一个参数化的 HF composition。

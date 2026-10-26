@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/timing.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Timing 翻译：interpolate、spring、easing
 
 收益最高的一份参考文档。easing 和时间是观众会注意到的东西；把它们弄错所损失的 SSIM，比任何其他翻译选择都多。已在 T1–T3 层级上经过实证验证。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/zoom-out-workspace-reveal.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # zoom-out-workspace-reveal —— 拉远揭示工作区
 
 **intent / 意图**：一开场就**紧紧**框在一个满版的细节上 —— 一个图形微距画面或一小块 UI 区域 —— 让微动作在特写里上演，然后**一次**连续减速的拉远揭示出：到目前为止看到的一切都位于一个包含它的整体之中（一个设计工具的工作区 / 一个多窗格的 agent 工作区）；画面在全景处锁定，元素级的兑现继续进行。拉远**就是**叙事引擎，揭示出嵌套关系就是兑现 —— 这区别于 `grid-card-assemble`，那里的**拉远**是一个可选的镜头修饰，给元素错开组装锦上添花；这里没有任何东西在组装，世界从一开始就是完整的，而这唯一一次向外的移动重新界定了它的意义。它在结构上是所有现有推近形态的反向（`constellation-hub` 的推近、`device-surface-showcase` 的连续推近、`dataviz-countup` 的穿透推进）。

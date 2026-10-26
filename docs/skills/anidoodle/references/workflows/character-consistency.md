@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/character-consistency.md -->
 # 工作流：一个始终是它自己的角色
 
 > 「我想拍一部关于这个特定角色的电影。」角色只建**一次**，做成一个模块；只审批**一次**，以设定图（model sheet）的形式；从那以后，每一张静帧、每个镜头、每部影片、每种画风都只是给它**摆姿势**。再也没有任何东西重新画它。现成的示例：Mira（`engine/src/canvas-core/characters/mira/`）。

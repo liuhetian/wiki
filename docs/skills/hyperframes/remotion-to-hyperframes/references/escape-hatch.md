@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/escape-hatch.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 何时退出：runtime 互操作模式
 
 有些 Remotion composition 无法被干净地翻译。本 skill 应当提前识别出它们，并推荐 PR #214[^pull-214] 中的 **runtime 互操作模式**，而不是产出坏掉的 HTML。

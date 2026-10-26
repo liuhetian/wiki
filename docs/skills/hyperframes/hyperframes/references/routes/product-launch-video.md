@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/routes/product-launch-video.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 路由：product-launch-video
 
 - **输入：** 一个网站 URL；一份点名了某个网站的脚本或 brief；或者一份无法推出对应网站、或明确写了"不要抓取"的产品发布脚本。除非 brief 选了不抓取模式，否则抓取网站素材和品牌 token。用户提供了脚本文案时，要问清它是逐字照念的旁白，还是可以重组。

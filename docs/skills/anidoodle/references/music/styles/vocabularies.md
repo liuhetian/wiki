@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/styles/vocabularies.md -->
 # 风格词汇
 
 > 本页由 `node tools/music.mjs vocab --md` 从 `engine/src/canvas-core/music/vocab.ts` 和 `vocabMore.ts` **生成**。不要手工编辑；本站是中译版，重新生成会得到英文原版。一种风格是一套词汇：声音、律动、和声语言、旋律规则、编曲语法。它从不包含音符。音符由你来写（[../compose.md](../compose.md)）。

@@ -1,12 +1,9 @@
 // REGISTRY. The style count can never go stale because nobody counts styles by hand: every new
 // plate exports `STYLE` and describes itself, the eleven that predate the export are declared in
-// styles.legacy.json, and this writes the merged, sorted truth to styles.gen.json and
-// references/styles/INDEX.md. docs-check.mjs and gallery.mjs read the same registry, so prose,
-// pictures and code cannot drift apart.
-// (Wiki import: the style index is now references/styles/index.md, translated into Chinese with a
-// column of links to each recipe page, so this no longer writes it: it would overwrite the
-// translation with the English table. It writes engine/styles.gen.json only; add a row to
-// index.md by hand when a plate is added. docs-check.mjs is not shipped here.)
+// styles.legacy.json, and this writes the merged, sorted truth to styles.gen.json. gallery.mjs
+// reads the same registry, so pictures and code cannot drift apart. The style index
+// references/styles/index.md is kept by hand (Chinese, with a column of links to each recipe page)
+// and is not written here: add a row to it when a plate is added.
 //   node tools/registry.mjs
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";

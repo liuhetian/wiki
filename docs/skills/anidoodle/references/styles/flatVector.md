@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/flatVector.md -->
 # 扁平矢量（现代扁平插画）
 
 模块：`engine/src/canvas-core/flatVector.ts`。主图：海湾上一场小帆船赛，背后是山丘；领头的船正绕过橙色浮标。

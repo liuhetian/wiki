@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/transitions/css-cover.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 ## 覆盖（Cover）
 
 ### 错落色块（Staggered Color Blocks）

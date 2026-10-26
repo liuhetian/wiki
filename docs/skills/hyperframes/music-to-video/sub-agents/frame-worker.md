@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/sub-agents/frame-worker.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Frame worker —— 逐 frame 的 composition 作者（music-to-video）
 
 你负责构建一个 frame 的 composition 文件：`compositions/frames/<frame_id>.html`。其他兄弟 worker 并行构建其余的 frame。通用的 HyperFrames 规则 —— sub-composition 的结构、timeline 登记、确定性、布局 —— 放在 `hyperframes-core` 里（`references/sub-compositions.md`

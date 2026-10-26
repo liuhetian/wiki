@@ -34,8 +34,8 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [花卉动态生长海报（flower-growth-poster）](skills/flower-growth-poster.md) —— 整理自抖音「小洁AI实战」的设计教程；即梦平台存技能的操作和 Seedream、Seedance 的型号跳过，模型换成 agent-io 的 gpt-image-2.5 和 MiniMax H3 首尾帧；prompt 照画面关键词自己写，首帧改成截海报纸纹，补了接成循环一步
 - [anidoodle 代码手绘](skills/anidoodle.md) —— 吸纳自 alexgreensh/anidoodle，钉在 25aae33，73 篇文档全文中译；6 个撞网址或当不了索引的文件改名，正文路径改成相对链接，风格索引加配方列；registry.mjs 不再覆盖中文索引，docs-check.mjs 和 README 演示素材跳过
 - [对话提示词（chat-prompts）](skills/chat-prompts.md) —— 取自 prompt-cards.cyanfish.site 的 17 段对话 prompt，钉在 JS 包 index-IivKxZ0S.js；去掉卡牌包装按场景重组，修补了架构先知和深度天赋挖掘机各一处；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录
-- [调研项目（project-research）](skills/project-research.md) —— 粗讲项目由 2026-10-19 介绍 bili-note 的对话提炼，细讲项目由 2026-10-20 拆解梨园的对话提炼，没有外部上游；2026-10-20 从对话提示词挪出来单独成 skill
-- [HyperFrames 视频（hyperframes）](skills/hyperframes.md) —— 吸纳自 heygen-com/hyperframes，钉在 46f6cb3，21 个 skill、330 篇全文中译，脚本模板原样随附；FRAME.md 的 frontmatter 不译，各子 skill 入口末尾加文件清单
+- [调研项目（project-research）](skills/project-research.md) —— 粗讲项目由 2026-10-19 介绍 bili-note 的对话提炼，细讲项目由 2026-10-20 拆解梨园的对话提炼，写书由 2026-10-23 讨论调研分阶段的对话提炼，没有外部上游；2026-10-20 从对话提示词挪出来单独成 skill
+- [HyperFrames 视频（hyperframes）](skills/hyperframes.md) —— 吸纳自 heygen-com/hyperframes，钉在 46f6cb3，21 个 skill、328 篇全文中译，脚本模板原样随附；FRAME.md 的 frontmatter 不译，各子 skill 入口末尾加文件清单
 - [去 AI 味（qu-ai-wei）](skills/qu-ai-wei.md) —— 吸纳自 LifelongLazyLearner/qu-ai-wei，钉在 ed35e74；上游本来是中文，SKILL.md 和九份规则表原文照录，只把外链挪进脚注
 - [檄文（xi-wen）](skills/xi-wen.md) —— 吸纳自 YuanZHAO321/XiWen，钉在 eb32d38；上游本来是中文，主文件、四份精讲、五篇底本古檄原文照录，入口的文件路径改成链接
 - [Dashboard（open-dashboard）](skills/dashboard.md) —— 蓝本 ahpxex/open-dashboard，钉在 aa9815f；Invariants 提炼成各篇「规矩」，实现换成自研 demo，原文不存档，只留两份系统级契约
@@ -45,6 +45,8 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [写真拍摄企划（photo-shoot）](skills/photo-shoot.md) —— 吸纳自 yang0/handraw-style 的 couple-photo-orchestrator（MIT 带署名），钉在 2a25a07；入口和总控 zongkong 合并，CORE_REQUIREMENTS 的规则并进各页，7 个子 skill 重组成入口加 6 个子 skill，生图换成 agent-io，9 个脚本随附、只改三行
 - [东方仙侠视觉导演（xianxia-visual-director）](skills/xianxia-visual-director.md) —— 吸纳自 liyue-aigc/xianxia-visual-director（未附许可证），钉在 bd88617；SKILL.md 和 8 篇 reference 全文中译，放进新建的抽象 skill 视频生成，直接出图接 agent-io
 - [获取热点（hot-topics）](skills/hot-topics.md) —— 2026-10-21 用户提议单开成标准 skill，一个信息源一篇；AIHOT 读的是接口 2.0.0，官方 Agent 使用说明存档，没装它的 Skill、没接 MCP 和 RSS，实测条件请求、links.story 还指旧域名；linux.do 日报只取小宇宙上的音频，为什么不走 linux.do 和汇总站
+- [让布局说话（ui-no-labels）](skills/ui-no-labels.md) —— 取自一张水印 @Ainward 的手机截图，原帖链接没留，截图存档；英文原句译成中文，套用初始化项目写进 `CLAUDE.md` / `AGENTS.md` 的形态
+- [PPT Master（ppt-master）](skills/ppt-master.md) —— 吸纳自 hugohe3/ppt-master（MIT），钉在 523e5bd（6.7.3）；只收规划、沟通模式、配图写法和三份风格目录，流水线不收、引导客户端装上游；规划和配图是提炼改写，其余中译
 
 ## Gallery 收录 { #gallery }
 
@@ -55,6 +57,7 @@ Gallery 里别人的成品从哪来、收的时候改了什么、上游更新了
 - [二次元平面设计风格](gallery/linux-do-style.md) —— 整理自 linux.do @sallyn 的帖子，23 张配图、原帖全文和主楼附件存档在 assets/；第 21 楼以后没抓到
 - [小红书拍照姿势](gallery/xhs-poses.md) —— 取自小红书「我的id是江苏美人」的 59 篇图文，经 agent-io 取原图，529 张原样收录；57 篇首图是拼图，没收
 - [手绘风格库、排版、经典主题色](skills/handdraw.md) —— 收录自 yang0/handraw-style，和 skill 的吸纳记录写在同一篇
+- [PPT 视觉风格、配图画风、配图版型](skills/ppt-master.md) —— 收录自 hugohe3/ppt-master，和 skill 的吸纳记录写在同一篇
 - [图片区零散收集](gallery/images-collected.md) —— 人像写真模板、一杯狗海报、旧刊物海报，单条收进来的 prompt 各自的出处和改动
 - [色彩区零散收集](gallery/colors-collected.md) —— 意象渐变配色，抖音图文原图原样收录，主题色 prompt 照色卡转录
 - [视频区零散收集](gallery/video-collected.md) —— 彩色手绘三维穿梭视频，收录自 makerjackie/parallax-ink-video-skill，渲染工程原样收录，配乐配音换成 agent-io

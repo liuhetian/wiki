@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/data-in-motion.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 运动中的数据
 
 关于视频 composition 中数据和统计数字的轻量指导。美学由 `house-style.md` 负责；这里只处理数据特有的坑。

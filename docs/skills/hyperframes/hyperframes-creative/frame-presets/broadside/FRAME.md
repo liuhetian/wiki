@@ -89,7 +89,6 @@ components:
     typography: "{typography.fadelist-item} ×3 at opacity 1.0/0.5/0.22 + {typography.fadelist-title}"
     description: "Three stacked words + one oversized title opposite."
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/frame-presets/broadside/FRAME.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Broadside — Frame (video / frame layer)
 

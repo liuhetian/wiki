@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/routes/music-to-video.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 路由：music-to-video
 
 - **输入：** 一条音乐音轨、一个以其音频作为音轨的视频，或根据情绪 brief 生成的一条音轨 —— 没有旁白，也不抓取网站。用户的图片或视频是可选的，所以一支完整的视频可以不需要任何用户提供的素材。

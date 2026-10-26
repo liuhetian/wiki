@@ -3,7 +3,6 @@ name: general-video
 description: >
   在没有合适的专门工作流时，或者 BRIEF.md 设置了 flow: companion 时，编写或编辑一个自定义的 HyperFrames composition。用于较长或多场景的作品、品牌片和混剪集锦、蒙太奇、静态循环、静态标题卡、素材画面重混，以及自由形式的构建。时长短、无旁白、以运动为先的单元（包括动画标题）改用 motion-graphics。全新创作要先经 hyperframes 路由，再使用本 skill。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/general-video/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 

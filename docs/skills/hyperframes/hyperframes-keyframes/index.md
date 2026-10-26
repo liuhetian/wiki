@@ -4,7 +4,6 @@ description: >
   当 HyperFrames composition 需要推近（punch-in）、拉远（punch-out）、变焦、重新取景、Ken Burns 处理、镜头运动、视觉匹配切 / 甩镜交接，或其他 seek 安全的 2D/3D 关键帧时使用；也用于 GSAP、CSS keyframes、Anime.js、WAAPI、FLIP、路径、遮罩、SVG 变形 / 描画、文字拖尾、3D 纵深，或 `hyperframes keyframes` 诊断。
   不要用于宏观的场景策略、品牌设计、媒体获取、字幕或一般性的视频规划。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-keyframes/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新类命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 

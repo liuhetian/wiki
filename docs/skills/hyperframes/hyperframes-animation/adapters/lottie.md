@@ -3,7 +3,6 @@ name: hyperframes-lottie
 description: >
   HyperFrames 的 Lottie 与 dotLottie adapter 模式。在嵌入 lottie-web JSON 动画、.lottie 文件、@lottiefiles/dotlottie-web 播放器，把实例注册到 window.__hfLottie 上，或让 After Effects 导出在 HyperFrames 中变得确定性时使用。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/lottie.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # HyperFrames 中的 Lottie
 

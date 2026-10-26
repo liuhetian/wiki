@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/references/shot-plan-ir.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # shot-plan IR
 
 Director 与 Builder 之间唯一的契约。一个文件：`PROJECT_DIR/shot-plan.json`。

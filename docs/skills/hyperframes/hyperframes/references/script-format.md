@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/script-format.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # `SCRIPT.md` —— 锁定的旁白（可选）
 
 一个项目的**锁定旁白**：最终的口播台词 + 声音 + 演绎方式。它是一个*可选的*计划层文件 —— 没有旁白的视频（只有 BGM、无声 overlay）就没有它。分镜里每帧的 `voiceover` 是更轻量、可编辑的*参考*；`SCRIPT.md` 是*定稿*。（分镜格式 → `references/storyboard-format.md`。）

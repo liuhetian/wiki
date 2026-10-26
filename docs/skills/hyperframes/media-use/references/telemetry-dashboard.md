@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/telemetry-dashboard.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # media-use 使用情况仪表盘
 
 media-use 使用情况仪表盘的可复现定义。这个仪表盘利用 `scripts/lib/telemetry.mjs` 已经发出的遥测数据，回答"media-use 用得有多少、用来做什么、复用是否奏效、有什么需求它满足不了"。在有权限的 HyperFrames 分析项目里构建它；这份文档是事实来源，以便随时能够重建。本地的补充：`resolve --stats`（回答同样的问题，数据来自 `.media/` + `~/.media`，不需要仪表盘访问权限）。

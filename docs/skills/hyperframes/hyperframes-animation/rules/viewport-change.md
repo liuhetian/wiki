@@ -5,7 +5,6 @@ description: >
 metadata:
   tags: viewport, camera, zoom, pan, focus-lock, virtual-camera
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/viewport-change.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Viewport Change（虚拟镜头）
 

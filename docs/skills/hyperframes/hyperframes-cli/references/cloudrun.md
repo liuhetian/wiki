@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/cloudrun.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 在 Google Cloud 上用 Cloud Run 渲染
 
 只有当用户明确想要自行管理的 Google Cloud 基础设施时，才使用 `hyperframes cloudrun`。它会部署 Cloud Run、Workflows 和 Cloud Storage。托管的默认方案用 `hyperframes cloud`；AWS 用 `hyperframes lambda`。

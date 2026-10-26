@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/folkTale.md -->
 # 民间故事绘本画
 
 模块：`engine/src/canvas-core/folkTale.ts`（工具包：`folkTaleKit.ts`，过程运行器来自 `sumiEKit.ts`）。主图：一个男孩抱着一只公鸡，沿着小路穿过白桦林边上一处乡村菜园。画幅：16:9，1920 x 1080（W 和 H 取自 `meta`）。

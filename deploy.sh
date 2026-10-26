@@ -60,12 +60,10 @@ cd "$PROJECT_DIR/site"
 #    .csv 同理进来（课程页的数据表）：AI 要能直接 GET 到表内容才做得了题。
 #    .caddy / .conf 同理（API 中转篇附的 Caddy 站点配置和 systemd drop-in），钉成文本，不留给 COS 去猜。
 #    .cjs 同理（HyperFrames skill 的 CommonJS 脚本，skills/hyperframes/MIRROR.md 脚本归类一节），与 .mjs 同等待遇。
-#    无扩展名的 LICENSE 同理（MIT 收录要求随附许可证原文，活例 gallery/images/gpt-image2/LICENSE）；
-#    coscmd 拿 fnmatch 比本地路径，*/LICENSE 里的 * 能跨目录匹配。
 #    带 -s：-s 只比对 MD5 不看类型，新增/内容变动的文件会带着正确类型上传，没变的跳过。
 #    （桶里错类型的历史对象已在 2026-08 前的部署里全量重传修正过，此后无需再无条件重传；
 #    若哪天又混入错类型对象，临时去掉 -s 跑一次即可自愈）
-"$COSCMD" upload -rs --include '*.ts,*.tsx,*.jsx,*.mjs,*.cjs,*.py,*.sh,*.csv,*.caddy,*.conf,*/LICENSE' -H 'Content-Type: text/plain; charset=utf-8' ./ /
+"$COSCMD" upload -rs --include '*.ts,*.tsx,*.jsx,*.mjs,*.cjs,*.py,*.sh,*.csv,*.caddy,*.conf' -H 'Content-Type: text/plain; charset=utf-8' ./ /
 #    skill 整包（第 3.6 步）同理钉成 application/gzip，不留给 COS 按扩展名去猜
 "$COSCMD" upload -rs --include '*.tar.gz' -H 'Content-Type: application/gzip' ./ /
 # llms.txt 不带 -s：coscmd 单文件 upload -s 命中"MD5 一致跳过"时退出码是 254（且静默），

@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/woodcut.md -->
 # 浮世绘套色木版画（`woodcut.ts`、`woodcutKit.ts`）
 
 **媒介。** 水性颜料调米浆，刷在刻好的樱木版上，用马连（baren）手工拓印到湿润的楮皮和纸（kozo washi）上，一块版一种颜色，每次都把纸靠着见当（kento，版面边缘的一个 L 形缺口和一条直的定位边）放好。

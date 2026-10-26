@@ -3,7 +3,6 @@ name: hyperframes-registry
 description: >
   搜索、安装 registry 中的 block 和 component，并把它们接入 HyperFrames composition。在手工搭建任何有名字的视觉效果之前先用它——只要 brief、用户或分镜点名了某种外观、效果、处理手法或转场，比如 CRT 扫描线、glitch、色差、胶片颗粒、shimmer 扫光、图表、代码或终端窗口、地图、彩纸爆发——因为托管的约 400 个条目已经覆盖了其中许多，而且搜索会对全部条目排序，不需要安装任何东西、不需要项目、也不需要账号。运行 hyperframes add 或 hyperframes catalog、安装单个条目或某个 tag 下的全部 block、把已安装条目接入 index.html、或处理 hyperframes.json 时也用它。涵盖发现、安装位置、block 的 sub-composition 接入、component 片段合并，以及编写新的 block 或 component 并贡献到上游（构思 → 搭骨架 → 校验 → PR）。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-registry/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装配置或更新类命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 

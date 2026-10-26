@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/routes/slideshow.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 路由：slideshow
 
 - **输入：** 一份 brief、大纲或已有页面，要制作成演示文稿、路演 deck 或交互式 deck。如果"幻灯片"、"deck"或"转换这个页面"有歧义，先确认用户要的是 HyperFrames slideshow，再开始制作。

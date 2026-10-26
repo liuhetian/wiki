@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/reference-bar.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 参照标杆 —— 世界级是什么样子
 
 没有外部标杆的自我评审永远会通过。交付之前，把渲染结果拿来对照这些参照 —— 不是问"有没有什么坏了"（闸门已经查过了），而是问"这些机构的设计师会不会签字认可"。

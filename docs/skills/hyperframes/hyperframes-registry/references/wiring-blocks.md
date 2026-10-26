@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-registry/references/wiring-blocks.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 接入 block
 
 block 是独立的 composition，有自己的 `data-composition-id`、尺寸、时长和 GSAP timeline。在宿主 composition 里，通过在一个 `<div>` 上设置 `data-composition-src` 来引入它们。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-audio/references/presets.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Preset、具名任务（job）和单旋钮 profile
 
 这里的一切都是通往某条效果链的捷径，而那条链你本来也可以手动搭出来。preset 写入的是标记了 `fromPreset` 的普通节点，具名任务写入的是一个带名字的普通节点，而 profile 是作用于一个效果多个参数的单一控件。没有任何东西是不透明的：打开其中任何一个，你看到的都是来自 [`fx-registry.md`](./fx-registry.md) 的效果，参数一览无余。

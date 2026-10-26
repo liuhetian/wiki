@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/launch-video.md -->
 # 发布片与产品视频
 
 发布片就一个产品许下一个承诺，并展示这个承诺被兑现。它是一部有任务的短片：开头几秒观众就知道这东西是什么，看到最后就知道去哪里拿到它。下面每一条规则都是在 anidoodle 自己那部 77 秒的发布片（剪了四版）上付过代价换来的，并对照已公开发表的发布片制作经验核对过。可复用的零件在 [launch-video-kit.md](launch-video-kit.md)；一部模板影片能根据数据为任何产品渲染出一部 16 秒的发布片。

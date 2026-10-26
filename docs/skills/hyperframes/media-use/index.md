@@ -3,7 +3,6 @@ name: media-use
 description: >
   HyperFrames 项目的 Agent 媒体操作系统。把 BGM、音效（SFX）、图片、图标、品牌 logo、配音、调色或 LUT 解析成一个冻结的本地文件或一段可直接粘贴的代码块 + 一条台账记录（只有一个动词：`resolve`）；catalog 里没有时，通过 TTS / 音乐 / 图像模型生成；通过一个共享的音频引擎产出旁白、转写、字幕和背景移除；对媒体进行操作（裁剪 / 重新构图 / 变换）；并在项目之间复用素材。当用户给出模糊反馈，说真实素材画面看起来偏暗、发平、无聊，应该有复古 / 家用摄像机 / 印刷 / ASCII 的感觉，需要隐私处理，或者需要一个媒体揭示时，也用它。当宿主应用提供了自己的音乐或音效工具时，音乐和音效就用那些工具；`resolve --type bgm|sfx` 需要 heygen CLI。设置了 `HEYGEN_API_BASE` 时，HeyGen 调用经由该宿主进行，无需登录 CLI。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装配置或更新类命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 
@@ -84,7 +83,6 @@ npx hyperframes media-use resolve --type <type> --intent "<description>" --proje
 
 本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
 
-- [audio/assets/sfx/CREDITS.md](audio/assets/sfx/CREDITS.md) —— 音效（SFX）来源致谢
 - [audio/references/bgm.md](audio/references/bgm.md) —— 背景音乐（BGM）
 - [audio/references/captions/authoring.md](audio/references/captions/authoring.md) —— 字幕
 - [audio/references/captions/motion.md](audio/references/captions/motion.md) —— 动态字幕技法

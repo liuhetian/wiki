@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/grading.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 调色 —— grade 块与 LUT
 
 当你需要为一个 `<img>` 或 `<video>` 生成规范的 HyperFrames 调色/效果 payload 时，用 `grade`。核心 preset 和基于 params 的 LUT 条目在本地解析；未来基于 CDN 的 LUT 条目需要联网，除非已经冻结过。已经确定的 payload 用 CLI 持久化，不要手工编辑 HTML：

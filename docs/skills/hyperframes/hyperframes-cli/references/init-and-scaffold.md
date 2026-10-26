@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/init-and-scaffold.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # init、capture、skills
 
 <!-- registry-items: allow=blank,landscape-4k,portrait-4k,square-4k,product-launch-video,hyperframes-core,media-use -->

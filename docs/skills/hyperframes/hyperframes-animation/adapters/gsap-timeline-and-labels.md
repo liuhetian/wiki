@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/gsap-timeline-and-labels.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Timeline 与 Label
 
 HyperFrames 是一个由 seek 驱动的 runtime。每个 composition 构建一个暂停的 timeline，挂到 `window.__timelines["<composition-id>"]` 上，让 HyperFrames 去 seek 它。对于影响渲染结果的运动，绝不要调用 `.play()`。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/references/variables-and-media.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 变量与媒体
 
 这是两个独立的关注点，放在一起是因为两者都控制着「从 HTML 外部流入的东西」：runtime 参数（变量）和外部媒体文件（视频 / 音频）。

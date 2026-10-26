@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/palettes/pastel-soft.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 粉彩 / 柔和（Pastel / Soft）
 
 时尚、美妆、生活方式、健康养生内容。

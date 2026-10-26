@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/animate-text.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 文字效果 —— 参考
 
 对于确定性的文字动画规格（例如精确到 `240ms / 46ms stagger / steps(1, end) easing` 的 `typewriter`），本 skill 交给另一个独立的 **`animate-text`** skill 处理，它由 Pixel Point 维护，地址是 github.com/pixel-point/animate-text[^animate-text]。它提供一个包含 24 种具名文字效果的目录，带有可移植的契约，以及针对各个库的实现配方（GSAP、Anime.js、WAAPI）。

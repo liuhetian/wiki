@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/html-in-canvas-patterns.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # HTML-in-Canvas 模式
 
 HyperFrames 最强大的视觉能力。把**任意**实时 HTML/CSS 抓取为 GPU 纹理，然后通过 WebGL shader、Three.js 3D 场景或后期处理效果渲染出来 —— 60fps、像素级精确，支持每一项 CSS 特性。

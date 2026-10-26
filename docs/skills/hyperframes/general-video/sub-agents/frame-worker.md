@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/general-video/sub-agents/frame-worker.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Frame worker —— general-video 增量部分
 
 > 共享的规矩是上面那份核心契约（帧包构建器会把 `../../hyperframes/references/frame-worker-core.md` 作为 `_role.md` 加在本文件前面）—— 把两者当作同一个角色来读。本文件只承载 general-video 的场景特有的内容；你以 N 路并行的方式运行，**每个 worker 一个场景** —— 你收到的派发里恰好只有一个帧包（packet）。想在这里加一条通用的 GSAP / timeline 规则？放错地方了 —— 它应该写进核心契约或 `hyperframes-core`。

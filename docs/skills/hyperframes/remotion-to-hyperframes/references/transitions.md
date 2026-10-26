@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/transitions.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 转场翻译：@remotion/transitions → HF 交叉淡化 / shader-transitions
 
 `@remotion/transitions` 包是 Remotion 预置的场景间转场库。HF 有两条路径来翻译它们：

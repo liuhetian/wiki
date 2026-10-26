@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-registry/references/placeholder-material.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 占位材质
 
 registry 条目附带替身内容：放用户截图的地方是一个矩形，放他们数字的地方是一根柱子，放他们队友头像的地方是一个圆片。这种替身内容就是**占位材质**，而且它是单色的。没有色相，没有彩色色阶，没有从紫到蓝的斜向填充。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/cloud.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # cloud —— HeyGen 托管渲染（零基础设施）
 
 `hyperframes cloud render` 在 HeyGen 的托管云上渲染 composition。CLI 会把项目打成 zip、上传、在 HeyGen 的基础设施（Chromium + FFmpeg）上运行渲染，然后下载成品视频。无需部署任何东西，也不用管理 Chrome/FFmpeg/AWS；按 credit 付费。

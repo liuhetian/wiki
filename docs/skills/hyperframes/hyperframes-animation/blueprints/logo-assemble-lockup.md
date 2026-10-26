@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/logo-assemble-lockup.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # logo-assemble-lockup — Logo 组装 → Lockup
 
 **intent**（意图）：一个品牌标志 / wordmark 在屏幕上诞生，并收成一个居中的 logo lockup —— 它可以由部件搭建而成（元素组装或沿轨道进入、字母级联、轮廓描画出来，或镜头推进穿过负空间），可以在清空的舞台上从零整体弹簧绽放（BLOOMED），可以从前面的短语 / 字形以一条不间断的链条变形（MORPHED）而来，可以从一道动态拖影中吸收而成，也可以本来就组装好、随着装饰清场而落定 —— 可选地再延展成最后的 URL / CTA / 结尾卡。

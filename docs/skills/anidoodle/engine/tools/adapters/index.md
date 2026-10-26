@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/engine/tools/adapters/README.md -->
 # 渲染适配器
 
 适配器是唯一知道影片如何变成像素的东西。美术核心永远看不见任何一个适配器。

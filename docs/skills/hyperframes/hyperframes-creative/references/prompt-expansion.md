@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/prompt-expansion.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Prompt 扩写
 
 每个 composition 都要运行。扩写不是为了把一个短 prompt 拉长 —— 而是把用户的意图落实到设计规范（`frame.md` 或 `design.md`）和 `house-style.md` 上，产出一份所有下游 agent 都会以同样方式理解的一致的中间产物。

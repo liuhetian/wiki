@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/example/butterfly-film-spec.md -->
 # MECHANICAL LEPIDOPTERA：影片规格书，第 4 版（先**造出来**，再**活过来**）
 
 角色：美术指导撰写并审阅这份规格书，制作者负责实现，客户负责审批。项目：本 skill 的 [example/](index.md)（一个供研究的完整参考，不是模板）。动手之前按这个顺序读：先把本文件从头到尾读完；再读 [../references/determinism-and-contract.md](../references/determinism-and-contract.md)，那是每一帧都要遵守的规矩；然后读这份规格书旁边 `src/canvas-core/butterfly/` 里的模块（geom、kit、parts、plate、surface、linkage、act1cues，以及 act4* 里的终场世界）。在改动任何会影响到那张已批准的目标静帧的东西之前，先亲手把它渲染出来。

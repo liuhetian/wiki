@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/explainer.md -->
 # 讲解片和信息图
 
 讲解片每章讲一个概念；信息图让数字一眼就能读懂。两者的评判标准都是观众看完之后是否懂了某件真实的事，所以文字和事实要先于任何绘制。

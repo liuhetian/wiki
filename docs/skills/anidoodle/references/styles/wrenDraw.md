@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/wrenDraw.md -->
 # 钢笔淡彩，绘制过程（wren 的绘制版）
 
 模块：`engine/src/canvas-core/wrenDraw.ts`。样张：`wren.ts`（未改动）。主画面：一只鹪鹩在山楂枝上鸣唱。

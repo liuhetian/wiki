@@ -6,15 +6,15 @@ description: "GPT Image 2 图库的维护记录：收录自 wuyoscar/GPT-Image2-
 
 [GPT Image 2 图库](../../gallery/images/index.md)的维护记录：31 个分类页和它们引用的 169 张原图，整理成「一张图 + 一段 prompt」的纯净形态，按 7 个大类挂在图片分区索引下。
 
-- **上游**：wuyoscar/GPT-Image2-Skill[^repo]，作者 Wuyoscar，MIT，原文见 [`LICENSE`](../../gallery/images/gpt-image2/LICENSE)，按条款随收录保留
+- **上游**：wuyoscar/GPT-Image2-Skill[^repo]，作者 Wuyoscar，MIT，许可证原文不随附
 - **commit**：钉在 `05cb113`[^commit]（上游最后更新 2026-09-10），2026-09-28 抓取
 - **跳过**：
-    - 反推 skill `get-prompt-from-image` 不在这里，收成了[图片提示词反推](../../skills/collab/image-prompt-reverse/index.md)的完整版，有它自己的[维护记录](../skills/get-prompt-from-image.md)
+    - 反推 skill `get-prompt-from-image` 不在这里，收成了[图片提示词反推](../../skills/image-prompt-reverse/index.md)的完整版，有它自己的[维护记录](../skills/get-prompt-from-image.md)
     - 生图 skill `gpt-image`（操作手册、写作要点、2.5 接口文档与模板）、CLI 源码、测试、README 和仓库治理文件：不收，要看原貌走钉 commit 的永链
     - 上游的总索引 `gallery.md`（按编号范围路由）和 `docs/sunburst-samples.md`（Sunburst 运行记录表，里面的图都已出现在对应条目里），由[图片分区索引](../../gallery/images/index.md)按 7 大类取代
     - `docs/community-prompt-index.md` + `community-prompt-picks.json`：只是一份指向 Reddit、小红书原帖的链接清单，引用的 `example-community-*.png` 在上游仓库里也不存在，既没图也没 prompt
     - 4 张只在 README 里出现的图：横幅 `docs/assets/gptimage2skill-banner.png`、反推演示的 `illustration/get-prompt-from-image-reference.jpg` 和 `-result.png`、`research-paper-figures/llm-agent-research-illustration.png`
-- **文件对应**：`gallery-*.md`（31 个，文件名不变）← `skills/gpt-image/references/gallery-*.md`；`assets/<分类>/*.png` ← `docs/<分类>/*.png`（相对路径不变，只是根目录从 `docs/` 换成 `assets/`）；`LICENSE` ← `LICENSE`
+- **文件对应**：`gallery-*.md`（31 个，文件名不变）← `skills/gpt-image/references/gallery-*.md`；`assets/<分类>/*.png` ← `docs/<分类>/*.png`（相对路径不变，只是根目录从 `docs/` 换成 `assets/`）
 - **翻译之外的改动**：
     - **全文中译（2026-09-29）**：31 个分类页连同 ```` ```text ```` 块里的 163 段 prompt 全部译成简体中文，英文原文看钉 commit 的永链。要在画面里原样出现的文字保留原文（引号里的标题、标语、招牌、图表标签、数字、公式，以及 prompt 明确要求 exact text 的内容），译掉它们图上的字就变了；专有名词（工作室、画家、品牌、作品、字体、软件）保留原文，不通行的美术和摄影术语写中文加英文括注；结构不变，标题、列表、表格、代码块、图片标签、链接目标跟原文逐一对应，用脚本逐文件比对过围栏数、`<img>` 行、链接目标、标题数和表格行数；分类名全站统一一套译名
     - **纯净化，只留「图 + prompt」（2026-09-29）**：每条的 `No. N · ` 编号去掉，标题只留名称；「图片：`assets/…`」路径行、元数据行（分类、画幅、尺寸、精选 / 作者 / 来源）、prompt 出处、视觉检查、运行记录、输出元数据、分类页头的「范围 / 条数」和「只在请求匹配时加载」说明一律删掉；分类页一级标题前的 emoji 和条目标题里的「🆕」去掉；原来只以路径文字出现的额外图片（同一 prompt 的 Sunburst 输出、编辑接口的输入图）转成真正的 `<img>`，同一条目里同一张图只留一次。被删掉的出处信息（作者、来源链接）仍可在钉 commit 的上游原文里查到

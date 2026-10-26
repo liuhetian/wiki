@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/caption-grouping.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 字幕分组
 
 如何把 Whisper 的词级转写稿变成 plan.json 里的 `groups[]` 数组。

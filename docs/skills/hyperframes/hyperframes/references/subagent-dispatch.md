@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/subagent-dispatch.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 子 agent 派发 —— harness 适配层
 
 各个视频工作流（`product-launch-video` / `faceless-explainer` / `pr-to-video` / `motion-graphics` / `general-video`）用与 harness 无关的动词来描述子 agent 派发。本文件把这些动词映射到你当前所运行的 agent harness 的原语上。每次运行读一次，在第一次派发之前读；工作流里的其余一切（派发帧包、文件产物、退出码闸门、Resume 表）都与 harness 无关，无需转换。

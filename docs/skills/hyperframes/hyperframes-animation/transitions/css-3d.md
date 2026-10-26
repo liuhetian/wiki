@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/transitions/css-3d.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 ## 3D
 
 ### 3D 卡片翻转（3D Card Flip）

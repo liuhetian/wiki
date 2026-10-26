@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/palettes/monochrome.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 单色（Monochrome）
 
 戏剧性、以字体排印为主、严肃的内容。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/transcribe.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 转写
 
 生成规范化的逐词时间戳。**始终显式指定 `--model`**——CLI 默认的是 `small.en`，它会悄悄把非英语音频翻译成英语。

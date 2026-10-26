@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/categories/stat/module.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # stat —— category 模块
 
 单个 **hero 数字**的显现。无素材（"输入"就是这个数字）。约 4–6 秒。

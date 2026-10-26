@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/beats.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 生成项目的节拍网格
 
 当一个已有的 HyperFrames 项目需要为它的音乐 track 生成与 Studio 兼容的节拍文件时，使用 `hyperframes beats`。这是一个 CLI 工具，不是完整的视频工作流。

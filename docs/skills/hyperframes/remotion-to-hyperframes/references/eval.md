@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/eval.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Eval：如何端到端地校验一次翻译
 
 每一次翻译都应当被度量。本 skill 附带三个脚本和一套分级测试语料库，它们合在一起把守翻译质量的闸门。

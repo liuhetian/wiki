@@ -20,7 +20,7 @@ copy_source: true
 
 顶层七个板块按用途分，主题只做板块内的二级目录。按顺序问：
 
-1. 收录一件成品当参考 —— 一张图配 prompt、一种前端风格配 demo？→ [Gallery](../../gallery/index.md)，按媒介进 images / layouts / colors / video / audio / web 六区之一；角色设定进 personas（人设），一人一页，定妆照加基本资料，活例 [SEOA｜徐星澄](../../gallery/personas/seoa.md)。原样收录，只调排版和图片路径，来源和改动写进[维护 · Gallery 收录](../../maintenance/index.md#gallery)，一个来源一篇；本站自己做的，成品和做法写在同一页（[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)）；layouts 区的五个分类页和 colors 区的经典主题色页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改；两区的 `index.md` 手写。活例：[GPT Image 2 的动漫与漫画](../../gallery/images/gpt-image2/gallery-anime-and-manga.md)、[前端风格收集](../../gallery/web/frontend-styles/index.md)
+1. 收录一件成品当参考 —— 一张图配 prompt、一种前端风格配 demo？→ [Gallery](../../gallery/index.md)，按媒介进 images / layouts / colors / video / audio / web 六区之一；角色设定进 personas（人设），一人一页，定妆照加基本资料，活例 [SEOA｜徐星澄](../../gallery/personas/seoa.md)。原样收录，只调排版和图片路径，来源和改动写进[维护 · Gallery 收录](../../maintenance/index.md#gallery)，一个来源一篇；本站自己做的，成品和做法写在同一页（[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)）；layouts 区的五个分类页和 colors 区的经典主题色页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改；两区的 `index.md` 手写。活例：[GPT Image 2 的动漫与漫画](../../gallery/images/gpt-image2/gallery-anime-and-manga.md)、[前端风格收集](../../gallery/web/frontend-styles/index.md)。只存链接、不存原件的整站收藏（好用的工具站、值得常看的博客）进 Gallery 侧栏「收藏夹」组的[网站](../../bookmarks/websites.md)，文件在顶层 `bookmarks/`：每条一行，链接、一句为什么收、收录日期；前端做得好、要当风格参考的照旧进 web 区存原件
 2. 给 agent 直接挂载的成套资产？→ [Skills](../index.md)
 3. 一个 skill 或 Agent 能力背后的事 —— 从哪来、为什么这么选、改过什么、实测过什么？→ [维护](../../maintenance/index.md)。skill 页只写怎么用，页尾链过来，写法见[收纳 skill · 维护记录](skill.md#maintenance-record)
 4. 跟着一本书或一套实操走、自己做完才算数？→ [课程](../../courses/index.md)
@@ -28,7 +28,7 @@ copy_source: true
 6. 拆解别人的一个项目——它属于什么领域、为了解决什么问题引入了哪些功能？→ [项目拆解](../../projects/index.md)，一个项目一个目录：`index.md` 先说领域，再从这个领域最简单的做法出发按功能线写「具体问题 → 功能」，只写现状、不记小 bug；每条功能线一页细讲，能跑就实跑，每一步贴源码模版和跑出来的效果。怎么读、怎么写照[细讲项目](../project-research/dissect.md)：入口页按论文骨架排（摘要、关键词、术语、引言、局限、结论），功能线是引言的小节；读的哪个 commit、实验设置和脚本写进[维护](../../maintenance/index.md#projects)。活例：[梨园 Liyuan](../../projects/liyuan/index.md)。只照[粗讲项目](../project-research/gist.md)讲了几段的，目录里只放一页 `index.md`，不套论文骨架，commit 写进脚注 —— 活例：[Teable](../../projects/teable/index.md)
 7. 其余能独立阅读的复盘、观点和方法整理 → [文章](../../posts/index.md)
 
-- 能用在任意成品上的方法归 skill，只做一种成品的做法写在 Gallery 那页 —— [花卉动态生长海报](../../gallery/video/flower-growth-poster.md)的五步只做这一种海报，写在成品页；[图片提示词反推 · 七维拆解](../collab/image-prompt-reverse/seven-dimensions/index.md)是 skill，它整理的合集进了 [Gallery](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)，两边互链
+- 能用在任意成品上的方法归 skill，只做一种成品的做法写在 Gallery 那页 —— [花卉动态生长海报](../../gallery/video/flower-growth-poster.md)的五步只做这一种海报，写在成品页；[图片提示词反推 · 七维拆解](../image-prompt-reverse/seven-dimensions/index.md)是 skill，它整理的合集进了 [Gallery](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)，两边互链
 - 课程是题、笔记是答卷：同名文件，答完才从 `courses/` 归档进 `notes/`
 - 文章和 skill 共生、单向链：复盘归文章，复盘里沉淀出的可复用手册归 skill；文章链到 skill，skill 不链回文章讲原理、背景和实现 —— skill 是给 AI 照着做的，为什么这样做它用不上。拿文章当写法活例、指向文章板块的不算。活例：[动画 PPT 复盘](../../posts/animated-ppt/index.md)链到它的[工程手册](../writing/deck.md)，手册不链回来
 - 归属变了就把文件真的搬过去，按下一节「挪文件」办
@@ -37,7 +37,7 @@ copy_source: true
 
 - **挪文件不留存根页**：要保住旧 URL 就别挪；挪了就删原文件、站内引用一并改，`mkdocs.yml` 的 `redirects` 加一行兜站外书签（只管 HTML，旧 `.md` 地址照样 404）。存根页没人链、不进 nav，留着只会逼 check-links 开豁免口子
 - **引外部一手资料三步**：① 真身存档进 `assets/`，注明出处和获取日期，正文用 `??? abstract` 折叠 + `--8<--` 展示；② 正文用 `>` 摘关键原句；③ 每处引用跟自己的分析。活跃开源仓库、关键契约已经消化成自己的话的，可以用钉 commit 的 GitHub 永链代替存档 —— 活例：[Dashboard](../dashboard/index.md) 的蓝本吸收
-- **正文链接只指站内，外部来源进脚注**：正文留 `[^名]`，URL 和读取日期写进文末脚注 —— 活例：[对象存储部署](../../posts/wiki/cos-deploy/index.md)
+- **正文链接只指站内，外部来源进脚注**：正文留 `[^名]`，URL 和读取日期写进文末脚注 —— 活例：[对象存储部署](../../posts/wiki/cos-deploy/index.md)。收藏夹除外：条目本身就是外链，直接写在条目上
 - **别人的图和视频直接收原件**：本 wiki 自己看、不商用，忠实记录比避嫌要紧，不为避嫌改成自己重新生成；作者和出处写进维护记录或脚注 —— 活例：[二次元平面设计风格](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)的 23 张配图原样存档
 - **收录外部仓库只取核心文件**：挑对理解主题真正关键的几个进 `assets/`，其余钉 commit 永链。项目拆解的源码存档 `assets/<名>-src/` 只存页面 `--8<--` 引到的文件，上游的设计文档、README 不整篇嵌，摘句加永链脚注；没人引的文件 check-links 会拦 —— 活例：[梨园](../../projects/liyuan/index.md)的 `liyuan-src/`。吸纳来的 skill 例外，要收齐才能跑，见 [收纳 skill](skill.md)
 - **代码即引用**：展示仓库里的文件用 `--8<--` 引真身，不复制粘贴；路径先相对 `docs/`、再相对仓库根（`skills/.../x.css`、`mkdocs.yml`）。完整文件不单独成页，在讲它的页面文末 `??? abstract` 折叠引用

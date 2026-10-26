@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/references/storyboard-format.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # STORYBOARD.md 格式 —— frame → group
 
 `STORYBOARD.md` 是用户在 Step 3 批准的那一份可供审阅的计划，也是每个 frame-worker 在 Step 4 遵循的**说明书**。它是**分层的**：每个 **frame** 一个块，写成一个 `## Frame N — <frame_id>` 标题（解析器识别的是 `Frame`）。**一个 frame = 一个场景 = 一个 composition 文件。** 每个 frame 块内部是它的 **group**（处理方式的单位）。组装器读取 frame 这一层（`duration` → `data-start`、`src`）；worker 读取它自己的那个 frame 块。一个 frame 的 **composition id = 它的 `src` 文件主名**（`compositions/frames/01-f1.html` → `01-f1`），worker 把它用作 `data-composition-id` 和 `window.__timelines` 的键。

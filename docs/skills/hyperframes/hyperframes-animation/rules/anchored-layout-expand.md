@@ -5,7 +5,6 @@ description: >
 metadata:
   tags: expand, collapse, anchored, dropdown, menu, accordion, panel, reflow, push, mask, counter-scale, layout
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/anchored-layout-expand.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # 锚定布局展开
 

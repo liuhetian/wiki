@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/launch-video-kit.md -->
 # 发布套件：做出你产品的发布片
 
 anidoodle 自己的发布片就是用这些零件做成的，它们在 `engine/src/canvas-core/` 里，任何产品都能用。它们所服务的规则写在 [launch-video.md](launch-video.md)。

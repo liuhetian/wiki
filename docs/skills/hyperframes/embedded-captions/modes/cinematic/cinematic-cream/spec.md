@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/modes/cinematic/cinematic-cream/spec.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # cinematic-cream —— 规范
 
 权威规范在 [template.html](template.html) 的头部注释里（只讲 DNA：哪些是 LOCKED（锁定）、哪些是 OPEN（开放），LAYOUT/planes 契约，READING ORDER（阅读顺序）+ hand-off（交接），hero 尺寸）。编写 plan.json 之前先读那段头部注释。简要契约：

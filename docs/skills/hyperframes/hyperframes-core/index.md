@@ -3,7 +3,6 @@ name: hyperframes-core
 description: >
   HyperFrames 的 composition 契约 —— 构建一个可渲染的项目。用于 composition 结构、`data-*` 计时属性、`class="clip"`、track、sub-composition、变量、由框架掌管的媒体播放、确定性渲染规则以及校验。编写 composition HTML 之前先读它。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新类命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装的则沿用下面的更新说明。
 

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/modes/cinematic/_archive/champion/spec.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 模板：champion
 
 **外观：** 播客 / 访谈，偏上的侧栏，intro→phrase→emph 一拍拍递进，最终落到一个横穿主体身体、位于画面正中的 CROWN（冠冕）。「Wimbledon Champion」那种能量。

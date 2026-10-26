@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/story-spine.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 故事主干 —— 价值优先的叙事准则
 
 适用于有旁白、由故事驱动的创作工作流 —— `/product-launch-video`、`/pr-to-video`、`/faceless-explainer`，以及作品要讲一个故事时的 `/general-video`。它**不**适用于 `/music-to-video`（音轨驱动弧线）、`/motion-graphics`（没有旁白 —— 运动本身就是信息）、`/embedded-captions` 和 `/talking-head-recut`（原片的故事已经定了），也不适用于 `/slideshow`（故事归演讲者掌控）。不要把这些规则强加给被豁免的工作流。

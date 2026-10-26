@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/paintedOil.md -->
 # 布面油画
 
 模块：`engine/src/canvas-core/paintedOil.ts`（工具集：`paintedOilKit.ts`，过程运行器取自 `sumiEKit.ts`）。主画面：窗边的两只梨和一只铜壶（窗户刚好在画外，左侧）。

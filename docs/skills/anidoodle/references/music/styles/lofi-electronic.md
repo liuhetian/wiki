@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/styles/lofi-electronic.md -->
 # 风格：lo-fi 电子（放松、轻快、干净）
 
 > 这是一套词汇，不是一首歌。数据是 `engine/src/canvas-core/music/vocab.ts` 里的 `VOCAB.lofiElectronic`（打印出来：`node tools/music.mjs vocab lofiElectronic`）。音符由你照 [../compose.md](../compose.md) 来写。我们的发布片就是用这个风格配的乐（`launchLofi3`）。那份配乐是我们的，已收进新颖度语料库（novelty corpus）。绝不重用它的和弦进行、hook、节奏、鼓或曲式。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/frame-worker-core.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Frame worker —— 核心契约（各叙事类视频工作流共用）
 
 每个 frame worker 角色中与工作流无关的那一半。每个工作流的帧包构建器（`scripts/frame-packets.mjs`）把本文件拼在该工作流的 `sub-agents/frame-worker.md`（即**增量部分**）前面，组成 `.hyperframes/frame-packets/_role.md` —— worker 把这两部分当作一个角色来读。编辑指引：适用于任何 frame worker 的规则写在这里，只写一次；某个工作流专属的规则写在该工作流的增量部分里。（`music-to-video` 有自己的 composition 模型，不使用本契约。）

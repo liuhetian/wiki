@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/pr-to-video/references/story-design.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 故事设计 —— PR → 叙事
 
 在 Step 3 用这份参考来为一支 **PR-to-video** 写 `STORYBOARD.md` 和 `SCRIPT.md` —— 把一次代码变更（diff、commit、文件、+/− 统计，以及背后的人）变成一支讲解视频。这里**没有网站，也没有抓取到的素材**；PR 已在 Step 1 读入到 `capture/extracted/`。

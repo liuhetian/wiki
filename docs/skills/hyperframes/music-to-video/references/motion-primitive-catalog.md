@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/references/motion-primitive-catalog.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 运动基本元素 catalog —— 自由组合菜单
 
 原子层：一个锚点 → 一个微动作。当没有模板适合某个 group 时，就从这里点名基本元素来自由组合。浏览 **锚点** + **最佳时长** + **作用**，然后挑出能撑起这个 group 的最小集合。

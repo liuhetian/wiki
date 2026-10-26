@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-audio/references/diagnosis.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 诊断你听不到的音频
 
 `SKILL.md` 里的症状表是从"听起来发轰"开始的。这预设了已经有人听过并且这么说了。如果别人只丢给你一个文件和一句"修一下"，你手里没有这样一句描述——而且你听不到。本文讲的就是如何得到这样一句描述。

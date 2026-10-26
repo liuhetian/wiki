@@ -1,5 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/formats.md -->
-
 # 格式：你在做的是什么，以及每一种怎么交付
 
 一切都是一个 `Film`：meta、铺满 `[0, duration)` 的镜头，以及可选的配乐。静帧是一部只有一帧长的影片，所以每个工具都适用于每一种格式。按你需要的种类生成脚手架：

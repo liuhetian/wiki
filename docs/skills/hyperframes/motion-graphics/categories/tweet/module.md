@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/categories/tweet/module.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # tweet —— category 模块（搜索驱动）
 
 **搜索一条推文 → 给推文卡片做动画。** 以一条真实帖子为依据（RWA）。约 4–8 秒。

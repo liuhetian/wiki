@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules-index.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 规则索引
 
 原子级的运动配方。每一条都放在 `rules/<name>.md`。每个场景用一条暂停的 timeline 组合 2–4 条。

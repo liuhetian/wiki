@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/categories/asset-fusion/module.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # asset-fusion —— category 模块（搜索驱动 · 全新的 IP）
 
 **一个真实素材的几何形状 _变成_ 图表本身** —— RWA 叙事内融合（吸管变成量表；一杯液体变成饼图）。任何 catalog 里都没有；这是真正全新的能力。约 5–8 秒。

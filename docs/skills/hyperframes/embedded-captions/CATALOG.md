@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/CATALOG.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 目录（THE CATALOG）—— 一个前端，背后三个引擎
 
 这是本 skill 唯一的选择界面。**用户从这张表里选一个风格（IDENTITY）；其他一切（引擎、编译器、编写文件）都通过查表得出 —— 绝不要问用户（或问你自己）「Standard 还是 Cinematic 还是 Theme？」** 那些是后端名称；一个产品即使有好几个引擎，也只有一种 UX。

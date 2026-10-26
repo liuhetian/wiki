@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/categories/webpage/module.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # webpage —— category 模块（搜索驱动）
 
 **给一个网页 / 链接做动画**（"网站动画"这个用例）。搜索驱动：用户给出或点名一个 URL → 拉取 / 抓取它 → 给它做动画（滚动浏览、UI 显现、光标演示、区域标注）。它不同于给一个现有的 _视频文件_ 加字幕（那是 `/embedded-captions`），也不同于一支 _关于_ 某个网站的有旁白视频（那是 `/product-launch-video` 的网站导览需求）；这里的来源是一个 _网页_，输出是一段短小、无旁白的高亮镜头。

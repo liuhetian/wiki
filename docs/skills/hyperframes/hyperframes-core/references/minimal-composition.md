@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/references/minimal-composition.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 最小 Composition
 
 最小的可渲染 HyperFrames composition —— 一个独立式（顶层）根元素，带一个 clip 和一个 tween：

@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/theory/harmony.md -->
 # 和声：功能、声部进行、色彩、张力
 
 罗马数字是相对于调而言的（大调中是 `I ii iii IV V vi vii°`，小调中是 `i ii° III iv v VI VII`，`b` = 借用或降低）。这些是惯用进行，也就是词汇。一个多小节的和弦进行连同它的节奏和律动就是一首作品了，新颖度检查查的正是这个。`craft` 在 **harmony** 那一行检测本页的内容。

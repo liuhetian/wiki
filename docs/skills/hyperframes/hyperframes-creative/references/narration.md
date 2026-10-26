@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/narration.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 旁白与脚本
 
 如何为视频 composition 写旁白脚本。composition 包含旁白或 TTS 时阅读。

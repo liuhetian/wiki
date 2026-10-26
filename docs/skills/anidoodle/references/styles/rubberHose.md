@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/rubberHose.md -->
 # 橡皮管动画（rubber hose，1930 年代动画工作室卡通）
 
 模块：`engine/src/canvas-core/rubberHose.ts`（+ `rubberHoseKit.ts`）。主画面：厨房台面上一只咖啡壶正跳到一个舞步的中间，蒸汽打着卷。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/agents/finalize.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 定稿 / 修复子 agent
 
 执行快照 QA 和一轮就地修复。只有当 Step 5 的 `lint`、`check` 或快照审查报告了缺陷时才派发。最终批准和渲染归编排者管；本 agent 绝不渲染。

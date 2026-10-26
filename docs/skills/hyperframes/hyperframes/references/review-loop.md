@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/review-loop.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 评审循环 —— 计划、草图、构建
 
 `storyboard: yes` 的运行如何一轮一轮地提升保真度：计划以文字形式在聊天中评审，布局以用户在浏览器里打开的草图版 `storyboard.html` 评审，成品以组装好的视频评审。协作模式在每个检查点等待。自主模式发出同样的检查点总结然后继续，在渲染前只保留恰好一个问题。

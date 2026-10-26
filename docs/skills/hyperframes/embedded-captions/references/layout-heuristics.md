@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/layout-heuristics.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 布局启发式
 
 如何在 plan.json 里选择 `wall_position` / `crown_position`。

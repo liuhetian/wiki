@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/scratchboard.md -->
 # 刮画板 · `scratchboard.ts`
 
 **媒介的物理形态。** 一块白色瓷土板，上面覆着一层黑色墨汁。什么都不添加：每一道笔触都是用钢刀或刮笔把墨刮掉，所以每一道笔触都是黑底上的白，画面是通过去掉暗色找出来的。一刀在刀刃切入的地方最宽，随着抬刀逐渐变细；瓷土在刀口边缘崩掉一丝（在一份干净的刮痕副本上叠一层 `draftTooth` 贴图）。

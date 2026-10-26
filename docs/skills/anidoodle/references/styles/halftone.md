@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/halftone.md -->
 # 新闻纸半色调（`halftone.ts`、`halftoneScene.ts`、`halftoneKit.ts`）
 
 **媒介。** 一台卷筒胶印报纸印刷机。照片被一张接触网屏打散成 AM 半色调：网点落在固定网格上，由它们的**面积**承载色调。只有两块印版：黑色在 45 度网屏上，一种暖橙专色在它自己 15 度的网屏上（相差 30 度，所以形成玫瑰斑，永远不出龟纹）。油性墨印在未漂白的机械木浆新闻纸上。

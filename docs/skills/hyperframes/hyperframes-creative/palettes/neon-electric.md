@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/palettes/neon-electric.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 霓虹 / 电光（Neon / Electric）
 
 游戏、科技、夜生活、Z 世代内容。

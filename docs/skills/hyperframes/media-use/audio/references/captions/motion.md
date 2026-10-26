@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/captions/motion.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 动态字幕技法
 
 你来到这里，是因为 SKILL.md 要求你在写动画代码之前先读这个文件。根据你从转写稿里判断出的能量级别，从下表中挑选技法组合，然后用标准的 GSAP 模式实现。

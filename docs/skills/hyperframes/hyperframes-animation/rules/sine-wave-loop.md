@@ -5,7 +5,6 @@ description: >
 metadata:
   tags: idle, jitter, bounded-ambient, sine, trigonometry, low-amplitude, post-entry
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/rules/sine-wave-loop.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Sine Wave Loop（含蓄抖动 / 有界环境运动）
 

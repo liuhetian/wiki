@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/brief-contract.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Brief 契约
 
 意图层（`/hyperframes` → `references/intent-interview.md`）只问一次创作问题。执行的工作流把确认后的结果写进 `BRIEF.md`，不再重问这些问题。本契约定义规范的运行形态字段、共享的 brief 字段和提问规则。各路由专属的选项在 `/hyperframes` → `references/routes/<workflow>.md` 里。

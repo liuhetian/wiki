@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/INDEX.md -->
 # 画风索引
 
 本页原由 `node tools/registry.mjs`（在 `engine/` 下运行）从 `engine/src/canvas-core/` 里的 `export const STYLE` 块加上 `engine/styles.legacy.json` 生成，这里是中译并加了「配方」列；`registry.mjs` 在本站只更新 `engine/styles.gen.json`，新增画风时手工在本页加一行。

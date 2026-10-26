@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/isometric.md -->
 # 等轴剖视 · `isometric.ts`
 
 **媒介，从物理上说。** 一幅画在真正 2:1 等轴（二等角，dimetric）网格上的扁平矢量插画，按等轴插画师在钢笔工具软件里的工作方式搭建。世界坐标 x -> 屏幕 (u, u/2)，y -> (-u, u/2)，z -> (0, -1.2247u)：每条水平棱都是一条 2:1 的线，每条竖直棱都是竖直的，立方体看起来就是立方体（`isometricKit.ts` 里的 `Iso`）。

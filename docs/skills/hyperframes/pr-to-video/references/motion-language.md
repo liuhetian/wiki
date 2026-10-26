@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/pr-to-video/references/motion-language.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 动效语言 —— 运动词汇 + 动效准则 + seek 安全的核心
 
 > **Step 4（视觉设计）** 的动效层。当你写一帧的**带时间码的镜头序列**时，每个场景的运动都**从下面的词汇里内联选名** —— 这是一套具名的色板，收录了黄金语料实际用到的运动。每个运动都附有它在本 skill 本地 `../../hyperframes-animation/rules/` 里的**支撑 rule id**；引用这个 id，这样当 **frame worker** 在 Step 5 实现它时，这个运动就能解析到一份真实的配方（worker 会读 `../../hyperframes-animation/rules/<id>.md` 里的 rule 正文 —— 它复现这个运动，而不是凭名字去猜）。你按**角色 / 运动名**来命名动效，绝不写原始的 GSAP 曲线、毫秒数或错开公式 —— 曲线由 worker 来对应。帧与帧之间的**转场不归你管**：故事指定 `transition_in`，harness 注入它；被注入的那个转场**就是**这一帧的退场。至于 worker 在一帧**内部**构建的切换（场景内替换、场景到场景的接缝），见 `cut-catalog.md` 里的目录。

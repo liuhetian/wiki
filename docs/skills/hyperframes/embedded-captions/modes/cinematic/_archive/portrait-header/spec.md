@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/modes/cinematic/_archive/portrait-header/spec.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 模板：portrait-header
 
 **外观：** 9:16 竖屏口播，字幕放在画面顶部、主体头顶上方的一条水平横条里。镜头拍到主体腰部或更低时，可以在底部加一个可选的 crown。

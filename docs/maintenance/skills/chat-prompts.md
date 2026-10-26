@@ -4,7 +4,7 @@ description: "对话提示词（chat-prompts）的维护记录：17 段取自 pr
 
 # 对话提示词（chat-prompts）
 
-[对话提示词](../../skills/collab/chat-prompts/index.md)的维护记录。18 段 prompt 来自两处；粗讲项目、细讲项目原来也在这里，2026-10-20 挪成了顶层的[调研项目](project-research.md)。
+[对话提示词](../../skills/chat-prompts/index.md)的维护记录。18 段 prompt 来自两处；粗讲项目、细讲项目原来也在这里，2026-10-20 挪成了顶层的[调研项目](project-research.md)。
 
 ## prompt-cards.cyanfish.site { #prompt-cards }
 
@@ -38,10 +38,10 @@ description: "对话提示词（chat-prompts）的维护记录：17 段取自 pr
 
 ## 小红书《让AI说人话》 { #xhs-ste }
 
-[说人话（80% STE）](../../skills/collab/chat-prompts/ste-plain.md)取自这里。
+[说人话（80% STE）](../../skills/chat-prompts/ste-plain.md)取自这里。
 
 - **上游**：小红书笔记《让AI说人话，1.3万人收藏了这招》[^xhs]，作者 Krypto说AI｜AI Builder，2026-10-02 发布，没写许可证。笔记转述 Karpathy 的一条长推：照飞机维修手册的写作规范 ASD-STE100 让 AI 写。笔记里三段中文 prompt 是作者把规范译成中文要求写的，不是 Karpathy 的原话
-- **存档**：标题、正文存在 [`assets/xhs-6abf6887/post.md`](../../skills/collab/chat-prompts/assets/xhs-6abf6887/post.md)，末尾按顺序贴 9 张图；同目录 `01`–`09` 是九张原图，1080×1440。2026-10-17 用 agent-io 的 [`xiaohongshu.py`](../../skills/agent-io/scripts/xiaohongshu.py)（当时还叫 `share_link.py`）抓的，背后是 TikHub 的 `xiaohongshu/app_v2/get_image_note_detail`
+- **存档**：标题、正文存在 [`assets/xhs-6abf6887/post.md`](../../skills/chat-prompts/assets/xhs-6abf6887/post.md)，末尾按顺序贴 9 张图；同目录 `01`–`09` 是九张原图，1080×1440。2026-10-17 用 agent-io 的 [`xiaohongshu.py`](../../skills/agent-io/scripts/xiaohongshu.py)（当时还叫 `share_link.py`）抓的，背后是 TikHub 的 `xiaohongshu/app_v2/get_image_note_detail`
     - 作者小红书号 11311079803；发布时间 2026-10-02 16:17 是接口给的，第 1 张图上印的是 21:00；抓取时赞 351、收藏 645、评论 28、分享 92
     - 正文一字没改，原文里只有制表符的空行也照留；图片是 CDN 给的原尺寸，链接里的 `format/webp` 换成了 `format/jpg`，文件名按原顺序编号
     - 评论区没有抓

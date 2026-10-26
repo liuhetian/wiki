@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/routes/faceless-explainer.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 路由：faceless-explainer
 
 - **输入：** 要讲解的一个话题、一篇文章、一份笔记或任意文字，没有要推销的产品，也没有要抓取的网站。

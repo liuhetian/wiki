@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-registry/references/wiring-components.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 接入 component
 
 component 是效果片段——由 HTML、CSS 以及可选的 JS 组成，你要把它们直接合并进一个已有的 composition。和 block 不同，component 没有独立的 timeline；它们参与宿主 composition 的 timeline。

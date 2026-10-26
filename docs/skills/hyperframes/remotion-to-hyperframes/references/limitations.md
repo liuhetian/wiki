@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/references/limitations.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 翻译的局限
 
 本 skill 明确无法翻译的内容，与阻断项清单（由 `lint_source.py` 强制执行）分开列出。这些是*已知的*缺口 —— 在翻译它们所在的 composition 时，把它们作为翻译说明呈现给用户。

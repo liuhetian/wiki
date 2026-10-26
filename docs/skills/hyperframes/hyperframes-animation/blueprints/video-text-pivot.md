@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/video-text-pivot.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # video-text-pivot —— 视频 → 文字转向
 
 **intent / 意图**：一段产品视频占据中央、抓住注意力，然后滑到一边，把它的分量交给在它腾出的空间里出现的一个 hero 数据，接着两者都清场，动态文字打进中央 —— 强调词承载起原先由视频承载的含义 —— 最后由一个渐变胶囊封口。整条弧线是「展示 → 让位 → 转向 → 盖章」，每一次交接都把一个退场和一个同锚点的入场配成一对，这样读起来是两拍，而不是四拍。

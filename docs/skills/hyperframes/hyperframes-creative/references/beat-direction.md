@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/beat-direction.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 段落节拍导演
 
 如何规划和导演多场景 composition 中的单个场景（段落节拍，beat）。写任何多场景视频之前都要先读。

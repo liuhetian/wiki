@@ -46,7 +46,7 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 - [FastAPI 后端](skills/fastapi/index.md) —— 依赖注入、SQLModel 分层建模、按需参考的一整套后端约定
 - [Dashboard 后台](skills/dashboard/index.md) —— 形状目录 + 每形状一个可玩的活 demo
 - [写作口味](skills/writing/index.md) —— 报纸版 HTML、滚动 deck、去 AI 味、檄文
-- [和 AI 协作](skills/collab/index.md) —— 初始化项目、盘问式协作、对话提示词、图片提示词反推
+- [和 AI 协作的几个 skill](skills/index.md#collab) —— 初始化项目、盘问我、带文档盘问、对话提示词，各自独立
 
 ## Gallery
 
@@ -57,6 +57,7 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 - [视频](gallery/video/index.md) —— 视频成品配制作方法：本站自己做的[花卉动态生长海报](gallery/video/flower-growth-poster.md)，收录的[彩色手绘三维穿梭视频](gallery/video/collected/gallery-parallax-ink.md)，做法都写在成品下面
 - [人设](gallery/personas/index.md) —— 角色设定一人一页：[SEOA｜徐星澄](gallery/personas/seoa.md)，24 岁，主舞兼创作型歌手
 - 音频区还没有收录
+- [收藏夹 · 网站](bookmarks/websites.md) —— 好用的工具站、值得常看的博客这类整站，只存链接、每条写清为什么收；已收 3 个：HeroSMS（接码）、zhanghaoya.com（买号）、guatizi.com（梯子）
 
 ## 项目拆解
 

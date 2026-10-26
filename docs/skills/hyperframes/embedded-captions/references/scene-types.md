@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/scene-types.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 场景类型 —— 选对模板
 
 三个模板只在一件事上有区别：**文字在物理上坐落在什么表面上（如果有的话）**。要通过读场景来挑，而不是看类型标签。

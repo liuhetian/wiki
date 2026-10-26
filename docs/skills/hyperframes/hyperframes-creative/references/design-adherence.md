@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/design-adherence.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 设计遵循度
 
 编写完成后的验证：确认 composition 遵循了设计规范。在搭建完之后、提供预览之前运行。

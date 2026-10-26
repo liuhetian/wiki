@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/routes/motion-graphics.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 路由：motion-graphics
 
 - **输入：** 一个以设计为主导的短单元，通常不到 10 秒，没有旁白，动效本身就是信息：动态文字、数据 / count-up、图表亮点、logo sting、动画标题、lower-third、地图、推文 / 新闻标题 / 页面高亮，或素材融合镜头。

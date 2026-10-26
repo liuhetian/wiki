@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/palettes/bold-energetic.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 大胆 / 活力（Bold / Energetic）
 
 产品发布、社交媒体、公告、高能量内容。

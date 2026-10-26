@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/storytelling.md -->
 # 故事才是重点
 
 > 这些信条是制作 MECHANICAL LEPIDOPTERA 时挣来的，那部影片就是 [example/](../example/index.md) 里的完整范例。下面每条规矩都在那部片子上付过代价；凡是导演自己犯的错，都照实写明，因为带着伤疤的规矩，人们才会守。

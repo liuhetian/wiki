@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/spatial-pan-stations.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # spatial-pan-stations —— 空间平移 / 站点
 
 **intent / 意图**：在一张超大画布上预先摆好一串带标签的站点，然后用单个虚拟镜头穿行其间 —— 反复的横向 / 斜向平移，依次把每个站点移到画面中央，并在每一站揭示一个标注，最后落在终点站上停住。

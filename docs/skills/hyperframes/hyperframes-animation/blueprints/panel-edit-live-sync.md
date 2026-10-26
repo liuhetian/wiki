@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/panel-edit-live-sync.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # panel-edit-live-sync —— 面板编辑，实时同步
 
 **intent**（意图）：一个二分式舞台 —— 一个检查器/编辑器**面板与一个目标界面绑定** —— 光标（或文字插入符）持续操作一个控件（数值拖动、单位/代码生成下拉菜单的选择、旋钮或 easing 手柄拖拽、行内重新输入），与之耦合的界面**实时、在同一拍里**更新：数值被拖动时页面按钮跟着旋转，预览图标随每一次按键改变尺寸，十六进制读数映出每一次悬停，代码块在选中的那一刻完成转换。运动本身就是因果 —— 一个手势，两个界面在同一帧里变化。摄像机的职责是让这一对同框可见，而不是追逐。

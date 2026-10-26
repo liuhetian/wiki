@@ -1,5 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/anatomy.md -->
-
 # 用代码画人体解剖
 
 > 先结构，后笔触：`butterfly/alive/anatomy.ts` 用在翅膀上的规则，用到一个人身上。从轮廓画出来的人，是人的路标图标。用骨架、体块和一台摄像机搭出来的人，能白白得到透视缩短、遮挡、接触和平衡，而且每一项都能检查。代码：`engine/src/canvas-core/character/human/`。

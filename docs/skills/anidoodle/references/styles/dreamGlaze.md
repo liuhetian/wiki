@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/dreamGlaze.md -->
 # 梦境罩染（手绘的梦）· `dreamGlazeKit.ts` + `dreamGlaze.ts`
 
 **媒介，从物理上说。** 用树脂稀释的油彩，用一支很小的软笔在光滑的白底上薄薄地一层层罩染。表面像珐琅一样平：没有鬃痕，没有颜料脊，看不见笔触。这是「手绘的梦境照片」的手笔：把一个不可能的场景画得像静物一样细致。

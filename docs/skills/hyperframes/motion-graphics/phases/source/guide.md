@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/phases/source/guide.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # source 阶段 —— 获取素材（素材优先）
 
 **只有当 `shot-plan.json.asset_needs` 非空时**才运行（形式类 category 永远不会走到这里）。把每一个需要的素材获取下来 → 一个**冻结的项目本地路径** + 一份台账（`assets/index.md`）。使用 `/media-use`（抓取 / 素材准备），并且**当安装了外部素材搜索 skill（例如 media-use）时**，使用它的 `resolve` 步骤。如果没有这样的搜索能力，就**降级为无素材**（见下文）。

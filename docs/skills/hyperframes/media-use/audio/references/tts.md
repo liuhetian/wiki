@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/tts.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 文字转语音
 
 `npx hyperframes tts` 用 Kokoro 在本地合成。它不接受 `--provider` 或 `--words` 参数。如果要 HeyGen 音频外加逐词时间戳，用下面随附的 `heygen-tts.mjs` 脚本。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/cta-morph-press.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # cta-morph-press —— CTA 变形与按压
 
 **intent**（意图）：一个静止的品牌标志在同一个屏幕中心凝缩成一个更小、更亮的 CTA，然后一个光标从画外到来，在它上面落下一次像人瞄准过的点击。观众的视线被引导着从"这就是我们"走到"而这就是你要做的"。变形和点击是两个头条段落节拍。

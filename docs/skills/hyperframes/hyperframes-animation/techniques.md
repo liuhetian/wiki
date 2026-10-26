@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/techniques.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 视觉技法参考
 
 来自 HyperFrames 线上视频、经过验证的 13 种技法。在你的分镜和 composition 里用上它们，做出视觉丰富、专业的成片。每种技法都附有一个可以改造的最小代码模式。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/palettes/dark-premium.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 暗色 / 高级（Dark / Premium）
 
 科技、金融、奢侈品、电影感内容。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/transitions/css-light.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 ## 光效（Light）
 
 ### 漏光（Light Leak）

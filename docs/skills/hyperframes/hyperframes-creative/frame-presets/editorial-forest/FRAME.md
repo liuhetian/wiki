@@ -89,7 +89,6 @@ components:
     rule: "2px solid (green on cream / pink on green / green-deep on pink)"
     description: "The only separator. Never 1px, never 3px+."
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/frame-presets/editorial-forest/FRAME.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # Editorial Forest — Frame (video / frame layer)
 

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/modes/cinematic/_archive/memory-wall/spec.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 模板：memory-wall
 
 **外观：** 内省式独白，斜体的诗句在后墙上层层叠起，高潮用右对齐的瀑布式排列。Sam Harris / Pico Iyer 那一路。

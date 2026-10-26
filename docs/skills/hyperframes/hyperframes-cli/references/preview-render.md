@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-cli/references/preview-render.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # preview、play、render、publish
 
 提供服务、渲染与分享的命令。

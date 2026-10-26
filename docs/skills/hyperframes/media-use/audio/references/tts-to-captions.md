@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/tts-to-captions.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # TTS → 字幕
 
 没有录制好的旁白时，生成一段，并获取逐词的字幕时间。根据所用的 TTS 服务商，有两条路径：

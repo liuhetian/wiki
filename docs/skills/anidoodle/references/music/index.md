@@ -2,7 +2,6 @@
 copy_source: true
 ---
 
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/README.md -->
 # 音乐：以数据作曲，交给引擎演奏，经过测量，最后让人听一次
 
 anidoodle 里的每一份配乐都以数据写成，每一个声音都是引擎自己的：你写音符，引擎演奏。你听不见自己做出来的东西，所以每个选择都是一个数字，每个数字都要测量，并且在任何东西交付之前，都要让一个人听 8 秒。

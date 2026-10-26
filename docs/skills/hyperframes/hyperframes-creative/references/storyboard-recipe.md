@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/storyboard-recipe.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 分镜配方 —— 像发布影片那样规划一支视频
 
 凡是运行要基于分镜做规划的地方都适用（`brief-contract.md` 里的 `storyboard: yes`）。本文件掌管**如何制作分镜**：里面放什么，以及用户审阅的那一个 HTML 页面。`review-loop.md` 掌管什么时候问用户；`storyboard-format.md` 掌管脚本解析的 `STORYBOARD.md` 文件；`story-spine.md` 掌管故事的顺序。这套方法提炼自已发布的几支发布影片的分镜（一个页头、一条有名字的主干、一张节拍清单、一张样张、一轮审阅）以及它们的交接文档对分镜的描述，外加几条规则（停住的帧、幻灯片 / 屏保禁令、字幕避让区）—— 这几条即使在某支发布影片里没有出现，也在更广泛的分镜语料里一贯出现。这里没有任何东西是 Studio 的功能：分镜由 agent 写，用户在对话里和浏览器里阅读。

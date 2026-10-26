@@ -103,6 +103,28 @@
   background-color: var(--paper-dark);
   color: var(--ink);
 }
+/* 组名：navigation.sections 把每个板块的第二层渲染成不折叠的组标题，nav 里那层只放组名、点不动。
+   黑墨 800 字重、字号同条目，名字正下方紧贴一道跟字一样长的 2px 绿线，引着下面的条目 ——
+   读起来是组名、不是一篇文章。线用绿不用黑：黑色下划线是链接的样子，反倒像能点。
+   线画在文字 span 上：Zensical 给它 flex-grow:1 撑满整行，这里归零，线才只有字那么长。
+   只管宽屏 —— 窄于 1220px 时 sections 不生效，组名照旧是点开的抽屉项。
+   特异度：属性 + 4 类，压过 Zensical 的 .md-nav__item--section>.md-nav__link、.md-nav__link .md-ellipsis
+   （都是 2 类）和本节开头那条 */
+@media screen and (min-width: 76.25em) {
+  .md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item--section > .md-nav__link {
+    color: var(--ink);
+    font-weight: 800;
+    letter-spacing: 0;
+  }
+  .md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item--section > .md-nav__link .md-ellipsis {
+    flex-grow: 0;
+    border-bottom: 2px solid var(--coral);
+    padding-bottom: .1rem;
+  }
+  .md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item--section + .md-nav__item--section {
+    margin-top: .8rem;
+  }
+}
 
 /* ================================================================
    3. 右侧 TOC：一条 1px 竖线当轨道，当前项在轨道上换成 2px 绿
@@ -896,7 +918,7 @@
 }
 
 /* ================================================================
-   11. 填空控件（活例：skills/collab/chat-prompts/plain-talk.md）
+   11. 填空控件（活例：skills/chat-prompts/plain-talk.md）
    正文里手写的 <input> / <textarea> / <select>，读者就地填，复制按钮把填的值换进源文件
    （vendor/md-copy.js）。单选、复选不算填空，不碰 —— 选项卡（tabbed）底下就是隐藏的 radio。
    行内的 input / select 画成纸上的填空横线：只有一条墨线，填过的铺荧光笔底，聚焦时线变 2px 深绿
@@ -959,7 +981,7 @@
 }
 
 /* ================================================================
-   12. 复制时不要的块 .zx-no-copy（活例：skills/collab/grilling.md 页尾、skills/project-research/dissect.md）
+   12. 复制时不要的块 .zx-no-copy（活例：skills/grilling.md 页尾、skills/project-research/dissect.md）
    复制按钮跳过的块：写死的 zx-no-copy（页尾维护记录、只给人看的开关），和条件不成立的分支
    div[data-when]（vendor/md-copy.js 按选择挂上 / 摘掉 zx-no-copy）。都是左边一道虚线、右上方
    「不复制」小字；没选中的分支另外变淡，鼠标移上去恢复。只是提示，不藏、不禁用：块里的控件照常能填。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/routes/remotion-to-hyperframes.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 路由：remotion-to-hyperframes
 
 - **输入：** 已有的 Remotion React 源码，仅当用户明确要求移植、转换或迁移它时。顺带提到 Remotion 不算触发。

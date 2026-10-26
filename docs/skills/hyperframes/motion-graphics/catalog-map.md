@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/catalog-map.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Director → catalog block 对照表（复用优先）
 
 <!-- registry-items: allow=geo-highlight,geo-flow,flag-borders,pin-rollout,stat-motion,data-composition-src -->

@@ -4,7 +4,7 @@ description: "初始化项目（init-project）的维护记录：吸纳自 multi
 
 # 初始化项目（init-project）
 
-[初始化项目](../../skills/collab/init-project.md)的维护记录。
+[初始化项目](../../skills/init-project.md)的维护记录。
 
 - **上游**：multica-ai/andrej-karpathy-skills 的 `skills/karpathy-guidelines/SKILL.md`[^upstream]，作者 Jiayuan Zhang（forrestchang，原仓库 `forrestchang/andrej-karpathy-skills` 已转到 multica-ai），MIT —— 仓库里没有 LICENSE 文件，许可证只写在 SKILL.md 的 frontmatter、`plugin.json` 和 README 里。四条原则是作者据 Karpathy 对 LLM 编码陷阱的观察[^karpathy]归纳的
 - **commit**：钉在 `2c60614`（2026-04-20），2026-10-16 读时仍是最新

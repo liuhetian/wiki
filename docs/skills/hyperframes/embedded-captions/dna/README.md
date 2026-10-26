@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/dna/README.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # DNA registry —— 挑一种视觉语言，而不是挑一个 preset
 
 一套 **DNA** 是一种完整的、经过艺术指导的视觉语言：字体、色板逻辑、动效语法和 hero 编排。它**按场景参数化**，而不是交付一个固定的外观：强调色从这个场景里采样，接触阴影沿着这个场景的光线方向投下，嵌入文字的模糊匹配这个场景的景深，hero 的入场幅度跟随这个词实际说出时的力度（RMS）。

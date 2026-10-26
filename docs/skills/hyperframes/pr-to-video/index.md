@@ -2,7 +2,6 @@
 name: pr-to-video
 description: "把一个 GitHub pull request（PR URL、owner/repo#N，或已 checkout 仓库里的「this PR」）做成代码变更讲解视频 —— 由 diff、commit 和文件构建出的 changelog、功能揭晓、修复讲解或重构走查：输入是一次代码变更，不是网站。不是产品宣传片（/product-launch-video），也不是没有 PR 的主题讲解视频（/faceless-explainer）。拿不准 → /hyperframes。"
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/pr-to-video/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 

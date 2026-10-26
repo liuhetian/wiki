@@ -4,7 +4,7 @@ description: "prompt-cards 生图条目的维护记录：Gallery 里 10 条图�
 
 # prompt-cards 生图条目（prompt-cards.cyanfish.site）
 
-Gallery 里有 10 条图配 prompt 取自 prompt-cards.cyanfish.site[^cyanfish]（「神级 AI 提示词卡牌图鉴」）的内置卡组：9 张配方、1 张词素，连同卡图。卡图就是 prompt 跑出来的效果图，正好是 Gallery「一张图配一段 prompt」的格式，所以按分类追加进 GPT Image 2 图库（[维护记录](gpt-image2.md)）对应页面的末尾，图片放在 `gallery/images/prompt-cards/assets/`。同一站点的 17 段对话 prompt 收成了 skill [对话提示词](../../skills/collab/chat-prompts/index.md)，来源见它的[维护记录](../skills/chat-prompts.md)。
+Gallery 里有 10 条图配 prompt 取自 prompt-cards.cyanfish.site[^cyanfish]（「神级 AI 提示词卡牌图鉴」）的内置卡组：9 张配方、1 张词素，连同卡图。卡图就是 prompt 跑出来的效果图，正好是 Gallery「一张图配一段 prompt」的格式，所以按分类追加进 GPT Image 2 图库（[维护记录](gpt-image2.md)）对应页面的末尾，图片放在 `gallery/images/prompt-cards/assets/`。同一站点的 17 段对话 prompt 收成了 skill [对话提示词](../../skills/chat-prompts/index.md)，来源见它的[维护记录](../skills/chat-prompts.md)。
 
 ## 版本
 
@@ -86,6 +86,6 @@ Gallery 里有 10 条图配 prompt 取自 prompt-cards.cyanfish.site[^cyanfish]�
 
 1. `curl` 首页，看 `<script src>` 里的文件名是否还是 `index-IivKxZ0S.js`；不变就说明没更新
 2. 变了就下载新包，同样截出卡组数组；生图卡按上面的译法同步进 gpt-image2 对应分类页，更新「放在哪」那张表和版本表
-3. 对话类的变化同步进[对话提示词](../../skills/collab/chat-prompts/index.md)，按它维护记录里的 id 对照表比对
+3. 对话类的变化同步进[对话提示词](../../skills/chat-prompts/index.md)，按它维护记录里的 id 对照表比对
 
 [^cyanfish]: [prompt-cards.cyanfish.site](https://prompt-cards.cyanfish.site/)，2026-10-17 读。

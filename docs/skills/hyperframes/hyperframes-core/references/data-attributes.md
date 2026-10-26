@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/references/data-attributes.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Data 属性参考
 
 每个 HyperFrames composition 都使用 `data-*` 属性向框架声明计时和结构。这里是完整的属性表 —— `data-track-index` 背后的规则请搭配 `tracks-and-clips.md` 阅读。

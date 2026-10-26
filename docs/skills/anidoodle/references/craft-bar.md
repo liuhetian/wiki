@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/craft-bar.md -->
 # 手艺及格线
 
 检验标准：一位对作品有自尊心的人类插画师会把它交出去吗，还是说它只是机械的形状拼装？

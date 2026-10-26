@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/agents/builder.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Motion-Graphics Builder
 
 把 `shot-plan.json` 变成一个可渲染的 HyperFrames composition（`compositions/index.html`）。一切都留在 HF 生态内 —— HTML 是唯一事实来源；由一条 **paused** GSAP timeline 承载全部运动；引擎负责 seek 它。各 category 专属的构建规则放在 `categories/<id>/module.md`；本文件是共享契约。

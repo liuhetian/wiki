@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/design-picker.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 设计选择器
 
 两阶段的可视化选择器：先看情绪板（选定一个完整的方向），再逐个类别微调。

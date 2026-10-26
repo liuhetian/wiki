@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/teach-drawing.md -->
 # 教绘画：根据一个请求或某人的图出一堂课
 
 两种请求，一套机器：

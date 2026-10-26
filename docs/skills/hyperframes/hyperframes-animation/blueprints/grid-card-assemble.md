@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/grid-card-assemble.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # grid-card-assemble — 网格 / 卡片组装
 
 **intent**（意图）：N 个条目（方块 / 卡片 / logo / 列表行）以错落级联的方式自行组装成一个网格或纵向列表并保持 —— 一个「看看有多少 / 有谁 / 它能做什么」的段落节拍，一次性罗列出广度；可选的镜头拉远（zoom-OUT）往后拉，揭示组装好的阵列其实位于一个更广阔的整体之中。

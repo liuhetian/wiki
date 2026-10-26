@@ -36,7 +36,7 @@ DeepSeek Harness 官方的 `read` 不读 PDF（`tool-fs` README 写的是 "PDF, 
 
 | 插件 | 钉的 commit | 许可证 | 存档 |
 |---|---|---|---|
-| jiaoqsh/dsh-document[^dsh-document]（帖子 #2746[^discussions-2746]） | `393aad9`（2026-08-16） | MIT，原文 [LICENSE](assets/pdf-upstream/dsh-document/LICENSE) | `src/tool.ts`、`pdf-inspector.ts`、`pdf-worker.ts`、`pages.ts` |
+| jiaoqsh/dsh-document[^dsh-document]（帖子 #2746[^discussions-2746]） | `393aad9`（2026-08-16） | MIT | `src/tool.ts`、`pdf-inspector.ts`、`pdf-worker.ts`、`pages.ts` |
 | vaxilicaihouxian/dsh-pdf-reader[^dsh-pdf-reader]（帖子 #6449[^discussions-6449]） | `0758700`（2026-09-12） | MIT，只在 `package.json` 里声明，上游没有 LICENSE 文件 | `src/pdf-reader.ts` |
 
 抓取日期都是 2026-09-29。上游 README、Office 转换、浏览器阅读视图和测试都没有收，要看原貌请点上面钉了 commit 的链接。

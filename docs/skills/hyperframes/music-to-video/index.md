@@ -2,7 +2,6 @@
 name: music-to-video
 description: "把一条音乐曲目（一个音频文件、一个要从中提取音频的视频，或者根据情绪 brief 生成的曲目）做成一支卡节拍的视频 —— 歌词视频、幻灯片或动态宣传片。音乐驱动全部节奏；用户提供的任何图片 / 视频都会被剪到同一张节拍网格上，而一支完整的视频不需要任何素材。有旁白的作品 → 与输入相匹配的工作流（见 /hyperframes）。不明确 → /hyperframes。"
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在运行安装或更新命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 

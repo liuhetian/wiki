@@ -3,7 +3,6 @@ name: talking-head-recut
 description: >
   给一段现有的口播 / 访谈 / 播客视频加上按时间编排、经过设计的图形 overlay 卡片 —— 动态标题、lower-third、数据标注、引语、侧边面板、画中画 —— 与转写稿同步，画布可选 16:9 / 9:16 / 4:5；原片在下面原样播放。触发词：「图形 overlay」（graphic overlays）、「屏幕图形」（on-screen graphics）、「包装 / 装点我的视频」（package / dress up my video）。不是纯字幕（/embedded-captions）。不明确 → /hyperframes。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/talking-head-recut/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于某个 HyperFrames 插件内时，在执行安装或保鲜命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装的情况保留下面的更新说明。
 
@@ -1010,5 +1009,4 @@ npx hyperframes snapshot public --at 5    # → public/snapshots/frame-00-at-5s.
 
 本站加的一节：本 skill 目录下的全部文档，链接文字是相对本页的路径，后面是标题。上游正文多用行内代码写路径，这里逐个挂上链接，AI 顺链接才走得到。脚本、模板和素材不逐个列出。
 
-- [NOTICE.md](NOTICE.md) —— 署名声明
 - [references/DESIGN_INDEX.md](references/DESIGN_INDEX.md) —— V—Take 视觉设计库

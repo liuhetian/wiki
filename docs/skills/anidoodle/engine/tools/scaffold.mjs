@@ -1,5 +1,4 @@
 // SCAFFOLD. Turn the skill's engine into a working project: a still, a film, or both.
-// (Wiki import: the music doc path in the template below now reads references/music/index.md; upstream README.md.)
 //
 //   node <skill>/engine/tools/scaffold.mjs <dir> [--still myPicture] [--film myFilm] [--duration seconds] [--size WxH | --format 9x16] [--fps N] [--bpm N] [--example]
 //

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-core/references/determinism-rules.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 确定性、动画 Runtime 与布局
 
 HyperFrames 逐帧 seek composition。每一帧都必须仅凭其时间值就能复现 —— 相同的输入时间 → 相同的像素。有三份契约来保证这一点：**动画 runtime 契约**、**确定性规则**和**布局契约**。

@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/toyBrick.md -->
 # 玩具积木 · `toyBrick.ts`
 
 **媒介的物理形态。** 注塑成型的 ABS 玩具积木，用正交视图渲染（方位角 45，仰角 30）。零手绘痕迹。用真实单位（`toyBrickKit.ts`）：1 个凸点间距 = 20 LDU，砖块高 24，薄板高 8，凸点宽 12、高 4，所以 5:6 的砖块比例从构造上就是对的。任何地方都绝不要写出商标名。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/music-to-video/references/frame-skeleton.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Frame 骨架（Step 2）—— 读懂音乐，排出各个 frame
 
 在 Step 2，**你（编排者）**阅读 `audiomap.json`，并直接写出 `STORYBOARD.md` 的**骨架**：把曲目切分成若干 **frame**（一个 frame = 一个 composition 文件 = 一个场景），并为每个 frame 设置它的 **span**、它的 **pacing**（这一段想要按节拍硬切，还是舒缓的乐句 / 能量流动？）、它的 **mood**，以及一行 **feel** 备注。

@@ -4,7 +4,7 @@ description: "带文档盘问（grill-with-docs）的维护记录：吸纳自 ma
 
 # 带文档盘问（grill-with-docs）
 
-[带文档盘问](../../skills/collab/grill-with-docs/index.md)和它依赖的[领域建模](../../skills/collab/grill-with-docs/domain-modeling/index.md)的维护记录。另一个依赖 grilling 单独收成了盘问我，见[它的维护记录](grilling.md)。
+[带文档盘问](../../skills/grill-with-docs/index.md)和它依赖的[领域建模](../../skills/grill-with-docs/domain-modeling/index.md)的维护记录。另一个依赖 grilling 单独收成了盘问我，见[它的维护记录](grilling.md)。
 
 - **上游**：mattpocock/skills 的 `skills/engineering/grill-with-docs/`[^gwd] 和 `skills/engineering/domain-modeling/`[^dm]，作者 Matt Pocock，MIT
 - **commit**：钉在 `49dd158`（2026-10-09），2026-10-16 读时仍是最新

@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/styles/music-box.md -->
 # 风格：八音盒
 
 > 这是 anidoodle 最初的音乐配方，留在下面是为了它的**声音**数值（`musicBox` 和 `bell` 两件乐器实现了这些数值）和它的伤疤故事（守卫为什么存在）。它是 `engine/src/canvas-core/music/vocab.ts`（`VOCAB.musicBox`）里众多词汇中的一种风格，不是默认值：根本没有默认风格。它原先那些写死的作曲选择（一个和弦进行、一个音阶、一个伴奏音型）在下面已改写成范围：音符由作曲者来写（[../compose.md](../compose.md)）。它的禁用清单只是**这个**风格的规矩；对其他风格，这些禁令变成了可测量的守卫。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/modes/cinematic/README.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Cinematic 模式（纯嵌入）—— 一个引擎，六套 DNA
 
 > Cinematic 模式通过 **[engine.html](engine.html)**（`make-composition.cjs`）编译 **[../../dna/](../../dna/README.md)**。旧的逐模板 HTML 外壳已经退役 —— `cinematic-cream` 会自动映射到 `dna: "cream"`；其余归档模板（memory-wall / champion / portrait-header，在 [\_archive/](_archive/) 里）只作为设计参考保留。

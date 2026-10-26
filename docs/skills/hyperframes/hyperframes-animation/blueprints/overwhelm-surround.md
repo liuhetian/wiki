@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/overwhelm-surround.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # overwhelm-surround — 压迫 / 围拢
 
 **intent**（意图）：靠堆积来传达压迫感。可辨认的主体先组装起来，密度标记散落进来，放大「看看有多少」，然后中央主体变形成观众自己的头像，元素从所有（ALL）方向围拢过来 —— 画面给人的感觉是被包围，而不是被推近。情绪弧线是从认出到幽闭。

@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/music/theory/rhythm.md -->
 # 节奏与律动
 
 位置用小节内的拍来表示（`1`，`1&` = 它后面那个八分音符，`1e&a` = 十六分音符）。在 6/8 和 12/8 里，一拍是一个附点四分音符。`craft` 在 **rhythm** 那一行检测本页的内容。

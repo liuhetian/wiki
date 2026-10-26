@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/site-art.md -->
 # 网站配图：一张能在别人页面上起作用的画
 
 标题旁边的首屏大图、一张功能卡片、一排图标、一张链接预览。画不再独占它的画布：页面的文字、颜色和品牌排在前面，画是为了与它们共处而画的。套件：`engine/src/canvas-core/assetKit.ts`。完整示例：`siteHero.ts`（浅色页面）和 `siteHeroDark.ts`（深色页面），两者由同一份代码画出。

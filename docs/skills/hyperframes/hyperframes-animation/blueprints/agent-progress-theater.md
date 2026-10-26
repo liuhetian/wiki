@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/agent-progress-theater.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # agent-progress-theater —— Agent 进度剧场
 
 **intent**（意图）：把 agent 的工作演成**工作状态**剧场 —— 一个简短的触发段落节拍把画面交给机器，然后机器肉眼可见地*干活*：加载动画旋转、状态短语轮换、圆点脉动、计数器跳动 —— 之后成果以一张卡片的形式到来，卡片里的行级联而入并**改变状态**（徽章翻转成对勾、标签被划掉、严重程度胶囊标签逐一显示），或者以一段对话的形式逐条消息构建起来，最后以摄像机推近收尾。主体是机器随时间推移进行劳动。它**不是**一条打出来等待输出的 prompt（从头到尾都不会打出任何 prompt/输入 —— 触发是一次点击、一次菜单选择，或一次已经在进行中的扫描）；**不是** `cursor-ui-demo`（这里至多**一次**点燃式点击，然后光标退场，UI 自己表演）；**不是** `grid-card-assemble`（那里的行组装成静态罗列并保持住 —— 这里的行是活的：它们作为 agent 的输出到来，然后**发生变化**，在观众眼前一行接一行地打勾）。

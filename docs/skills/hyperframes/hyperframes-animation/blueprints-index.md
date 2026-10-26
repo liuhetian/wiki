@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints-index.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Blueprint（经过验证的形状）
 
 > blueprint 层的入口。读这个文件来为某一帧找到形状；读 `blueprints/<id>.md` 来实例化它。Step 4 的方法（复现 / 改编 / 组合，以及每帧要写什么）在 `visual-design.md` 里 —— 本文件是菜单 + 选择器。

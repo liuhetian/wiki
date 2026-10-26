@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/routes/embedded-captions.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 路由：embedded-captions
 
 - **输入：** 要加字幕的已有口播素材画面。它是一个实际的媒体文件，不是 URL 或创意 brief。

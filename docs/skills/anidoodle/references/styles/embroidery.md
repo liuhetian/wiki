@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/embroidery.md -->
 # 手工刺绣（`embroidery.ts`）
 
 **媒介，从物理上说。** 六股棉绣线，分成两三股使用（点缀处用一根金线），用一根绒线绣针（crewel needle）穿过天然平纹亚麻布绣，布绷在一只带黄铜螺丝夹的山毛榉绣绷里，绷得像鼓面一样紧。

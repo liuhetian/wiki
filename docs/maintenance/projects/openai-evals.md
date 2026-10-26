@@ -8,7 +8,7 @@ description: "OpenAI Evals 拆解的维护记录：读的是 8eac7a7（2026-10-2
 
 ## 版本和素材 { #sources }
 
-- **上游**：[openai/evals](https://github.com/openai/evals)，MIT 许可，许可原文随存档放着
+- **上游**：[openai/evals](https://github.com/openai/evals)，MIT 许可，许可原文不随附
 - **读的版本**：`8eac7a7`（2026-04-14 提交，钉 pre-commit 钩子版本），2026-10-20 读。各页不逐处标版本，上游更新了再对照这一个点
 - **源码存档**：`projects/openai-evals/assets/evals-src/` 只存细讲页 `--8<--` 引到的文件，逐字未改，路径和原仓库一致：核心框架、两个字符串模板和模型打分模板、答题方框架、二十问和工具循环两个多轮样例、引到的几份注册 YAML。`docs/` 下的项目文档不存档，原话在正文摘句，脚注钉这个 commit 的永链
 - **题库样本**：上游的 `registry/data/` 全在 Git LFS 里，克隆时跳过了 LFS，只用 `git lfs pull --include` 取了引到的三份 JSONL（`test_fuzzy_match/samples.jsonl`、`test_metaeval/joke_fruits_labeled.jsonl`、`test_multiio/battles/joke_animals_vs_fruits.jsonl`）和 `registry/data/README.md`，存档逐字

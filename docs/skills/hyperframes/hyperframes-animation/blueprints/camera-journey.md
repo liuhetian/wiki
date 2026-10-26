@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/camera-journey.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # camera-journey —— 摄像机旅程
 
 **intent**（意图）：真正的 viewport 摄像机就是**讲故事的人** —— 在**一个**连续的世界里进行多段旅程（钻入 → 旅程中途某个段落节拍触发 → 移动到结果处 / 重新取景 → 落地推近，静止），移动本身承载叙事。折叠了两种子形状：**(A) 动作往返** —— 摄像机钻进一个 UI 面板，一个光标/打字动作触发，摄像机俯冲/平移到另一个区域，结果在那里以元素运动的形式呈现；**(B) 无光标飞行** —— 在静态或自带动画的内容上空进行纯电影化的 3D 飞行（运动模糊、景深、倾斜到展平的旋转），全程没有光标。

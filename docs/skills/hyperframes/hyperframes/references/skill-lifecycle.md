@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/skill-lifecycle.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # Skill 的安装与保鲜
 
 在安装或更新 skill、诊断工作流的意外行为，或在 CI 中运行 HyperFrames 设置时，读这份参考。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/house-style.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 内部风格（House Style）
 
 没有提供设计规范（`frame.md` 或 `design.md`）时，composition 的创意方向。这些只是起点 —— 任何不服务于内容的东西都可以推翻。存在设计规范时，以它的品牌取值为准；house-style 只填补空缺。

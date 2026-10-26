@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/dataviz-countup.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # dataviz-countup — 数据可视化 / 数字滚动计数
 
 **intent**（意图）：让数字和图表当 hero —— 一个计数的圆环 / 数字、一张趋势图、一组倾斜的统计 / 卡片网格 —— 并用一个镜头穿行于这些数据仪表之间，镜头穿透它们（或滚动扫过它们），最后落在一个 hero 指标上，让数据本身承载论点。

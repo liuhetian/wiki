@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-audio/references/fx-registry.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 效果 registry
 
 每一种效果、它的参数以及每个参数的可用范围。超出范围的值会在读取时被钳制，所以任何能解析的东西都可以安全地实现。**AUTO** 标记的是自动化 lane 可以驱动的参数；没有标记的都不能随时间变化（见底部的说明）。

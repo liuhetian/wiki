@@ -1,5 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/realism-and-craft.md -->
-
 # 把写实程度说清楚，纹理靠手做
 
 > 这些准则是做 MECHANICAL LEPIDOPTERA 时挣来的，它就是 [example/](../example/index.md) 里那个完整示例。下面每一条规则都在那部影片上付过学费；哪里的错误是导演自己犯的，这里就照实说，因为带着伤疤的规则，人们才守得住。

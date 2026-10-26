@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/start-here.md -->
 # 从这里开始：先和对方商定作品，再动手做
 
 anidoodle 能用许多种手笔做许多种东西。一件作品没有哪一点是事先定死的：长度、形状、画风、声音都不是。所以第一件事是弄清这个人想要什么，要快，一次问一个问题，并且每一处空缺都用一个明说出来的默认值去填，而不是靠猜。

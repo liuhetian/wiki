@@ -3,7 +3,6 @@ name: remotion-to-hyperframes
 description: >
   把一个现有 Remotion（React）composition 的源码移植成 HyperFrames HTML。仅在用户明确要求移植 / 转换 / 迁移 / 翻译某份 Remotion 源码时使用 —— 单向，仅限 Remotion。顺带提到 Remotion、只作参考的代码，或者「做一个像我那个 Remotion 视频一样的东西」，都属于全新构建（/general-video）。拿不准 → /hyperframes。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/remotion-to-hyperframes/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在执行安装或更新命令之前，先遵循 [插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 

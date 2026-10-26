@@ -46,7 +46,7 @@
    原件，只给页面的 `--8<--` 当真身。每个文件都要有页面用 `--8<--` 或链接引到：没人引的文件
    AI 顺链接走不到，其中的 .md 还会被 zensical 建成孤儿页、进站内搜索，原文里指向没拷的
    文件的相对链接全成了构建警告。正文里写一句路径不算引用 —— 那指的是原仓库同版本，
-   读的哪个 commit 写在维护记录里。许可文件（LICENSE*）随附，不算。
+   读的哪个 commit 写在维护记录里。
 
 豁免：文件顶部（前 5 行内）写 `<!-- link-check-ok: 理由 -->` 可跳过检查 1 和 3。
 理由写在文件里而不是脚本白名单里 —— 挪文件不会让豁免失效，读到那个文件的人也
@@ -252,7 +252,7 @@ def main() -> int:
     cited = set().union(*(cited_files(md) for md in outgoing))
     uncited = sorted(
         rel(f) for f in DOCS.glob(f"{ARCHIVES}/**/*")
-        if f.is_file() and not f.name.startswith("LICENSE") and f.resolve() not in cited
+        if f.is_file() and f.resolve() not in cited
     )
 
     orphans, unregistered, unresolved, dead_assets = [], [], [], {}

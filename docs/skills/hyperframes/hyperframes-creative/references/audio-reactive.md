@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/audio-reactive.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 音频响应动画
 
 用音乐、人声或声音驱动画面。任何 GSAP 可以做动画的属性，都可以响应预先提取好的音频数据。

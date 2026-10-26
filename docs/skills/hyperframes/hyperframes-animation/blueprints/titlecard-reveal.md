@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/titlecard-reveal.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # titlecard-reveal —— 标题卡 / 单卡揭示
 
 **intent / 意图**：平静的喘息 / 落地段落节拍 —— 一张干净的标题卡，或一张单独的品牌 / 证明卡，用恰好一个克制的动作揭示出来（上滑交叉淡变，或擦除式揭示），然后静止停留。低运动量本身就是要交付的内容，不是缺陷。

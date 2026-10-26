@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-creative/references/video-composition.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 视频构图
 
 视频帧不是网页。在尊重所要求的格式、品牌和范围的前提下，把这些规则用于以设计为主导的 composition。极简的技术性 composition 和刻意疏朗的格式可能不需要这么多细节。

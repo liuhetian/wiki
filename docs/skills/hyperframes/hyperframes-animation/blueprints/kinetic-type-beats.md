@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/kinetic-type-beats.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # kinetic-type-beats — 动态文字段落节拍
 
 **intent**（意图）：一个扁平、居中、粗体文字的镜头，运动本身就是词 / 短语的变化 —— 这行字要么以硬切原地替换 token，要么在一个个全屏段落节拍上搭建一个陈述（每一拍有它自己的动作），最后落在一个弹簧弹出的收束上。

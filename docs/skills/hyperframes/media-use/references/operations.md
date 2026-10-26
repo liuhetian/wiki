@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/references/operations.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 媒体操作：agent 指南
 
 media-use 负责解析和记住素材。至于对素材进行**操作** —— 剪切、重新构图、拼接、变换 —— 它不会把每个动作都包装成定制命令，而是把你指向合适的本地工具（决策 OP1）。运行该工具，然后用 `resolve --from <output> --type <type>` 登记输出，让结果像其他任何素材一样进入台账（ledger）和全局缓存。

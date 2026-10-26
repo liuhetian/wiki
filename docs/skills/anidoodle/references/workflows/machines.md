@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/workflows/machines.md -->
 # 机械：在任何画风里，把一个想法造出来讲清楚
 
 机械是一种主题，不是一种观感。套件（`engine/src/canvas-core/mechanismKit.ts`）在 3D 中造出真实的零件，给它们排序，把它们拆开再收拢回去；一种**手笔**用某个画风自己的媒介给它们落下笔触。同一个八音盒可以画成蓝晒、彩色铅笔、点画或平涂的等轴平面。完整示例：`mechanism.ts`（18 音的机芯）、`mechanismHands.ts`、`mechanismExplorer.ts`。

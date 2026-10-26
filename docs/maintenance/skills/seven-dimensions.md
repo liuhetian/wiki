@@ -4,11 +4,11 @@ description: "七维拆解的维护记录：整理自 linux.do 帖子《图片�
 
 # 七维拆解
 
-[七维拆解](../../skills/collab/image-prompt-reverse/seven-dimensions/index.md)的维护记录，它是[图片提示词反推](../../skills/collab/image-prompt-reverse/index.md)的简化版。
+[七维拆解](../../skills/image-prompt-reverse/seven-dimensions/index.md)的维护记录，它是[图片提示词反推](../../skills/image-prompt-reverse/index.md)的简化版。
 
 - **上游**：linux.do 帖子《图片提示词反推》[^post]，作者 fly（@water_ling），2026-08-10 发帖，帖子没写许可证。帖子在「开发调优」分类，标签：纯水、人工智能。「复刻和提风格是两件事」一节的提风格思路，来自同帖第 4 楼（@lookback）引用的另一个帖子《通用焚决千篇一律，特殊风格万里挑一》第 13 楼[^style]
 - **commit**：帖子没有 commit，2026-09-28 抓取：用 Discourse 的 `https://linux.do/t/topic/2729491.json` 取主楼 `cooked` HTML，pandoc 转成 gfm
-- **存档**：主楼原文存成 [`assets/linux-do-2729491/post.md`](../../skills/collab/image-prompt-reverse/seven-dimensions/assets/linux-do-2729491/post.md)，同目录 `01`–`08` 是八张原图（lightbox 原尺寸，不是 690px 缩略图）
+- **存档**：主楼原文存成 [`assets/linux-do-2729491/post.md`](../../skills/image-prompt-reverse/seven-dimensions/assets/linux-do-2729491/post.md)，同目录 `01`–`08` 是八张原图（lightbox 原尺寸，不是 690px 缩略图）
     - 图片链接从 `cdn3.ldstatic.com` 改成指向同目录的本地文件，文件名用原帖的图片标题；去掉 Discourse 给标题自动加的锚点 `<a name="p-…">`
     - 正文文字、标题层级、斜体和引用块都原样保留，一个字没改
 - **跳过**：第 2–6 楼是简短的寒暄和讨论，没存档；其中第 4 楼引用的提风格思路收进了正文
@@ -21,7 +21,7 @@ description: "七维拆解的维护记录：整理自 linux.do 帖子《图片�
 
 1. 重新抓 `.json`，把主楼 `cooked` 和本地的 `post.md` 做 diff
 2. 如果有改动，覆盖 `post.md` 和配图，更新本页的抓取日期
-3. 按需修改[七维拆解](../../skills/collab/image-prompt-reverse/seven-dimensions/index.md)的提炼
+3. 按需修改[七维拆解](../../skills/image-prompt-reverse/seven-dimensions/index.md)的提炼
 
 [^post]: fly（@water_ling），[《图片提示词反推》](https://linux.do/t/topic/2729491)，linux.do，2026-09-28 读。
 [^style]: [《通用焚决千篇一律，特殊风格万里挑一》第 13 楼](https://linux.do/t/topic/2044964/13)，linux.do，读取日期没记。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/talking-head-recut/references/DESIGN_INDEX.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # V—Take 视觉设计库
 
 本目录是 talking-head-recut skill 的一个**参考库**。样式（style）、布局（layout）和视频画框（video frame）是三个**相互正交**的维度，设计一支要点视频时可以自由组合。

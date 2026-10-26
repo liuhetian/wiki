@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-registry/references/templates.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 贡献用模板
 
 每种 component 类型都有可直接复制粘贴的起步模板。它们内置了经过验证、能通过 `lint` 和 `check` 的模式。

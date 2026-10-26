@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/references/aesthetic-principles.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 电影感字幕的美学原则
 
 这 18 条规则区分了「设计出来的」字幕作品和「preset 生成的」字幕作品。这是本 skill 里最重要的一份参考 —— 每个 plan.json、每个 Standard 模式的 HTML 在提交之前都要对照它们检查一遍。

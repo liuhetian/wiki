@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/routes/pr-to-video.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 路由：pr-to-video
 
 - **输入：** 一个 GitHub PR URL、`owner/repo#N` 或"this PR"（这个 PR），通过 `gh` 读取；它不是网站抓取请求。

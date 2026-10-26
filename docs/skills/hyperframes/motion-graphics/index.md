@@ -3,7 +3,6 @@ name: motion-graphics
 description: >
   一段短小、以设计为主导、运动即信息的动态图形 —— 动态文字、数字 count-up、图表 / 数据可视化的冲击镜头、logo sting / 品牌 lockup、lower-third / 标注 / 社交 overlay、动画地图（高亮区域、连接地点、缩放到某个位置）、动画推文 / 新闻文章 / 标题、网页 / UI 动画（滚动、光标、标注），或者把一张真实图片的几何形状融合进图表。通常不超过 10 秒（最长约 30 秒），没有旁白，也没有真人拍摄的主体；渲染为 MP4 或透明 overlay。更长 / 有旁白 / 多场景 → /general-video。不明确 → /hyperframes。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/motion-graphics/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于 HyperFrames 插件内时，在运行安装或更新命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 

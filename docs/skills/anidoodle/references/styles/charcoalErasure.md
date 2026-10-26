@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/charcoalErasure.md -->
 # 炭笔，擦掉再画（`charcoalErasure.ts`）
 
 **媒介，从物理上说。** 柳条炭（一根软软的灰色炭条，在纸齿上一滑而过，吹口气就掉粉）和压缩炭（黑、利落，咬进纸里，几乎擦不掉），画在同一张厚实、齿纹很重的奶油色棉浆纸上。纸擦笔把色调揉进纸纹的凹处；可塑橡皮把亮部提回来，而且从来不会全部提干净。

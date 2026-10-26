@@ -3,7 +3,6 @@ name: hyperframes-waapi
 description: >
   HyperFrames 的 Web Animations API adapter 模式。在编写 element.animate() 运动、通过 Animation 的 currentTime 进行 seek、使用 document.getAnimations()、KeyframeEffect 时间设置、fill 模式，或任何必须在 HyperFrames 中确定性渲染的浏览器原生动画时使用。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/adapters/waapi.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 # HyperFrames 中的 Web Animations API
 

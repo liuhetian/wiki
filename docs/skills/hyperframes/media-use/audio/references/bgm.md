@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/media-use/audio/references/bgm.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 背景音乐（BGM）
 
 每个 composition 一条音乐垫底，由共享的音频引擎（`scripts/audio.mjs` → `scripts/lib/bgm.mjs`）产出。有两条路径，由引擎唯一的开关来选择——是否存在 HeyGen 凭据：

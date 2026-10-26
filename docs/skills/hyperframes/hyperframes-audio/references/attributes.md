@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-audio/references/attributes.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 三个音频属性
 
 三个属性都挂在 `<audio>` / `<video>` 元素本身上，以 JSON 编码，所以一个 composition 的整个混音都装在 HTML 里，旁边不需要加载任何东西。`data-fx-chain` 和 `data-automation` 也可以挂在 `<hf-audio-group>` 总线上，在那里它们对叠加后的成员表达同样的含义——只有一个值得知道的区别：组的自动化运行在 COMPOSITION 时间上，因为总线自己没有 `data-start`。`data-fx-carve` 只能用在 clip 上；总线没有挖空。没有任何静态检查会校验它们：预览会把无法读取的效果链以干声播放，以保持可用；而渲染会拒绝整个混音，而不是交付一条听起来像那么回事、实际却是错的干声 track。

@@ -2,7 +2,6 @@
 name: hyperframes-animation
 description: "HyperFrames 的全部动画知识 —— 原子动效规则、多阶段场景蓝图、场景转场、更广泛的动效设计技巧，以及七个 runtime adapter（默认 GSAP，另有 Lottie、Three.js、Anime.js、CSS keyframes、Web Animations API、TypeGPU）。用于任何动效或动画任务：挑 2-4 条规则组合起来，或加载一个蓝图，或查阅特定 runtime 的 API（例如 GSAP 的 ease / Lottie 播放器 / Three.js mixer）。也涵盖审查已有 composition 的编排（动画地图），以及 24 种具名的文字动画效果。HyperFrames 原生：单条暂停的 timeline、seek 安全、确定性。"
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于某个 HyperFrames 插件之内时，在执行安装设置或版本刷新类命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装的情况仍按下文的更新说明执行。
 

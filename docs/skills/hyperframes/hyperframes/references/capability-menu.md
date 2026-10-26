@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/capability-menu.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 能力菜单 —— HyperFrames 能给视频带来什么
 
 一份清单，三类读者。**提案轮**（`pitch-round.md`）在任何人把它当菜单读之前就先把它说出来了：每个提案都会点出它的概念所依托的一两项能力，措辞取自中间那一列 —— 这些行被融进概念里来体验，大多数用户正是这样第一次知道自己可以要什么。**意图层**（`/hyperframes` → `references/intent-interview.md` 第 7 步）从中推荐 —— 推荐确认后的概念明确需要、而选中的提案尚未点出的一两行，用户问还能做什么时再展示按路由筛选后的部分。**companion 模式下的 `/general-video`** 把同一份清单当作执行地图 —— 当作它的**触发清单**：每一行的大白话描述也正是提出它的时机，即对话触及这一行所做的事情时 —— 同时也当作每一轮的**升级渠道**：计划、草图或构建检查点都可以附带一两条有据可循的提议，指向用户正在看的素材。

@@ -1,5 +1,4 @@
 // LAUNCH. The launch film's two commands: start one, and ship it in every shape.
-// (Wiki import: the style guide path in the template below now reads references/style-guide.md; upstream styles.md.)
 //
 //   node tools/launch.mjs new <name> [--preset drawn|clean]
 //       writes src/canvas-core/<name>.ts (a launch template spec to fill from the brief: every line

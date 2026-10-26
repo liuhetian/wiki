@@ -3,7 +3,6 @@ name: product-launch-video
 description: >
   把一个产品或营销 URL、粘贴来的脚本或一份 brief 变成产品发布 / 宣传视频 —— SaaS 宣传片、功能揭晓、产品演示、应用和公司发布。当用户想要营销、发布、推广或揭晓一个产品时使用；对任何商业 URL 都默认走这里。网站的导览 / 展示也路由到这里 —— brief 里承载「原样展示」的意图。不清楚 → /hyperframes。
 ---
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/product-launch-video/SKILL.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
 
 **插件安装：** 当本 skill 位于某个 HyperFrames 插件内部时，在执行准备或更新命令之前，先遵循[插件执行规则](../hyperframes/references/plugin-installation.md)。独立安装则沿用下面的更新说明。
 

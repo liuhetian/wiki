@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/routes/talking-head-recut.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 路由：talking-head-recut
 
 - **输入：** 要包装的已有口播、访谈或播客素材画面。底下的片段原样播放。

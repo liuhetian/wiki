@@ -1,5 +1,4 @@
 // VERIFY-EXPORT. The gate proves the SOURCE draws the same frame every time; this proves the
-// (Wiki import: the music doc is cited as music/index.md; upstream README.md.)
 // FILE that came out of the encoder is that film. It never renders the film again except where
 // a check says so, it never writes near out/, and every check beyond the container facts is
 // opt-in, because the right bar depends on the piece: a transparent sticker has no background

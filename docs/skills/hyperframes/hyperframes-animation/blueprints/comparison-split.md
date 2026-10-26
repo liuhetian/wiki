@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes-animation/blueprints/comparison-split.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # comparison-split —— 对比分屏卡片
 
 **intent**（意图）：两个分量相等的成对条目并排展示，带着镜像的 3D "翻书"式倾斜 —— 视线把它们读作一组平衡的对比，然后一个胶囊徽章落在每张卡片的内侧边缘来点题。运动**就是**对称本身：两张卡片从相对的两翼到来，形成一个保持住的对开页。

@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/embedded-captions/themes/README.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # THEME 模式 —— 组合而成的视觉宪章
 
 Theme 模式是第三个编译器（`scripts/make-theme.cjs`），与 Standard 和 Cinematic 并列。它之所以存在，是因为「模式」原本是一捆相互正交的维度，却假装成一个开关。theme DNA 从各个 registry 中组合出自己的身份，而这些 registry 在编译器里只实现一次 —— **paradigm 是代码的单位；DNA 是身份的单位**。新的外观只是一个 JSON 文件；只有真正全新的 paradigm/setpiece（很少见）才需要动编译器。

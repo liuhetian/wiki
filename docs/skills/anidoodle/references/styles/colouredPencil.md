@@ -1,4 +1,3 @@
-<!-- 中译自 alexgreensh/anidoodle@25aae33 的 skills/anidoodle/references/styles/colouredPencil.md -->
 # 彩色铅笔（`colouredPencil.ts`，工具包 `colouredPencilKit.ts`）
 
 **媒介，从物理上说。** 蜡基彩色铅笔，削尖但没有尖到针尖那么细，画在有真实纸齿的奶油色卡纸上。笔芯只落在纸面的凸脊上，所以每一段颜色都夹杂着凹处奶油色的斑点。用力越重，填进去的凹处越多。蜡层一层叠在一层上，第二种色相排线叠在第一种上，会产生视觉混色。

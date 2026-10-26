@@ -1,5 +1,3 @@
-<!-- 中译自 heygen-com/hyperframes@46f6cb3 的 skills/hyperframes/references/storyboard-format.md（Apache-2.0）；改动说明见 maintenance/skills/hyperframes.md -->
-
 # 分镜格式 —— `STORYBOARD.md` + 解析后的 manifest
 
 只定义分镜的**基础数据格式**：`STORYBOARD.md` 的文件形状，以及它被解析成的 `StoryboardManifest`。工作流如何*生成*分镜，写在各个工作流里；可选的旁白 / TTS 文件（`SCRIPT.md`）是另一回事，由 TTS 步骤负责，不在这里讲。
