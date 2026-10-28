@@ -1,6 +1,6 @@
-<!-- 存档：GitHub Releases 原文，2026-10-15 抓取。zensical：https://github.com/zensical/zensical/releases ；ui：https://github.com/zensical/ui/releases 。每个版本的正文原样放在代码块里，不渲染外链图片。 -->
+<!-- 存档：GitHub Releases 原文，0.0.70、UI 0.0.37 及以前 2026-10-15 抓取，之后的 2026-10-28 补抓。zensical：https://github.com/zensical/zensical/releases ；ui：https://github.com/zensical/ui/releases 。每个版本的正文原样放在代码块里，不渲染外链图片。 -->
 
-# Zensical 0.0.63–0.0.70 与 UI 0.0.31–0.0.37 发布说明（存档）
+# Zensical 0.0.63–0.0.73 与 UI 0.0.31–0.0.40 发布说明（存档）
 
 ## zensical v0.0.63（2026-09-19）
 
@@ -196,6 +196,88 @@ Additionally, the user interface is updated to [v0.0.37](https://github.com/zens
 - 3d11502 __ui__ – update ui to v0.0.37
 ````
 
+## zensical v0.0.71（2026-10-16）
+
+<https://github.com/zensical/zensical/releases/tag/v0.0.71>
+
+````markdown
+## Summary
+
+This version adds support for `mkdocs-include-markdown-plugin`. It also fixes social card rendering when palette colors are unset, prevents unnecessary restarts during file discovery, and reports oversized search fields more clearly.
+
+## Changelog
+
+### Features
+
+- db5f22e __zensical__, __compat__ – support include-markdown plugin
+
+### Bug fixes
+
+- 7430b0c __zensical__, __compat__ – preserve social palette defaults for unset colors (#1041)
+- 62a6e6b – build manylinux AArch64 wheel on native ARM runner (#1040)
+- 812f06b __zensical__, __zensical-watch__, __compat__ – avoid false restarts during file discovery (#1035)
+- 391e658 __zensical__ – reject oversized search fields during index construction
+````
+
+## zensical v0.0.72（2026-10-23）
+
+<https://github.com/zensical/zensical/releases/tag/v0.0.72>
+
+````markdown
+## Summary
+
+This version brings Zensical's behavior closely in line with MkDocs, with support for the privacy plugin and fixes to Markdown rendering, link handling, and project layouts.
+
+Fenced code blocks now work by default, Markdown extension order is preserved with SuperFences, and links to Markdown pages can end with a trailing slash. HTML URL rewriting handles character references correctly while preserving surrounding quotes and whitespace. Overlapping documentation and theme directories and custom polyfill scripts are also handled correctly.
+
+File watching is more reliable, and template edits made within the same second are now picked up.
+
+Additionally, the user interface is updated to v0.0.38, and this release includes a security update to `rustls`.
+
+## Changelog
+
+### Features
+
+- 581fc01 __zensical__, __compat__ – support privacy plugin
+
+### Bug fixes
+
+- 1dd7988 __zensical__, __compat__ – resolve HTML character references before rewriting URLs
+- 3f3c8a7 __compat__ – normalize polyfill script entries (#1075)
+- b37107b __compat__ – handle same second edits
+- 967bfec __zensical__, __compat__ – restrict HTML URL rewriting to attribute values
+- 47cf4da __zensical-watch__ – handle reused ext4 inode in watcher
+- 878aaad __zensical__, __compat__ – retain overlapping documentation and theme sources
+- 36fc72a __compat__ – preserve configured SuperFences extension order
+- e0bf56d __zensical-watch__, __compat__ – ignore access events in watcher
+- 7cfd5f6 __ui__ – update ui to v0.0.38
+- 55186fb – patch `rustls` to mitigate security vulnerability
+- dc85f5f __zensical__, __compat__ – support links to Markdown pages with a trailing slash
+- 75bbdae __compat__ – support fenced code blocks by default
+- d5086f1 __zensical__, __zensical-serve__, __compat__ – print all bound addresses when serving (#1050)
+- b4a4804 __zensical__ – count search token positions for field limits (#1046)
+````
+
+## zensical v0.0.73（2026-10-26）
+
+<https://github.com/zensical/zensical/releases/tag/v0.0.73>
+
+````markdown
+## Summary
+
+This version fixes URL rewriting in the privacy plugin so assets loaded by JavaScript resolve correctly on nested pages and during local preview. It also corrects the nested list example included in newly created projects.
+
+Additionally, the user interface is updated to v0.0.39, adding support for Mermaid 12 and improving scroll restoration when following anchor links, reloading pages, or navigating back and forward.
+
+## Changelog
+
+### Bug fixes
+
+- d68bd2c __compat__ – nested list item has insufficient indent in bootstrapped project
+- f039e8b __ui__ – update ui to v0.0.39
+- 9d1b114 __zensical__, __compat__ – fix URL rewriting in the privacy plugin (#1080)
+````
+
 ## ui v0.0.31（2026-09-19）
 
 <https://github.com/zensical/ui/releases/tag/v0.0.31>
@@ -337,4 +419,69 @@ It also brings support for draft documents, with _draft_ markers now having cons
 - 2a04bab __ui__, __scripts__ – improve search accessibility and result rendering
 - c912822 __ui__, __scripts__ – update search client rendering and keyboard handling
 - d6669ba __ui__, __templates__ – add "describedby" and "alternate" links as per llms.txt spec (#264)
+````
+
+## ui v0.0.38（2026-10-20）
+
+<https://github.com/zensical/ui/releases/tag/v0.0.38>
+
+````markdown
+## Summary
+
+This version improves header accessibility, restores ellipsis for long words in the table of contents while preserving multiline entries, and fixes text colors in Mermaid state diagram notes.
+
+It also adds **26 new Lucide icons**, updates dependencies, and removes a vulnerable CSS build dependency.
+
+## Changelog
+
+### Bug fixes
+
+- 1bb03fd __ui__, __scripts__ – use theme colors for Mermaid state diagram note text (#273)
+- 061104c __ui__, __classic__, __modern__, __templates__ – use hidden text for header toggle labels (#274)
+- d61af50 __ui__, __classic__, __modern__ – restore ellipsis for long ToC words while preserving wrapping (#271)
+````
+
+## ui v0.0.39（2026-10-26）
+
+<https://github.com/zensical/ui/releases/tag/v0.0.39>
+
+````markdown
+## Summary
+
+This version adds support for **Mermaid 12**, with updated diagram styling and consistent colors across light and dark themes. It also improves anchor handling and scroll restoration, bringing reloads and history navigation closer to native browser behavior and fixing unexpected jumps during rapid Back and Forward navigation.
+
+It also adds **16 new icons** and updates dependencies.
+
+## Changelog
+
+### Features
+
+- f2e8d02 __ui__, __scripts__ – add support for Mermaid 12 (#259)
+
+### Bug fixes
+
+- b60e016 __ui__, __scripts__ – align scroll restoration with native navigation (#284)
+- 8f4636d __ui__, __scripts__ – detect repeated anchor links before updating history (#279)
+- 7ae2ea9 __ui__, __scripts__ – prevent stale scroll writes during rapid history navigation (#279)
+- ce8a1f5 __ui__, __scripts__ – restore saved scroll positions when returning to fragments
+- 09824ed __ui__, __scripts__ – clear cached anchors when navigating without a fragment
+- 67bf3d0 __ui__, __scripts__ – prevent stale tracking updates during instant navigation (#279)
+````
+
+## ui v0.0.40（2026-10-27）
+
+<https://github.com/zensical/ui/releases/tag/v0.0.40>
+
+````markdown
+## Summary
+
+This version introduces `zensical-ui`, a Python package containing Zensical's templates, browser assets, and icons. It prepares the UI to ship separately from Zensical’s native wheels, allowing future releases to reduce their package sizes.
+
+The package includes prebuilt assets and supports editable installs for local UI development.
+
+## Changelog
+
+### Features
+
+- b9019fb __ui__, __tools__ – package templates as `zensical-ui`
 ````

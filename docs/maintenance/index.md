@@ -1,5 +1,5 @@
 ---
-description: "维护板块：skill 和 Agent 能力背后的事，分两部分：Agent 基础能力背后的选型实测、上游来源和没做的事，一个能力一篇；外部 skill 的吸纳记录，一个 skill 一篇；Gallery 收录的来源和改动，一个来源一篇；细讲的项目读的版本和素材来源，一个项目一篇；实测流水线用的示例 skill。AI 正常使用不用看，出问题或要改做法时再看"
+description: "维护板块：skill 和 Agent 能力背后的事，分两部分：Agent 基础能力背后的选型实测、上游来源和没做的事，一个能力一篇；外部 skill 的吸纳记录，一个 skill 一篇；Gallery 收录的来源和改动，一个来源一篇；细讲的项目读的版本和素材来源，一个项目一篇；本站依赖的 Zensical 跟到哪个版本、升不升级；实测流水线用的示例 skill。AI 正常使用不用看，出问题或要改做法时再看"
 ---
 
 # 维护
@@ -71,6 +71,12 @@ Gallery 里别人的成品从哪来、收的时候改了什么、上游更新了
 - [酒馆 SillyTavern](projects/sillytavern.md) —— 读的是 06bde93（1.19.0，2026-10-20 读），AGPL-3.0 许可；源码存档和行号；效果块怎么实跑出来的：Node 加载钩子原样加载酒馆前端模块、界面依赖换成桩，模型请求另起进程发；脚本附后
 - [DeepSeek Harness](projects/deepseek-harness.md) —— DeepSeek Harness 拆解的维护记录：读的是 687f282（2026-10-20 读），MIT 许可、Landlock 启动器子包 BSD-3；存档和行号怎么对；六条线怎么实跑、密钥怎么隔离、模型用量多少，脚本附后
 - [OpenAI Evals](projects/openai-evals.md) —— OpenAI Evals 拆解的维护记录：读的是 8eac7a7（2026-10-20 读），MIT 许可；源码存档和行号怎么对、几份题库样本怎么从 LFS 取的；注册 eval 的计数口径；只读源码，没有实跑
+
+## 本站 { #wiki }
+
+这个 wiki 自己依赖的东西跟到哪个版本、新版本升不升级。本站怎么搭起来的见[wiki 介绍](../projects/wiki/index.md)。
+
+- [Zensical 升级评估](zensical-upgrade/index.md) —— 本站钉在 Zensical 0.0.62、最新 0.0.73，2026-10-28 定下先不升：十一个版本逐条过，有关的只有预览重建、草稿、minify 修复几条；官方 llmstxt 只出转换版、不打算发源文件；privacy 插件能接管 mermaid 和 GLightbox；升级步骤和要看的地方
 
 ## 实测用的示例 { #fixtures }
 

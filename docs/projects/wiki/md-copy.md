@@ -13,7 +13,7 @@ description: "每页右上角的复制按钮和页头的 Markdown 发现链接�
 - **复制按钮和插件绑死**：不开插件没有按钮；开了，按钮复制的就是转换版
 - **想要的只有两样**：按钮和发现链接，都能自己做，下面就是做法
 
-逐条实测和三条备选路线见[Zensical 升级评估 · llmstxt](zensical-upgrade/index.md#llmstxt)；决定记在[能力时间线](index.md#timeline) 10-15「评估官方 llmstxt 插件与自研复制按钮」那一条。
+逐条实测和三条备选路线见[Zensical 升级评估 · llmstxt](../../maintenance/zensical-upgrade/index.md#llmstxt)；决定记在[能力时间线](index.md#timeline) 10-15「评估官方 llmstxt 插件与自研复制按钮」那一条。
 
 ## 源文件地址：借 `page.edit_url` { #edit-url }
 

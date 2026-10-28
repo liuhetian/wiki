@@ -38,7 +38,8 @@ copy_source: true
 - [用自己的对象存储做 git-lfs 后端](git-lfs.md) —— standalone custom transfer agent：140 行脚本替掉整个 LFS 服务，协议、坑和换存储的改法
 - [打码：key 和小字都以密文写进 wiki](age-mosaic.md) —— API key、服务器地址用 age 公钥加密后写进 markdown，浏览器里显示成马赛克，解锁后还原；六种存法的比较、对称与非对称加密、scrypt 为什么撑得住短口令，以及 encryptcontent 这类插件为什么在本站会漏
 - [复制本页 Markdown 源：不用官方插件，自己做](md-copy.md) —— 右上角复制按钮和页头发现链接：为什么不用官方 llmstxt 插件、借 `page.edit_url` 拿源文件地址、复制时相对链接怎么改成线上绝对地址
-- [Zensical 0.0.62 → 0.0.70：升不升级](zensical-upgrade/index.md) —— 八个版本逐条过：跟本站有关的只有预览重建、草稿、sitemap 几条；0.0.70 构建正式站零告警、class 未变；llmstxt 插件替不掉 `.md` 镜像
+
+Zensical 本身跟到哪个版本、新版本升不升级，记在维护的[Zensical 升级评估](../../maintenance/zensical-upgrade/index.md)。
 
 还没单独成篇的：`check-links.py` 这道闸门（现在写在总纲的[闸门一节](cos-deploy/index.md#link-check)）、vendor 本地化与按需加载、中文字体子集化。哪项值得单独讲了再拆出来。
 
@@ -260,7 +261,7 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 **不走 md → HTML → md 路线：AI 能写 md，就能读 md，忠实发布源文件就够了；官方 `llmstxt` 插件对本站的价值只剩复制按钮，于是自己做。** Zensical 0.0.67 起的这个插件把页面渲染成 HTML 再转回 Markdown，实测丢图片、iframe、选项卡标签、frontmatter，snippet 一律展开，复制按钮还和它绑死。自研的两样：`repo_url`、`edit_uri` 设成站点根，`page.edit_url` 就是源文件地址，写进页头的 `alternate` 发现链接；`vendor/md-copy.js` 在右上角放按钮，复制源文件本身，相对链接和 `--8<--` 改成线上绝对地址。只升级 Zensical 版本、不写进 `plugins`，碰不到这个插件。
 
-详见[复制本页 Markdown 源](md-copy.md)，实测细节见[Zensical 升级评估 · llmstxt](zensical-upgrade/index.md#llmstxt)。
+详见[复制本页 Markdown 源](md-copy.md)，实测细节见[Zensical 升级评估 · llmstxt](../../maintenance/zensical-upgrade/index.md#llmstxt)。
 
 ### 2026-10-15 · 命令行一口气解开打码 {: data-kind="流水线" }
 

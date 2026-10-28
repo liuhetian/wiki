@@ -130,7 +130,7 @@ plugins:
         posts/wiki-tech/git-lfs.md: projects/wiki/git-lfs.md
         posts/wiki-tech/age-mosaic.md: projects/wiki/age-mosaic.md
         posts/wiki-tech/md-copy.md: projects/wiki/md-copy.md
-        posts/wiki-tech/zensical-upgrade/index.md: projects/wiki/zensical-upgrade/index.md
+        posts/wiki-tech/zensical-upgrade/index.md: maintenance/zensical-upgrade/index.md
         posts/wiki-roadmap.md: projects/wiki/roadmap.md
         posts/everything-skill.md: projects/wiki/everything-skill.md
         # 2026-10-15 吸纳记录从 skill 目录里的 MIRROR.md 挪进维护目录
@@ -382,8 +382,8 @@ plugins:
         posts/wiki/md-copy.md: projects/wiki/md-copy.md
         posts/wiki/roadmap.md: projects/wiki/roadmap.md
         posts/wiki/sections.md: projects/wiki/sections.md
-        posts/wiki/zensical-upgrade/assets/releases.md: projects/wiki/zensical-upgrade/assets/releases.md
-        posts/wiki/zensical-upgrade/index.md: projects/wiki/zensical-upgrade/index.md
+        posts/wiki/zensical-upgrade/assets/releases.md: maintenance/zensical-upgrade/assets/releases.md
+        posts/wiki/zensical-upgrade/index.md: maintenance/zensical-upgrade/index.md
         posts/kindle-dashboard/index.md: projects/kindle-dashboard/index.md
         posts/kindle-dashboard/reference/decision-log.md: projects/kindle-dashboard/reference/decision-log.md
         posts/kindle-dashboard/reference/jailbreak.md: projects/kindle-dashboard/reference/jailbreak.md
@@ -401,6 +401,9 @@ plugins:
         skills/collect-triage.md: skills/collect/triage.md
         # 2026-10-28 收藏夹成了轴外的顶层板块，网站那页按来源的形态拆成几页，旧地址落到入口
         bookmarks/websites.md: bookmarks/index.md
+        # 2026-10-28 Zensical 升级评估是本站依赖的版本记录，从 wiki 介绍挪进维护
+        projects/wiki/zensical-upgrade/index.md: maintenance/zensical-upgrade/index.md
+        projects/wiki/zensical-upgrade/assets/releases.md: maintenance/zensical-upgrade/assets/releases.md
 
 # 链接校验。0.0.53 及更早版本有并行竞态：同一份内容偶发（约 1/15 次构建）误报大量
 # "page does not exist"，产物 HTML 实测无差异，只能关掉。0.0.62 上复现不出来了 ——
@@ -436,7 +439,6 @@ nav:
               - 自建 git-lfs 后端: projects/wiki/git-lfs.md
               - 打码：key 和小字: projects/wiki/age-mosaic.md
               - 复制本页 Markdown 源: projects/wiki/md-copy.md
-              - Zensical 升级评估: projects/wiki/zensical-upgrade/index.md
               - 新机器初始化自检: projects/wiki/init-check.md
           - Docmost:
               - projects/docmost/index.md
@@ -1309,3 +1311,6 @@ nav:
               - 酒馆 SillyTavern: maintenance/projects/sillytavern.md
               - DeepSeek Harness: maintenance/projects/deepseek-harness.md
               - OpenAI Evals: maintenance/projects/openai-evals.md
+      - 本站:
+          - Zensical 升级评估:
+              - maintenance/zensical-upgrade/index.md
