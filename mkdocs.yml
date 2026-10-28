@@ -398,7 +398,9 @@ plugins:
         posts/data-analysis/distribution.md: notes/statistics/data-analysis/distribution.md
         posts/data-analysis/index.md: notes/statistics/data-analysis/index.md
         # 2026-10-27 收纳的规矩合成抽象 skill「收纳」：导诊挪进 collect/，收纳步骤和各源头类型从写 skill 挪出
-        skills/collect-triage.md: skills/collect/triage.md
+        skills/collect-triage.md: skills/collect/index.md
+        # 2026-10-28 导诊并进收纳的入口，共用规矩拆进 reference/rules.md
+        skills/collect/triage.md: skills/collect/index.md
         # 2026-10-28 收藏夹成了轴外的顶层板块，网站那页按来源的形态拆成几页，旧地址落到入口
         bookmarks/websites.md: bookmarks/index.md
         # 2026-10-28 Zensical 升级评估是本站依赖的版本记录，从 wiki 介绍挪进维护
@@ -896,7 +898,7 @@ nav:
       - 调研与收集:
           - 收纳:
               - skills/collect/index.md
-              - 收纳导诊: skills/collect/triage.md
+              - 共用规矩: skills/collect/reference/rules.md
               - 收纳 skill: skills/collect/skill.md
               - 收进 Gallery: skills/collect/gallery.md
           - 调研项目:

@@ -22,6 +22,7 @@ skill 本质是渐进式披露的文档。markdown 里写的相对链接，渲�
 - **子页能单独拿出去用的是子 skill，不能的是 reference**：子 skill 有自己的 `name` 和 `description`，能单独被触发、单独复制进对话；reference 离开所属 skill 就不知道拿来干什么。把独立 skill 塞成别人的 reference 是层级错位
 - **迷你 skill 长出第一份 reference 或第一张图才升成目录**：`foo.md` 挪成 `foo/index.md`，按[挪文件](index.md#rules)办 —— 网页地址不变，`.md` 地址会变，站内链接全改。同一级不能同时有 `foo.md` 和 `foo/`，两者抢同一个网页地址
 - **抽象 skill 的 `index.md` 讲清各子 skill 什么时候用**：只列名字不够，每行写干什么 + 什么时候用，AI 靠它挑路；归类用的也一样，不照搬上游 README。几个子 skill 都要遵守的规矩写进这里，子 skill 只写自己多出来的 —— 活例：写作规范的页面规矩写在入口，课程页、skill 两个子 skill 只写各自的部分
+- **用之前总要先分诊的，入口本身就写成分诊 prompt**：分诊就是挑路，不再另列一张表；分诊 prompt 里写着「只分诊、不动手」，动手的 agent 去读入口会撞上，所以共用规矩放进 `reference/`，交接让它读那一篇 —— 活例：[收纳](../collect/index.md)入口就是导诊，共用规矩在它的 [reference](../collect/reference/rules.md)
 - **标准 skill 的 `index.md` 只做入口**：几行说明加链接指向 `reference/`，不要用 `--8<--` 把 reference 塞进来；迷你 skill 本身就是全文
 - **`reference/` 只一层深**，`index.md` 直接链到每一篇；超过 100 行的 reference 顶部加目录
 - **`assets/` 只放真身**（css / js / svg / demo / 脚本），跟 `reference/` 平级、归它所属的 skill；子 skill 的资产各归各的，不混进上级的 `assets/`
@@ -91,6 +92,6 @@ reference 不在 nav 里单独成层，展平到所属 skill 的入口后面；�
 </div>
 ```
 
-记录本身写在哪、写什么，见收纳的[维护记录](../collect/index.md#maintenance-record)。
+记录本身写在哪、写什么，见收纳的[维护记录](../collect/reference/rules.md#maintenance-record)。
 
 [^bp]: Anthropic [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)，2026-10-16 读。

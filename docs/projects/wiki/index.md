@@ -28,7 +28,7 @@ copy_source: true
 - **不侵入，不托管重东西**：mod、MCP 不收，重的流水线让客户端装上游
 - **收多深、侧重什么只有收的人知道**：所以先分诊，交一段交接 prompt 给人改，不直接动手；没说就按最浅收 —— 浅了再加一层便宜，深了再删是白花工夫
 
-照这些规律给一样东西分诊的是 skill [收纳导诊](../../skills/collect/triage.md)：正面（轴上四层，人和 AI 都读）和背面（skill，给 AI 照着做）分开判，一个来源可以两面都收；只定每一面用哪个 skill 收、收到哪、收多深，交出交接 prompt，具体怎么收由各个收纳 skill 管。
+照这些规律给一样东西分诊的是 skill [收纳](../../skills/collect/index.md)：正面（轴上四层，人和 AI 都读）和背面（skill，给 AI 照着做）分开判，一个来源可以两面都收；只定每一面用哪个 skill 收、收到哪、收多深，交出交接 prompt，具体怎么收由各个收纳 skill 管。
 
 ## 用到的技术 { #tech }
 
@@ -431,7 +431,7 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 > 现在已经不再是一个选择题了，而是 文章线(人读)和skill线(AI读)并行，可能一次性吸纳到两边
 
-顶栏从八项改成 首页 · 文章 · 项目 · 笔记 · Gallery · Skills · 维护。「项目拆解」改名「项目」，自己做的也算：本 wiki、Kindle 常显信息屏、AI 助手、动画网页 PPT 从 `posts/` 搬进 `projects/` 按领域分组，如何分析数据搬进 `notes/statistics/`，`redirects` 给搬走的 27 页各加一行；文章顶栏只剩四篇单篇。课程内容全删，16 门科目留成 [roadmap](roadmap.md#subjects) 的待记科目；`conflict` 块、`course.py`、check-links 第 4 项留着，改成在笔记里给自己出题，`course.py status` 列出空着的题。写作规范的归属七问改成六问，按 Gallery、Skills、维护、项目、笔记、文章的顺序判一页放哪；[收纳导诊](../../skills/collect/triage.md)改成文章线和 skill 线分开判，一个来源可以两边都收；旧刊物海报的守则从 Gallery 拆成 skill。首页两个身子按六个板块重写，开屏的特性网格把课程卡换成项目卡。
+顶栏从八项改成 首页 · 文章 · 项目 · 笔记 · Gallery · Skills · 维护。「项目拆解」改名「项目」，自己做的也算：本 wiki、Kindle 常显信息屏、AI 助手、动画网页 PPT 从 `posts/` 搬进 `projects/` 按领域分组，如何分析数据搬进 `notes/statistics/`，`redirects` 给搬走的 27 页各加一行；文章顶栏只剩四篇单篇。课程内容全删，16 门科目留成 [roadmap](roadmap.md#subjects) 的待记科目；`conflict` 块、`course.py`、check-links 第 4 项留着，改成在笔记里给自己出题，`course.py status` 列出空着的题。写作规范的归属七问改成六问，按 Gallery、Skills、维护、项目、笔记、文章的顺序判一页放哪；[收纳导诊](../../skills/collect/index.md)改成文章线和 skill 线分开判，一个来源可以两边都收；旧刊物海报的守则从 Gallery 拆成 skill。首页两个身子按六个板块重写，开屏的特性网格把课程卡换成项目卡。
 
 详见[板块怎么分](sections.md)。
 

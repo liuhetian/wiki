@@ -18,7 +18,7 @@ description: "把外面的 skill、插件仓库、提示词合集收进 skills/�
 5. **深度收纳，不是简单翻译或原文照录**：内容全部译为中文，人称转换成对 AI 讲述。允许大幅改动，让它贴合本站 —— 换掉本站已有能力能替代的依赖，删掉用不上的路线，脚本一起改，改了什么写进维护记录。活例：[整理视频为笔记](../video-note/index.md)把下载视频和本地转写换成了 [Agent 基础能力](../agent-io/index.md)的接口，网页 AI 字幕整条删掉。它引用的 references 也要收齐并翻译为中文；README、安装器、CI、测试、运行方式（比如用 xxx 命令运行）跳过。处理好文件之间的路径引用，保证能通过相对路径访问到 skill 内部资源和依赖的其他 skill
 6. **prompt 里的占位改成填空**：上游的 `{{idea}}`、`[产品名]`、【…】这类，一律改成[填空](../wiki-guide/reference/components.md#fill)输入框，读者在网页上填好再复制；为占位写给 AI 的说明（「【】里的内容用户还没给，先问用户要，齐了再开始」这类）随之删掉，输入框本身就说明了哪里要填。活例：[人话翻译](../chat-prompts/plain-talk.md)
 7. **入口页说清拿到它之后要做什么**，可以补一两句原因给人看。顶层入口（收进来的抽象 skill 的 `index.md`，或者单个 skill 本身）开头写领域建模：本 skill 解决什么问题，可以参考原本 frontmatter 里的 description，也可以参考 README.md 里的描述。原文里的出处、作者、外链不留在入口页，挪进维护记录的「上游」，外链写成脚注 —— 同[写作规范的硬规矩](../wiki-guide/index.md#rules)
-8. **收尾**：上级入口加一行钩子（照抄 description，见[三种形态](../wiki-guide/skill.md#layout)最后一条），`mkdocs.yml` 注册 [nav](../wiki-guide/skill.md#nav)，顶层入口[页尾链到维护记录](../wiki-guide/skill.md#maintenance-record)、记录照收纳的[共用规矩](index.md#maintenance-record)写，跑 `python3 scripts/check-links.py`
+8. **收尾**：上级入口加一行钩子（照抄 description，见[三种形态](../wiki-guide/skill.md#layout)最后一条），`mkdocs.yml` 注册 [nav](../wiki-guide/skill.md#nav)，顶层入口[页尾链到维护记录](../wiki-guide/skill.md#maintenance-record)、记录照收纳的[共用规矩](reference/rules.md#maintenance-record)写，跑 `python3 scripts/check-links.py`
 
 ## 不同的源头类型 { #sources }
 
