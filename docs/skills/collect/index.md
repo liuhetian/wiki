@@ -1,6 +1,7 @@
 ---
 name: 收纳
-description: "把外面的仓库、网站、帖子、视频或一批图收进本 wiki 时用：先分诊，正面（轴上的笔记、Gallery、文章、项目，人和 AI 都读）和背面（skill，给 AI 照着做）分开判，一个来源可以两边都收；只问我能定的几件事，交出交接 prompt，指明每一面照哪页收 —— 收纳 skill、收进 Gallery、调研项目、整理视频为笔记；照着收的先读共用规矩"
+description: "把外面的仓库、网站、帖子、视频或一批图收进本 wiki 时用：先分诊，正面（轴上的笔记、Gallery、文章、项目，人和 AI 都读）和背面（skill，给 AI 照着做）分开判，一个来源可以两边都收；只问我能定的几件事，交出交接 prompt，指明每一面照哪页收 —— 收纳 skill、收进 Gallery、调研项目、整理视频为笔记；外部材料怎么存、维护记录写什么是两面共守的规矩"
+copy_source: true
 ---
 
 # 收纳
@@ -61,7 +62,7 @@ description: "把外面的仓库、网站、帖子、视频或一批图收进本
 
 ### 两面怎么接 { #link }
 
-两边怎么互链照写作规范「内容放哪个板块」末尾两条；维护不是第三面，记录写在哪照收纳的[共用规矩](reference/rules.md#maintenance-record)。
+两边怎么互链照写作规范「内容放哪个板块」末尾两条；维护不是第三面，记录写在哪照本页的[维护记录](#maintenance-record)。
 
 ## 哪些问我 { #ask }
 
@@ -86,10 +87,39 @@ description: "把外面的仓库、网站、帖子、视频或一批图收进本
 
 1. **给我看的**：要问的几题，每题带推荐；再用几句话说为什么这么分 —— 每面收不收、为什么进这个板块、为什么用这个 skill、为什么收这么深、哪些不收。理由只给我看，不进交接，下一个 agent 照做用不上
 2. **交接 prompt**：放进一个 `text` 代码块，问题按推荐先答好写进去，我改完原样贴给下一个 agent。它没看过这次对话，所以写全：
-    - 你当前的工作区就是本 wiki 的仓库，先读 `docs/skills/wiki-guide/index.md` 和 `docs/skills/collect/reference/rules.md`（收纳的共用规矩），再读下一个 skill
+    - 你当前的工作区就是本 wiki 的仓库，先读 `docs/skills/wiki-guide/index.md` 和 `docs/skills/collect/index.md` 的「共用规矩」一节，再读下一个 skill
     - 来源：地址，一句话说它是什么
     - 两面都收的分两节写，各写：照哪一页收（仓库里的路径）、收到哪（落地路径）、收多深和侧重什么、下一个 skill 里的空（「空名：值」）
     - 两边怎么互链，维护记录写在哪
     - 这次特有的收什么、不收什么；下一个 skill、共用规矩和写作规范里写过的不重复
 
 我说「照这个做」，就在这次对话里按交接做。
+
+## 共用规矩 { #shared }
+
+交接之后照哪一页收 —— 收纳 skill、收进 Gallery、调研项目、整理视频为笔记 —— 动手前都先读[写作规范](../wiki-guide/index.md)和这一节。
+
+### 外部材料 { #material }
+
+- **别人的图和视频直接收原件**：本 wiki 自己看、不商用，忠实记录比避嫌要紧，不为避嫌改成自己重新生成；作者和出处写进维护记录或脚注 —— 活例：[二次元平面设计风格](../../gallery/images/linux-do-style/gallery-anime-graphic-design.md)的 23 张配图原样存档
+- **外部仓库只取用得上的文件**：进 `assets/` 的只有页面用得上的 —— demo 跑起来要的、正文 `--8<--` 引到的，其余不收、链上游；上游的设计文档、README 不整篇嵌，摘句加脚注；没人引的源码存档 check-links 会拦 —— 活例：[梨园](../../projects/liyuan/index.md)的 `liyuan-src/`。吸纳的 skill 例外，要收齐才能跑，见[收纳 skill](skill.md)
+- **读的哪个版本只记一次**：写进维护记录，正文不逐处标版本；不建维护记录的写进脚注
+
+### 维护记录 { #maintenance-record }
+
+页面只写怎么用；从哪来、改了什么写进[维护](../../maintenance/index.md)。一个来源两面都收的，记录只写一篇 —— 活例：[手绘风格出图](../../maintenance/skills/handdraw.md)，skill 和 Gallery 三区的收录写在同一篇。
+
+| 收的是 | 记录写在 | 一篇管 |
+|---|---|---|
+| skill | `maintenance/skills/<名字>.md`，挂进维护的「Skill 吸纳」 | 一个 skill |
+| Gallery | `maintenance/gallery/<名字>.md`，挂进「Gallery 收录」；单条收的并进该类零散收集那篇 | 一个来源；极简收的不建 |
+| 细讲、写书的项目 | `maintenance/projects/<名字>.md`，挂进「项目」 | 一个项目；粗讲不建 |
+
+记录写四样：
+
+- **上游**：仓库、作者、许可证，原文里提到的出处也写在这
+- **commit**：一句话，钉在哪个 commit、哪天
+- **跳过了什么**
+- **翻译之外的改动**
+
+项目的记录另加两样：源码存档和行号怎么对上，实验怎么跑、脚本附后。skill 页尾怎么链过来，见[写 skill](../wiki-guide/skill.md#maintenance-record)。

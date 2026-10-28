@@ -23,7 +23,7 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 
 ## Skill 吸纳 { #skills }
 
-从别人那里吸纳来的 skill，一个 skill 一篇：上游、commit、跳过了什么、翻译之外的改动。写法见收纳的[维护记录](../skills/collect/reference/rules.md#maintenance-record)。
+从别人那里吸纳来的 skill，一个 skill 一篇：上游、commit、跳过了什么、翻译之外的改动。写法见收纳的[维护记录](../skills/collect/index.md#maintenance-record)。
 
 - [盘问我（grilling）](skills/grilling.md) —— 吸纳自 mattpocock/skills，钉在 95249b0，正文逐段中译
 - [带文档盘问（grill-with-docs）](skills/grill-with-docs.md) —— 吸纳自 mattpocock/skills，钉在 49dd158，连同依赖的 domain-modeling 一起中译；domain-modeling 放进目录当子 skill，加了往 `CLAUDE.md` / `AGENTS.md` 留指针的一步
