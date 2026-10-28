@@ -21,7 +21,9 @@
 //     选中项的文字），原样嵌入、不参与链接改写；空着的写成【placeholder】；写了 required 的没填就不复制。
 //     网页上第 n 个控件对应源文件代码以外第 n 个标签，数量对不上就报错不复制；标签要写在一行里，单选、复选不算。
 //     name 相同的是同一个变量：在一个框里填，别的同名框跟着变。不复制的块里的 required 不拦
-// 打码的密文原样复制，页面上解锁过也一样。页头没有那行 link 就不出按钮。
+//   - 打码跟着页面走：这个标签页解锁过，`age:…` 和 ```age 块换成明文（块换成普通代码块）；没解锁写成【已加密】，
+//     解锁了还解不开写成【解不开】。几百字的密文贴给 AI 只占上下文、它也解不开。解密借 vendor/age-init.js 的 WikiAge.open
+// 页头没有那行 link 就不出按钮。
 (function () {
   const REPO = "https://github.com/liuhetian/wiki/blob/main/";
   const SVG = d => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${d}"/></svg>`;
@@ -39,6 +41,8 @@
   const NOT_FIELD = /^<input\b[^>]*\btype=["']?(?:radio|checkbox|hidden)\b/i;
   const FIELD_SEL = "input:not([type=radio]):not([type=checkbox]):not([type=hidden]), textarea, select"; // 选项卡底下是隐藏的 radio
   const MARK = "\u0000";
+  const AGE_TOKEN = /age:YWdlLWVuY3J5cHRpb24ub3JnL3Yx[A-Za-z0-9+/]*={0,2}/g;  // 和 age-init.js 的 TOKEN 一致
+  const AGE_FENCE = /^(\s*)(`{3,}|~{3,})\s*age\s*$/;
 
   const abs =(target, base) => (!target || KEEP.test(target) ? target : new URL(target, base).href);
 
@@ -93,6 +97,34 @@
     return [REPO + path, range];                            // 站上没有的是仓库根的文件（mkdocs.yml、deploy.sh）
   }
 
+  // 打码：解锁过换成明文，没解锁、解不开换成记号
+  async function openAge(cipher, block) {
+    try {
+      const text = globalThis.WikiAge ? await WikiAge.open(cipher, block) : null;
+      return text === null ? { mark: "【已加密】" } : { text };
+    } catch (e) {
+      return { mark: "【解不开】" };
+    }
+  }
+
+  // ```age 块：明文放进普通代码块，围栏比明文里最长的一串反引号多一个；记号单独一行
+  async function openAgeBlock({ indent, armor }) {
+    const r = await openAge(armor.map(l => l.trim()).join("\n"), true);
+    if (r.mark) return indent + r.mark;
+    const f = "`".repeat(Math.max(3, ...(r.text.match(/`+/g) || []).map(s => s.length + 1)));
+    return [f, ...r.text.split("\n"), f].map(l => l && indent + l).join("\n");
+  }
+
+  // `age:…` 小字：同一段密文只解一次
+  async function openAgeTokens(text) {
+    const found = [...new Set(text.match(AGE_TOKEN) || [])];
+    const opened = new Map(await Promise.all(found.map(async t => {
+      const r = await openAge(t, false);
+      return [t, r.mark || r.text];
+    })));
+    return text.replace(AGE_TOKEN, t => opened.get(t));
+  }
+
   // 去掉一行里代码以外的 HTML 注释，行内代码原样跳过；注释跨行时 state.open 记着还没收尾
   function stripComments(line, state) {
     let res = "", i = 0;
@@ -123,6 +155,7 @@
     let depth = 0;                                          // 照常复制的部分：代码以外的 div 层数
     const unwrap = [];                                      // 条件成立的分支：进去之前的层数，配上它的 </div> 那行不要
     const seen = { n: 0 };                                  // 数到第几个填空控件
+    let age = null;                                         // 在 ```age 块里：{ i: 开头那行, indent, armor: 密文各行 }
     const jobs = [];
     const out = lines.map((line, i) => {
       if (!fence && (comment.open || line.includes("<!--"))) {
@@ -132,10 +165,22 @@
       }
       const m = line.match(/^\s*(`{3,}|~{3,})/);
       if (m) {
-        if (!fence) fence = { ch: m[1][0], len: m[1].length };
-        else if (m[1][0] === fence.ch && m[1].length >= fence.len && /^\s*[`~]+\s*$/.test(line)) fence = null;
+        if (!fence) {
+          fence = { ch: m[1][0], len: m[1].length };
+          const a = !skip && line.match(AGE_FENCE);
+          if (a) { age = { i, indent: a[1], armor: [] }; return ""; }  // 先占位，解完换成整块
+        } else if (m[1][0] === fence.ch && m[1].length >= fence.len && /^\s*[`~]+\s*$/.test(line)) {
+          fence = null;
+          if (age) {
+            const a = age;
+            age = null;
+            jobs.push(openAgeBlock(a).then(block => { out[a.i] = block; }));
+            return null;
+          }
+        }
         return skip ? null : line;
       }
+      if (age) { age.armor.push(line); return null; }
       if (skip) {
         if (!fence) {
           skip += divDepth(line);
@@ -180,7 +225,8 @@
       if (line.trim()) gap = false;
       kept.push(line);
     }
-    const text = kept.join("\n").replace(new RegExp(`${MARK}(\\d+)${MARK}`, "g"), (_, i) => fieldValue(fields[i]));
+    const text = (await openAgeTokens(kept.join("\n")))   // 先解密文再嵌填的值，读者填的字不会被当成密文
+      .replace(new RegExp(`${MARK}(\\d+)${MARK}`, "g"), (_, i) => fieldValue(fields[i]));
     return withSource
       ? `${text.trimEnd()}\n\n本文源地址：${base}\n上面就是这个地址的全文。之后读到的页面再链到这个地址（包括带 # 的小节链接），直接看上文对应的地方，不要重复打开。\n`
       : text;

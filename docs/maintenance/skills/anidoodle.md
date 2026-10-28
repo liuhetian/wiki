@@ -21,7 +21,6 @@ description: "anidoodle 代码手绘的维护记录：吸纳自 alexgreensh/anid
     - 上游正文用行内 code 写文档路径，改成相对当前文件的链接，链接文字保留上游写法（相对 skill 根），整包解压后照着读也对得上；指向 `.ts`、`.mjs`、`.json` 的路径仍是行内 code
     - 提到 `SKILL.md` 的地方改成链到入口页；GitHub 上风格总览图的地址改成本地 `assets/styles.jpg`；音源许可证里的外部网址挪进脚注
     - 风格索引加「配方」列，链到同目录 30 篇配方，`balloon`、`mellan` 两种没有配方页
-    - `references/backends-and-adapters.md` 讲 HyperFrames 后端的地方补了一个站内链接，指向本站收的 [HyperFrames 视频](../../skills/hyperframes/index.md)
     - 引擎脚本：`registry.mjs` 不再生成 `references/styles/INDEX.md`，只写 `engine/styles.gen.json` —— 重新生成会用英文表盖掉中译和配方列，新增画风时手工在索引页加一行；`launchExample.ts`、`launch.mjs`、`scaffold.mjs`、`verify-export.mjs`、`adapters/hyperframes.mjs` 里指向改名文档的注释和提示跟着改；`registry.mjs` 开头的说明改成和现在的行为一致
     - `engine/test/` 保留：`gate.mjs --self-test` 读 `test/fixtures/`，工具表里的 `npm test` 也指着它
 

@@ -77,7 +77,7 @@ const abs = (target, base) => (!target || KEEP.test(target) ? target : new URL(t
 - **分支按选择去留**：`<div data-when="名=值" markdown>` 包起来的内容，名为「名」的控件选了「值」才复制，只写「名」就是那个框填了才复制。网页上条件不成立的块由脚本挂上 `zx-no-copy`，和写死的那种一个样子；复制时拿源文件里写的条件和同一批控件值再算一遍，用的是同一个函数，结果和网页上一致，不成立的整块去掉，成立的只去掉外壳 div。不复制的块里的 `required` 不拦。写法见[分支](../../skills/wiki-guide/reference/branch.md)
 - **去掉 HTML 注释**：网页上本来不显示，对话框里也不要，整行、行尾、跨行的都去；代码块和行内代码里举例写的注释不动。删完留下的连续空行并成一行
 - **填空换成填的值**：正文里的 `<input>`、`<textarea>`、`<select>` 是给读者填的空，复制时标签换成填的值，空着的写成【placeholder】；值在链接改写之后才嵌进去，填的内容不会被当成链接改写。写法见[自研组件 · 填空](../../skills/wiki-guide/reference/components.md#fill)
-- **打码原样复制**：取的是源文件，页面上解锁过也还是密文；要明文接 [`age-open.py`](age-mosaic.md#cli)
+- **打码跟着解锁走**：这个标签页解锁过，`` `age:…` `` 换成明文、```` ```age ```` 块换成普通代码块；没解锁写成【已加密】，解锁了还解不开写成【解不开】。几百字的密文贴给 AI 只占上下文，它手里没钥匙也解不开；解锁过的，网页上看到的就是明文，复制出来跟看到的一致。解密借 `age-init.js` 的 `WikiAge.open`，用的是解锁时记下的私钥，见[打码](age-mosaic.md#design)
 - **写剪贴板**：https 下用 `navigator.clipboard`；本地 http 预览没有这个接口，退回隐藏 textarea 加 `execCommand("copy")`
 
 ## 实现 { #impl }
@@ -87,11 +87,13 @@ const abs = (target, base) => (!target || KEEP.test(target) ? target : new URL(t
 | `mkdocs.yml` | `repo_url`、`edit_uri` 设成站点根；`extra_javascript` 挂 `vendor/md-copy.js` |
 | `overrides/main.html`、`overrides/home.html` | 页头写 `alternate` 和 `describedby` 两行 |
 | `overrides/partials/source.html` | 空文件，关掉 `repo_url` 带出来的仓库入口 |
-| [`vendor/md-copy.js`](../../vendor/md-copy.js) | 复制按钮、改写、填空和分支，约 250 行，不压缩 |
+| [`vendor/md-copy.js`](../../vendor/md-copy.js) | 复制按钮、改写、填空、分支和打码，约 300 行，不压缩 |
 | `scripts/check-links.py` 检查 6 | 算哪些入口有子页链回，核对 frontmatter 的 `copy_source: true` |
 | `stylesheets/zx-theme.css` 第 11、12 节 | 填空控件的样式；不复制的块的样式 |
 
 2026-10-15 测过（当时还没改成去掉 frontmatter）：正式站构建并照 `deploy.sh` 镜像 `.md` 后起本地预览，在打码那篇把剪贴板接口换成记录、自动点按钮——frontmatter 保留、来源注释在、三种 snippet 各指对地方、正文相对链接和 iframe 的 `src` 改成线上地址、`#cli` 锚点和代码块里的命令不动。
+
+2026-10-26 在 node 里测过打码：未解锁时收藏夹·网站、开发环境第 0 步的 6 处密文都换成【已加密】；放一把临时生成的测试私钥，用它加密的行内小字、代码块里的小字、缩进在提示框里的 `age` 块都换成明文，wiki 钥匙加密的那 6 处换成【解不开】；写作规范里举例的 `` `age:…` `` 和嵌在示例里的 `age` 块不动，没有密文的页面复制结果和改之前逐字节一致。
 
 ??? abstract "`vendor/md-copy.js` —— 复制按钮源码（未压缩）"
 

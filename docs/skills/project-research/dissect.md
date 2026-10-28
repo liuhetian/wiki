@@ -34,7 +34,7 @@ description: "想拆解学习一个仓库或项目的设计时用：照论文的
 
 <div data-when="收纳=是" markdown>
 
-写进本 wiki：你当前的工作区就是本 wiki 的仓库，动笔前先读仓库里的 `docs/skills/wiki-guide/index.md`，照它的写作流程写进仓库，下面没写到的都按它来。
+写进本 wiki：你当前的工作区就是本 wiki 的仓库，动笔前先读仓库里的 `docs/skills/wiki-guide/index.md` 和 `docs/skills/collect/index.md`（收纳的共用规矩），照写作流程写进仓库，下面没写到的都按它们来。写在 `docs/projects/<名>/`；这个目录里已经有一页粗讲的，就在原地写，入口那页按下面重写，地址不变。
 
 </div>
 

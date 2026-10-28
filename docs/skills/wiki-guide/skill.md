@@ -1,19 +1,16 @@
 ---
-description: "在 skills/ 下收纳或改 skill 时读（先读写作规范）：迷你、标准、抽象三种形态怎么判，所有来源共用的收纳步骤，插件仓库、脚本重的 skill、提示词合集、教程、自己跑通的 prompt 各怎么收，带脚本的 skill 怎么发，nav 怎么挂，页尾链到维护记录"
+description: "在 skills/ 下写或改 skill 时读（先读写作规范）：迷你、标准、抽象三种形态怎么判，自己跑通的 prompt 怎么挖填空，带脚本的 skill 怎么发，nav 怎么挂，页尾怎么链到维护记录；从外面收进来的另读收纳 skill"
 ---
 
-# 收纳 skill
+# 写 skill
 
 skill 本质是渐进式披露的文档。markdown 里写的相对链接，渲染成网页后照样能访问到对应的文档 —— 静态网页就能替代本地目录当远程 skill 源，AI 依旧顺相对链接按需往下读。
 
-目录沿用 Anthropic 的 skill 形态和 authoring best practices[^bp]，文字守[写作规范](index.md)。本页先讲成品的[三种形态](#layout)和所有来源共用的[收纳步骤](#principles)，再管实践中多出来的两件事：
-
-1. 来源不同，收法不同 —— 见[不同的源头类型](#sources)
-2. skill 还带可执行脚本 —— 见[带脚本的 skill](#scripts)
+目录沿用 Anthropic 的 skill 形态和 authoring best practices[^bp]，文字守[写作规范](index.md)。本页管 skill 写成什么样：[三种形态](#layout)、[自己跑通的 prompt](#own-prompt)、[带脚本的 skill](#scripts)、[nav](#nav)、[页尾链到维护记录](#maintenance-record)。从外面收进来的，先照[收纳 skill](../collect/skill.md)走收纳步骤。
 
 ## 三种最终形态 { #layout }
 
-收纳到本 wiki 的 skill 最终是下面三种形态之一。`skills/` 是一棵树：中间的节点都是抽象 skill，叶子是迷你 skill 或标准 skill。
+本 wiki 的 skill 最终是下面三种形态之一。`skills/` 是一棵树：中间的节点都是抽象 skill，叶子是迷你 skill 或标准 skill。
 
 | 形态 | 结构 | 什么时候用 | 活例 |
 |---|---|---|---|
@@ -32,52 +29,9 @@ skill 本质是渐进式披露的文档。markdown 里写的相对链接，渲�
 - **项目运行文件不进 `assets/`**：`deploy.sh`、`mkdocs.yml` 这类真身留仓库根才能跑，文章里 `--8<--` 引用，不复制
 - **入口的 description 写干什么 + 什么时候用**，上级入口那行钩子照抄它；吸纳来的在钩子末尾括号注明吸纳自谁
 
-## 收纳步骤 { #principles }
+## 自己跑通的 prompt { #own-prompt }
 
-不管什么来源都按这个顺序走，来源特有的那一步见[不同的源头类型](#sources)。
-
-1. **先拆架构、定形态，和用户确认**：看来源里有几个 skill、带不带 reference 和 assets，按[判形态](#layout)对上三种形态。超级简单、没有附带目的的几句话，先看站内有没有相似的 skill，和用户确认能否收进已有 skill
-2. **定能力名称，和用户确认**：也就是解决什么问题。目录名用英文，用规范的变量命名或者直接对齐上游 slug
-3. **上游入口 `SKILL.md` 改名**：只有这一个文件的，改名成 `<名字>.md`（迷你 skill）；带 references、scripts、assets 的，改名成 `<名字>/index.md`（标准 skill），从而符合 wiki 的渲染规范
-4. **frontmatter 忠实保留**：`allowed-tools`、`model` 等字段原样不动；`name` 用和用户确认的能力名称，`description` 按能力名称改写成什么时候用、用了做什么，不照译原文。复制按钮会自动去掉 frontmatter。原文没有一级标题的补一个
-5. **深度收纳，不是简单翻译或原文照录**：内容全部译为中文，人称转换成对 AI 讲述。允许大幅改动，让它贴合本站 —— 换掉本站已有能力能替代的依赖，删掉用不上的路线，脚本一起改，改了什么写进维护记录。活例：[整理视频为笔记](../video-note/index.md)把下载视频和本地转写换成了 [Agent 基础能力](../agent-io/index.md)的接口，网页 AI 字幕整条删掉。它引用的 references 也要收齐并翻译为中文；README、安装器、CI、测试、运行方式（比如用 xxx 命令运行）跳过。处理好文件之间的路径引用，保证能通过相对路径访问到 skill 内部资源和依赖的其他 skill
-6. **prompt 里的占位改成填空**：上游的 `{{idea}}`、`[产品名]`、【…】这类，一律改成[填空](reference/components.md#fill)输入框，读者在网页上填好再复制；为占位写给 AI 的说明（「【】里的内容用户还没给，先问用户要，齐了再开始」这类）随之删掉，输入框本身就说明了哪里要填。活例：[人话翻译](../chat-prompts/plain-talk.md)
-7. **入口页说清拿到它之后要做什么**，可以补一两句原因给人看。顶层入口（收进来的抽象 skill 的 `index.md`，或者单个 skill 本身）开头写领域建模：本 skill 解决什么问题，可以参考原本 frontmatter 里的 description，也可以参考 README.md 里的描述。原文里的出处、作者、外链不留在入口页，挪进维护记录的「上游」，外链写成脚注 —— 同[写作规范的硬规矩](index.md#rules)
-8. **收尾**：上级入口加一行钩子（照抄 description，见[三种形态](#layout)最后一条），`mkdocs.yml` 注册 [nav](#nav)，顶层入口页尾链到[维护记录](#maintenance-record)，跑 `python3 scripts/check-links.py`
-
-## 不同的源头类型 { #sources }
-
-上游本来就是一个 skill 的，走完收纳步骤就够；下面几种来源另有讲究。
-
-### 插件仓库 { #plugin-repo }
-
-插件的物理形态就是一个 git 仓库，里面可能不光有 skill，还有别的组件：hooks、agents、commands、mod、MCP 服务器[^overview]。收纳时先分清哪些有用、哪些丢掉。
-
-本站不提供、也不希望提供侵入客户端 agent 的能力，所以 hooks、agents、commands 提炼出文本 prompt 转换成 skill，作为软引导；mod（Claude Code 的侵入式插件）和 MCP 暂时没法转成 skill，吸纳时丢弃，并明确告知发起收纳的人丢了哪些。
-
-| 组件 | 怎么收 |
-|---|---|
-| skills | 按[收纳步骤](#principles) |
-| hooks | 转成文字：xxx 之后，执行 xxx 脚本；脚本忠实保留 |
-| agents | 常见形态就是一句话，直接收成 skill |
-| commands | 常见形态就是一句话，直接收成 skill；里面的变量（`$ARGUMENTS` 这类）改成[填空](reference/components.md#fill)，同收纳步骤里的占位 |
-| mod、MCP | 丢弃，丢了什么写进[维护记录](#maintenance-record)的「跳过了什么」，并告诉用户 |
-
-### 脚本重、更新快的 skill { #heavy }
-
-上游是 skill，但主体是一套脚本流水线、几天一个版本的，只收离开脚本也能用的知识：方法、讲法、prompt 写法，不照收纳步骤第 5 步收齐。入口写清怎么装上游、哪些文件不能动，真正生成交给上游跑；用户说全收才全收。活例：[PPT Master](../ppt-master/index.md)。
-
-### 提示词合集、卡牌站
-
-来源自带的形式和框架不跟着进来：卡牌、稀有度、站点自己的分类、几套并存的占位写法这类包装一律丢掉，按本站的 skill 形态重新组织，分组按使用场景来。只收能直接拿来用的内容，分析来源本身的话（比如从写法推断出处）不进 skill，确实有用的写进维护记录的「上游」。活例：[对话提示词](../chat-prompts/index.md)，原来是一套提示词卡牌。
-
-### 教程、视频这类教人怎么做的内容
-
-先照做一遍再收。原文多半只露关键词和成品，照着说的做不一定行，坑要自己跑出来：跑通的 prompt、参数和坑写进 skill，和原文不一样的地方写进维护记录的「翻译之外的改动」。视频先用[整理视频为笔记](../video-note/index.md)记成文章，文章链到 skill，skill 不链回文章。活例：Gallery 的[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)，原视频只给了风格关键词，首帧怎么做、比例怎么补、怎么接成循环都是照做时发现的。
-
-### 自己跑通的 prompt
-
-和占位改填空反过来：换题材要改的值挖成填空，placeholder 写成「比如」加实测那次的值，照着填回去就是跑通过的那条。活例：Gallery 的[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)，花名、颜色、海报文字挖空，placeholder 是洋桔梗那次的值。
+和收纳时把上游占位改成填空反过来：换题材要改的值挖成[填空](reference/components.md#fill)，placeholder 写成「比如」加实测那次的值，照着填回去就是跑通过的那条。活例：Gallery 的[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)，花名、颜色、海报文字挖空，placeholder 是洋桔梗那次的值。
 
 ## 带脚本的 skill：远程为主，整包兜底 { #scripts }
 
@@ -123,7 +77,7 @@ reference 不在 nav 里单独成层，展平到所属 skill 的入口后面；�
     - 数据库: skills/fastapi/reference/数据库.md
 ```
 
-## 维护记录 { #maintenance-record }
+## 页尾链到维护记录 { #maintenance-record }
 
 在顶层入口页末尾用分割线加一行链接，包进 `zx-no-copy` 块：网页上和源文件里都看得到，但是复制按钮复制出来的结果不会带上这个块的内容。
 
@@ -137,12 +91,6 @@ reference 不在 nav 里单独成层，展平到所属 skill 的入口后面；�
 </div>
 ```
 
-记录本身写在 `maintenance/skills/<名字>.md`，挂进[维护板块](../../maintenance/index.md#skills)，只写四样：
+记录本身写在哪、写什么，见收纳的[维护记录](../collect/index.md#maintenance-record)。
 
-- 上游：仓库、作者、许可证，原文里提到的出处也写在这
-- commit：一句话，钉在哪个 commit、哪天
-- 跳过了什么
-- 翻译之外的改动
-
-[^overview]: [Plugins overview](https://code.claude.com/docs/en/plugins/overview) —— Claude Code 官方文档，2026-10-14 读。
 [^bp]: Anthropic [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)，2026-10-16 读。

@@ -92,6 +92,7 @@ bash scripts/age-seal.sh -a   # 粘贴多行、Ctrl-D 结束 → 打印 armor，
 - **块解开后是素 `<pre><code>`**，没有语法高亮，要高亮的内容别放进 `age` 块
 - **wiki 钥匙对专用**：私钥在部署机 `~/.config/age/wiki.key`，公钥在 `scripts/age-seal.sh`，口令锁住的副本在 [`vendor/age-init.js`](../../../vendor/age-init.js) 的 `WIKI_KEY_AGE`；换钥匙对时三处一起改，旧密文重新加密
 - 命令行读 `.md` 源时，管道接 `uv run scripts/age-open.py` 整页解开；用法和凭据查找顺序写在脚本头部
+- 复制按钮跟着解锁走：没解锁复制成【已加密】，解锁过复制出明文
 
 活例：[开发环境第 0 步](../../../projects/ai-assistant/dev-env.md#proxy)代码块里的服务器地址和登录密码。
 
@@ -130,7 +131,7 @@ bash scripts/age-seal.sh -a   # 粘贴多行、Ctrl-D 结束 → 打印 armor，
 
 网页上照常显示，左边一道虚线、上方一个「不复制」小字；读 `.md` 源的 AI 也看得到，只有复制按钮整块跳过；块放在页面任何位置都行。写法同时间线：开头结尾前后各空一行，里面不缩进。复制按钮另外还会去掉 frontmatter 和代码以外的 HTML 注释；目录下有页面链回的入口在 frontmatter 写 `copy_source: true`，复制时末尾带一行源地址，该写没写、不该写写了 check-links 都会拦。样式在 `zx-theme.css` 第 12 节。
 
-活例：[盘问我](../../grilling.md)页尾的维护记录，写法见[收纳 skill · 维护记录](../skill.md#maintenance-record)。
+活例：[盘问我](../../grilling.md)页尾的维护记录，写法见[写 skill · 页尾链到维护记录](../skill.md#maintenance-record)。
 
 要按读者的选择决定哪段复制，见[分支](branch.md)。
 

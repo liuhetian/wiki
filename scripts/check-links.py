@@ -10,7 +10,7 @@
 1. 父级链接 —— 每篇 .md 必须被**某个祖先目录**的索引页用 markdown 链接直接指向。
    索引页指 index.md / SKILL.md 两种：SKILL.md 是上游主文件，照样承担链接责任。
    「祖先」而非「最近父级」是必要的：深层文件常由上面几层的入口统一挂链（活例：
-   HyperFrames 各子 skill 入口末尾的文件清单挂住 rules/、transitions/ 下的上百篇）。
+   Dashboard 后台入口的形状总表挂住 reference/<分组>/ 下的 35 篇）。
 
 2. 死链 —— 指向不存在 .md 的链接。代码块和行内 code 里的不算，理由同检查 5：
    那是示范不是引用（活例：领域建模的 GLOSSARY.md 格式模板举例

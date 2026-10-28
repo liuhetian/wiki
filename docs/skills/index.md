@@ -1,20 +1,20 @@
 ---
-description: "给 AI 挂载执行的成套资产：我自己在长期使用中沉淀下来的实践集合，按 Claude skill 的标准目录组织、作为给 Claude Code 的 skill 维护，同时整理成人可读的页面发到这里。每套讲的都是「怎么做、为什么这么做」，不是教程；URL 保持稳定，整棵树可以直接当远程 skill 用"
+description: "给 AI 挂载执行的成套资产，是板块那根从通用到具体的轴的背面：每一层都可以有一个影子，只留一种做法，写成守则加脚本，很少讲原因；按 Claude skill 的标准目录组织，URL 保持稳定，整棵树可以直接当远程 skill 用"
 copy_source: true
 ---
 
 # Skills
 
-给 AI 挂载执行的成套资产：我自己在长期使用中沉淀下来的实践集合，按 Claude skill 的标准目录组织、作为给 Claude Code 的 skill 维护，同时整理成人可读的页面发到这里。每套讲的都是「怎么做、为什么这么做」，不是教程；URL 保持稳定，整棵树可以直接当远程 skill 用。
+给 AI 挂载执行的成套资产，是[板块那根轴](../projects/wiki/sections.md#skill)的背面：笔记、Gallery、文章、项目每一层都可以有一个影子，只留一种做法，写成 AI 照着做的守则加脚本，很少讲原因，原因留在正面。按 Claude skill 的标准目录组织、作为给 Claude Code 的 skill 维护，同时整理成人可读的页面发到这里；URL 保持稳定，整棵树可以直接当远程 skill 用。
 
 ## 基础
 
-- [本 wiki 写作规范](wiki-guide/index.md) —— 往这个 wiki 写东西前先读：写作流程、放哪个板块、硬规矩、什么场景用什么语法、文风；课程页怎么写、收纳 skill、精简检查是三个子 skill
+- [本 wiki 写作规范](wiki-guide/index.md) —— 往这个 wiki 写东西前先读：写作流程、放哪个板块、硬规矩、什么场景用什么语法、文风；课程页怎么写、写 skill、精简检查是三个子 skill
 - [Agent 基础能力](agent-io/index.md) —— 给新 Agent 装上读 PDF、音视频、生成媒体、网络搜索等能力：每个能力一篇接入说明，需要时配一个 `uv run` 脚本；已接入：阅读 PDF、转录音频、阅读视频、网络搜索、解析分享链接、读取邮箱、生成语音、生成音乐、生成编辑图片、生成视频、调用 DeepSeek、结构化判断（默认 Jev，另接三家）
 
 ## 调研与收集
 
-- [收纳导诊](collect-triage.md) —— 要把外面的仓库、网站、帖子、视频或一批图收进本 wiki、还没想好怎么收时用：看来源到能分诊为止，文章线（给人读）和 skill 线（给 AI 读）分开判，一个来源可以两边都收；只问我能定的几件事，交出一份给下一个 agent 的交接 prompt —— 每条线用哪个 skill、收到哪、收多深、两边怎么互链，另附几句给人看的理由；只分诊，不动手
+- [收纳](collect/index.md) —— 把外面的仓库、网站、帖子、视频或一批图收进本 wiki 时用：先用收纳导诊分诊、交出交接 prompt，再照交接读每一面的执行页 —— 收纳 skill、收进 Gallery、调研项目、整理视频为笔记；外部材料怎么存、维护记录写什么是两面共守的规矩
 - [调研项目](project-research/index.md) —— 要弄懂、拆解或复刻别人的项目时用：只想知道它是什么，用粗讲项目讲三四段大白话；要学它的设计，用细讲项目照论文骨架写一组文档；要从零复刻、对比同领域几个项目或做实验，用写书写成一本书。都先读源码，文档只当线索
 - [整理视频为笔记](video-note/index.md) —— 要把视频或图文帖整理成学习笔记时用：分下载、分析、输出三段，前两段跑 agent-io 的平台下载脚本和 video_read，取下内容、出关键帧和转写；输出段出证据索引和篇幅预算，Agent 按预算写学习型笔记，写完打分验收（吸纳自 Rimagination/bili-note）
 - [获取热点](hot-topics/index.md) —— 想知道 AI 圈此刻在热什么、最近发生了什么时用：当前热点榜和事件来龙去脉、过去 24 小时或一周的精选、按公司模型人物搜最近动态、日报周报月报；一个信息源一篇，现在接了 AIHOT 和 linux.do 日报（音频）
@@ -38,8 +38,8 @@ copy_source: true
 - [旧刊物海报](pulp-poster.md) —— 要把一张照片做成九十年代旧刊物电影海报时用：读图填场景卡，按有没有要认出来的脸选主体档位，在变化引擎里配方，编四段 prompt 调 gpt-image-2.5 编辑接口改图，质检后最多定向修正一次；交成图加几句创作思路（吸纳自 Nealsun1993/neil-quentin，MIT，中译）
 - [图片提示词反推](image-prompt-reverse/index.md) —— 从参考图反推生图 prompt：简化版[七维拆解](image-prompt-reverse/seven-dimensions/index.md)，人弄懂拆法、自己跟看图模型分两轮问（整理自 linux.do 帖子；[维护记录](../maintenance/skills/seven-dimensions.md)）；完整版[从图反推 prompt](image-prompt-reverse/get-prompt-from-image/index.md)，AI 直接产出中英正向 prompt 和负向词（吸纳自 wuyoscar/GPT-Image2-Skill，原作者 LunarXuan，MIT，中译；[维护记录](../maintenance/skills/get-prompt-from-image.md)）
 - [anidoodle 代码手绘](anidoodle/index.md) —— 要用代码画画、做动画时用：32 种画风的静帧、自己画出来的延时、任意长度的影片、讲解片、发布片和响应页面操作的网页动画，配乐也用代码作曲；能仿用户给的图的画风、跨镜头保持角色一致、教人画画。同一份源码到哪都出同样的像素和声音，不用任何生成素材；带 Node 引擎和 30 篇画风配方（吸纳自 alexgreensh/anidoodle，Apache-2.0）
+- [HyperFrames](hyperframes.md) —— 要用 HTML 写视频、渲染成 MP4，或让 agent 做发布片、讲解片、数据片时用：一页概要讲清 HyperFrames 的导演纪律 —— 三条故事线挑一条、SPEC 把形容词换成数字并禁掉默认样子、用陌生人的眼光复查 —— 和逐帧确定的渲染合同、各类片子读什么；CLI、素材、组件库和脚本在上游（吸纳自 heygen-com/hyperframes，Apache-2.0；[维护记录](../maintenance/skills/hyperframes.md)）
 - [视频生成](video-gen/index.md) —— 用生图、生视频模型做 AI 视频时用：按题材和环节挑子 skill；已收东方仙侠视觉导演，给仙侠场景写单张画面和视频关键帧的生图提示词（吸纳自 liyue-aigc/xianxia-visual-director）
-- [HyperFrames 视频](hyperframes/index.md) —— 用 HTML 做视频：HeyGen 开源的 21 个视频 skill 全套中译，从一个路由 skill 读起，访谈确认 brief 后分派给发布片、讲解视频、PR 讲解、口播字幕、卡点视频、deck 等 10 个创作工作流，按需加载 composition 契约、动效配方、媒体等领域 skill；带 142 个本地执行脚本（吸收自 heygen-com/hyperframes，Apache-2.0）
 
 ## 写代码
 
@@ -48,3 +48,7 @@ copy_source: true
 - [数据可视化](data-visualization/index.md) —— 可视化 skill 的大目录；每套方法独立维护规则、模板与可运行 demo
 - [前端画布](canvas/index.md) —— 无限画布/白板/节点图的 L1–L4 四级选型，比较成本与实用性，每级一个可玩的活 demo
 - [让布局说话（ui-no-labels）](ui-no-labels.md) —— 要让 AI 做界面的项目用：让 AI 把一条界面守则写进项目根的 `CLAUDE.md` 或 `AGENTS.md` —— 不加多余的次级标签和说明文字，让布局自己说明，免得界面堆满标签、像说明书（取自 @Ainward 的一张截图；[维护记录](../maintenance/skills/ui-no-labels.md)）
+
+## 逆向与安全
+
+- [Windows 软件逆向（exe-reverse）](exe-reverse.md) —— 逆向 Windows 本地软件（`.exe`/`.dll`/`.sys`/`.msi`）、定位授权校验、给二进制打补丁又不打坏、判断「只改客户端能不能成」时用：一页概要讲清这个 skill 把逆向分成哪些情况、靠什么纪律收口，逐层操作和脚本在上游；限用于自己的软件、授权样本和竞赛沙箱（吸纳自 reverse-skill-lab/exe-reverse，MIT；[维护记录](../maintenance/skills/exe-reverse.md)）

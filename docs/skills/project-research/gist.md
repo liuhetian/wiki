@@ -46,6 +46,10 @@ description: "想几句话弄懂一个仓库或项目在干什么时用：先读
 
 <div data-when="收纳=是" markdown>
 
-讲完把这几段收纳进本 wiki：你当前的工作区就是本 wiki 的仓库，动笔前先读仓库里的 `docs/skills/wiki-guide/index.md`，照它的写作流程写进仓库，和上面冲突的按上面。
+讲完把这几段收纳进本 wiki：你当前的工作区就是本 wiki 的仓库，动笔前先读仓库里的 `docs/skills/wiki-guide/index.md` 和 `docs/skills/collect/index.md`（收纳的共用规矩），照写作流程写进仓库，和上面冲突的按上面：
+
+- 落在 `docs/projects/<名>/index.md`，一个仓库一个目录，正文就是这几段，不套论文骨架；读的 commit 写进脚注，不另开维护记录。`docs/projects/index.md` 按领域挂一行钩子，钩子以「粗讲：」开头；nav 挂在项目的同一个领域分组下
+- 我讲完再追问的，在正文后开「追问」一节按问答补：一问一个三级标题，问题照我的原话，答案不限字数 —— 活例 `docs/projects/teable/index.md` 的「追问」
+- 之后要细讲，按[细讲项目](dissect.md)在同一个目录里写：入口这页按细讲重写，功能线各开一页，地址不变
 
 </div>

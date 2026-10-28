@@ -24,14 +24,15 @@ flowchart LR
 
 ## 内容
 
-六个顶层板块，各自的索引页就是入口：
+七个顶层板块，各自的索引页就是入口。笔记、Gallery、文章、项目排在一根从通用到具体的轴上，Skills 是这根轴的背面，收藏夹和维护在轴外，为什么这样分见[板块怎么分](docs/projects/wiki/sections.md)：
 
-- [文章](docs/posts/index.md) —— 一篇定义一个问题、提出解决方案，像一篇论文；论文笔记也是文章
-- [项目](docs/projects/index.md) —— 为了交付同一个东西收在一起的问题，自己做的、拆别人的都算，一个项目一个目录；这个站点本身怎么做的，见 [wiki 介绍](docs/projects/wiki/index.md)
-- [笔记](docs/notes/index.md) —— 概率与算法、统计学、机器学习、Git、JavaScript 等专业科目的学习与推导；可以用 git 冲突标记给自己出题
-- [Gallery](docs/gallery/index.md) —— 原样收录的成品参考：图片配 prompt、排版、色彩、前端风格 demo
-- [Skills](docs/skills/index.md) —— 给 AI 挂载执行的成套资产：FastAPI 后端、Dashboard 后台、数据可视化、前端画布、Agent 基础能力、HyperFrames 视频等
-- [维护](docs/maintenance/index.md) —— skill、Gallery 收录和项目背后的事：选型实测、上游来源、吸纳来的 skill 改过什么
+- [笔记](docs/notes/index.md) —— 一门学问，学会了能自己往下推：概率与算法、统计学、机器学习、Git、JavaScript 等；可以用 git 冲突标记给自己出题
+- [Gallery](docs/gallery/index.md) —— 现成的东西，通用到不用提问题就能挑：图片配 prompt、排版、色彩、前端特效 demo、人设
+- [文章](docs/posts/index.md) —— 一个通用问题：定义问题，给几种方案和依据，讲各自适合什么、怎么选，像一篇论文；代码只是示意，论文笔记也是文章
+- [项目](docs/projects/index.md) —— 一个具体的东西：自己做的软件、别人的仓库，讲它解了哪些问题；粗讲一页说它是什么，细讲一组、每步落到源码和实跑；这个站点本身怎么做的，见 [wiki 介绍](docs/projects/wiki/index.md)
+- [Skills](docs/skills/index.md) —— 轴的背面，给 AI 挂载执行的成套资产：FastAPI 后端、Dashboard 后台、数据可视化、前端画布、Agent 基础能力等
+- [收藏夹](docs/bookmarks/index.md) —— 轴外的入口：外面的站点、论坛、合集，只存链接、每条写清为什么收
+- [维护](docs/maintenance/index.md) —— 轴外的记录：skill、Gallery 收录和项目背后的事：选型实测、上游来源、吸纳来的 skill 改过什么
 
 往这里写东西的规矩见[本 wiki 写作规范](docs/skills/wiki-guide/index.md)。
 

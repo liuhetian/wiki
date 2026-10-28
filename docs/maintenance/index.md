@@ -23,7 +23,7 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 
 ## Skill 吸纳 { #skills }
 
-从别人那里吸纳来的 skill，一个 skill 一篇：上游、commit、跳过了什么、翻译之外的改动。写法见 [收纳 skill](../skills/wiki-guide/skill.md#maintenance-record)。
+从别人那里吸纳来的 skill，一个 skill 一篇：上游、commit、跳过了什么、翻译之外的改动。写法见收纳的[维护记录](../skills/collect/index.md#maintenance-record)。
 
 - [盘问我（grilling）](skills/grilling.md) —— 吸纳自 mattpocock/skills，钉在 95249b0，正文逐段中译
 - [带文档盘问（grill-with-docs）](skills/grill-with-docs.md) —— 吸纳自 mattpocock/skills，钉在 49dd158，连同依赖的 domain-modeling 一起中译；domain-modeling 放进目录当子 skill，加了往 `CLAUDE.md` / `AGENTS.md` 留指针的一步
@@ -35,7 +35,6 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [anidoodle 代码手绘](skills/anidoodle.md) —— 吸纳自 alexgreensh/anidoodle，钉在 25aae33，73 篇文档全文中译；6 个撞网址或当不了索引的文件改名，正文路径改成相对链接，风格索引加配方列；registry.mjs 不再覆盖中文索引，docs-check.mjs 和 README 演示素材跳过
 - [对话提示词（chat-prompts）](skills/chat-prompts.md) —— 取自 prompt-cards.cyanfish.site 的 17 段对话 prompt，钉在 JS 包 index-IivKxZ0S.js；去掉卡牌包装按场景重组，修补了架构先知和深度天赋挖掘机各一处；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录
 - [调研项目（project-research）](skills/project-research.md) —— 粗讲项目由 2026-10-19 介绍 bili-note 的对话提炼，细讲项目由 2026-10-20 拆解梨园的对话提炼，写书由 2026-10-23 讨论调研分阶段的对话提炼，没有外部上游；2026-10-20 从对话提示词挪出来单独成 skill
-- [HyperFrames 视频（hyperframes）](skills/hyperframes.md) —— 吸纳自 heygen-com/hyperframes，钉在 46f6cb3，21 个 skill、328 篇全文中译，脚本模板原样随附；FRAME.md 的 frontmatter 不译，各子 skill 入口末尾加文件清单
 - [去 AI 味（qu-ai-wei）](skills/qu-ai-wei.md) —— 吸纳自 LifelongLazyLearner/qu-ai-wei，钉在 ed35e74；上游本来是中文，SKILL.md 和九份规则表原文照录，只把外链挪进脚注
 - [檄文（xi-wen）](skills/xi-wen.md) —— 吸纳自 YuanZHAO321/XiWen，钉在 eb32d38；上游本来是中文，主文件、四份精讲、五篇底本古檄原文照录，入口的文件路径改成链接
 - [Dashboard（open-dashboard）](skills/dashboard.md) —— 蓝本 ahpxex/open-dashboard，钉在 aa9815f；Invariants 提炼成各篇「规矩」，实现换成自研 demo，原文不存档，只留两份系统级契约
@@ -47,6 +46,8 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [获取热点（hot-topics）](skills/hot-topics.md) —— 2026-10-21 用户提议单开成标准 skill，一个信息源一篇；AIHOT 读的是接口 2.0.0，官方 Agent 使用说明存档，没装它的 Skill、没接 MCP 和 RSS，实测条件请求、links.story 还指旧域名；linux.do 日报只取小宇宙上的音频，为什么不走 linux.do 和汇总站
 - [让布局说话（ui-no-labels）](skills/ui-no-labels.md) —— 取自一张水印 @Ainward 的手机截图，原帖链接没留，截图存档；英文原句译成中文，套用初始化项目写进 `CLAUDE.md` / `AGENTS.md` 的形态
 - [PPT Master（ppt-master）](skills/ppt-master.md) —— 吸纳自 hugohe3/ppt-master（MIT），钉在 523e5bd（6.7.3）；只收规划、沟通模式、配图写法和三份风格目录，流水线不收、引导客户端装上游；规划和配图是提炼改写，其余中译
+- [Windows 软件逆向（exe-reverse）](skills/exe-reverse.md) —— 吸纳自 reverse-skill-lab/exe-reverse（MIT），钉在 af9603c；脚本重、更新快，只收一页概要（分类三轴 + 门禁纪律梗概 + 边界），约 40 篇技术 reference、17 个脚本和全套测试 CI 都不收、引导装上游；正文报清基数，不让人以为这是全部
+- [HyperFrames（hyperframes）](skills/hyperframes.md) —— 吸纳自 heygen-com/hyperframes（Apache-2.0），钉在 5a28b4e（v0.8.206）；7 个 skill 都离不开引擎，只收一页概要，导演纪律为主，合同和片型讲到够分类；约 80 篇 reference、60 多个脚本、13 套外观预设、约 450 个组件和仓库内部 6 个 skill 都不收、引导装上游
 
 ## Gallery 收录 { #gallery }
 

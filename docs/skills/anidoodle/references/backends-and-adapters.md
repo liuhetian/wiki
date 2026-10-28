@@ -34,7 +34,7 @@ export const open = async (film, { scale, workers }) => session;
 | `playwright` | 帧，作为得到 MP4 的手段 | playwright + 一个 chromium 构建 |
 | `html-player` | **页面本身**：一个自包含、可离线打开的 HTML 文件 | playwright + 一个 chromium 构建 |
 | `remotion` | 经由 Remotion `<Composition>` 产出的帧 | `remotion`、`@remotion/bundler`、`@remotion/renderer` |
-| `hyperframes` | 由 Hyperframes 引擎在无头 Chrome 里定位（seek）取得的帧（本站收录了 [HyperFrames 的 skill](../../hyperframes/index.md)） | `@hyperframes/engine`、Node >= 22、ffmpeg |
+| `hyperframes` | 由 Hyperframes 引擎在无头 Chrome 里定位（seek）取得的帧 | `@hyperframes/engine`、Node >= 22、ffmpeg |
 
 ## 热和冷抓到的是不同的 bug
 

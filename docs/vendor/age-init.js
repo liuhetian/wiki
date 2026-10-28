@@ -7,6 +7,7 @@
 //   - 其他：当口令，先解开下面内嵌的 WIKI_KEY_AGE（用口令锁住的 wiki 私钥，跑一次 scrypt）
 // 解开的私钥存进 sessionStorage，同一个标签页里翻到别的页面自动还原，关掉标签页就忘；
 // 右下角「锁上」清掉它。页面上没有密文就直接返回，不加载 age-core.js。
+// 复制按钮（vendor/md-copy.js）借 globalThis.WikiAge.open 解源文件里的密文：解锁过的复制出明文，没解锁的不解。
 (function () {
   // 前缀是「age-encryption.org/v1」的 base64，普通文字里的 usage: 之类不会误伤
   const TOKEN = /age:YWdlLWVuY3J5cHRpb24ub3JnL3Yx[A-Za-z0-9+/]*={0,2}/g;
@@ -93,21 +94,26 @@ pw0glpBLtnv1PHQt20HEreCWRSzNYaROwcnNt4BmLDv+xYoNEGWdfBmjrXjFPLYS
     return AgeCore.findIdentity(new TextDecoder().decode(plaintext));
   }
 
+  // 一段密文 → 明文，末尾换行去掉；block 是 armor，否则是 age:… 小字
+  async function decrypt(identity, cipher, block) {
+    const file = block ? AgeCore.dearmor(cipher) : AgeCore.decodeToken(cipher);
+    const { plaintext } = await AgeCore.ageDecrypt(file, { identity });
+    return new TextDecoder("utf-8", { fatal: true }).decode(plaintext).replace(/\n$/, "");
+  }
+
   async function revealAll(identityStr) {
     const identity = AgeCore.parseIdentity(identityStr);
     for (const it of items) {
       if (it.done) continue;
       try {
-        const file = it.block ? AgeCore.dearmor(it.armor) : AgeCore.decodeToken(it.token);
-        const { plaintext } = await AgeCore.ageDecrypt(file, { identity });
-        const text = new TextDecoder("utf-8", { fatal: true }).decode(plaintext);
+        const text = await decrypt(identity, it.block ? it.armor : it.token, it.block);
         if (it.block) {
           const pre = document.createElement("pre"), code = document.createElement("code");
-          code.textContent = text.replace(/\n$/, "");
+          code.textContent = text;
           pre.append(code);
           it.el.replaceWith(pre);
         } else {
-          it.el.replaceWith(document.createTextNode(text.replace(/\n$/, "")));
+          it.el.replaceWith(document.createTextNode(text));
         }
         it.done = true;
       } catch (e) {
@@ -187,6 +193,16 @@ pw0glpBLtnv1PHQt20HEreCWRSzNYaROwcnNt4BmLDv+xYoNEGWdfBmjrXjFPLYS
       sessionStorage.removeItem(STORE);                   // 存的私钥坏了就忘掉，下次重新解锁
     }
   }
+
+  // 给复制按钮用：这个标签页没解锁返回 null，解锁了返回明文，解不开抛错
+  globalThis.WikiAge = {
+    async open(cipher, block) {
+      const saved = sessionStorage.getItem(STORE);
+      if (!saved) return null;
+      await loadCore();
+      return decrypt(AgeCore.parseIdentity(saved), cipher, block);
+    },
+  };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();

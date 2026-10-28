@@ -31,7 +31,7 @@ description: "想把一个项目或一个领域写成一本书时用：先选角
 
 <div data-when="收纳=是" markdown>
 
-写进本 wiki：你当前的工作区就是本 wiki 的仓库，动笔前先读仓库里的 `docs/skills/wiki-guide/index.md`，照它的写作流程写进仓库，和本页冲突的按本页。`docs/projects/` 里已经拆过这个项目的，那就是底稿；书放在哪，盘问时一并问我。
+写进本 wiki：你当前的工作区就是本 wiki 的仓库，动笔前先读仓库里的 `docs/skills/wiki-guide/index.md` 和 `docs/skills/collect/index.md`（收纳的共用规矩），照写作流程写进仓库，和本页冲突的按本页。`docs/projects/` 里已经拆过这个项目的，那就是底稿。板块按角度定：从零复刻、做实验讲的是一个具体的东西，进项目；领域对比讲一个领域问题的几种解法，进文章；具体目录盘问时一并问我。
 
 </div>
 

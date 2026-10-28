@@ -10,14 +10,14 @@ copy_source: true
 ## 目标与用法 { #about }
 
 - [本 wiki 的目标与计划](roadmap.md) —— 2026-09-29 的审核：专业主干只到本科应用统计，要补数理统计与计算、计量、机器学习、深度学习四块；吸纳教材只留地图、压缩、手迹、连线四样，要记的科目按依赖排好、一科一本书，文末进度表做一项划一项
-- [把 wiki 当远程 skill](everything-skill.md) —— skill 要人能读能改，所以吸纳别人的 skill 要翻译；frontmatter 可丢，脚本部署前打包；插件里「告诉模型怎么做」的一半能换成 skill，「Claude Code 自己执行」的 hooks、mod 换不了。由此衍生出 [skill 收纳方案](../../skills/wiki-guide/skill.md)
+- [把 wiki 当远程 skill](everything-skill.md) —— skill 要人能读能改，所以吸纳别人的 skill 要翻译；frontmatter 可丢，脚本部署前打包；插件里「告诉模型怎么做」的一半能换成 skill，「Claude Code 自己执行」的 hooks、mod 换不了。由此衍生出 [skill 收纳方案](../../skills/collect/skill.md)
 - [新机器初始化自检](init-check.md) —— 从 clone 到能推送的五条链路：依赖与构建、链路闸门、LFS 真身、COS 凭证、GitHub 推送；各自怎么验、失败时先看哪里
 
 ## 板块分工 { #sections }
 
-- [板块怎么分](sections.md) —— 最小单位是文章：一个问题加解决方案，写给人看；项目、笔记、Gallery 是把多个问题收在一起的三种方式（交付同一个东西、学会同一门学问、同一类小问题），Skill 是从文章提炼、写给 AI 的执行方式；来源不算数
+- [板块怎么分](sections.md) —— 板块按一根从通用到具体的轴排：笔记（一门学问）、Gallery（通用到不用提问题就能挑）、文章（一个通用问题，几种方案）、项目（一个具体的东西，粗讲一页、细讲落到源码和实跑）；Skills 是轴的背面，每一层给 AI 照着做的影子；轴外是收藏夹（外面的入口，只存链接）和维护（背后的记录）；来源不算数
 
-顶栏六个板块：文章、项目、笔记、Gallery、Skills、维护，主题只在板块里分二级目录。维护不在这套分法里，是 skill、Gallery 收录和项目背后的记录。
+顶栏七个板块：文章、项目、笔记、Gallery、Skills、收藏夹、维护，主题只在板块里分二级目录。
 
 ### 东西为什么这样收 { #collect-why }
 
@@ -28,7 +28,7 @@ copy_source: true
 - **不侵入，不托管重东西**：mod、MCP 不收，重的流水线让客户端装上游
 - **收多深、侧重什么只有收的人知道**：所以先分诊，交一段交接 prompt 给人改，不直接动手；没说就按最浅收 —— 浅了再加一层便宜，深了再删是白花工夫
 
-照这些规律给一样东西分诊的是 skill [收纳导诊](../../skills/collect-triage.md)：文章线（给人读）和 skill 线（给 AI 读）分开判，一个来源可以两边都收；只定每条线用哪个 skill 收、收到哪、收多深，交出交接 prompt，具体怎么收由各个收纳 skill 管。
+照这些规律给一样东西分诊的是 skill [收纳导诊](../../skills/collect/triage.md)：正面（轴上四层，人和 AI 都读）和背面（skill，给 AI 照着做）分开判，一个来源可以两面都收；只定每一面用哪个 skill 收、收到哪、收多深，交出交接 prompt，具体怎么收由各个收纳 skill 管。
 
 ## 用到的技术 { #tech }
 
@@ -336,7 +336,7 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 新增 `scripts/build-skill-bundles.py`，`deploy.sh` 在 md 源镜像之后调用：入口 `index.md` 写了标准那一行`如果要调用 2 次以上本 skill 中的脚本，直接将[本 skill](<目录名>.tar.gz)下载到本地。`，就把整个目录原样打成这个包（跳过点开头的文件、`__pycache__` 和 `.pyc`），放进 `site/` 的同一位置，上传时钉 `application/gzip`；链接了包却不是这一行，部署停住。包按路径排序、时间戳和属主固定，内容不变字节就不变，`-s` 跳过重传；只在 `site/` 和桶里，不进 git。远程和整包共用一套文档，只写相对路径，不讲根目录：先前入口页写过「根目录是…，相对路径拼上它」，subagent 实测照着把子 skill 的脚本拼到父目录下拿到 404，已删。命令不用 shell 变量，因为 Agent 每次执行命令都是新环境。入口页只在开头介绍段末尾写这一句，默认走网络请求，不单独成节；不附下载命令，客户端 AI 自己会写。HyperFrames 的 `MANIFEST.txt` 清单删掉，换成整包；B站视频笔记逐个下载脚本的循环删掉，换成首段那一句；新增 mock 抽象 skill [测试skill](../../maintenance/mock-bundle/index.md)对照。
 
-详见[收纳 skill · 带脚本的 skill](../../skills/wiki-guide/skill.md#scripts)。
+详见[写 skill · 带脚本的 skill](../../skills/wiki-guide/skill.md#scripts)。
 
 ### 2026-10-17 · minify：增删 nav 条目不再波及全站 {: data-kind="配置" }
 
@@ -356,7 +356,7 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 `scripts/build-skill-bundles.py` 原来只扫各目录的 `index.md`，打它自己所在的目录；Gallery 的单条收录放在 `collected/gallery-*.md`，不占 `index.md`，写了标准那一行也打不了包。改成扫全站页面：标准那一行的链接指向 `<目录>/<目录名>.tar.gz`，就把那个目录打成包、放在它里面，原来 `index.md` 的写法是其中的特例，原有 5 个包重跑逐字节不变。代码块和行内代码里写的不再算声明；报错从「`index.md` 链了自己的包却不是标准写法」放宽成「链了全站没人声明的包」，子页链上级的包照旧不报。链接在三条路上都对：zensical 会把非 `index.md` 页面里指向构建时还不存在的文件的相对链接也改写对，用最小工程实测过；复制按钮和 AI 读的 `.md` 源按 `.md` 的地址解析相对链接，是读代码确认的。`deploy.sh` 的注释、写作规范、`CLAUDE.md` 跟着改。
 
-详见[收纳 skill · 带脚本的 skill](../../skills/wiki-guide/skill.md#scripts)。
+详见[写 skill · 带脚本的 skill](../../skills/wiki-guide/skill.md#scripts)。
 
 ### 2026-10-19 · 链路闸门补三处漏判 {: data-kind="流水线" }
 
@@ -430,9 +430,17 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 > 现在已经不再是一个选择题了，而是 文章线(人读)和skill线(AI读)并行，可能一次性吸纳到两边
 
-顶栏从八项改成 首页 · 文章 · 项目 · 笔记 · Gallery · Skills · 维护。「项目拆解」改名「项目」，自己做的也算：本 wiki、Kindle 常显信息屏、AI 助手、动画网页 PPT 从 `posts/` 搬进 `projects/` 按领域分组，如何分析数据搬进 `notes/statistics/`，`redirects` 给搬走的 27 页各加一行；文章顶栏只剩四篇单篇。课程内容全删，16 门科目留成 [roadmap](roadmap.md#subjects) 的待记科目；`conflict` 块、`course.py`、check-links 第 4 项留着，改成在笔记里给自己出题，`course.py status` 列出空着的题。写作规范的归属七问改成六问，按 Gallery、Skills、维护、项目、笔记、文章的顺序判一页放哪；[收纳导诊](../../skills/collect-triage.md)改成文章线和 skill 线分开判，一个来源可以两边都收；旧刊物海报的守则从 Gallery 拆成 skill。首页两个身子按六个板块重写，开屏的特性网格把课程卡换成项目卡。
+顶栏从八项改成 首页 · 文章 · 项目 · 笔记 · Gallery · Skills · 维护。「项目拆解」改名「项目」，自己做的也算：本 wiki、Kindle 常显信息屏、AI 助手、动画网页 PPT 从 `posts/` 搬进 `projects/` 按领域分组，如何分析数据搬进 `notes/statistics/`，`redirects` 给搬走的 27 页各加一行；文章顶栏只剩四篇单篇。课程内容全删，16 门科目留成 [roadmap](roadmap.md#subjects) 的待记科目；`conflict` 块、`course.py`、check-links 第 4 项留着，改成在笔记里给自己出题，`course.py status` 列出空着的题。写作规范的归属七问改成六问，按 Gallery、Skills、维护、项目、笔记、文章的顺序判一页放哪；[收纳导诊](../../skills/collect/triage.md)改成文章线和 skill 线分开判，一个来源可以两边都收；旧刊物海报的守则从 Gallery 拆成 skill。首页两个身子按六个板块重写，开屏的特性网格把课程卡换成项目卡。
 
 详见[板块怎么分](sections.md)。
+
+### 2026-10-26 · 复制按钮跟着解锁走：打码复制成明文或【已加密】 {: data-kind="前端" }
+
+> 我在想这么长一串，不应该进入AI上下文吧，解密前应该复制出来是 已加密， 解密后复制出来应该是真实值
+
+此前复制按钮把密文原样复制，页面上解锁过也一样，一段 `` `age:…` `` 两三百字，贴给 AI 只占上下文、它也解不开。`vendor/age-init.js` 把解密抽成一个函数，挂出 `WikiAge.open`，用解锁时记在 sessionStorage 里的私钥；`vendor/md-copy.js` 复制时找出源文件里的小字和 `age` 块：这个标签页解锁过就换成明文，块换成普通代码块，没解锁写成【已加密】，解锁了还解不开写成【解不开】。复制出来的跟网页上看到的一致，和填空、分支一个路子。
+
+详见[复制本页 Markdown 源](md-copy.md)。
 
 </div>
 

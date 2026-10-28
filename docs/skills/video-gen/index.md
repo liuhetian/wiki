@@ -8,4 +8,4 @@ description: "用生图、生视频模型做 AI 视频时用：按题材和环�
 
 - [东方仙侠视觉导演](xianxia-visual-director/index.md) —— 给东方仙侠场景写单张画面或视频关键帧的生图提示词时用：把一句构想、已有提示词或参考扩成参数锁定、导演方案、正负提示词和三个衍生方向，也做衍生、优化、诊断和变体；所有画面守同一套仙界总则，六种画幅，默认 16:9（吸纳自 liyue-aigc/xianxia-visual-director）
 
-用代码渲染视频不归这里：HTML 做视频用 [HyperFrames 视频](../hyperframes/index.md)，代码手绘动画用 [anidoodle 代码手绘](../anidoodle/index.md)。
+用代码渲染视频不归这里，代码手绘动画用 [anidoodle 代码手绘](../anidoodle/index.md)。
