@@ -399,7 +399,7 @@ plugins:
         posts/data-analysis/index.md: notes/statistics/data-analysis/index.md
         # 2026-10-27 收纳的规矩合成抽象 skill「收纳」：导诊挪进 collect/，收纳步骤和各源头类型从写 skill 挪出
         skills/collect-triage.md: skills/collect/triage.md
-        # 2026-10-28 收藏夹只存外面的链接，成了轴外的顶层板块，网站那页就是它的首页
+        # 2026-10-28 收藏夹成了轴外的顶层板块，网站那页按来源的形态拆成几页，旧地址落到入口
         bookmarks/websites.md: bookmarks/index.md
 
 # 链接校验。0.0.53 及更早版本有并行竞态：同一份内容偶发（约 1/15 次构建）误报大量
@@ -1248,6 +1248,10 @@ nav:
           - Windows 软件逆向: skills/exe-reverse.md
   - 收藏夹:
       - bookmarks/index.md
+      - 社区和论坛: bookmarks/community.md
+      - 人: bookmarks/people.md
+      - 合集和导航站: bookmarks/collections.md
+      - 工具和服务: bookmarks/tools.md
   - 维护:
       - maintenance/index.md
       - 能力与 skill:

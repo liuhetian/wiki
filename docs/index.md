@@ -62,7 +62,12 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 ## 收藏夹
 
-外面的站点、论坛、合集，里面什么层的东西都有，只存链接、每条写清为什么收；已收 6 个：接码、买号、梯子、下歌、内网穿透、agent 用例合集，在[收藏夹](bookmarks/index.md)。
+外面的整个来源，里面什么层的东西都有，只存链接、每条写清为什么收、拆出过什么；按来源的形态分页，全部在[收藏夹索引](bookmarks/index.md)：
+
+- [社区和论坛](bookmarks/community.md) —— linux.do
+- [人](bookmarks/people.md) —— 小红书、linux.do 上的作者，工作室 Lusion
+- [合集和导航站](bookmarks/collections.md) —— prompt 卡牌图鉴、agent 用例合集、梯子合集
+- [工具和服务](bookmarks/tools.md) —— 接码、买号、下歌、内网穿透
 
 ## 维护
 

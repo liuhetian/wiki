@@ -20,7 +20,7 @@ copy_source: true
 
 顶层七个板块：笔记、Gallery、文章、项目排在一根从通用到具体的轴上，Skills 是这根轴的背面，收藏夹和维护在轴外 —— 为什么这样分见[板块怎么分](../../projects/wiki/sections.md)。主题只做板块内的二级目录。下面七问定的是一页放哪。收外面的东西先读[收纳](../collect/index.md)：先分诊，再照每一面的执行页收。按顺序问：
 
-1. 外面的一个站点、论坛、合集，只存一个链接加一句为什么收？→ [收藏夹](../../bookmarks/index.md)，`bookmarks/index.md` 里一条一行。要从里面拆出一样写成页面，就按下面几问进轴
+1. 外面的整个来源 —— 一个论坛、一个人、一个合集，或者拿来就用的工具站 —— 只存一个链接加一句为什么收？→ [收藏夹](../../bookmarks/index.md)，按来源的形态进 `bookmarks/` 下的分类页，一条一行，写法见[一条怎么写](../../bookmarks/index.md#entry)。单篇帖子、文章不进收藏夹；要从里面拆出一样写成页面，就按下面几问进轴，再回条目上补「拆出过」
 2. 一件现成的东西，通用到不用提问题就能挑 —— 一张图配 prompt、一段版式、一套配色、一种前端风格配 demo、一个人设？→ [Gallery](../../gallery/index.md)，目录是 `gallery/`，七类各一个子目录：images（图片）、layouts（排版）、colors（色彩）、video（视频）、audio（音频）、web（前端特效）、personas（人设，一人一页，定妆照加基本资料，活例 [SEOA｜徐星澄](../../gallery/personas/seoa.md)）。本站自己做的，成品和做法写在同一页（[花卉动态生长海报](../../gallery/video/flower-growth-poster.md)）；别人的照[收进 Gallery](../collect/gallery.md)。layouts 区的五个分类页和 colors 区的经典主题色页由 `scripts/build-handdraw-gallery.py` 从 `images/handdraw-style/assets/` 生成，别手改；两区的 `index.md` 手写
 3. 给 agent 照着做的执行方式 —— 某一层的 AI 影子，只留一种做法，守则加脚本？→ [Skills](../index.md)
 4. 一个 skill、Gallery 收录或项目背后的事 —— 从哪来、为什么这么选、改过什么、实测过什么？→ [维护](../../maintenance/index.md)。skill 页只写怎么用，页尾链过来，写法见[写 skill · 页尾链到维护记录](skill.md#maintenance-record)；记录写什么见收纳的[维护记录](../collect/index.md#maintenance-record)
@@ -36,7 +36,7 @@ copy_source: true
 
 - **挪文件不留存根页**：要保住旧 URL 就别挪；挪了就删原文件、站内引用一并改，`mkdocs.yml` 的 `redirects` 加一行兜站外书签（只管 HTML，旧 `.md` 地址照样 404）。存根页没人链、不进 nav，留着只会逼 check-links 开豁免口子
 - **引外部一手资料三步**：① 真身存档进 `assets/`，注明出处和获取日期，正文用 `??? abstract` 折叠 + `--8<--` 展示；② 正文用 `>` 摘关键原句；③ 每处引用跟自己的分析。活跃开源仓库、关键契约已经消化成自己的话的，可以用钉 commit 的 GitHub 永链代替存档 —— 活例：[Dashboard](../dashboard/index.md) 的蓝本吸收
-- **正文链接只指站内，外部来源进脚注**：正文留 `[^名]`，URL 和读取日期写进文末脚注 —— 活例：[对象存储部署](../../projects/wiki/cos-deploy/index.md)。收藏夹里网站的条目和极简收的那句「使用 xxx 仓库即可」除外：链接本身就是收的内容，直接写在句子上
+- **正文链接只指站内，外部来源进脚注**：正文留 `[^名]`，URL 和读取日期写进文末脚注 —— 活例：[对象存储部署](../../projects/wiki/cos-deploy/index.md)。收藏夹的条目和极简收的那句「使用 xxx 仓库即可」除外：链接本身就是收的内容，直接写在句子上
 - **代码即引用**：展示仓库里的文件用 `--8<--` 引真身，不复制粘贴；路径先相对 `docs/`、再相对仓库根（`skills/.../x.css`、`mkdocs.yml`）。完整文件不单独成页，在讲它的页面文末 `??? abstract` 折叠引用
 - **缩进 4 空格**：折叠块、选项卡、提示框的子内容不缩 4 格就不被识别；代码块内部的缩进照原样
 - 代码块语言标识写 `python`，不写 `py`

@@ -31,7 +31,7 @@ flowchart LR
 - [文章](docs/posts/index.md) —— 一个通用问题：定义问题，给几种方案和依据，讲各自适合什么、怎么选，像一篇论文；代码只是示意，论文笔记也是文章
 - [项目](docs/projects/index.md) —— 一个具体的东西：自己做的软件、别人的仓库，讲它解了哪些问题；粗讲一页说它是什么，细讲一组、每步落到源码和实跑；这个站点本身怎么做的，见 [wiki 介绍](docs/projects/wiki/index.md)
 - [Skills](docs/skills/index.md) —— 轴的背面，给 AI 挂载执行的成套资产：FastAPI 后端、Dashboard 后台、数据可视化、前端画布、Agent 基础能力等
-- [收藏夹](docs/bookmarks/index.md) —— 轴外的入口：外面的站点、论坛、合集，只存链接、每条写清为什么收
+- [收藏夹](docs/bookmarks/index.md) —— 轴外的入口：外面的整个来源（论坛、人、合集）和拿来就用的工具站，按形态分页，只存链接、每条写清为什么收、拆出过什么
 - [维护](docs/maintenance/index.md) —— 轴外的记录：skill、Gallery 收录和项目背后的事：选型实测、上游来源、吸纳来的 skill 改过什么
 
 往这里写东西的规矩见[本 wiki 写作规范](docs/skills/wiki-guide/index.md)。
