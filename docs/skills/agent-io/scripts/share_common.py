@@ -11,7 +11,8 @@ Not run on its own. It holds what every platform does the same way:
         images/NN.<ext>    pictures; the extension follows the real format, not the URL
         cover.<ext>        videos
         video/pNN.mp4      one file per part; most posts have only p01
-    meta.json's parts lists, per part: page, cid, title, duration, video, subtitles, source, referer.
+    meta.json's parts lists, per part: page, cid, title, duration, video, subtitles, source, referer;
+    time_url only where the platform can open a part at a given second (Bilibili): append the seconds.
 
     xiazaitool (the share-link parser for direct video URLs) with retries, and the video download;
     a failed download is a warning, and a rerun finishes it from the URL saved in raw/ for free,

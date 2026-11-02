@@ -87,9 +87,47 @@ class Body(HTMLParser):
         self.quote = 0
         self.code: list[str] | None = None
         self.end: tuple[int, int] | None = None
+        self.style: list[tuple] = []  # (bold, font-size px, color) of each open element
+        self.run: list[tuple] = []  # the current block's text: (chars, bold, size, color)
+        self.sizes: dict = {}  # chars per font size, to find the body's
+        self.colors: dict = {}  # chars per color, to find the body's
+        self.heads: list[tuple] = []  # (block, <hN> level or 0, all bold, size, color)
+
+    def styled(self, tag: str, css: str) -> tuple:
+        bold, size, color = self.style[-1] if self.style else (False, None, None)
+        if tag in ("strong", "b"):
+            bold = True
+        if m := re.search(r"font-weight\s*:\s*(\w+)", css):
+            bold = m[1] in ("bold", "bolder") or m[1].isdigit() and int(m[1]) >= 600
+        if m := re.search(r"font-size\s*:\s*([\d.]+)px", css):
+            size = float(m[1])
+        if m := re.search(r"(?<![\w-])color\s*:\s*([^;]+)", css):
+            color = re.sub(r"\s+", "", m[1]).lower()
+        return bold, size, color
+
+    def outline(self) -> None:
+        """Settle headings by how they look, not by tag: editors often tag a section's first paragraph <h1>
+        and set a heading as a bold <p>. An <hN> whose text looks like the body (not bold, no larger, same
+        color) is a paragraph; a short bold <p> set larger than the body is a heading. Levels follow font
+        size, largest first."""
+        body = max(self.sizes, key=self.sizes.get) if self.sizes else None
+        ink = max(self.colors, key=self.colors.get) if self.colors else None
+        heads = []
+        for i, tag, bold, size, color in self.heads:
+            larger = bool(body and size and size > body)
+            plain = not bold and body and size and not larger and not (color and ink and color != ink)
+            if tag and not plain or not tag and larger:
+                heads.append((i, tag, size))
+            elif tag:
+                self.blocks[i] = re.sub(r"^#+ ", "", self.blocks[i])
+        ranks = sorted({size for _, _, size in heads if size}, reverse=True)
+        for i, tag, size in heads:
+            level = ranks.index(size) + 1 if size else tag
+            self.blocks[i] = "#" * min(6, level + 1) + " " + re.sub(r"^#+ ", "", self.blocks[i]).replace("**", "")
 
     def flush(self) -> None:
         text = "".join(self.line)
+        run, self.run = self.run, []
         self.line.clear()
         if text.count("**") % 2:  # a bold that spans blocks: drop it rather than leave one side open
             text = text.replace("**", "")
@@ -99,6 +137,19 @@ class Body(HTMLParser):
         text = "\n".join(ln for ln in lines if ln)
         if not text:
             return
+        size_of: dict = {}
+        color_of: dict = {}
+        for n, _, size, color in run:
+            size_of[size] = size_of.get(size, 0) + n
+            color_of[color] = color_of.get(color, 0) + n
+            if size:
+                self.sizes[size] = self.sizes.get(size, 0) + n
+            if color:
+                self.colors[color] = self.colors.get(color, 0) + n
+        bold = any(n for n, *_ in run) and all(b for n, b, *_ in run if n)
+        plain = text.replace("**", "")
+        if self.heading or bold and not (self.bullet or self.quote) and len(plain) <= 50 and plain[-1] not in "。！？；：，.!?;:,":
+            self.heads.append((len(self.blocks), self.heading, bold, max(size_of, key=size_of.get), max(color_of, key=color_of.get)))
         prefix = "#" * min(6, self.heading + 1) + " " if self.heading else "- " if self.bullet else ""
         if self.quote:
             text = "\n".join("> " + ln for ln in text.split("\n"))
@@ -112,6 +163,7 @@ class Body(HTMLParser):
             return
         if tag not in self.VOID:
             self.depth += 1
+            self.style.append(self.styled(tag, a.get("style") or ""))
         if self.skip or tag in self.SKIP:
             self.skip += tag not in self.VOID
             return
@@ -152,6 +204,8 @@ class Body(HTMLParser):
         if not self.depth or tag in self.VOID:
             return
         self.depth -= 1
+        if self.style:
+            self.style.pop()
         if self.skip:
             self.skip -= 1
             return
@@ -191,6 +245,8 @@ class Body(HTMLParser):
             self.code.append(data)
         else:
             self.line.append(data.replace(" ", " "))
+            if n := len("".join(data.split())):
+                self.run.append((n, *(self.style[-1] if self.style else (False, None, None))))
 
 
 def page_var(page: str, *patterns: str) -> str:
@@ -233,6 +289,7 @@ def read_page(post: Post) -> dict | None:
         body.flush()
         post.warn("could not find where #js_content ends; article.md may carry page text after the article")
         end = len(page)
+    body.outline()
     if not body.blocks:
         post.warn("#js_content is empty; fell back to TikHub fetch_article_detail_h5")
         return None
@@ -259,6 +316,7 @@ def read_tikhub(post: Post) -> dict:
     body.feed(str(content.get("content_noencode") or ""))
     body.close()
     body.flush()
+    body.outline()
     if not body.blocks:
         raise RuntimeError("TikHub gave no body either")
     ip = content.get("ip_wording") or {}

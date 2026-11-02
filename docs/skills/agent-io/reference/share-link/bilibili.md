@@ -23,6 +23,7 @@ python3 scripts/bilibili.py <链接或整段分享文案>... --out <目录> [--p
 
 - **`b23.tv` 短链**：App 分享出来的短链不带 BV 号，也不带图文 ID；先跟一次跳转，读 `Location` 头拿到完整链接
 - **BV 号**：链接里 `BV` 开头的 12 位；图文、动态的 ID 在 `/opus/<数字>`、`/dynamic/<数字>` 或 `t.bilibili.com/<数字>`
+- **跳到某一秒**：`https://www.bilibili.com/video/<BV号>/?p=<N>&t=<秒>`，脚本把 `t=` 之前的部分写进每P的 `time_url`
 
 ## 底层：视频 { #video }
 

@@ -135,7 +135,8 @@ def fetch_bilibili_video(post: Post, bvid: str, args: argparse.Namespace) -> Non
         n = int(page.get("page") or 1)
         if n not in wanted:
             continue
-        part = {"page": n, "cid": page.get("cid"), "title": page.get("part") or "", "duration": page.get("duration"), "video": None, "subtitles": []}
+        part = {"page": n, "cid": page.get("cid"), "title": page.get("part") or "", "duration": page.get("duration"), "video": None, "subtitles": [],
+                "time_url": f"https://www.bilibili.com/video/{bvid}/?p={n}&t="}
         post.meta["parts"].append(part)
         part["subtitles"] = bilibili_subtitles(post, bvid, part)
         if not args.no_video:

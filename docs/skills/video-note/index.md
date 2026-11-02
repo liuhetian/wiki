@@ -11,7 +11,7 @@ description: "要把视频或图文帖整理成学习笔记时用：分下载、
 
 | 环节 | 跑什么 | 得到什么 |
 |---|---|---|
-| 下载 | agent-io 按平台的 `xiaohongshu.py`、`douyin.py`、`bilibili.py`：`<平台>.py <链接> --out <目录>` | `<目录>/<平台>_<ID>/`：元数据、正文、图、视频，B 站另有字幕和评论 |
+| 下载 | agent-io 解析分享链接的平台脚本：`<平台>.py <链接> --out <目录>` | `<目录>/<平台>_<键>/`：元数据、正文、图、视频，有的平台另有字幕和评论 |
 | 分析 | agent-io 的 `video_read.py <文件夹>` | 关键帧联系图、单帧、转写、`read.json` |
 | 输出 | 本 skill 的 `prepare_note.py <文件夹>`，写笔记，再 `score_note.py <文件夹> <笔记>` | `note/evidence.md`、`note/budget.json`、笔记、`note/score.json` |
 
@@ -24,9 +24,9 @@ description: "要把视频或图文帖整理成学习笔记时用：分下载、
 
 照[解析分享链接](../agent-io/reference/share-link/index.md)跑：
 
-- 用户要评论区就加 `--comments`，只有 B 站能取，抖音、小红书的评论没接；写进笔记时过滤打卡、求资料、广告、闲聊
+- 用户要评论区就加 `--comments`，平台脚本不认这个参数就告诉用户这次取不到；写进笔记时过滤打卡、求资料、广告、闲聊
 - 多P的长课先加 `--no-video` 跑一次，看 `meta.json` 的 `parts`，再用 `--parts` 挑要的P；用户明确要全部才全取
-- B 站字幕多半要登录才给，拿不到没关系，分析段会转写
+- 没拿到字幕没关系，分析段会转写
 
 ## 分析 { #analyze }
 
@@ -40,6 +40,17 @@ description: "要把视频或图文帖整理成学习笔记时用：分下载、
 
 ## 输出 { #output }
 
+### 读文件夹里的什么 { #input }
+
+输出段只认文件夹，不认平台：换一个下载或分析的接口，只要写出下面这几样，`prepare_note.py` 照常跑。完整格式见[解析分享链接](../agent-io/reference/share-link/index.md#script)和[阅读视频](../agent-io/reference/read-video.md)。
+
+- `meta.json`：`kind`（`video`、`image`、`carousel`、`article`）、`title`、`url`、`desc`、`published`（带时区的 ISO 时间）、`files.images`；`stats` 里的 `view`、`like`、`collect`、`coin`、`comment`、`danmaku`、`share`，缺的当 0；`parts` 每P要 `page`、`video`、`subtitles[].srt`，写脚注时还看 `time_url`
+- `read.json`：每P的 `duration`；`meta.json` 有 `parts` 却没有它，脚本报错退出
+- `keyframes.json`：每帧的 `id`、`page`、`time`、`sheet`、`row`、`column`、`file`
+- 每P的文字：`subtitles[].srt` 指向的字幕优先，有中文先用中文；没有就读 `transcripts/pNN.srt`
+- `article.md`：图文正文，没有就用 `desc`
+- `comments.json`：`items[]` 每条 `rpid`、`user`、`like`、`message`，楼中楼在 `children[]`
+
 ### 写前：证据索引和预算 { #prepare }
 
 ```bash
@@ -51,7 +62,7 @@ python3 scripts/prepare_note.py <文件夹>
     - 推荐字数：`recommended_note_chars_min` 到 `recommended_note_chars_max`；不到 3 分钟的视频下限 400 字，关键帧越多给得越多，短图文不会超过原文太多
     - 写多细：`granularity` 和 `writing_guidance`
     - 画面依赖：`visual_dependency.risk` 是 `medium` 或 `high` 时先看关键帧，不能写成完整解析；`warnings` 要转述给用户
-    - 互动倍率：`quality.quality_multiplier`，点赞、收藏、投币、评论、弹幕、分享、播放量和发布天数合成，0.85–1.4，调高或调低推荐字数；没有播放量的小红书、抖音固定 1.0
+    - 互动倍率：`quality.quality_multiplier`，点赞、收藏、投币、评论、弹幕、分享、播放量和发布天数合成，0.85–1.4，调高或调低推荐字数；没有播放量的平台固定 1.0
     - 文字从哪来：`text_coverage` 写着每P用的是字幕、转写还是没有
 
 ### 笔记写法 { #note }
@@ -73,7 +84,7 @@ python3 scripts/prepare_note.py <文件夹>
 9. `## 实践清单`：给出能照着做的步骤、检查项、失败信号和排错方向。
 10. `## 坑点与反例`：整理视频和评论区提到的踩坑、争议、误区和边界条件。
 11. `## 自测题`：写 5–10 个问题和简短答案，帮人或 Agent 检查学没学会。
-12. `## 来源、覆盖与局限`：URL、平台和 ID（B 站是 BV 号）、作者、发布时间、字幕或转写和评论的覆盖、材料文件夹路径和局限放在最后。
+12. `## 来源、覆盖与局限`：URL、平台和 ID、作者、发布时间、字幕或转写和评论的覆盖、材料文件夹路径和局限放在最后。
 
 **短视频的精简结构 { #clip }**：不到 3 分钟的视频（`granularity` 是 `clip`）一般只讲一个观点或一套操作，13 节会写成注水。改成：
 
@@ -93,7 +104,7 @@ python3 scripts/prepare_note.py <文件夹>
 - 观点型短视频按「问题背景 → 作者判断 → 论据 → 适用边界 → 对用户的启发」组织。
 - 技术教程和图文长文保留架构、数据流、代码思路、配置项、图片结论、评估方式和排错路径。
 - 评论区只写有学习价值的内容：纠错、补充案例、实践经验、替代方案、争议点。
-- **证据用脚注**：照写作规范，正文写 `[^名]`，外部链接也只进脚注，不在段落里塞长证据 ID。脚注写证据 ID 和一句话；视频证据再写原视频的时间点：B 站写能跳到那一秒的链接 `https://www.bilibili.com/video/<BV号>/?p=1&t=80`，抖音、小红书没有按秒跳转的链接，写「第 N 秒」。ID 写全，写成区间（`KF-P01-03～KF-P01-06`）也算区间里的每一条。全文在材料文件夹的 `note/evidence.md`。
+- **证据用脚注**：照写作规范，正文写 `[^名]`，外部链接也只进脚注，不在段落里塞长证据 ID。脚注写证据 ID 和一句话；视频证据再写原视频的时间点：这一P在 `meta.json` 里有 `time_url` 的，接上秒数写成链接，点开就跳到那一秒；没有的写「第 N 秒」。ID 写全，写成区间（`KF-P01-03～KF-P01-06`）也算区间里的每一条。全文在材料文件夹的 `note/evidence.md`。
 - **画面上的提示词、命令、参数照原文抄**，放进代码块；其余用自己的话写，只摘短句。
 - 热度是「值得多写」的辅助信号，不是证据：扩写的内容必须来自正文、字幕或转写、画面和评论。
 - 只看了标题、目录的内容，不要写成「完整提取」；只转写了部分分P时，明确列出覆盖范围。

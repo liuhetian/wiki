@@ -26,7 +26,7 @@ python3 scripts/<平台>.py <链接或整段分享文案>... --out <目录>
 - **平台脚本都 import 同目录的 [`share_common.py`](../../scripts/share_common.py)**，所以调用一次也要整包：直接将[Agent 基础能力](../../agent-io.tar.gz)下载到本地。本地有本 wiki 的仓库就直接跑 `docs/skills/agent-io/scripts/` 下的
 - **每个脚本只认自己平台的链接**：传错了那一条报错、提示换哪个脚本，其余照常取完。几个平台混在一起，就按平台分几次跑，`--out` 用同一个目录
 - **输出**：每条一个子文件夹 `<平台>_<键>/`，键是链接里直接认得出的 ID，短链就是短链码，真正的 ID 在 `meta.json` 的 `id`。里面是 `meta.json`、`images/01.jpg`…、`cover.jpg`、`video/p01.mp4`…（图片扩展名按文件实际格式，B 站图文多是 `.png`，抖音封面是 `.webp`），B 站图文、公众号文章另有 `article.md`，B 站视频另有 `subtitles/p01_<语言>.srt`，加 `--comments` 有 `comments.json`；`raw/` 存各家的原样返回
-- **`meta.json`**：`kind` 是 `image`（图文）、`carousel`（小红书拿一组图拼的轮播视频，原图都在 `images/`）、`video` 或 `article`（B 站图文、公众号文章）；另有 `title`、`desc`、`author`、`stats`、`published`、`duration`、`topics`、`files`、`cost`、`warnings`、`error`。`parts` 每P一条：`page`、`cid`、`title`、`duration`、`video`、`subtitles`，不分P的也是一条
+- **`meta.json`**：`kind` 是 `image`（图文）、`carousel`（小红书拿一组图拼的轮播视频，原图都在 `images/`）、`video` 或 `article`（B 站图文、公众号文章）；另有 `title`、`desc`、`author`、`stats`、`published`、`duration`、`topics`、`files`、`cost`、`warnings`、`error`。`parts` 每P一条：`page`、`cid`、`title`、`duration`、`video`、`subtitles`，不分P的也是一条；能从某一秒开始播的平台另有 `time_url`，接上秒数就是跳到那一秒的链接，现在只有 B 站有
 - **stdout**：每条一行 JSON 摘要，最后一行是总花费；有一条失败，退出码就是 1
 - **共用参数**：`--no-video` 不下视频，也省下下载狗；`--force` 重新取，重新扣钱。B 站另有 `--parts` 和 `--comments`，见 [B 站](bilibili.md#script)；公众号的参数不一样，见[微信公众号](wechat-mp.md#script)
 - **重跑不扣钱**：文件夹里已有不带 `error` 的 `meta.json` 就跳过
