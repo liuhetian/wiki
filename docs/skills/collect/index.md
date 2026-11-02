@@ -20,6 +20,12 @@ copy_source: true
 
 看到能分诊为止：README、目录结构，有 `SKILL.md` 先读它。只判断它该进哪、有多重，不讲解、不拆设计，那是下一个 skill 的事。记下体量和更新频率：文件数、代码量、最近几个版本隔多久。
 
+## 再查本站已有内容 { #existing }
+
+按来源名、主题和能力搜索本站，再读目标板块索引与最相关的现有页面入口，看到能决定新建、扩写或并入为止。已有 skill 管得了的并进去；同一项目沿用原目录和入口，已有同来源维护记录的复用。活例：[wenai](../../projects/wenai/index.md)从概要扩为粗讲，入口没有换地址。
+
+把查到的目标索引、已有页面、可并入的 skill 和同来源维护记录的具体路径写进交接，并说明“原地扩写”“并入”或“复用记录”。没有找到就明确写“未找到，按指定路径新建”，不要让下一个 agent 再猜一遍；导航位置同时看 `mkdocs.yml`。这里只核对落点与可复用入口，不提前做下一步的全文调研。
+
 ## 分诊：正面、背面分开判 { #tree }
 
 不是在几个板块里挑一个。**正面**是从通用到具体那根轴上的四层，人和 AI 都读，收它讲清了什么；**背面**是 skill，给 AI 照着做，收 agent 能照着做的执行方式。两面各判各的，一个来源可以两边都收，也可以只收一边。来源不算数：自己做的、别人做的一样判。
@@ -87,13 +93,38 @@ copy_source: true
 
 1. **给我看的**：要问的几题，每题带推荐；再用几句话说为什么这么分 —— 每面收不收、为什么进这个板块、为什么用这个 skill、为什么收这么深、哪些不收。理由只给我看，不进交接，下一个 agent 照做用不上
 2. **交接 prompt**：放进一个 `text` 代码块，已确认的决定直接填入，其他问题按推荐预填；意图尚未回答、无法确定深度时只能给标为「待确认」的草稿，不写成已定，也不交给下一步执行。我改完原样贴给下一个 agent。它没看过这次对话，所以写全：
-    - 你当前的工作区就是本 wiki 的仓库，先读 `docs/skills/wiki-guide/index.md` 和 `docs/skills/collect/index.md` 的「共用规矩」一节，再读下一个 skill
+    - 你当前的工作区就是本 wiki 的仓库；按下节组织「必读规则」「已确定要用的能力」「按条件读取的参考」，把读取指令与路径全写在这个代码块里，一次复制即可交接
     - 来源：地址，一句话说它是什么
     - 两面都收的分两节写，各写：照哪一页收（仓库里的路径）、收到哪（落地路径）、收多深和侧重什么、下一个 skill 里的空（「空名：值」）
+    - [查过的本站入口](#existing)：目标索引、需要扩写或并入的页面、复用的维护记录和导航分组，给具体路径与处理方式
     - 两边怎么互链，维护记录写在哪
     - 这次特有的收什么、不收什么；下一个 skill、共用规矩和写作规范里写过的不重复
 
 我说「照这个做」，就在这次对话里按交接做。
+
+### 交接要带哪些读取指令 { #dependencies }
+
+**按本次任务挑依赖，不把下面整张表抄进每份交接。** 分诊时确定读取路线，不执行接口或提前读透所有参考；已确定要做的事写具体页与小节，还不能确定的才写“需要做什么时，先读什么”。活例：[wenai 的记忆实验](../../maintenance/projects/wenai.md#experiment)需要调用模型，交接可明确指定本站 DeepSeek 接口，不必再让执行者找服务。
+
+代码块里的读取指令分三组，重复路径只列一次：
+
+1. **必读规则**：先读 `docs/skills/wiki-guide/index.md`、`docs/skills/collect/index.md` 的「共用规矩」，再读本次选定的执行页。项目四档另读调研的共用证据规则；已确定要写 skill 的，带上 skill 写作规则。已确认的依赖直接列具体路径，不写成可选。
+2. **已确定要用的能力**：列这次确实需要调用的能力和对应接口，说明用来做什么。走 agent-io 时先读入口、再读已选接口，有现成脚本优先使用；仅计划实跑、尚不知是否要调用模型的，留到条件参考。
+3. **按条件读取的参考**：只列本任务可能遇到的情况及其读取路径。已确定适用的移到前两组，不再让执行者重复判断；没有相关项写“无”。
+
+| 本次工作需要什么 | 写入交接的读取路径与条件 |
+|---|---|
+| 任一收纳任务 | [写作规范](../wiki-guide/index.md)、本页[共用规矩](#shared)、选定的收纳或写作执行页；代码块中写实际仓库路径 |
+| 概要、粗讲、细讲或写书 | `docs/skills/project-research/index.md` 的[共用证据规则](../project-research/index.md#evidence)，以及选定的具体子 skill |
+| 新写或修改 skill | `docs/skills/wiki-guide/skill.md`（[写 skill](../wiki-guide/skill.md)）；外部吸纳还读 `docs/skills/collect/skill.md` |
+| 搜索、读媒体、调模型、生成素材 | `docs/skills/agent-io/index.md`（[能力表](../agent-io/index.md)），能选定的进一步给具体接口页；还不能选定的写“用到对应能力时按能力表读接口” |
+| 给 prompt 增加填空或选项 | `docs/skills/wiki-guide/reference/components.md` 的[填空](../wiki-guide/reference/components.md#fill)；需要条件段落再读 `docs/skills/wiki-guide/reference/branch.md`（[分支](../wiki-guide/reference/branch.md)） |
+| 展示软件界面或嵌入演示 | `docs/skills/wiki-guide/reference/components.md` 的[仿真展示](../wiki-guide/reference/components.md#showcase-demo)或[嵌入交互单页](../wiki-guide/reference/components.md#iframe-demo)，按实际要做的选小节 |
+| 用户明确要求配图 | `docs/skills/wiki-guide/reference/infographic.md`（[配图](../wiki-guide/reference/infographic.md)）；没有这项要求，不添加生成配图的任务 |
+| 细讲或写书仍有取舍待定 | `docs/skills/grilling.md`（[盘问我](../grilling.md)）；只问尚未确定的 baseline、功能线、侧重或目录，已确认的不再问 |
+| 明确写成课程 | `docs/skills/wiki-guide/course.md`（[课程页](../wiki-guide/course.md)）；普通笔记不自动套课程骨架 |
+
+精简检查和写作口味只有用户指定才加入；能力清单不会替用户增加配图、部署等任务。收尾校验沿用写作规范，不复制整套校验说明。最终交接中不留下“选定执行页”“对应接口”等能在本次确定却没有填实的泛称。
 
 ## 共用规矩 { #shared }
 
@@ -123,3 +154,11 @@ copy_source: true
 - **翻译之外的改动**
 
 项目的记录另加两样：源码存档和行号怎么对上，实验怎么跑、脚本附后。skill 页尾怎么链过来，见[写 skill](../wiki-guide/skill.md#maintenance-record)。
+
+<div class="zx-no-copy" markdown>
+
+---
+
+维护记录：[从哪来、改了什么](../../maintenance/skills/collect.md)。正常使用不用看，出问题再看。
+
+</div>

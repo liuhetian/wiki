@@ -35,6 +35,7 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [anidoodle 代码手绘](skills/anidoodle.md) —— 吸纳自 alexgreensh/anidoodle，钉在 25aae33，73 篇文档全文中译；6 个撞网址或当不了索引的文件改名，正文路径改成相对链接，风格索引加配方列；registry.mjs 不再覆盖中文索引，docs-check.mjs 和 README 演示素材跳过
 - [对话提示词（chat-prompts）](skills/chat-prompts.md) —— 取自 prompt-cards.cyanfish.site 的 17 段对话 prompt，钉在 JS 包 index-IivKxZ0S.js；去掉卡牌包装按场景重组，修补了架构先知和深度天赋挖掘机各一处；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录
 - [调研项目（project-research）](skills/project-research.md) —— 调研项目的维护记录：概要原称粗讲，功能级粗讲由 wenai 收纳提炼，另有细讲与写书；记录四档命名、分诊先问意图、证据规则和旧页迁移
+- [收纳分诊](skills/collect.md) —— 收纳分诊的维护记录：交接按任务携带必读规则、已选能力和条件参考，先查本站入口以复用页面与维护记录，保留先问意图的深度选择
 - [去 AI 味（qu-ai-wei）](skills/qu-ai-wei.md) —— 吸纳自 LifelongLazyLearner/qu-ai-wei，钉在 ed35e74；上游本来是中文，SKILL.md 和九份规则表原文照录，只把外链挪进脚注
 - [檄文（xi-wen）](skills/xi-wen.md) —— 吸纳自 YuanZHAO321/XiWen，钉在 eb32d38；上游本来是中文，主文件、四份精讲、五篇底本古檄原文照录，入口的文件路径改成链接
 - [Dashboard（open-dashboard）](skills/dashboard.md) —— 蓝本 ahpxex/open-dashboard，钉在 aa9815f；Invariants 提炼成各篇「规矩」，实现换成自研 demo，原文不存档，只留两份系统级契约
