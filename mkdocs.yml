@@ -106,6 +106,10 @@ plugins:
   # 所以挪文件依旧要把站内引用一并改掉，redirects 兜的是站外链接和别人的书签。
   - redirects:
       redirect_maps:
+        # 2026-10-29 领域地图搬进 posts/domains/，按任务类型分九组
+        posts/ocr-directions.md: posts/domains/ocr.md
+        posts/asr-directions.md: posts/domains/asr.md
+        posts/video-compositing/index.md: posts/domains/video-compositing/index.md
         # 2026-09-29 手绘风格库的版式、主题色单独成区：gallery/layouts/、gallery/colors/
         gallery/images/handdraw-style/layouts-social-cards.md: gallery/layouts/social-cards.md
         gallery/images/handdraw-style/layouts-infographics.md: gallery/layouts/infographics.md
@@ -428,6 +432,38 @@ nav:
           - 超级轻量的自用AI编程Harness框架:
               - posts/ai-code-skeleton/index.md
           - 上线前的三层验收: posts/release-acceptance.md
+      - Agent 架构:
+          - Super-agent: posts/super-agent.md
+      - 领域地图:
+          - posts/domains/index.md
+          - 识别与分类:
+              - 图像识别: posts/domains/image-recognition.md
+          - 数值预测:
+              - 时间序列预测: posts/domains/time-series-forecasting.md
+          - 检测、定位与分割:
+              - 目标检测与分割: posts/domains/object-detection.md
+          - 信息提取与结构化:
+              - 文字识别: posts/domains/ocr.md
+              - 语音识别: posts/domains/asr.md
+              - 视频理解: posts/domains/video-understanding.md
+              - 文本理解: posts/domains/text-understanding.md
+          - 内容生成:
+              - 图像生成: posts/domains/image-generation.md
+              - 语音合成: posts/domains/tts.md
+              - 视频生成: posts/domains/video-generation.md
+              - 文本生成: posts/domains/text-generation.md
+          - 内容变换:
+              - 图像编辑: posts/domains/image-editing.md
+              - 音频处理: posts/domains/audio-processing.md
+              - 视频合成:
+                  - posts/domains/video-compositing/index.md
+              - 机器翻译: posts/domains/translation.md
+          - 检索、匹配与排序:
+              - 推荐系统: posts/domains/recommender.md
+          - 模式发现与数据表示:
+              - 聚类与降维: posts/domains/clustering.md
+          - 决策、规划与控制:
+              - 强化学习: posts/domains/reinforcement-learning.md
   - 项目:
       - projects/index.md
       - 知识库:
