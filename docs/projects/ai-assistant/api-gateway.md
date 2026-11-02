@@ -1,26 +1,27 @@
 ---
-description: "只给自己用的 AI 接口中转：Caddy 验网关 token、换成真实 key、其余原样转发，配置全在 /etc/caddy；DeepSeek、AutoDL、下载狗、TikHub 已在国内机上线，CodeProxy、OpenRouter 在海外机；记录我们的决策和踩过的坑"
+description: "只给自己用的 AI 接口中转：Caddy 验网关 token、换成真实 key、其余原样转发，配置全在 /etc/caddy；DeepSeek、AutoDL、下载狗、TikHub、百度文字识别已在国内机上线，CodeProxy、OpenRouter 在海外机；记录我们的决策和踩过的坑"
 ---
 
 # 调 AI 接口不需要 new-api：Caddy 换个 header 就够了
 
-**Agent 只拿一个网关 token，真实 key 只存在中转机上。** 2026-10-01 在国内机上接好了 DeepSeek 和 AutoDL，2026-10-02 在海外机上接好了 CodeProxy（图片生成）和 OpenRouter（网络搜索、音频转录、音乐生成、Jev 结构化判断，2026-10-08 又用它接了微软 MAI-Voice 语音合成，2026-10-10 接了微软、OpenAI、Mercury 三家结构化判断，中转都没改），2026-10-10 国内机又接了下载狗，2026-10-17 接了 TikHub，2026-10-18 DeepSeek 开放的搜索、抓取接口也走原来的 DeepSeek 中转（中转没改），其余厂商还没接。Agent 端用法见[调用 DeepSeek](../../skills/agent-io/reference/deepseek.md)、[解析分享链接](../../skills/agent-io/reference/share-link/index.md)、[网络搜索](../../skills/agent-io/reference/web-search.md)、[读取网页](../../skills/agent-io/reference/web-fetch.md)、[生成语音](../../skills/agent-io/reference/tts.md)、[生成视频](../../skills/agent-io/reference/video/index.md)、[生成、编辑图片](../../skills/agent-io/reference/image.md)、[转录音频](../../skills/agent-io/reference/transcribe.md)、[生成音乐](../../skills/agent-io/reference/music.md)和[结构化判断](../../skills/agent-io/reference/jev.md)。
+**Agent 只拿一个网关 token，真实 key 只存在中转机上。** 2026-10-01 在国内机上接好了 DeepSeek 和 AutoDL，2026-10-02 在海外机上接好了 CodeProxy（图片生成）和 OpenRouter（网络搜索、音频转录、音乐生成、Jev 结构化判断，2026-10-08 又用它接了微软 MAI-Voice 语音合成，2026-10-10 接了微软、OpenAI、Mercury 三家结构化判断，中转都没改），2026-10-10 国内机又接了下载狗，2026-10-17 接了 TikHub，2026-10-18 DeepSeek 开放的搜索、抓取接口也走原来的 DeepSeek 中转（中转没改），2026-10-29 接了百度文字识别，其余厂商还没接。Agent 端用法见[调用 DeepSeek](../../skills/agent-io/reference/deepseek.md)、[解析分享链接](../../skills/agent-io/reference/share-link/index.md)、[网络搜索](../../skills/agent-io/reference/web-search.md)、[读取网页](../../skills/agent-io/reference/web-fetch.md)、[生成语音](../../skills/agent-io/reference/tts.md)、[生成视频](../../skills/agent-io/reference/video/index.md)、[生成、编辑图片](../../skills/agent-io/reference/image.md)、[转录音频](../../skills/agent-io/reference/transcribe.md)、[生成音乐](../../skills/agent-io/reference/music.md)和[结构化判断](../../skills/agent-io/reference/jev.md)。
 
 ## 决策 { #decisions }
 
 - 只做透明转发：验 token，换 `Authorization`，其余原样转发。Agent 照官方 SDK 用，只换 base URL 和 key。
 - 例外是下载狗：它的 token 在 JSON 正文里，中转用 `request_body` 把调用方的 `GET /?url=<链接>` 改写成带 token 的 POST。仍然只用 Caddy，不加别的服务。
 - 用 Caddy，版本必须 ≥ 2.11，`caddy version` 确认：SSE、WebSocket、长连接默认就能用，证书自动签。不用 nginx，因为这些都要手配；不用 new-api，可以但没必要。
-- 国内机接国内厂商，海外机接 OpenAI、Anthropic、Gemini。一家厂商一个子域名、一个 `.caddy` 文件。DeepSeek 是 `https://deepseek-proxy.liuhetian.work`，AutoDL 是 `https://autodl-proxy.liuhetian.work`，下载狗是 `https://xiazaitool-proxy.liuhetian.work`，TikHub 是 `https://tikhub-proxy.liuhetian.work`（海外服务，但抓的是抖音、小红书，也放国内机，国内机连它 0.7 秒）；海外机上的 CodeProxy 是 `https://codeproxy.reverse-pro.xyz`，OpenRouter 是 `https://openrouter.reverse-pro.xyz`。
+- 国内机接国内厂商，海外机接 OpenAI、Anthropic、Gemini。一家厂商一个子域名、一个 `.caddy` 文件。DeepSeek 是 `https://deepseek-proxy.liuhetian.work`，AutoDL 是 `https://autodl-proxy.liuhetian.work`，下载狗是 `https://xiazaitool-proxy.liuhetian.work`，TikHub 是 `https://tikhub-proxy.liuhetian.work`（海外服务，但抓的是抖音、小红书，也放国内机，国内机连它 0.7 秒），百度文字识别是 `https://baidu-proxy.liuhetian.work`；海外机上的 CodeProxy 是 `https://codeproxy.reverse-pro.xyz`，OpenRouter 是 `https://openrouter.reverse-pro.xyz`。
 - token 由用户自己定，各家用同一个。Agent 端写在 `.env` 的 `MY_API_KEY` 里。
 - 日志只留时间和状态码，请求头、URL、IP、聊天内容都不记。
 - 要签名或者令牌会过期的厂商（即梦、Bedrock、腾讯云 TC3、可灵、Vertex），Caddy 做不了，改用这家有 Bearer key 的 OpenAI 兼容接口。
+- 百度文字识别老的两种鉴权都接不了：access_token 30 天过期，AK/SK 每次要现算签名。它另有 IAM API Key，`Authorization: Bearer bce-v3/ALTAK-…`，长期有效[^baidu-apikey]，所以和 DeepSeek 一样只换请求头。上游 `aip.baidubce.com` 是百度全部的 AI 开放能力，中转不限路径，能调哪些能力由 key 的服务权限决定。
 - **配置全放 `/etc/caddy`**，唯一的例外是 systemd drop-in：
 
 | 文件 | 内容 |
 |---|---|
 | `/etc/caddy/Caddyfile` | 原有的静态站，末尾 `import /etc/caddy/sites-enabled/*.caddy` |
-| `/etc/caddy/sites-enabled/deepseek.caddy`、`autodl.caddy`、`xiazaitool.caddy`、`tikhub.caddy` | 一家一个：验 token、换 key、转发、过滤日志 |
+| `/etc/caddy/sites-enabled/deepseek.caddy`、`autodl.caddy`、`xiazaitool.caddy`、`tikhub.caddy`、`baidu.caddy` | 一家一个：验 token、换 key、转发、过滤日志 |
 | `/etc/caddy/gateway.env` | 每家两行 `<厂商>_API_KEY`、`<厂商>_GATEWAY_TOKEN`，root 所有，0600 |
 | `/etc/systemd/system/caddy.service.d/gateway.conf` | 读 env 文件，去掉 `--environ` |
 
@@ -48,6 +49,12 @@ description: "只给自己用的 AI 接口中转：Caddy 验网关 token、换�
     --8<-- "projects/ai-assistant/assets/gateway/tikhub.caddy"
     ```
 
+??? abstract "`assets/gateway/baidu.caddy`"
+
+    ```text
+    --8<-- "projects/ai-assistant/assets/gateway/baidu.caddy"
+    ```
+
 ??? abstract "`assets/gateway/gateway.conf`"
 
     ```ini
@@ -70,6 +77,8 @@ description: "只给自己用的 AI 接口中转：Caddy 验网关 token、换�
 - **`autosave.json` 里是明文 key**：`/var/lib/caddy/.config/caddy/autosave.json` 存的是展开后的配置。保持 0600，管理 API 只监听本机，配置导出来别往外贴。
 - **中转只认 `Authorization: Bearer`**：Anthropic 兼容端点 `/anthropic` 也会原样转发，但 Anthropic SDK 默认把 key 放进 `x-api-key`，这样会 401，要改用 `auth_token=`。
 - **AutoDL 的真实令牌前面不带 `Bearer`**：所以 `autodl.caddy` 写的是 `header_up Authorization "{$AUTODL_API_KEY}"`。Agent 那边照样发 `Bearer <网关 token>`。
+- **百度的 key 要拿 IAM API Key**：在控制台的 API Key 管理里建，格式是 `bce-v3/ALTAK-…/…`。「应用列表」里那对 API Key、Secret Key 是换 access_token 用的，填进来不能用。key 不对时百度回 `error_code 23`「IAM API-KEY authentication failed」。
+- **百度出错也回 HTTP 200**：错误写在正文的 `error_code` 里，`stats.py` 按状态码统计，失败的 OCR 请求也算成 200。
 - **`sites-enabled/` 里的文件，`request_body` 正文开头要写 `\\{`**：被 `import` 的文件会多吃一层转义，只写 `\{` 时 `{"url":"{…}` 整段被当成不认识的占位符替换成空。下载狗收不到 url，只回一句「500 网络不稳定」，看着像上游故障，绕了一个多小时。同一行直接写在主 Caddyfile 里又是好的，所以临时复现的配置也要经过 `import`。
 - **Caddy 和直连结果不一样时，先抓 Caddy 实际发出的请求再猜**：用管理 API 把这条路由的上游临时指到本机 `nc -l`，发一次请求看完整报文，再 `reload` 恢复。
 - **改了 token 要同步改每个 Agent 的 `.env`**：旧 token 马上就是 401。
@@ -88,3 +97,5 @@ DeepSeek 的 key 还没写进来。
 - 统计只有请求次数和状态码，不是 token 用量，也不是账单。账单看 DeepSeek 余额（`/user/balance`）。
 - 海外机 2026-10-02 重装过，本机的 SSH 公钥还没装回去：CodeProxy、OpenRouter 的中转配置没同步进 `assets/gateway/`，上面的文件表也只对应国内机，验收脚本没在海外机上跑过。
 - 没定的事：每项能力用哪家，语音要不要实时（实时就走 WebSocket），每个调用方能用哪些厂商。
+
+[^baidu-apikey]: 百度智能云《API Key 鉴权机制》https://cloud.baidu.com/doc/AI_REFERENCE/s/Hm5us339w 、《API Key 通用介绍》https://cloud.baidu.com/doc/Reference/s/1m5qi1m4y ，2026-10-29 读取。

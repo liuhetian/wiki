@@ -10,7 +10,7 @@ AI助手经常迁移服务器，折腾来折腾去，所以目标是根据这个
 
 0. 开发环境：[新机器配开发环境：zsh、uv、Node.js](dev-env.md) —— 新 Ubuntu 机器按顺序复制粘贴五步；装完 zsh 必须手动改 `$SHELL`，否则 nvm 会写进 `~/.bashrc`，zsh 里找不到 node
 1. 先用 caddy 进行反向代理完全覆盖 header 为localhost访问，进行域名绑定
-2. API 中转：[Caddy 换 key 转发](api-gateway.md)，Agent 只拿一个网关 token，不存厂商 key；DeepSeek、AutoDL、下载狗、TikHub 已在国内机上线，CodeProxy、OpenRouter 在海外机，记录我们的决策和踩过的坑；厂商 key 打码写在文中（[为什么能公开放密文](../wiki/age-mosaic.md)）
+2. API 中转：[Caddy 换 key 转发](api-gateway.md)，Agent 只拿一个网关 token，不存厂商 key；DeepSeek、AutoDL、下载狗、TikHub、百度文字识别已在国内机上线，CodeProxy、OpenRouter 在海外机，记录我们的决策和踩过的坑；厂商 key 打码写在文中（[为什么能公开放密文](../wiki/age-mosaic.md)）
 3. 基础能力（接入说明见 [Agent 基础能力](../../skills/agent-io/index.md)）：
 
     | 能力 | 读取 | 生成 |
