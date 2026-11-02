@@ -46,7 +46,7 @@ description: "把外面的 skill、插件仓库、提示词合集收进 skills/�
 2. **接上游**：客户端照上游自己的 `SKILL.md` 跑，这一节只写照它跑会踩的和本站要改的 —— 哪些文件不能动、动了会怎样；本站替换掉的环节（出图走 agent-io 这类）；上游的确认关口怎么过、花钱的调用先问谁；什么活读上游哪一篇，两边的 id 怎么对应。装法只写和常规不一样的地方
 3. **离开引擎也完整的部分，列出来问用户**：不默认收。能单独拿出去用的守则适合收成子 skill（判法用[判形态那把尺](../wiki-guide/skill.md#layout)：有自己的 name 和 description），风格、画风、版型这类按编号查的目录适合进 Gallery。一条一行写清是什么、适合收成哪种、为什么，用户确认的才收，收就收完整；离开这条工作流就不知道拿来干什么的是工作流的层，不列
 
-讲原因的 —— 它为什么这么设计、上游观察到什么失败 —— 不进 skill，走正面：默认配一篇[粗讲](../project-research/gist.md)进项目，要弄懂它怎么实现再在同一个目录里细讲，正面链到 skill。活例：[PPT Master](../ppt-master/index.md)，入口一段领域建模、一节「生成 PPTX：装上游」；规划 deck、沟通模式、生成配图收成三个子 skill，视觉风格、画风、版型进了 Gallery。
+讲原因的 —— 它为什么这么设计、上游观察到什么失败 —— 不进 skill，走正面：配套项目页先按[分诊](index.md#ask)问用户：只收概要用[概要项目](../project-research/gist.md)，有关注点推荐[粗讲项目](../project-research/explain.md)，要学设计用细讲；都在同一个目录里长，正面链到 skill。活例：[PPT Master](../ppt-master/index.md)，入口一段领域建模、一节「生成 PPTX：装上游」；规划 deck、沟通模式、生成配图收成三个子 skill，视觉风格、画风、版型进了 Gallery。
 
 ### 提示词合集、卡牌站 { #prompt-cards }
 

@@ -513,6 +513,8 @@ nav:
               - 用户自己加规则: projects/sillytavern/rules.md
           - PawzoChat:
               - projects/pawzochat/index.md
+          - wenai:
+              - projects/wenai/index.md
       - Agent 与评测:
           - DeepSeek Harness:
               - projects/deepseek-harness/index.md
@@ -948,7 +950,8 @@ nav:
               - 收进 Gallery: skills/collect/gallery.md
           - 调研项目:
               - skills/project-research/index.md
-              - 粗讲项目: skills/project-research/gist.md
+              - 概要项目: skills/project-research/gist.md
+              - 粗讲项目: skills/project-research/explain.md
               - 细讲项目: skills/project-research/dissect.md
               - 写书: skills/project-research/book.md
           - 整理视频为笔记:
@@ -1359,6 +1362,7 @@ nav:
               - DeepSeek Harness: maintenance/projects/deepseek-harness.md
               - OpenAI Evals: maintenance/projects/openai-evals.md
               - DeepTutor: maintenance/projects/deeptutor.md
+              - wenai: maintenance/projects/wenai.md
       - 本站:
           - Zensical 升级评估:
               - maintenance/zensical-upgrade/index.md

@@ -1,5 +1,5 @@
 ---
-description: "Pyodide 粗讲：不是把 Python 翻译成 JS，是把 CPython 解释器编译成 WebAssembly；Python 的 import 是同步的、下载只能异步，所以包要先 loadPackage 解进内存文件系统，.so 提前 dlopen"
+description: "Pyodide 概要：不是把 Python 翻译成 JS，是把 CPython 解释器编译成 WebAssembly；Python 的 import 是同步的、下载只能异步，所以包要先 loadPackage 解进内存文件系统，.so 提前 dlopen"
 ---
 
 # Pyodide：编译成 WebAssembly 的 CPython

@@ -1,5 +1,5 @@
 ---
-description: "OpenAI Evals 拆解：领域是大模型评测框架，以 for 循环评测脚本为 baseline，按登记、判分、被测对象、多轮、跑和记五条线讲问题和功能，配源码模版；重心是一个 eval 等于数据加 YAML 里选一个模板类"
+description: "细讲：OpenAI Evals 拆解：领域是大模型评测框架，以 for 循环评测脚本为 baseline，按登记、判分、被测对象、多轮、跑和记五条线讲问题和功能，配源码模版；重心是一个 eval 等于数据加 YAML 里选一个模板类"
 ---
 
 # OpenAI Evals：评测脚本拆成三块，加一个题库只交数据和一段 YAML

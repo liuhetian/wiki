@@ -1,5 +1,5 @@
 ---
-description: "酒馆 SillyTavern 拆解：领域是 AI 角色扮演，它把网页版 ChatGPT 的一段 system prompt 换成每轮重拼的上下文；按角色卡、世界书、现拼 prompt、喂各种模型、重来分叉、聊久了、群聊、自加规则八条功能线讲问题和功能，每步配源码模版和实跑效果，结论是能搬走的设计"
+description: "细讲：领域是 AI 角色扮演，它把网页版 ChatGPT 的一段 system prompt 换成每轮重拼的上下文；按角色卡、世界书、现拼 prompt、喂各种模型、重来分叉、聊久了、群聊、自加规则八条功能线讲问题和功能，每步配源码模版和实跑效果，结论是能搬走的设计"
 ---
 
 # 酒馆 SillyTavern：把一段 system prompt 换成每轮重拼的上下文

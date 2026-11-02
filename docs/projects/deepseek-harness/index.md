@@ -1,5 +1,5 @@
 ---
-description: "DeepSeek Harness 拆解：领域是 agent harness，以 pi 为 baseline，按插件、会话日志、拼 prompt、压缩、工具与沙箱、多 agent 六条线讲问题和功能，配源码模版和实跑；重心是请求从会话日志现算"
+description: "细讲：DeepSeek Harness 拆解：领域是 agent harness，以 pi 为 baseline，按插件、会话日志、拼 prompt、压缩、工具与沙箱、多 agent 六条线讲问题和功能，配源码模版和实跑；重心是请求从会话日志现算"
 ---
 
 # DeepSeek Harness：请求每次从会话日志现算，连 agent 循环都是插件

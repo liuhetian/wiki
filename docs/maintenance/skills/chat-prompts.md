@@ -4,7 +4,7 @@ description: "对话提示词（chat-prompts）的维护记录：17 段取自 pr
 
 # 对话提示词（chat-prompts）
 
-[对话提示词](../../skills/chat-prompts/index.md)的维护记录。18 段 prompt 来自两处；粗讲项目、细讲项目原来也在这里，2026-10-20 挪成了顶层的[调研项目](project-research.md)。
+[对话提示词](../../skills/chat-prompts/index.md)的维护记录。18 段 prompt 来自两处；概要项目（当时称粗讲）、细讲项目原来也在这里，2026-10-20 挪成了顶层的[调研项目](project-research.md)。
 
 ## prompt-cards.cyanfish.site { #prompt-cards }
 

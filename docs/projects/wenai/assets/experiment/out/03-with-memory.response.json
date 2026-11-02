@@ -1,0 +1,28 @@
+{
+  "id": "2d9cf09e-4202-429c-adc4-ae19dd547c5a",
+  "object": "chat.completion",
+  "created": 1793598103,
+  "model": "deepseek-flash",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"reply\":\"上次在河畔咖啡馆，第三章已讨论完。出门前先把蓝色书签放回书里，然后去河边散步。你喝热茶、不加糖。下一张图用序号 00008。\",\"memory_markdown\":\"# 读书会记忆\\n\\n- 日期：2026-11-02\\n- 地点：河畔咖啡馆\\n- 进度：第三章已讨论完\\n- 未完成约定：出门前将蓝色书签放回书里；之后去河边散步\\n- 饮品偏好：热茶，不加糖\\n- 最近图片序号：00007（messageId: msg_demo_007）\\n- 下一张图片序号：00008\"}"
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 278,
+    "completion_tokens": 151,
+    "total_tokens": 429,
+    "prompt_tokens_details": {
+      "cached_tokens": 128
+    },
+    "prompt_cache_hit_tokens": 128,
+    "prompt_cache_miss_tokens": 150
+  },
+  "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+}

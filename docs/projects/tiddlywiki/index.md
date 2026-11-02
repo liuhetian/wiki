@@ -1,5 +1,5 @@
 ---
-description: "TiddlyWiki 粗讲：整个 wiki 可以只是一个 HTML 文件；打开时从文件里的 JSON 读出全部 tiddler，内核和界面也是 tiddler；存盘把模板渲染成新文件，浏览器里兜底是下载副本，写回原文件靠服务器或扩展"
+description: "TiddlyWiki 概要：整个 wiki 可以只是一个 HTML 文件；打开时从文件里的 JSON 读出全部 tiddler，内核和界面也是 tiddler；存盘把模板渲染成新文件，浏览器里兜底是下载副本，写回原文件靠服务器或扩展"
 ---
 
 # TiddlyWiki：程序和数据装在一个 HTML 里，存盘就是把自己重拼一遍

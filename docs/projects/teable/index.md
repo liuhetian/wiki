@@ -1,5 +1,5 @@
 ---
-description: "Teable 粗讲：不是又一个在线表格，是套了表格外壳的 Postgres；程序管结构和联动计算，模型只填 AI 字段；重心是改一格后跨表连锁重算；追问两条：更像 Airtable，计算字段不靠触发器、在应用层算"
+description: "Teable 概要：不是又一个在线表格，是套了表格外壳的 Postgres；程序管结构和联动计算，模型只填 AI 字段；重心是改一格后跨表连锁重算；追问两条：更像 Airtable，计算字段不靠触发器、在应用层算"
 ---
 
 # Teable：套了表格外壳的 Postgres

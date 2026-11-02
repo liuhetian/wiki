@@ -1,5 +1,5 @@
 ---
-description: "维护板块：skill 和 Agent 能力背后的事，分两部分：Agent 基础能力背后的选型实测、上游来源和没做的事，一个能力一篇；外部 skill 的吸纳记录，一个 skill 一篇；Gallery 收录的来源和改动，一个来源一篇；细讲的项目读的版本和素材来源，一个项目一篇；本站依赖的 Zensical 跟到哪个版本、升不升级；实测流水线用的示例 skill。AI 正常使用不用看，出问题或要改做法时再看"
+description: "维护板块：skill 和 Agent 能力背后的事，分两部分：Agent 基础能力背后的选型实测、上游来源和没做的事，一个能力一篇；外部 skill 的吸纳记录，一个 skill 一篇；Gallery 收录的来源和改动，一个来源一篇；粗讲、细讲及项目类写书读的版本和素材来源，一个项目一篇；本站依赖的 Zensical 跟到哪个版本、升不升级；实测流水线用的示例 skill。AI 正常使用不用看，出问题或要改做法时再看"
 ---
 
 # 维护
@@ -34,7 +34,7 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [花卉动态生长海报（flower-growth-poster）](skills/flower-growth-poster.md) —— 整理自抖音「小洁AI实战」的设计教程；即梦平台存技能的操作和 Seedream、Seedance 的型号跳过，模型换成 agent-io 的 gpt-image-2.5 和 MiniMax H3 首尾帧；prompt 照画面关键词自己写，首帧改成截海报纸纹，补了接成循环一步
 - [anidoodle 代码手绘](skills/anidoodle.md) —— 吸纳自 alexgreensh/anidoodle，钉在 25aae33，73 篇文档全文中译；6 个撞网址或当不了索引的文件改名，正文路径改成相对链接，风格索引加配方列；registry.mjs 不再覆盖中文索引，docs-check.mjs 和 README 演示素材跳过
 - [对话提示词（chat-prompts）](skills/chat-prompts.md) —— 取自 prompt-cards.cyanfish.site 的 17 段对话 prompt，钉在 JS 包 index-IivKxZ0S.js；去掉卡牌包装按场景重组，修补了架构先知和深度天赋挖掘机各一处；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录
-- [调研项目（project-research）](skills/project-research.md) —— 粗讲项目由 2026-10-19 介绍 bili-note 的对话提炼，细讲项目由 2026-10-20 拆解梨园的对话提炼，写书由 2026-10-23 讨论调研分阶段的对话提炼，没有外部上游；2026-10-20 从对话提示词挪出来单独成 skill
+- [调研项目（project-research）](skills/project-research.md) —— 调研项目的维护记录：概要原称粗讲，功能级粗讲由 wenai 收纳提炼，另有细讲与写书；记录四档命名、分诊先问意图、证据规则和旧页迁移
 - [去 AI 味（qu-ai-wei）](skills/qu-ai-wei.md) —— 吸纳自 LifelongLazyLearner/qu-ai-wei，钉在 ed35e74；上游本来是中文，SKILL.md 和九份规则表原文照录，只把外链挪进脚注
 - [檄文（xi-wen）](skills/xi-wen.md) —— 吸纳自 YuanZHAO321/XiWen，钉在 eb32d38；上游本来是中文，主文件、四份精讲、五篇底本古檄原文照录，入口的文件路径改成链接
 - [Dashboard（open-dashboard）](skills/dashboard.md) —— 蓝本 ahpxex/open-dashboard，钉在 aa9815f；Invariants 提炼成各篇「规矩」，实现换成自研 demo，原文不存档，只留两份系统级契约
@@ -65,13 +65,14 @@ Gallery 里别人的成品从哪来、收的时候改了什么、上游更新了
 
 ## 项目 { #projects }
 
-[项目](../projects/index.md)里细讲的别人的项目每个一篇：读的哪个版本、许可、存档和素材从哪来、实验怎么跑的。
+[项目](../projects/index.md)里粗讲、细讲及项目类写书每个项目一篇；独立概要的出处与版本放脚注，同来源两面都收时复用已有记录：读的哪个版本、许可、存档和素材从哪来、实验怎么跑的。
 
 - [梨园 Liyuan](projects/liyuan.md) —— 读的是 1e9448e（2026-10-19 读），PolyForm Noncommercial 许可；源码存档、行号、截图、配图各从哪来；细讲页的效果块怎么实跑出来的，脚本附后
 - [酒馆 SillyTavern](projects/sillytavern.md) —— 读的是 06bde93（1.19.0，2026-10-20 读），AGPL-3.0 许可；源码存档和行号；效果块怎么实跑出来的：Node 加载钩子原样加载酒馆前端模块、界面依赖换成桩，模型请求另起进程发；脚本附后
 - [DeepSeek Harness](projects/deepseek-harness.md) —— DeepSeek Harness 拆解的维护记录：读的是 687f282（2026-10-20 读），MIT 许可、Landlock 启动器子包 BSD-3；存档和行号怎么对；六条线怎么实跑、密钥怎么隔离、模型用量多少，脚本附后
 - [OpenAI Evals](projects/openai-evals.md) —— OpenAI Evals 拆解的维护记录：读的是 8eac7a7（2026-10-20 读），MIT 许可；源码存档和行号怎么对、几份题库样本怎么从 LFS 取的；注册 eval 的计数口径；只读源码，没有实跑
 - [DeepTutor](projects/deeptutor.md) —— DeepTutor 拆解的维护记录：读的是 a31d826（v1.6.15，2026-10-29 读），Apache-2.0 许可；源码存档和行号怎么对；纯函数怎么实跑、父包怎么登记成空壳绕开重依赖，脚本附后；15 个仿真 demo 照哪些上游文件抄的、偏离了哪里、怎么不开浏览器验
+- [wenai](projects/wenai.md) —— wenai 粗讲的维护记录：上游版本和过滤范围、原文行号、构造示例与三次 DeepSeek 文件记忆对照，脚本和原始请求响应附后
 
 ## 本站 { #wiki }
 

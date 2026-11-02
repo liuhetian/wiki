@@ -1,0 +1,12 @@
+{
+  "kind": "constructed-demo-not-upstream-execution",
+  "memory_read_back_equals_written": true,
+  "required_strings_in_final_reply": {
+    "散步": true,
+    "蓝色书签": true,
+    "热茶": true,
+    "不加糖": true,
+    "00008": true
+  },
+  "note": "字符串核对是本样本检查，不是准确率或可靠性评测；未测试真实文件工具、发送、补记或去重。"
+}

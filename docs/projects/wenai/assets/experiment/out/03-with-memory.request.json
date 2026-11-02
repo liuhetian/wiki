@@ -1,0 +1,21 @@
+{
+  "model": "deepseek-flash",
+  "thinking": {
+    "type": "disabled"
+  },
+  "temperature": 0,
+  "max_tokens": 1200,
+  "response_format": {
+    "type": "json_object"
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是非露骨读书会的会话助手。只根据本次给定的记录回答，不编造未提供的过去事实。\n你没有文件或消息工具，不能声称已经写文件或发送图片。\n用 JSON 对象回答，只包含 reply（面向用户的简短回答）和 memory_markdown（供下次恢复的 Markdown 文本）。\n记忆保留用户明确给出的地点、进度、未完成约定、饮品偏好、最近图片序号和下一张序号。\n没有这些信息时，memory_markdown 写空字符串，并在 reply 中向用户问清。\n"
+    },
+    {
+      "role": "user",
+      "content": "以下是宿主从磁盘实际读回的最近场景记录：\n# 读书会记忆\n\n- 日期：2026-11-02\n- 地点：河畔咖啡馆\n- 进度：第三章已讨论完\n- 未完成约定：出门前将蓝色书签放回书里；之后去河边散步\n- 饮品偏好：热茶，不加糖\n- 最近图片序号：00007（messageId: msg_demo_007）\n- 下一张图片序号：00008\n\n\n用户本轮输入：\n接着上次的安排吧。我们下一步做什么，出门前还要做什么？我喝什么，下一张图用哪个序号？"
+    }
+  ]
+}

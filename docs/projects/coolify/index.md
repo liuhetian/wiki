@@ -1,5 +1,5 @@
 ---
-description: "Coolify 粗讲：和 Podman 不在一层，它不是容器引擎，是坐在 Docker 之上的自托管 Heroku；主路径是 SSH 进目标机起 helper 容器构建镜像，用带 Traefik label 的 compose 拉起"
+description: "Coolify 概要：和 Podman 不在一层，它不是容器引擎，是坐在 Docker 之上的自托管 Heroku；主路径是 SSH 进目标机起 helper 容器构建镜像，用带 Traefik label 的 compose 拉起"
 ---
 
 # Coolify：不是容器引擎，是用 SSH 驱动 Docker 的部署平台

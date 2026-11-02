@@ -25,12 +25,13 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 ## 项目
 
-项目是一个具体的东西：自己做的软件、别人的仓库，讲它解了哪些问题，每个问题只留它那一种方案；粗讲一页说它是什么，细讲一组、每步落到源码和实跑。一个项目一个目录，全部在[项目索引](projects/index.md)：
+项目是一个具体的东西：自己做的软件、别人的仓库，讲它解了哪些问题，每个问题只留它那一种方案；概要讲它是什么，粗讲按功能展示机制与实例，细讲沿问题拆源码和验证。一个项目一个目录，全部在[项目索引](projects/index.md)：
 
 - [wiki 介绍](projects/wiki/index.md) —— 这个 wiki 自己的事：[目标与计划](projects/wiki/roadmap.md)（专业主干补到应用统计研究生的水平）、怎么当远程 skill 用、[板块怎么分](projects/wiki/sections.md)和东西为什么这样收、用到的技术一项一页（[对象存储部署](projects/wiki/cos-deploy/index.md)、自建 git-lfs、打码）
 - [梨园 Liyuan](projects/liyuan/index.md) —— 把角色扮演从一次生成改成 agent 循环：以网页版 ChatGPT 为 baseline，按七条功能线讲每个具体问题引入了什么功能，结论是能搬走的设计
 - [让 Kindle 常显一块 Token 看板](projects/kindle-dashboard/index.md) —— 墨水屏的两条硬约束（刷新有代价、只有 16 级灰）反推出的整套设计
-- 粗讲 8 个仓库，一个一页：[Teable](projects/teable/index.md)、[Coolify](projects/coolify/index.md)、[Docmost](projects/docmost/index.md)、[TiddlyWiki](projects/tiddlywiki/index.md) 等
+- [wenai](projects/wenai/index.md) —— 粗讲：按功能展示 prompt、档案、跨轮记忆文件与实测接续效果
+- 概要 8 个仓库，一个一页：[Teable](projects/teable/index.md)、[Coolify](projects/coolify/index.md)、[Docmost](projects/docmost/index.md)、[TiddlyWiki](projects/tiddlywiki/index.md) 等
 
 ## 笔记
 

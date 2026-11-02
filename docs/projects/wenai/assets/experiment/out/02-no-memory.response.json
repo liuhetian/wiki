@@ -1,0 +1,28 @@
+{
+  "id": "466f4143-d761-44bd-9dab-fe35cbd7a809",
+  "object": "chat.completion",
+  "created": 1793598102,
+  "model": "deepseek-flash",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"reply\":\"抱歉，我这边没有上次的记录，无法确认你说的“上次安排”、出门前事项、饮品偏好和图片序号。请告诉我：上次约定了什么、当前进度、出门前还要做什么、你想喝什么，以及最近用过的图片序号和下一张该用哪个序号。\",\"memory_markdown\":\"\"}"
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 168,
+    "completion_tokens": 70,
+    "total_tokens": 238,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 168
+  },
+  "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+}

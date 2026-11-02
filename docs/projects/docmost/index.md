@@ -1,5 +1,5 @@
 ---
-description: "Docmost 粗讲：不是一个人用的在线记事本，是自托管的团队 wiki；主路径是每页一份 Yjs 文档，经 Hocuspocus 实时合并多人改动，停笔 10 秒连同 JSON 和纯文本一起落库；开源版模型不参与，AI 在闭源 ee 子模块；追问两条：不是 Office 套件，Bases 要付费、ppt 只有演示模式；和 git 仓库加 Zensical 比，差在谁来写、谁来读"
+description: "Docmost 概要：不是一个人用的在线记事本，是自托管的团队 wiki；主路径是每页一份 Yjs 文档，经 Hocuspocus 实时合并多人改动，停笔 10 秒连同 JSON 和纯文本一起落库；开源版模型不参与，AI 在闭源 ee 子模块；追问两条：不是 Office 套件，Bases 要付费、ppt 只有演示模式；和 git 仓库加 Zensical 比，差在谁来写、谁来读"
 ---
 
 # Docmost：不是在线记事本，是多人同改的自托管团队 wiki
