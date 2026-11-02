@@ -1,0 +1,41 @@
+1) L1：trace/chat/<日期>.jsonl 里追加的一行
+{"id":"chat:01M62X46R9YHW15R3RM2T1YMG3","ts":"2026-10-29T04:01:41.641959+00:00","surface":"chat","kind":"turn","payload":{"user":"p 值小于 0.05 就能说明原假设是错的吗？","assistant_chars":212,"kb":["应用统计学"]},"session_id":"sess_0412","turn_id":"turn_7"}
+
+2) 旧格式的 L2 文档（脚注按条目编号，一个脚注里写好几个来源）：
+# Chat
+
+## 理解偏差
+- 常把 p 值读成「H0 为真的概率」，第二次讲解后能自己纠正[^m_01JCA6Z3R8QK4T7W2N5P9X1B3D]
+- 例 8.3 第一次算 t 时忘了除以标准误[^m_01JCA6Z3R8QK4T7W2N5P9X1B3E]
+
+## 学习偏好
+- 喜欢先看例题再看定义[^m_01JCA6Z3R8QK4T7W2N5P9X1B3F]
+
+[^m_01JCA6Z3R8QK4T7W2N5P9X1B3D]: chat:sess_0412, quiz:q_0415_2
+[^m_01JCA6Z3R8QK4T7W2N5P9X1B3E]: chat:sess_0412
+[^m_01JCA6Z3R8QK4T7W2N5P9X1B3F]: chat:sess_0409
+
+   parse 出来的条目：
+   m_01JCA6Z3R8QK4T7W2N5P9X1B3D  [理解偏差]  refs=['chat:sess_0412', 'quiz:q_0415_2']
+   m_01JCA6Z3R8QK4T7W2N5P9X1B3E  [理解偏差]  refs=['chat:sess_0412']
+   m_01JCA6Z3R8QK4T7W2N5P9X1B3F  [学习偏好]  refs=['chat:sess_0409']
+
+3) serialize 写回的新格式（来源各占一个编号脚注，按首次出现排；条目 id 留在行尾注释里）：
+# Chat
+
+## 理解偏差
+
+- 常把 p 值读成「H0 为真的概率」，第二次讲解后能自己纠正 [^1], [^2] <!--m_01JCA6Z3R8QK4T7W2N5P9X1B3D-->
+- 例 8.3 第一次算 t 时忘了除以标准误 [^1] <!--m_01JCA6Z3R8QK4T7W2N5P9X1B3E-->
+
+## 学习偏好
+
+- 喜欢先看例题再看定义 [^3] <!--m_01JCA6Z3R8QK4T7W2N5P9X1B3F-->
+
+---
+
+[^1]: chat:sess_0412
+[^2]: quiz:q_0415_2
+[^3]: chat:sess_0409
+
+4) 再 parse 再 serialize，和上面逐字相同：True

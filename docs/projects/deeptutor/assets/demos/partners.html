@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="600">
+<title>DeepTutor 仿真 demo：伙伴与频道</title>
+<!--
+  Goal      伙伴是挂在 IM 上的常驻助教：列表里两张伙伴卡，点进「统计助教 · 小 t」的频道页签，
+            微信扫码关联，状态从「连接中」变「已连接」，卡片上多出一个频道
+  Surface   /partners → /partners/[id]?tab=channels
+  Sources   app/(workspace)/partners/page.tsx 23-30（频道名）、64-160（页头、伙伴卡）、163-210（群组段）；
+            app/(workspace)/partners/[partnerId]/page.tsx 455-462（页签）、466-623（头栏）、696-700（频道页签容器）、723-727（提示条）；
+            components/partners/PartnerChannels.tsx 154（保存提示）、247-392（主从两栏、频道列表、配置区）；
+            components/partners/ChannelRuntimeStatus.tsx 50-126（状态文字、图标、配色）；
+            components/partners/WeixinQrLogin.tsx 85-160（扫码面板）；
+            components/partners/schema-form.tsx 64-82、177-237、312-345（字段）；
+            components/partners/PartnerAvatar.tsx 9-18、49-70；components/partners/ChannelIcon.tsx 22-59、231-299；
+            deeptutor/partners/channels/*.py 的 display_name（频道列表按它排序）、weixin.py 123-133（微信的配置字段）
+  Layout    Shell（当前项 伙伴）→ 第一幕伙伴列表 → 第二幕伙伴详情（三段式头栏 + 频道页签）
+  Data      DT.DATA.partners；16 个频道照后端 display_name
+  Autoplay  列表 → 点卡片 → 切到「频道」→ 选微信 → 获取二维码 → 扫码 → 已连接、提示「微信已连接。」→
+            状态「连接中」→「已连接」→ 保存 → 回列表，卡片上多了 weixin，一圈约 29s
+  Height    600
+  Deviations 频道品牌图（simple-icons 的路径）换成上游给 Slack、Mochat 用的那种字母方块，颜色取上游的品牌色；
+            二维码是确定性画出来的假码；上游 md 断点以下主从两栏会上下叠，这里 ≥ 560px 就并排
+  Checks    状态文字、按钮、提示与语言包一致
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  .pt-page { height: 100%; overflow-y: auto; scrollbar-gutter: stable; }
+  .pt-container { margin: 0 auto; width: 100%; max-width: 1180px; padding: 28px 24px; }
+  @media (min-width: 768px) { .pt-container { padding: 28px 36px; } }
+  /* PageHeader：mb-6 flex flex-col gap-4，≥640 容器横排 */
+  .pt-header { margin-bottom: 24px; display: flex; flex-direction: column; gap: 16px; }
+  @container feature-page (min-width: 640px) { .pt-header { flex-direction: row; align-items: flex-end; justify-content: space-between; } }
+  .pt-title { line-height: 1.5; letter-spacing: -0.02em; }
+  /* PAGE_SECTION_TITLE_CLASS：text-[13.5px] font-semibold */
+  .pt-h2 { font-size: 13.5px; font-weight: 600; }
+  .pt-desc { margin-top: 6px; max-width: 672px; font-size: 12.5px; line-height: 1.625; color: var(--muted-foreground); }
+  /* pageActionClass：dt-page-action inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[12.5px] font-medium leading-[18px]；
+     primary bg-primary text-primary-foreground；secondary border border-border text-foreground；min-h-[36px] */
+  .pt-action { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; gap: 6px; border-radius: 8px; padding: 8px 14px; font-size: 12.5px; font-weight: 500; line-height: 18px; white-space: nowrap; }
+  .pt-action--primary { background: var(--primary); color: var(--primary-foreground); }
+  .pt-action--secondary { border: 1px solid var(--border); color: var(--foreground); }
+  /* pageGridClass(2)：dt-page-grid，容器 ≥520 两列，gap 12px */
+  .pt-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  @container feature-page (min-width: 520px) { .pt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  /* 卡片：group flex items-start gap-3 rounded-2xl border border-border p-4 hover:border-ring */
+  .pt-card { display: flex; align-items: flex-start; gap: 12px; border-radius: 16px; border: 1px solid var(--border); padding: 16px; transition: border-color var(--motion-base); }
+  .pt-card.is-hover { border-color: var(--ring); }
+  /* 名字 truncate text-[14px] font-medium；运行点 inline-flex gap-1 text-[10px]，h-1.5 w-1.5 rounded-full bg-emerald-500 */
+  .pt-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 500; }
+  .pt-run { display: inline-flex; flex-shrink: 0; align-items: center; gap: 4px; font-size: 10px; color: var(--muted-foreground); }
+  .pt-run i { height: 6px; width: 6px; border-radius: 9999px; background: var(--tw-emerald-500); }
+  /* 简介：mt-0.5 line-clamp-2 text-[12px] leading-relaxed */
+  .pt-blurb { margin-top: 2px; font-size: 12px; line-height: 1.625; color: var(--muted-foreground); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  /* 频道标签：inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] */
+  .pt-chan { display: inline-flex; align-items: center; gap: 4px; border-radius: 9999px; background: var(--muted); padding: 2px 8px; font-size: 11px; color: var(--muted-foreground); }
+  /* 头像（PartnerAvatar）：rounded-full text-white，字号 = size × 0.55 */
+  .pt-avatar { display: flex; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 9999px; color: #fff; font-weight: 600; user-select: none; }
+  /* 群组段：mt-9 border-t border-border pt-7；空态 flex items-center gap-3 rounded-2xl border border-dashed px-4 py-5 */
+  .pt-groups { margin-top: 36px; border-top: 1px solid var(--border); padding-top: 28px; }
+  .pt-groups-empty { display: flex; align-items: center; gap: 12px; border-radius: 16px; border: 1px dashed var(--border); padding: 20px 16px; font-size: 12px; line-height: 1.625; color: var(--muted-foreground); }
+  /* 字母方块（ChannelIcon.tsx 的 LETTER_BADGES 画法）：rounded-[5px] font-semibold text-white，字号 = size × 0.58 */
+  .pt-badge { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 5px; color: #fff; font-weight: 600; line-height: 1; user-select: none; }
+
+  /* 详情头栏：grid min-h-[64px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 border-b px-5 py-3 */
+  .pd { display: flex; height: 100%; flex-direction: column; }
+  .pd-head { display: grid; min-height: 64px; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; border-bottom: 1px solid var(--border); padding: 12px 20px; }
+  /* 图标按钮：rounded-md p-1.5 text-muted-foreground */
+  .pd-iconbtn { border-radius: 6px; padding: 6px; color: var(--muted-foreground); }
+  /* 描述：truncate text-[11.5px] */
+  .pd-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px; color: var(--muted-foreground); }
+  /* 页签：flex justify-self-center gap-0.5 rounded-lg bg-muted p-0.5；
+     一项 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[12px]；当前 bg-background font-medium shadow-sm */
+  .pd-tabs { display: flex; justify-self: center; gap: 2px; border-radius: 8px; background: var(--muted); padding: 2px; }
+  .pd-tab { display: inline-flex; align-items: center; gap: 6px; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: var(--muted-foreground); transition: background-color var(--motion-fast), color var(--motion-fast); white-space: nowrap; }
+  .pd-tab.is-active { background: var(--background); font-weight: 500; color: var(--foreground); box-shadow: var(--shadow-sm); }
+  @media (max-width: 700px) { .pd-tab span { display: none; } }
+  /* 同步：mr-1 inline-flex items-center gap-1.5 text-[11px]；文字 hidden xl:inline */
+  .pd-sync { margin-right: 4px; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted-foreground); }
+  .pd-check { display: inline-flex; height: 14px; width: 14px; align-items: center; justify-content: center; border-radius: 3px; border: 1px solid color-mix(in srgb, var(--foreground) 35%, transparent); background: var(--background); color: #fff; }
+  .pd-check.is-on { background: var(--primary); border-color: var(--primary); }
+  .pd-body { min-height: 0; flex: 1; overflow-y: auto; }
+  /* 频道页签容器：mx-auto h-full max-w-3xl overflow-y-auto px-5 py-5 */
+  .pd-wrap { margin: 0 auto; max-width: 768px; padding: 20px; }
+  /* 聊天页签：mx-auto max-w-3xl px-5 */
+  .pd-chat { margin: 0 auto; max-width: 768px; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px; }
+  /* 保存：inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-[12px] font-medium */
+  .pc-save { display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; background: var(--primary); padding: 6px 12px; font-size: 12px; font-weight: 500; color: var(--primary-foreground); }
+  /* 主从：grid grid-cols-1 gap-4 md:grid-cols-[180px_1fr] */
+  .pc-grid { margin-top: 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  @media (min-width: 560px) { .pc-grid { grid-template-columns: 180px minmax(0, 1fr); } }
+  /* 频道列表：h-fit rounded-xl border p-2；一项 flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-[13px]；当前 bg-muted font-medium */
+  .pc-aside { height: fit-content; border-radius: 12px; border: 1px solid var(--border); padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+  .pc-item { display: flex; width: 100%; align-items: center; gap: 8px; border-radius: 6px; padding: 6px 10px; font-size: 13px; color: var(--muted-foreground); transition: background-color var(--motion-fast), color var(--motion-fast); }
+  .pc-item.is-active { background: var(--muted); font-weight: 500; color: var(--foreground); }
+  /* 已启用：inline-flex gap-1 text-[10px] text-emerald-600 */
+  .pc-on { display: inline-flex; flex-shrink: 0; align-items: center; gap: 4px; font-size: 10px; font-weight: 400; color: var(--tw-emerald-600); }
+  .pc-on i { height: 6px; width: 6px; border-radius: 9999px; background: var(--tw-emerald-500); }
+  /* 配置区：rounded-xl border p-4 space-y-3 */
+  .pc-section { border-radius: 12px; border: 1px solid var(--border); padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .pc-h3 { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+  .pc-code { font-family: var(--font-mono); font-size: 11px; color: var(--muted-foreground); }
+  /* 运行状态：rounded-lg border px-3 py-2.5 text-[11px] bg-card text-muted-foreground */
+  .pc-status { border-radius: 8px; border: 1px solid var(--border); background: var(--card); padding: 10px 12px; font-size: 11px; color: var(--muted-foreground); }
+  /* 扫码面板：rounded-lg border bg-card p-3；标题 text-[12px] font-medium；按钮 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium */
+  .pc-qr { border-radius: 8px; border: 1px solid var(--border); background: var(--card); padding: 12px; }
+  .pc-qr__btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; border: 1px solid var(--border); padding: 6px 10px; font-size: 11px; font-weight: 500; color: var(--muted-foreground); }
+  .pc-qr__btn[disabled] { opacity: 0.4; }
+  .pc-note { margin-top: 6px; font-size: 11px; line-height: 1.625; color: var(--muted-foreground); }
+  /* 二维码：h-[132px] w-[132px] shrink-0 rounded-md bg-white p-1.5 */
+  .pc-qr__img { height: 132px; width: 132px; flex-shrink: 0; border-radius: 6px; background: #fff; padding: 6px; box-shadow: inset 0 0 0 1px var(--border); }
+  /* 字段：标签 mb-1 block text-[12px] font-medium；输入 w-full rounded-lg border bg-transparent px-3 py-2 text-[13px] */
+  .pc-label { margin-bottom: 4px; display: block; font-size: 12px; font-weight: 500; }
+  .pc-label span { margin-left: 4px; font-weight: 400; opacity: 0.7; }
+  .pc-input { width: 100%; border-radius: 8px; border: 1px solid var(--border); padding: 8px 12px; font-size: 13px; min-height: 38px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pc-input.is-mono { font-family: var(--font-mono); }
+  .pc-textarea { width: 100%; border-radius: 8px; border: 1px solid var(--border); padding: 8px 12px; font-family: var(--font-mono); font-size: 13px; min-height: 66px; white-space: pre; }
+  .pc-bool { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; }
+  /* 提示条：fixed bottom-6 left-1/2 rounded-lg bg-foreground px-3.5 py-2 text-[12.5px] text-background shadow-lg */
+  .pd-toast { position: fixed; bottom: 24px; left: 50%; z-index: 50; transform: translateX(-50%); border-radius: 8px; background: var(--foreground); padding: 8px 14px; font-size: 12.5px; color: var(--background); box-shadow: var(--shadow-lg); animation: dt-pop-in 200ms cubic-bezier(0.22, 1, 0.36, 1); white-space: nowrap; }
+  .pd-reply { font-size: 14px; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, Shell, cx, DATA } = DT;
+
+DT.ICONS["settings-2"] = "<path d=\"M14 17H5M19 7h-9\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/><circle cx=\"7\" cy=\"7\" r=\"3\"/>";
+DT.ICONS["radio"] = "<path d=\"M16.247 7.761a6 6 0 0 1 0 8.478M19.075 4.933a10 10 0 0 1 0 14.134M4.925 19.067a10 10 0 0 1 0-14.134M7.753 16.239a6 6 0 0 1 0-8.478\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/>";
+DT.ICONS["link-2"] = "<path d=\"M9 17H7A5 5 0 0 1 7 7h2M15 7h2a5 5 0 1 1 0 10h-2M8 12h8\"/>";
+DT.ICONS["save"] = "<path d=\"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z\"/><path d=\"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7\"/>";
+
+const T = {
+  "Partners": "伙伴",
+  "New partner": "新建伙伴",
+  "Running": "运行中",
+  "Companions with their own soul, library, and channels — reachable from your IM apps.": "每个伙伴都有自己的灵魂、资料库和频道——可以直接在飞书、Telegram 等 IM 里对话。",
+  "Groups": "群组",
+  "Ask several Partners at once and compare how they differ.": "一次问多位伙伴，比较他们的判断有何不同。",
+  "New group": "新建群组",
+  "Bring two or more Partners together — they share the conversation but reason on their own.": "把两位以上的伙伴组到一起——他们共享这段对话，但各自独立思考。",
+  "Chat": "聊天",
+  "Configure": "配置",
+  "Channels": "频道",
+  "Conversations": "聊天",
+  "Back to Partners": "返回伙伴",
+  "Sync browsers": "跨浏览器同步",
+  "Save": "保存",
+  "Enabled": "已启用",
+  "Status": "状态",
+  "Connected": "已连接",
+  "Connecting": "连接中",
+  "Scan to connect": "扫码关联",
+  "Get a code": "获取二维码",
+  "New code": "换一张",
+  "Waiting for a scan…": "等待扫码…",
+  "Scanned — confirm on your phone.": "已扫码，请在手机上确认。",
+  "Connected. The bot token has been saved.": "已连接，令牌已保存。",
+  "Sign in with the WeChat account this partner should speak as. The bot token is saved on the server.": "用你希望该伙伴对外使用的微信账号登录。令牌保存在服务器上。",
+  "Channels saved": "频道已保存",
+  "WeChat connected.": "微信已连接。",
+  "One value per line": "每行一个值",
+  "Link a chat account": "关联聊天账号",
+  "Stop": "停止",
+  "Delete partner": "删除伙伴",
+};
+
+/* 频道：后端 display_name 排序；颜色取 ChannelIcon.tsx 的品牌色，Email 用 lucide 的 mail */
+const CHANNELS = [
+  ["dingtalk", "DingTalk", "#3296FA", "钉"],
+  ["discord", "Discord", "#5865F2", "D"],
+  ["email", "Email", null, "mail"],
+  ["feishu", "Feishu", "#3370FF", "飞"],
+  ["matrix", "Matrix", "#000000", "M"],
+  ["mattermost", "Mattermost", "#0058CC", "M"],
+  ["msteams", "Microsoft Teams", "#5059C9", "T"],
+  ["mochat", "Mochat", "#07C160", "M"],
+  ["qq", "QQ", "#1EBAFC", "Q"],
+  ["napcat", "QQ (NapCat)", "#1EBAFC", "N"],
+  ["slack", "Slack", "#4A154B", "S"],
+  ["telegram", "Telegram", "#26A5E4", "T"],
+  ["weixin", "WeChat", "#07C160", "微"],
+  ["wecom", "WeCom", "#0082EF", "企"],
+  ["whatsapp", "WhatsApp", "#25D366", "W"],
+  ["zulip", "Zulip", "#6492FE", "Z"],
+];
+const CH = Object.fromEntries(CHANNELS.map(([id, name, hex, glyph]) => [id, { id, name, hex, glyph }]));
+
+function ChannelIcon({ id, size = 15 }) {
+  const c = CH[id];
+  if (!c.hex) return html`<${Icon} name="mail" size=${size} />`;
+  return html`<span class="pt-badge" style=${{ width: size, height: size, fontSize: Math.round(size * 0.58), background: c.hex }}>${c.glyph}</span>`;
+}
+
+const AV_COLORS = ["#3d6b8a", "#4f7a5b"]; /* PARTNER_COLORS 里的 lake、moss */
+function Avatar({ p, i, size }) {
+  return html`<span class="pt-avatar" style=${{ width: size, height: size, background: AV_COLORS[i], fontSize: size * 0.55 }}>${p.face}</span>`;
+}
+
+/* 一张确定性的假二维码：25 × 25 模块，三角定位块照规范画 */
+function FakeQr() {
+  const N = 25;
+  const cells = [];
+  const finder = (x, y) => {
+    for (const [ox, oy] of [[0, 0], [N - 7, 0], [0, N - 7]]) {
+      const dx = x - ox, dy = y - oy;
+      if (dx >= 0 && dx < 7 && dy >= 0 && dy < 7) {
+        const ring = Math.max(Math.abs(dx - 3), Math.abs(dy - 3));
+        return ring === 3 || ring <= 1 ? 1 : 0;
+      }
+      if (dx >= -1 && dx <= 7 && dy >= -1 && dy <= 7) return 0;
+    }
+    return null;
+  };
+  for (let y = 0; y < N; y++)
+    for (let x = 0; x < N; x++) {
+      const f = finder(x, y);
+      const on = f === null ? ((x * 7 + y * 13 + ((x * y) % 5) * 3) % 7) < 3 : f === 1;
+      if (on) cells.push(html`<rect key=${x + "-" + y} x=${x} y=${y} width="1.02" height="1.02" />`);
+    }
+  return html`<svg viewBox=${"0 0 " + N + " " + N} width="100%" height="100%" fill="#111" shape-rendering="crispEdges" aria-label="微信登录二维码">${cells}</svg>`;
+}
+
+const [P1, P2] = DATA.partners;
+const initial = {
+  scene: "list",
+  hoverCard: false,
+  tab: "chat",
+  pressedTab: null,
+  channel: "telegram",
+  qr: "idle",
+  weixinOn: false,
+  runtime: null,
+  token: "",
+  toast: null,
+  pressed: null,
+};
+
+const steps = [
+  { at: 2200, set: { hoverCard: true } },
+  { at: 700, set: { scene: "detail", hoverCard: false } },
+  { label: "opened" },
+  { at: 1800, set: { pressedTab: "channels" } },
+  { at: 200, set: { tab: "channels", pressedTab: null } },
+  { at: 1600, set: { channel: "weixin" } },
+  { label: "weixin" },
+  { at: 1500, set: { pressed: "code", qr: "busy" } },
+  { at: 900, set: { pressed: null, qr: "waiting" } },
+  { at: 2600, set: { qr: "scanned" } },
+  { at: 1900, set: { qr: "confirmed", weixinOn: true, token: "••••••••••••••••••••", toast: "WeChat connected." } },
+  { label: "confirmed" },
+  { at: 1200, set: { runtime: "connecting" } },
+  { at: 400, scroll: { sel: "#pd-body", to: "#pc-status", block: "center", ms: 480 } },
+  { at: 1600, set: { runtime: "connected", toast: null } },
+  { at: 1800, scroll: { sel: "#pd-body", top: 0, ms: 480 } },
+  { at: 300, set: { pressed: "save" } },
+  { at: 300, set: { pressed: null, toast: "Channels saved" } },
+  { label: "saved" },
+  { at: 2400, set: { scene: "list", toast: null } },
+  { at: 2600, set: {} },
+];
+
+function ListScene({ s }) {
+  const partners = [
+    Object.assign({}, P1, { chans: s.weixinOn ? ["telegram", "weixin"] : ["telegram"] }),
+    Object.assign({}, P2, { chans: ["weixin"] }),
+  ];
+  return html`<div class="pt-page" data-dt-scroll>
+    <div class="pt-container dt-page-container">
+      <header class="pt-header">
+        <div class="min0">
+          <h1 class="dt-page-title pt-title">${T["Partners"]}</h1>
+          <p class="pt-desc">${T["Companions with their own soul, library, and channels — reachable from your IM apps."]}</p>
+        </div>
+        <span class="pt-action pt-action--primary"><${Icon} name="plus" size=${14} />${T["New partner"]}</span>
+      </header>
+      <div class="pt-grid">
+        ${partners.map(
+          (p, i) => html`<div key=${p.id} class=${cx("pt-card", { "is-hover": i === 0 && s.hoverCard, "dt-press": i === 0 && s.hoverCard })}>
+            <${Avatar} p=${p} i=${i} size=${42} />
+            <div class="min0 grow">
+              <div class="row" style=${{ gap: 8 }}>
+                <span class="pt-name">${p.name}</span>
+                <span class="pt-run"><i></i>${T["Running"]}</span>
+              </div>
+              <p class="pt-blurb">${p.soul}</p>
+              <div class="row" style=${{ marginTop: 8, flexWrap: "wrap", gap: 6 }}>
+                ${p.chans.map((c) => html`<span key=${c} class=${cx("pt-chan", { "animate-pop-in": c === "weixin" && i === 0 })}><${ChannelIcon} id=${c} size=${11} />${c}</span>`)}
+              </div>
+            </div>
+          </div>`
+        )}
+      </div>
+      <section class="pt-groups">
+        <header class="pt-header">
+          <div class="min0">
+            <h2 class="pt-h2">${T["Groups"]}</h2>
+            <p class="pt-desc">${T["Ask several Partners at once and compare how they differ."]}</p>
+          </div>
+          <span class="pt-action pt-action--secondary"><${Icon} name="plus" size=${14} />${T["New group"]}</span>
+        </header>
+        <div class="pt-groups-empty">
+          <${Icon} name="users" size=${24} strokeWidth=${1.5} />
+          <p>${T["Bring two or more Partners together — they share the conversation but reason on their own."]}</p>
+        </div>
+      </section>
+    </div>
+  </div>`;
+}
+
+function Field({ label, desc, children }) {
+  return html`<div>
+    <label class="pc-label">${label}${desc ? html`<span>— ${desc}</span>` : null}</label>
+    ${children}
+  </div>`;
+}
+
+function ChannelsTab({ s }) {
+  const ch = CH[s.channel];
+  const enabled = (id) => id === "telegram" || (id === "weixin" && s.weixinOn);
+  const statusLine = { waiting: "Waiting for a scan…", scanned: "Scanned — confirm on your phone.", confirmed: "Connected. The bot token has been saved." }[s.qr];
+  return html`<div class="pd-wrap">
+    <div class="row" style=${{ justifyContent: "flex-end" }}>
+      <button type="button" class=${cx("pc-save", { "dt-press": s.pressed === "save" })}><${Icon} name="save" size=${14} />${T["Save"]}</button>
+    </div>
+    <div class="pc-grid">
+      <aside class="pc-aside">
+        ${CHANNELS.map(
+          ([id, name]) => html`<div key=${id} class=${cx("pc-item", { "is-active": s.channel === id })}>
+            <${ChannelIcon} id=${id} size=${15} />
+            <span class="min0 grow truncate">${name}</span>
+            ${enabled(id) ? html`<span class="pc-on"><i></i>${T["Enabled"]}</span>` : null}
+          </div>`
+        )}
+      </aside>
+      <section class="pc-section">
+        <div class="row" style=${{ justifyContent: "space-between" }}>
+          <h3 class="pc-h3"><${ChannelIcon} id=${ch.id} size=${18} />${ch.name}</h3>
+          <code class="pc-code">${ch.id}</code>
+        </div>
+        ${enabled(ch.id) && (ch.id === "telegram" || s.runtime)
+          ? html`<div class="pc-status" id="pc-status">
+              <div class="row" style=${{ gap: 8, fontWeight: 500 }}>
+                ${ch.id === "weixin" && s.runtime === "connecting"
+                  ? html`<${Icon} name="loader-2" size=${14} class="animate-spin" />`
+                  : html`<span style=${{ color: "var(--tw-emerald-500)" }}><${Icon} name="wifi" size=${14} /></span>`}
+                <span>${T["Status"]}: ${ch.id === "weixin" && s.runtime === "connecting" ? T["Connecting"] : T["Connected"]}</span>
+              </div>
+            </div>`
+          : null}
+        ${ch.id === "weixin"
+          ? html`<div class="pc-qr">
+              <div class="row" style=${{ justifyContent: "space-between", gap: 12 }}>
+                <div class="row" style=${{ gap: 8, fontSize: 12, fontWeight: 500 }}>
+                  <span style=${{ color: "var(--primary)" }}><${Icon} name="qr-code" size=${14} /></span>${T["Scan to connect"]}
+                </div>
+                <button type="button" class=${cx("pc-qr__btn", { "dt-press": s.pressed === "code" })} disabled=${s.qr === "busy"}>
+                  <${Icon} name=${s.qr === "busy" ? "loader-2" : "refresh-cw"} size=${12} class=${s.qr === "busy" ? "animate-spin" : ""} />
+                  ${s.qr === "idle" || s.qr === "busy" ? T["Get a code"] : T["New code"]}
+                </button>
+              </div>
+              <p class="pc-note">${T["Sign in with the WeChat account this partner should speak as. The bot token is saved on the server."]}</p>
+              ${statusLine
+                ? html`<div class="row" style=${{ marginTop: 12, gap: 12 }}>
+                    ${s.qr !== "confirmed" ? html`<div class="pc-qr__img animate-fade-in"><${FakeQr} /></div>` : null}
+                    <div class="min0" style=${{ fontSize: 11, color: "var(--muted-foreground)" }}><p>${T[statusLine]}</p></div>
+                  </div>`
+                : null}
+            </div>`
+          : null}
+        <label class="pc-bool">
+          <span class=${cx("pd-check", { "is-on": enabled(ch.id) })} style=${{ marginTop: 2 }}>${enabled(ch.id) ? html`<${Icon} name="check" size=${10} strokeWidth=${3} />` : null}</span>
+          <span>Enabled</span>
+        </label>
+        <${Field} label="Allow From" desc=${T["One value per line"]}>
+          <div class="pc-textarea">${ch.id === "telegram" ? "lin_xiaoyu" : s.weixinOn ? "wxid_linxiaoyu" : ""}</div>
+        <//>
+        ${ch.id === "weixin"
+          ? html`<div class="col" style=${{ gap: 12 }}>
+              <${Field} label="Base Url"><div class="pc-input">https://ilinkai.weixin.qq.com</div><//>
+              <${Field} label="Token">
+                <div class="pc-input is-mono row" style=${{ justifyContent: "space-between" }}>
+                  <span>${s.token}</span><span class="muted"><${Icon} name="eye" size=${16} /></span>
+                </div>
+              <//>
+              <${Field} label="Poll Timeout"><div class="pc-input" style=${{ width: 160 }}>35</div><//>
+            </div>`
+          : html`<${Field} label="Token">
+              <div class="pc-input is-mono row" style=${{ justifyContent: "space-between" }}>
+                <span>••••••••••••••••••••••••</span><span class="muted"><${Icon} name="eye" size=${16} /></span>
+              </div>
+            <//>`}
+      </section>
+    </div>
+  </div>`;
+}
+
+function DetailScene({ s }) {
+  const tabs = [
+    ["chat", T["Chat"], "message-circle"],
+    ["configure", T["Configure"], "settings-2"],
+    ["channels", T["Channels"], "radio"],
+    ["archive", T["Conversations"], "archive"],
+  ];
+  return html`<div class="pd animate-fade-in">
+    <div class="pd-head">
+      <div class="row min0" style=${{ gap: 12 }}>
+        <span class="pd-iconbtn" title=${T["Back to Partners"]}><${Icon} name="arrow-left" size=${16} /></span>
+        <${Avatar} p=${P1} i=${0} size=${32} />
+        <div class="min0">
+          <div class="row" style=${{ gap: 8 }}>
+            <span class="pt-name">${P1.name}</span>
+            <span class="pt-run"><i></i>${T["Running"]}</span>
+          </div>
+          <p class="pd-sub">${P1.soul}</p>
+        </div>
+      </div>
+      <nav class="pd-tabs">
+        ${tabs.map(
+          ([k, label, icon]) => html`<span key=${k} class=${cx("pd-tab", { "is-active": s.tab === k, "dt-press": s.pressedTab === k })}>
+            <${Icon} name=${icon} size=${14} /><span>${label}</span>
+          </span>`
+        )}
+      </nav>
+      <div class="row" style=${{ justifyContent: "flex-end", gap: 2, minWidth: 0 }}>
+        <span class="pd-sync" title=${T["Sync browsers"]}><span class="pd-check"></span></span>
+        <span class="pd-iconbtn" title=${T["Link a chat account"]}><${Icon} name="link-2" size=${16} /></span>
+        <span class="pd-iconbtn" title=${T["Stop"]}><${Icon} name="square" size=${16} /></span>
+        <span class="pd-iconbtn" title=${T["Delete partner"]}><${Icon} name="trash-2" size=${16} /></span>
+      </div>
+    </div>
+    <div class="pd-body" id="pd-body" data-dt-scroll>
+      ${s.tab === "chat"
+        ? html`<div class="pd-chat">
+            <div class="dt-user-bubble">明天复习什么？</div>
+            <div class="pd-reply">按复习队列，明天先看三样：表 8-1 两类错误、例 8.3 的 t 统计量，还有你上次答错的「α 改成 0.01 时结论变不变」。每样我出一道题，晚上九点发给你。</div>
+          </div>`
+        : html`<${ChannelsTab} s=${s} />`}
+    </div>
+    ${s.toast ? html`<div class="pd-toast" key=${s.toast}>${T[s.toast]}</div>` : null}
+  </div>`;
+}
+
+function render(s) {
+  return html`<${Shell} active="/partners">
+    ${s.scene === "list" ? html`<${ListScene} s=${s} />` : html`<${DetailScene} s=${s} />`}
+  <//>`;
+}
+
+DT.run({ T, initial, steps, render });
+</script>
+</body>
+</html>

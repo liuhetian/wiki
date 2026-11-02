@@ -1,0 +1,24 @@
+起草模式（宽松）：
+  模块 hyp_m0  假设与两类错误  （3 个知识点）
+    hyp_m0_kp0     concept    原假设与备择假设
+    hyp_m0_kp1     concept    第一类与第二类错误
+    hyp_m0_kp2     memory     显著性水平 α 的含义
+  模块 hyp_m1  检验统计量与 p 值  （4 个知识点）
+    hyp_m1_kp0     procedure  单样本 t 统计量
+    hyp_m1_kp1     concept    p 值不是 H0 为真的概率
+    hyp_m1_kp2     procedure  拒绝域与临界值
+    hyp_m1_kp3     concept    查 t 分布表
+  模块 hyp_m3  功效与样本量  （7 个知识点）
+    hyp_m3_kp0     procedure  功效练习 1
+    hyp_m3_kp1     procedure  功效练习 2
+    hyp_m3_kp2     procedure  功效练习 3
+    hyp_m3_kp3     procedure  功效练习 4
+    hyp_m3_kp4     procedure  功效练习 5
+    hyp_m3_kp5     procedure  功效练习 6
+    hyp_m3_kp6     procedure  功效练习 7
+  丢掉的模块：
+    第 3 个：module is not an object
+    第 5 个：module name is missing
+
+保存模式（strict=True），同一份草稿：
+  TopicGenerationError: Route region 1 waypoint 4 needs a name

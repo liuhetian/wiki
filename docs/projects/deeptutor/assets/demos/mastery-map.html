@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="640">
+<title>DeepTutor 仿真 demo：精通之路 · 精通大纲</title>
+<!--
+  Goal      「什么时候算会」是程序算的：知识点按形状分三态，定量门槛画成带刻度的进度条，
+            分数越过 90% 那一刻形状变实心、「下一个」挪到下一个知识点；概念题走定性门槛，练习题打不开
+  Surface   /learning/mastery/[pathId] · app/(workspace)/learning/mastery/[pathId]/page.tsx + ModuleOutline + ObjectiveDetail
+  Sources   app/(workspace)/learning/mastery/[pathId]/page.tsx 321-414（页头、计数和进度条）、416-482（「下一个」条）、
+            523-567（「精通大纲」标题和大纲/看板切换）；
+            components/space/learning/ModuleOutline.tsx 26-67（三态形状）、94-194（模块卡和知识点行）、
+            242-341（展开抽屉、「我已经掌握，直接放行」）；
+            components/space/learning/ObjectiveDetail.tsx 19-104（间隔复习、作答记录）、165-235（GateBar）；
+            components/space/learning/format.ts 6-11（知识类型标签）；components/space/learning/next-step-copy.ts 3-43；
+            components/layout/FeaturePage.tsx 24、54-55；locales/zh/app.json
+  Layout    Shell（个性化学习）→ 返回链接和操作 → 页头（题目、说明、资料 chip、计数和进度）→「下一个」条 → 精通大纲（模块卡）
+  Data      DT.DATA.mastery（3 个模块、8 个知识点）、book.file
+  Autoplay  展开「单样本 t 统计量」→ 门槛 74% → 又答对两题 86% → 93% 过 90% 线、形状变实心 →
+            回页头看 4/8、「下一个」换成「p 值不是 H0 为真的概率」→ 展开它，看定性门槛，一圈约 24s
+  Height    640
+  Deviations 宽屏时上游右侧还有学习档案和会话列（lg 才出现），iframe 窄，不画；大纲下方的复习计划不画。
+            时间用固定的相对说法（「2 天前」），不按真实日期算
+  Checks    三态形状和上游一致（实心勾 / 主色环加点 / 灰边空心）；门槛文案、计数格式与语言包一致
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  /* main：mastery-shell flex h-full flex-col overflow-y-auto [scrollbar-gutter:stable] */
+  .mm-page { display: flex; height: 100%; flex-direction: column; overflow-y: auto; scrollbar-gutter: stable; }
+  /* PageContainer：mx-auto w-full max-w-[1180px] px-6 md:px-9 py-7 + flex min-h-0 flex-1 flex-col sm:pb-10 */
+  .mm-container { margin: 0 auto; width: 100%; max-width: 1180px; padding: 28px 24px 40px; display: flex; flex-direction: column; flex: 1 0 auto; }
+  @media (min-width: 768px) { .mm-container { padding-left: 36px; padding-right: 36px; } }
+  /* 返回链接：inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground */
+  .mm-back { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  /* 编辑模块：inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-[12px] font-medium text-muted-foreground */
+  .mm-tool { display: inline-flex; height: 32px; align-items: center; gap: 6px; border-radius: 8px; border-width: 1px; background: var(--card); padding: 0 10px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  /* 更多：flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card */
+  .mm-tool--icon { width: 32px; padding: 0; justify-content: center; }
+  /* 页头：dt-page-header mt-5 mb-6 flex flex-col gap-4；容器 ≥640 时横排、底对齐（globals.css 47-51） */
+  .mm-header { margin: 20px 0 24px; display: flex; flex-direction: column; gap: 16px; }
+  @container feature-page (min-width: 640px) {
+    .mm-header { flex-direction: row; align-items: flex-end; justify-content: space-between; }
+  }
+  /* PAGE_TITLE_CLASS：dt-page-title font-serif font-semibold leading-normal tracking-[-0.02em] */
+  .mm-title { line-height: 1.5; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* PAGE_DESCRIPTION_CLASS：mt-1.5 max-w-2xl text-[12.5px] leading-relaxed text-muted-foreground */
+  .mm-desc { margin-top: 6px; max-width: 672px; font-size: 12.5px; line-height: 1.625; color: var(--muted-foreground); }
+  /* 资料 chip：inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-[10px] text-muted-foreground */
+  .mm-source { margin-top: 16px; display: inline-flex; align-items: center; gap: 6px; border-radius: 9999px; background: var(--muted); padding: 4px 10px; font-size: 10px; color: var(--muted-foreground); }
+  /* 计数：text-[13px] tabular-nums text-muted-foreground；分隔 h-3 w-px bg-border；
+     进度条 h-1 w-24 overflow-hidden rounded-full bg-muted，填充 bg-primary transition-[width] duration-500 */
+  .mm-stats { display: flex; flex-shrink: 0; align-items: center; gap: 12px; }
+  .mm-count { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+  .mm-sep { height: 12px; width: 1px; background: var(--border); }
+  .mm-bar { height: 4px; width: 96px; overflow: hidden; border-radius: 9999px; background: var(--muted); }
+  .mm-bar > i { display: block; height: 100%; border-radius: 9999px; background: var(--primary); transition: width 500ms; }
+  .mm-pct { font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  /* 「下一个」条（sm 以上）：mt-6 flex items-center justify-between gap-6 border-y border-border py-4 */
+  .mm-next { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 16px 0; }
+  .mm-next__label { flex-shrink: 0; font-size: 12px; color: var(--muted-foreground); }
+  .mm-next__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 500; transition: opacity var(--motion-slow); }
+  .mm-next__copy { margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: var(--muted-foreground); }
+  /* 按钮：inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3.5 text-[13px] font-medium text-primary-foreground */
+  .mm-cta { display: inline-flex; height: 36px; flex-shrink: 0; align-items: center; justify-content: center; gap: 6px; border-radius: 8px; background: var(--primary); padding: 0 14px; font-size: 13px; font-weight: 500; color: var(--primary-foreground); }
+  /* 精通大纲标题：text-[12px] font-semibold；切换 rounded-lg bg-muted p-0.5，按钮 h-8 rounded-md px-2.5 text-xs font-medium，
+     当前 bg-background text-foreground shadow-sm */
+  .mm-outline-head { margin: 24px 0 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .mm-outline-title { font-size: 12px; font-weight: 600; }
+  .mm-seg { display: flex; align-items: center; gap: 2px; border-radius: 8px; background: var(--muted); padding: 2px; }
+  .mm-seg__btn { display: flex; height: 32px; align-items: center; gap: 6px; border-radius: 6px; padding: 0 10px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  .mm-seg__btn.is-on { background: var(--background); color: var(--foreground); box-shadow: var(--shadow-sm); }
+  /* 模块卡：overflow-hidden rounded-lg border border-border bg-card；卡间 space-y-3 */
+  .mm-modules { display: flex; flex-direction: column; gap: 12px; }
+  .mm-module { overflow: hidden; border-radius: 8px; border-width: 1px; background: var(--card); }
+  /* 模块头：bg-secondary px-4 py-2.5；「模块 n」text-[11px] font-semibold tabular-nums；名 text-[13px] font-semibold；
+     计数 ml-auto text-[11px] tabular-nums；目标 mt-1 text-[12px] leading-5 text-muted-foreground */
+  .mm-module__head { background: var(--secondary); padding: 10px 16px; }
+  .mm-module__n { font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+  .mm-module__name { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
+  .mm-module__count { margin-left: auto; flex-shrink: 0; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+  .mm-module__goal { margin-top: 4px; font-size: 12px; line-height: 20px; color: var(--muted-foreground); }
+  /* 知识点行：flex w-full items-center gap-3 px-4 py-2.5；选中 bg-muted */
+  .mm-point { display: flex; width: 100%; align-items: center; gap: 12px; padding: 10px 16px; text-align: left; transition: background-color var(--motion-base); }
+  .mm-point.is-selected { background: var(--muted); }
+  .mm-point__name { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+  .mm-point__name.is-new { color: var(--muted-foreground); }
+  /* 「下一个」：rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary */
+  .mm-next-chip { flex-shrink: 0; border-radius: 9999px; background: color-mix(in srgb, var(--primary) 10%, transparent); padding: 2px 8px; font-size: 10px; font-weight: 600; color: var(--primary); }
+  .mm-point__status { display: none; flex-shrink: 0; font-size: 11px; color: var(--muted-foreground); }
+  @media (min-width: 640px) { .mm-point__status { display: inline; } }
+  .mm-point__chev { flex-shrink: 0; color: var(--muted-foreground); transition: transform var(--motion-base); }
+  .mm-point.is-selected .mm-point__chev { transform: rotate(90deg); }
+  /* StatusMark：flex h-6 w-6 shrink-0 items-center justify-center rounded-full border
+     掌握了 border-primary bg-primary text-primary-foreground；学习中 border-primary bg-card text-primary；未开始 border-border bg-card text-muted-foreground */
+  .mm-mark { display: flex; height: 24px; width: 24px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 9999px; border: 1px solid var(--border); background: var(--card); color: var(--muted-foreground); transition: background-color var(--motion-slow), border-color var(--motion-slow), color var(--motion-slow); }
+  .mm-mark.is-learning { border-color: var(--primary); color: var(--primary); }
+  .mm-mark.is-mastered { border-color: var(--primary); background: var(--primary); color: var(--primary-foreground); }
+  /* 抽屉：border-t border-border bg-secondary/60 py-4 pl-[52px] pr-4 */
+  .mm-drawer { border-top: 1px solid var(--border); background: color-mix(in srgb, var(--secondary) 60%, transparent); padding: 16px 16px 16px 52px; animation: dt-detail-in 180ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .mm-drawer__loading { display: flex; min-height: 128px; align-items: center; justify-content: center; color: var(--muted-foreground); }
+  .mm-drawer__type { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted-foreground); }
+  /* 收起：rounded-lg px-2 py-1 text-[11px] text-muted-foreground */
+  .mm-collapse { border-radius: 8px; padding: 4px 8px; font-size: 11px; color: var(--muted-foreground); }
+  /* ObjectiveDetail：mt-1 mb-2 ml-5 space-y-3 border-l border-border pl-3 */
+  .mm-detail { margin: 4px 0 8px 20px; display: flex; flex-direction: column; gap: 12px; border-left: 1px solid var(--border); padding-left: 12px; }
+  .mm-gate__line { display: flex; align-items: baseline; justify-content: space-between; font-size: 12px; }
+  .mm-gate__pct { color: var(--muted-foreground); font-variant-numeric: tabular-nums; transition: color var(--motion-slow); }
+  /* 掌握后：text-green-500 */
+  .mm-gate__pct.is-pass { color: var(--tw-green-500); }
+  /* 条：relative mt-1 h-1.5 w-full overflow-hidden rounded-full bg-accent；填充 h-full，没过 bg-muted-foreground，过了 bg-primary；
+     刻度 absolute inset-y-0 w-px bg-foreground/40 */
+  .mm-gate__bar { position: relative; margin-top: 4px; height: 6px; width: 100%; overflow: hidden; border-radius: 9999px; background: var(--accent); }
+  .mm-gate__fill { height: 100%; background: var(--muted-foreground); transition: width 700ms cubic-bezier(0.22, 1, 0.36, 1), background-color var(--motion-slow); }
+  .mm-gate__fill.is-pass { background: var(--primary); }
+  .mm-gate__tick { position: absolute; top: 0; bottom: 0; width: 1px; background: color-mix(in srgb, var(--foreground) 40%, transparent); }
+  /* 门槛下的说明：mt-1.5 text-[11px] leading-4 text-muted-foreground */
+  .mm-gate__note { margin-top: 6px; font-size: 11px; line-height: 16px; color: var(--muted-foreground); }
+  /* Row：text-xs；标签 text-muted-foreground；值 mt-0.5 text-foreground */
+  .mm-row { font-size: 12px; }
+  .mm-row__label { color: var(--muted-foreground); }
+  .mm-row__value { margin-top: 2px; }
+  /* 作答：mt-1 space-y-1.5；每条 flex gap-2 text-xs；对 text-green-500，错 text-red-500 */
+  .mm-attempts { margin-top: 4px; display: flex; flex-direction: column; gap: 6px; }
+  .mm-attempt { display: flex; gap: 8px; font-size: 12px; }
+  .mm-attempt__ok { margin-top: 2px; color: var(--tw-green-500); }
+  .mm-attempt__no { margin-top: 2px; color: #ef4444; }
+  /* 放行区：mt-5 border-t border-border pt-4；按钮 inline-flex h-9 items-center gap-2 rounded-xl border border-border px-3 text-xs font-medium */
+  .mm-override { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
+  .mm-override__btn { display: inline-flex; height: 36px; align-items: center; gap: 8px; border-radius: 12px; border-width: 1px; padding: 0 12px; font-size: 12px; font-weight: 500; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, Shell, cx, DATA } = DT;
+
+/* 缺的图标，内层逐字取自 lucide */
+DT.ICONS["pencil-ruler"] = '<path d="M13 7 8.7 2.7a2.41 2.41 0 0 0-3.4 0L2.7 5.3a2.41 2.41 0 0 0 0 3.4L7 13M8 6l2-2M18 16l2-2M17 11l4.3 4.3c.94.94.94 2.46 0 3.4l-2.6 2.6c-.94.94-2.46.94-3.4 0L11 17M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497zM15 5l4 4"/>';
+DT.ICONS["lock-keyhole"] = '<circle cx="12" cy="16" r="1"/><rect width="18" height="12" x="3" y="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/>';
+
+const T = {
+  "Learning topics": "精通目标",
+  "Edit modules": "编辑模块",
+  "knowledge points": "知识点",
+  "Next up": "下一个",
+  "Continue learning": "继续学习",
+  "Mastery outline": "精通大纲",
+  "Outline": "大纲",
+  "Board": "看板",
+  "Module {{n}}": "模块 {{n}}",
+  "Next": "下一个",
+  "Mastered": "掌握了",
+  "In progress": "学习中",
+  "Not started": "未开始",
+  "Collapse": "收起",
+  "Concept": "概念",
+  "Procedure": "过程",
+  "Memory": "记忆",
+  "Quantitative gate: {{pct}}%": "定量门槛：{{pct}}%",
+  "Qualitative gate: explain it in your own words": "定性门槛：用自己的话讲清楚",
+  "Practice questions do not open this gate — it opens when you explain the idea in your own words and your tutor records that. Your answers here still count as practice.":
+    "练习题打不开这道门——它要等你用自己的话把这个概念讲清楚、并由导师记录下来才会打开。你在这里的作答仍然算作练习。",
+  "Spaced review": "间隔复习",
+  "Due {{relative}} · {{absolute}}": "{{relative}}复习 · {{absolute}}",
+  "memory {{retrievability}}% · stability {{stability}} days": "记忆可提取度 {{retrievability}}% · 稳定性 {{stability}} 天",
+  "risk {{risk}}% · {{lapses}} lapses": "遗忘风险 {{risk}}% · 遗忘 {{lapses}} 次",
+  "Attempts ({{correct}}/{{total}} correct)": "作答记录（{{correct}}/{{total}} 正确）",
+  "You said: ": "你答：",
+  "I already know this — advance": "我已经掌握，直接放行",
+};
+const tt = (key, vars) => T[key].replace(/\{\{(\w+)\}\}/g, (_, k) => String(vars[k]));
+
+/* 上游 NEXT_LABELS（next-step-copy.ts）的中文 */
+const NEXT_COPY = {
+  practice: "继续练习，直到稳定越过掌握门槛",
+  assess: "用自己的话讲清楚这个概念",
+};
+const TYPE_LABEL = { CONCEPT: T["Concept"], PROCEDURE: T["Procedure"], MEMORY: T["Memory"] };
+const MODULE_GOALS = {
+  m1: "能说清一次检验在问什么，会犯哪两种错",
+  m2: "能算出 t 统计量，并把 p 值读对",
+  m3: "能估算出让检验有足够功效的样本量",
+};
+const TOPIC_DESC = "从原假设到 p 值，把第 8 章学到能自己做检验、讲清楚结论。";
+
+/* 演示里会动的两个知识点的「证据」：上游 fetchObjectiveReport 的那几项 */
+const REPORTS = {
+  "m2-p1": {
+    gate: "quantitative",
+    threshold: 0.9,
+    review: { relative: "明天", absolute: "10月30日 21:00", retrievability: 0.91, stability: 2.4, risk: 0.09, lapses: 0 },
+    attempts: [
+      { ok: true, prompt: "例 8.3 中 t 统计量的分母是什么？", answer: "s / √n = 0.82", when: "3 天前" },
+      { ok: false, prompt: "t 统计量的自由度是多少？", answer: "25", when: "2 天前" },
+      { ok: true, prompt: "n = 16、均值 51.2、s = 2.4，t 等于？", answer: "2.0", when: "2 天前" },
+    ],
+    more: [
+      { ok: true, prompt: "例 8.3 的 t 统计量等于多少？", answer: "2.80", when: "刚刚" },
+      { ok: true, prompt: "自由度 24 时，双侧 5% 的临界值是？", answer: "2.064", when: "刚刚" },
+    ],
+  },
+  "m2-p2": {
+    gate: "qualitative",
+    threshold: 1,
+    review: null,
+    attempts: [
+      { ok: true, prompt: "p = 0.0098 能说明 H0 为真的概率不到 1% 吗？", answer: "不能", when: "昨天" },
+      { ok: false, prompt: "p 值是在什么条件下算出来的概率？", answer: "H1 为真时", when: "昨天" },
+    ],
+    more: [],
+  },
+};
+
+const STATUS = { mastered: "mastered", in_progress: "learning", not_started: "new" };
+const MODULES = DATA.mastery.modules.map((m) => ({
+  id: m.id,
+  name: m.title,
+  points: m.points.map((p) => ({ id: p.id, name: p.title, type: p.type, status: STATUS[p.status], score: p.score })),
+}));
+
+const initial = {
+  statuses: {},
+  scores: {},
+  next: "m2-p1",
+  selected: null,
+  loading: false,
+  extra: 0,
+  pressed: null,
+};
+
+const steps = [
+  { at: 1400, set: { pressed: "m2-p1" } },
+  { at: 160, set: { selected: "m2-p1", loading: true, pressed: null } },
+  { at: 80, scroll: { sel: "#mm-page", to: '[data-module="m2"]', block: "start", offset: 12, ms: 520 } },
+  { at: 420, set: { loading: false } },
+  { label: "gate-open" },
+  { at: 2200, set: { extra: 1, scores: { "m2-p1": 0.86 } } },
+  { at: 1900, set: { extra: 2, scores: { "m2-p1": 0.93 }, statuses: { "m2-p1": "mastered" } } },
+  { label: "gate-passed" },
+  { at: 900, set: { next: "m2-p2" } },
+  { at: 1900, scroll: { sel: "#mm-page", top: 0, ms: 520 } },
+  { label: "header-updated" },
+  { at: 2600, set: { pressed: "m2-p2" } },
+  { at: 160, set: { selected: "m2-p2", loading: true, pressed: null } },
+  { at: 60, scroll: { sel: "#mm-page", to: '[data-point="m2-p2"]', block: "start", offset: 120, ms: 520 } },
+  { at: 420, set: { loading: false } },
+  { label: "qualitative-gate" },
+  { at: 4200 },
+];
+
+function pointOf(s, p) {
+  return {
+    status: s.statuses[p.id] || p.status,
+    score: s.scores[p.id] !== undefined ? s.scores[p.id] : p.score,
+  };
+}
+
+function StatusMark({ status }) {
+  if (status === "mastered")
+    return html`<span class="mm-mark is-mastered"><${Icon} name="check" size=${14} /></span>`;
+  if (status === "learning")
+    return html`<span class="mm-mark is-learning"><${Icon} name="circle-dot" size=${14} /></span>`;
+  return html`<span class="mm-mark"><${Icon} name="circle" size=${12} /></span>`;
+}
+
+function statusLabel(status) {
+  return status === "mastered" ? T["Mastered"] : status === "learning" ? T["In progress"] : T["Not started"];
+}
+
+function GateBar({ report, score, mastered }) {
+  const qualitative = report.gate === "qualitative";
+  const pct = qualitative ? (mastered ? 100 : 0) : Math.round(score * 100);
+  const threshold = Math.round(report.threshold * 100);
+  return html`<div>
+    <div class="mm-gate__line">
+      <span class="muted">${qualitative ? T["Qualitative gate: explain it in your own words"] : tt("Quantitative gate: {{pct}}%", { pct: threshold })}</span>
+      <span class=${cx("mm-gate__pct", { "is-pass": mastered })}>${pct}%</span>
+    </div>
+    <div class="mm-gate__bar">
+      <div class=${cx("mm-gate__fill", { "is-pass": mastered })} style=${{ width: pct + "%" }}></div>
+      ${qualitative ? null : html`<div class="mm-gate__tick" style=${{ left: threshold + "%" }}></div>`}
+    </div>
+    ${qualitative && !mastered
+      ? html`<p class="mm-gate__note">${T["Practice questions do not open this gate — it opens when you explain the idea in your own words and your tutor records that. Your answers here still count as practice."]}</p>`
+      : null}
+  </div>`;
+}
+
+function Drawer({ point, s, st }) {
+  const report = REPORTS[point.id];
+  if (s.loading || !report)
+    return html`<aside class="mm-drawer"><div class="mm-drawer__loading"><${Icon} name="loader-2" size=${20} class="animate-spin" /></div></aside>`;
+  const mastered = st.status === "mastered";
+  const attempts = report.attempts.concat(report.more.slice(0, point.id === "m2-p1" ? s.extra : 0));
+  const correct = attempts.filter((a) => a.ok).length;
+  return html`<aside class="mm-drawer">
+    <div class="row" style=${{ alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
+      <div class="mm-drawer__type"><span>${TYPE_LABEL[point.type]}</span></div>
+      <button type="button" class="mm-collapse">${T["Collapse"]}</button>
+    </div>
+    <div class="mm-detail">
+      <${GateBar} report=${report} score=${st.score} mastered=${mastered} />
+      ${report.review
+        ? html`<div class="mm-row">
+            <div class="mm-row__label">${T["Spaced review"]}</div>
+            <div class="mm-row__value">
+              ${tt("Due {{relative}} · {{absolute}}", report.review)}
+              <span class="muted" style=${{ marginLeft: 8 }}>${tt("memory {{retrievability}}% · stability {{stability}} days", {
+                retrievability: Math.round(report.review.retrievability * 100),
+                stability: report.review.stability.toFixed(1),
+              })}</span>
+              <span class="muted" style=${{ display: "block" }}>${tt("risk {{risk}}% · {{lapses}} lapses", {
+                risk: Math.round(report.review.risk * 100),
+                lapses: report.review.lapses,
+              })}</span>
+            </div>
+          </div>`
+        : null}
+      <div>
+        <div class="muted" style=${{ fontSize: 12 }}>${tt("Attempts ({{correct}}/{{total}} correct)", { correct, total: attempts.length })}</div>
+        <ul class="mm-attempts">
+          ${attempts
+            .slice()
+            .reverse()
+            .map(
+              (a, i) => html`<li key=${a.prompt} class=${cx("mm-attempt", { "animate-fade-in": a.when === "刚刚" && i === 0 })}>
+                <${Icon} name=${a.ok ? "check" : "x"} size=${12} class=${a.ok ? "mm-attempt__ok" : "mm-attempt__no"} />
+                <div class="min0">
+                  <div>${a.prompt}</div>
+                  <div class="muted">${T["You said: "]}${a.answer}<span style=${{ marginLeft: 8 }}>${a.when}</span></div>
+                </div>
+              </li>`
+            )}
+        </ul>
+      </div>
+    </div>
+    ${mastered
+      ? null
+      : html`<div class="mm-override">
+          <span class="mm-override__btn"><${Icon} name="lock-keyhole" size=${14} />${T["I already know this — advance"]}</span>
+        </div>`}
+  </aside>`;
+}
+
+function render(s) {
+  const all = MODULES.flatMap((m) => m.points);
+  const mastered = all.filter((p) => pointOf(s, p).status === "mastered").length;
+  const progress = Math.round((mastered / all.length) * 100);
+  const nextPoint = all.find((p) => p.id === s.next);
+  const nextCopy = nextPoint.type === "CONCEPT" ? NEXT_COPY.assess : NEXT_COPY.practice;
+  return html`<${Shell} active="/learning">
+    <main class="mm-page mastery-shell" id="mm-page" data-dt-scroll>
+      <div class="mm-container dt-page-container">
+        <div class="row" style=${{ justifyContent: "space-between", gap: 12 }}>
+          <span class="mm-back"><${Icon} name="arrow-left" size=${14} />${T["Learning topics"]}</span>
+          <div class="row" style=${{ gap: 8 }}>
+            <span class="mm-tool"><${Icon} name="pencil-ruler" size=${14} />${T["Edit modules"]}</span>
+            <span class="mm-tool mm-tool--icon"><${Icon} name="ellipsis" size=${16} /></span>
+          </div>
+        </div>
+
+        <header class="mm-header">
+          <div class="min0">
+            <h1 class="dt-page-title mm-title">${DATA.mastery.title}</h1>
+            <p class="mm-desc">${TOPIC_DESC}</p>
+            <span class="mm-source"><${Icon} name="book-open" size=${12} />${DATA.book.file}</span>
+          </div>
+          <div class="mm-stats">
+            <span class="mm-count">${mastered}/${all.length} ${T["knowledge points"]}</span>
+            <span class="mm-sep" aria-hidden="true"></span>
+            <div class="row" style=${{ gap: 8 }}>
+              <div class="mm-bar"><i style=${{ width: progress + "%" }}></i></div>
+              <span class="mm-pct">${progress}%</span>
+            </div>
+          </div>
+        </header>
+
+        <section class="mm-next">
+          <div class="row min0" style=${{ alignItems: "baseline", gap: 12 }}>
+            <span class="mm-next__label">${T["Next up"]}</span>
+            <div class="min0">
+              <div class="mm-next__name animate-fade-in" key=${nextPoint.id}>${nextPoint.name}</div>
+              <p class="mm-next__copy">${nextCopy}</p>
+            </div>
+          </div>
+          <span class="mm-cta">${T["Continue learning"]}<${Icon} name="arrow-right" size=${14} /></span>
+        </section>
+
+        <div class="mm-outline-head">
+          <h2 class="mm-outline-title">${T["Mastery outline"]}</h2>
+          <div class="mm-seg">
+            <span class="mm-seg__btn is-on"><${Icon} name="list" size=${14} />${T["Outline"]}</span>
+            <span class="mm-seg__btn"><${Icon} name="layout-grid" size=${14} />${T["Board"]}</span>
+          </div>
+        </div>
+
+        <section class="mm-modules" aria-label="主题大纲">
+          ${MODULES.map((m, mi) => {
+            const done = m.points.filter((p) => pointOf(s, p).status === "mastered").length;
+            return html`<div key=${m.id} class="mm-module" data-module=${m.id}>
+              <header class="mm-module__head">
+                <div class="row" style=${{ alignItems: "baseline", gap: 10 }}>
+                  <span class="mm-module__n">${tt("Module {{n}}", { n: mi + 1 })}</span>
+                  <h2 class="mm-module__name">${m.name}</h2>
+                  <span class="mm-module__count">${done}/${m.points.length}</span>
+                </div>
+                <p class="mm-module__goal">${MODULE_GOALS[m.id]}</p>
+              </header>
+              <ul>
+                ${m.points.map((p) => {
+                  const st = pointOf(s, p);
+                  const selected = s.selected === p.id;
+                  return html`<li key=${p.id}>
+                    <div class=${cx("mm-point", { "is-selected": selected, "dt-press": s.pressed === p.id })} data-point=${p.id}>
+                      <${StatusMark} status=${st.status} />
+                      <span class=${cx("mm-point__name", { "is-new": st.status === "new" })}>${p.name}</span>
+                      ${s.next === p.id ? html`<span class="mm-next-chip animate-pop-in">${T["Next"]}</span>` : null}
+                      <span class="mm-point__status">${statusLabel(st.status)}</span>
+                      <${Icon} name="chevron-right" size=${14} class="mm-point__chev" />
+                    </div>
+                    ${selected ? html`<${Drawer} point=${p} s=${s} st=${st} />` : null}
+                  </li>`;
+                })}
+              </ul>
+            </div>`;
+          })}
+        </section>
+      </div>
+    </main>
+  <//>`;
+}
+
+DT.run({ T, initial, steps, render });
+</script>
+</body>
+</html>

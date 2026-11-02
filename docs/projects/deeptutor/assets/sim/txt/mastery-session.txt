@@ -1,0 +1,38 @@
+新路径，什么都没做                                                      → probe · 原假设与备择假设
+讲清了原假设与备择假设（导师判过）              掌握分 1.000，已过门    → probe · 第一类与第二类错误
+讲清了两类错误（导师判过）                      掌握分 1.000，已过门    → probe · 显著性水平 α 的含义
+α 的含义 第 1 题 对                             掌握分 0.500            → practice · 显著性水平 α 的含义
+α 的含义 第 2 题 对                             掌握分 0.800            → practice · 显著性水平 α 的含义
+α 的含义 第 3 题 对                             掌握分 1.000，已过门    → probe · 单样本 t 统计量
+t 统计量 第 1 题 答「2.80」对                   掌握分 0.500            → practice · 单样本 t 统计量
+t 统计量 第 2 题 答「2.3」错                    掌握分 0.487            → practice · 单样本 t 统计量
+t 统计量 第 3 题 答「2.80」对                   掌握分 0.661            → practice · 单样本 t 统计量
+t 统计量 第 4 题 答「2.80」对                   掌握分 0.757            → practice · 单样本 t 统计量
+t 统计量 第 5 题 答「2.80」对                   掌握分 0.825            → practice · 单样本 t 统计量
+t 统计量 第 6 题 答「2.80」对                   掌握分 0.875            → practice · 单样本 t 统计量
+t 统计量 第 7 题 答「2.80」对                   掌握分 1.000，已过门    → probe · p 值不是 H0 为真的概率
+p 值含义 选择题 第 1 题 对                      掌握分 0.500            → assess · p 值不是 H0 为真的概率
+p 值含义 选择题 第 2 题 对                      掌握分 0.800            → assess · p 值不是 H0 为真的概率
+p 值含义 选择题 第 3 题 对                      掌握分 1.000            → assess · p 值不是 H0 为真的概率
+让学习者讲 p 值，讲错了                         掌握分 0.400            → assess · p 值不是 H0 为真的概率
+重讲一遍，讲对了                                掌握分 1.000，已过门    → probe · 拒绝域与临界值
+t 统计量又考一题，答错                          掌握分 0.750            → practice · 单样本 t 统计量
+再连对五题                                      掌握分 1.000，已过门    → probe · 拒绝域与临界值
+点「我已经掌握，直接放行」：拒绝域与临界值      掌握分 0.000，已过门    → complete
+
+map_summary：counts = {'mastered': 6, 'learning': 0, 'new': 0, 'total': 6}，complete = True
+  假设与两类错误  3/3
+    原假设与备择假设          concept    mastered  1.0    系统判
+    第一类与第二类错误        concept    mastered  1.0    系统判
+    显著性水平 α 的含义       memory     mastered  1.0    系统判
+  检验统计量与 p 值  3/3
+    单样本 t 统计量           procedure  mastered  1.0    系统判
+    p 值不是 H0 为真的概率    concept    mastered  1.0    系统判
+    拒绝域与临界值            procedure  mastered  0.0    自报
+
+把时钟拨到五天后，重建复习队列：
+  显著性水平 α 的含义       遗忘风险 1.00  due 5 days ago; retrievability 1% below 90% target.
+  单样本 t 统计量           遗忘风险 1.00  due 5 days ago; retrievability 26% below 90% target; 2 lapses.
+  p 值不是 H0 为真的概率    遗忘风险 0.62  due 4 days ago; retrievability 73% below 90% target; 1 lapse.
+  原假设与备择假设          遗忘风险 0.08  due in 1 day; retrievability 92%.
+next_objective → review · 显著性水平 α 的含义

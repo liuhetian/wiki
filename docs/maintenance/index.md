@@ -71,6 +71,7 @@ Gallery 里别人的成品从哪来、收的时候改了什么、上游更新了
 - [酒馆 SillyTavern](projects/sillytavern.md) —— 读的是 06bde93（1.19.0，2026-10-20 读），AGPL-3.0 许可；源码存档和行号；效果块怎么实跑出来的：Node 加载钩子原样加载酒馆前端模块、界面依赖换成桩，模型请求另起进程发；脚本附后
 - [DeepSeek Harness](projects/deepseek-harness.md) —— DeepSeek Harness 拆解的维护记录：读的是 687f282（2026-10-20 读），MIT 许可、Landlock 启动器子包 BSD-3；存档和行号怎么对；六条线怎么实跑、密钥怎么隔离、模型用量多少，脚本附后
 - [OpenAI Evals](projects/openai-evals.md) —— OpenAI Evals 拆解的维护记录：读的是 8eac7a7（2026-10-20 读），MIT 许可；源码存档和行号怎么对、几份题库样本怎么从 LFS 取的；注册 eval 的计数口径；只读源码，没有实跑
+- [DeepTutor](projects/deeptutor.md) —— DeepTutor 拆解的维护记录：读的是 a31d826（v1.6.15，2026-10-29 读），Apache-2.0 许可；源码存档和行号怎么对；纯函数怎么实跑、父包怎么登记成空壳绕开重依赖，脚本附后；15 个仿真 demo 照哪些上游文件抄的、偏离了哪里、怎么不开浏览器验
 
 ## 本站 { #wiki }
 

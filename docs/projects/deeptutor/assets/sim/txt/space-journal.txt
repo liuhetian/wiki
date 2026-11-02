@@ -1,0 +1,17 @@
+有内容的日志，这一轮拼进系统 prompt 的是：
+
+# Learning journal (carried over from earlier sessions)
+
+## Mission
+- Topic: 《应用统计学》第 8 章 假设检验
+- Why: 下周课上要讲例 8.3
+- Level: 研一
+
+## Last session
+- Summary: 讲清了 p 值是条件概率；α 改成 0.01 时的边界题还会判错
+- Next focus: 拒绝域与临界值，然后做习题 8.4
+
+_Pick up from where this leaves off, and record what this session changes with `learning_update`._
+
+三条学习记录：没有注入（3 条都留在 learning_status 工具后面）
+空日志注入的内容：''

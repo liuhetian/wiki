@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="640">
+<title>DeepTutor 仿真 demo：精通之路 · 学习会话</title>
+<!--
+  Goal      概念题的门不是选择题能打开的：探查题选对了，导师照样要你用自己的话讲一遍，
+            讲清楚了才记一次「过关」——左侧大纲那个点落下、波纹散开、整行发亮，撒彩纸，下一站换人
+  Surface   /learning/mastery/[pathId]/sessions/[sessionId] · components/space/learning/MasteryStudy.tsx
+  Sources   components/space/learning/MasteryStudy.tsx 576-660（56px 头栏、模式切换、进度环）、
+            662-700（左侧大纲栏、消息列 max-w-[900px]）、848-862（输入框占位语）；
+            components/space/learning/StudyOutline.tsx 12-45（三态小点）、96-180（大纲列表和那条竖线）；
+            components/space/learning/ModeSwitch.tsx 40-85；lib/mastery-mode.ts 17、41-45；
+            components/chat/home/MasteryQuestionCard.tsx 34-38、42-95（选项行）、176-340（题卡、判定、页脚）；
+            components/space/learning/LevelUpCelebration.tsx（彩纸：七色、三门炮、3200ms、物理参数照抄）；
+            components/space/learning/mastery-theme.css 96-205（过关的三层动画）；
+            features/chat/trace/TracePresentation.tsx 324-332（没登记的工具名按 titleCase 显示）、1574-1588（头栏状态）；
+            features/chat/messages/ChatMessageList.tsx 1028-1034（折叠摘要）、1887（用户气泡）；
+            components/chat/home/ChatComposer.tsx 1093、1188、182-194、1447（输入框外壳、工具条、发送键四态）；
+            lib/trace-timing.ts 65-76（时长格式）；locales/zh/app.json
+  Layout    Shell（个性化学习）→ 56px 头栏 → 左 252px 大纲 | 消息列 + 底部输入框
+  Data      DT.DATA.mastery（m2-p1 已过关，演示翻的是 m2-p2）
+  Autoplay  选 B 提交 → Mastery Grade 判对 → 导师要求用自己的话讲 → 打字发送 → Mastery Assess、Mastery Status →
+            大纲那一点过关动画 + 彩纸 → 头栏换成下一站，一圈约 37s
+  Height    640
+  Deviations 上游左侧大纲栏要视口 ≥ 1280px（xl）才出现，iframe 窄，这里 ≥ 720px 就显示；
+            彩纸照搬参数但换成确定性随机数，每圈落点一样
+  Checks    题卡四态（选中、对、错、未选）与 OptionRow 一致；过关动画用 mastery-just-mastered-* 三个类
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  /* main：mastery-shell flex h-full min-h-0 flex-col overflow-hidden */
+  .ms-main { display: flex; height: 100%; min-height: 0; flex-direction: column; overflow: hidden; }
+  /* 头栏：flex h-[56px] shrink-0 items-center gap-1 border-b border-border bg-background/95 px-3 backdrop-blur sm:px-4 */
+  .ms-head { display: flex; height: 56px; flex-shrink: 0; align-items: center; gap: 4px; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--background) 95%, transparent); padding: 0 12px; backdrop-filter: blur(8px); }
+  @media (min-width: 640px) { .ms-head { padding: 0 16px; } }
+  /* 头栏按钮：flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground */
+  .ms-icon-btn { display: flex; height: 32px; width: 32px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 8px; color: var(--muted-foreground); }
+  /* 题目：shrink-0 truncate text-[14.5px] font-semibold tracking-[-0.01em]；「/」text-muted-foreground/40；当前站 text-[12.5px] text-muted-foreground */
+  .ms-topic { flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14.5px; font-weight: 600; letter-spacing: -0.01em; }
+  .ms-slash { flex-shrink: 0; color: color-mix(in srgb, var(--muted-foreground) 40%, transparent); }
+  .ms-waypoint { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--muted-foreground); }
+  .ms-slash, .ms-waypoint { display: none; }
+  @media (min-width: 640px) { .ms-slash, .ms-waypoint { display: inline; } }
+  /* ModeSwitch：flex items-center gap-0.5 rounded-lg bg-muted/60 p-0.5；按钮 flex h-7 items-center gap-1.5 rounded-md px-2 text-[12px] font-medium；
+     当前 bg-background text-foreground shadow-sm；点 h-[7px] w-[7px] rounded-full border，当前 border-primary bg-primary，其余 border-muted-foreground/45 */
+  .ms-modes { display: none; flex-shrink: 0; align-items: center; gap: 2px; border-radius: 8px; background: color-mix(in srgb, var(--muted) 60%, transparent); padding: 2px; }
+  @media (min-width: 640px) { .ms-modes { display: flex; } }
+  .ms-mode { display: flex; height: 28px; align-items: center; gap: 6px; border-radius: 6px; padding: 0 8px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  .ms-mode.is-on { background: var(--background); color: var(--foreground); box-shadow: var(--shadow-sm); }
+  .ms-mode__dot { height: 7px; width: 7px; border-radius: 9999px; border: 1px solid color-mix(in srgb, var(--muted-foreground) 45%, transparent); }
+  .ms-mode.is-on .ms-mode__dot { border-color: var(--primary); background: var(--primary); }
+  .ms-count { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+  /* 下半：flex min-h-0 flex-1 */
+  .ms-body { display: flex; min-height: 0; flex: 1; }
+  /* 大纲栏：shrink-0 overflow-y-auto border-r border-border bg-card/30 w-[252px] px-5 py-5（见头注偏离项） */
+  .ms-aside { display: none; width: 252px; flex-shrink: 0; overflow-y: auto; border-right: 1px solid var(--border); background: color-mix(in srgb, var(--card) 30%, transparent); padding: 20px; }
+  @media (min-width: 720px) { .ms-aside { display: block; } }
+  /* 「大纲」：text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground/70；计数 text-[10.5px] tabular-nums text-muted-foreground/55 */
+  .ms-o-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; color: color-mix(in srgb, var(--muted-foreground) 70%, transparent); }
+  .ms-o-count { font-size: 10.5px; font-variant-numeric: tabular-nums; color: color-mix(in srgb, var(--muted-foreground) 55%, transparent); }
+  .ms-o-hide { display: flex; height: 20px; width: 20px; align-items: center; justify-content: center; border-radius: 4px; color: color-mix(in srgb, var(--muted-foreground) 50%, transparent); }
+  /* 模块：mt-5 space-y-6；序号 w-[18px] text-[10.5px] font-medium tabular-nums text-muted-foreground/45；名 text-[12.5px] font-semibold leading-5 */
+  .ms-o-modules { margin-top: 20px; display: flex; flex-direction: column; gap: 24px; }
+  .ms-o-idx { width: 18px; flex-shrink: 0; font-size: 10.5px; font-weight: 500; font-variant-numeric: tabular-nums; color: color-mix(in srgb, var(--muted-foreground) 45%, transparent); }
+  .ms-o-name { min-width: 0; font-size: 12.5px; font-weight: 600; line-height: 20px; }
+  /* 竖线：relative mt-1.5 before:absolute before:bottom-[14px] before:left-[21px] before:top-[14px] before:w-px before:bg-border */
+  .ms-o-list { position: relative; margin-top: 6px; }
+  .ms-o-list::before { content: ""; position: absolute; bottom: 14px; left: 21px; top: 14px; width: 1px; background: var(--border); }
+  /* 行：flex items-start gap-2 rounded-md py-[5px] pl-[18px] pr-2；当前 bg-[color-mix(primary 7%)] */
+  .ms-o-row { display: flex; align-items: flex-start; gap: 8px; border-radius: 6px; padding: 5px 8px 5px 18px; transition: background-color var(--motion-slow); }
+  .ms-o-row.is-current { background: color-mix(in srgb, var(--primary) 7%, transparent); }
+  /* 点的格子：relative z-[1] flex h-[18px] w-[7px] shrink-0 items-center justify-center */
+  .ms-o-markbox { position: relative; z-index: 1; display: flex; height: 18px; width: 7px; flex-shrink: 0; align-items: center; justify-content: center; }
+  /* PointMark：h-[7px] w-[7px] rounded-full；过关 bg-primary；当前 bg-background ring-2 ring-primary；学习中 border border-primary/60；未开始 border border-muted-foreground/35 */
+  .ms-dot { height: 7px; width: 7px; border-radius: 9999px; }
+  .ms-dot.is-mastered { background: var(--primary); }
+  .ms-dot.is-current { background: var(--background); box-shadow: 0 0 0 2px var(--primary); }
+  .ms-dot.is-learning { border: 1px solid color-mix(in srgb, var(--primary) 60%, transparent); }
+  .ms-dot.is-new { border: 1px solid color-mix(in srgb, var(--muted-foreground) 35%, transparent); }
+  /* 名：min-w-0 text-[12px] leading-[18px]；当前 font-medium text-foreground；过关 text-muted-foreground/75；其余 text-muted-foreground */
+  .ms-o-text { min-width: 0; font-size: 12px; line-height: 18px; color: var(--muted-foreground); transition: color 500ms; }
+  .ms-o-text.is-current { font-weight: 500; color: var(--foreground); }
+  .ms-o-text.is-mastered { color: color-mix(in srgb, var(--muted-foreground) 75%, transparent); }
+  /* 消息区：section flex min-w-0 flex-1 flex-col；滚动 h-full overflow-y-auto [scrollbar-gutter:stable] */
+  .ms-chat { display: flex; min-width: 0; flex: 1; flex-direction: column; background: var(--background); }
+  .ms-scroll { min-height: 0; flex: 1; overflow-y: auto; scrollbar-gutter: stable; }
+  /* 列：mx-auto w-full max-w-[900px] px-4 pb-8 pt-7 sm:px-7 */
+  .ms-column { margin: 0 auto; width: 100%; max-width: 900px; padding: 28px 16px 32px; }
+  @media (min-width: 640px) { .ms-column { padding-left: 28px; padding-right: 28px; } }
+  .ms-turns { display: flex; flex-direction: column; gap: 28px; }
+  .ms-turn .dt-act-header { margin-bottom: 12px; }
+  .ms-rows { margin: -4px 0 12px; }
+  /* 消息底部的操作：inline-flex rounded-md p-1 text-muted-foreground，图标 15px strokeWidth 1.5 */
+  .ms-actions { margin-top: 6px; display: flex; gap: 2px; color: var(--muted-foreground); }
+  .ms-actions > span { display: inline-flex; border-radius: 6px; padding: 4px; }
+  /* 用户气泡外层：flex max-w-[75%] flex-col items-end；气泡 rounded-2xl bg-secondary px-4 py-2.5 text-[14px] leading-relaxed shadow-sm */
+  .ms-user { display: flex; justify-content: flex-end; }
+  /* 题卡：my-4 border-l-2 pl-4 sm:pl-5；判对 border-primary，判错 border-destructive，平时 border-border */
+  .mq { margin: 16px 0; border-left: 2px solid var(--border); padding-left: 16px; transition: border-color var(--motion-slow); }
+  @media (min-width: 640px) { .mq { padding-left: 20px; } }
+  .mq.is-right { border-left-color: var(--primary); }
+  .mq.is-wrong { border-left-color: var(--destructive); }
+  /* meta：text-[11px] leading-5 text-muted-foreground；题干 mt-0.5 font-serif text-[15.5px] font-semibold leading-relaxed tracking-[-0.01em] */
+  .mq__meta { font-size: 11px; line-height: 20px; color: var(--muted-foreground); }
+  .mq__prompt { margin-top: 2px; font-family: var(--font-serif); font-size: 15.5px; font-weight: 600; line-height: 1.625; letter-spacing: -0.01em; }
+  .mq__options { margin-top: 10px; display: flex; flex-direction: column; gap: 2px; }
+  /* OptionRow：-mx-2 flex items-baseline gap-3 rounded-lg px-2 py-1.5 text-left */
+  .mq__opt { margin: 0 -8px; display: flex; align-items: baseline; gap: 12px; border-radius: 8px; padding: 6px 8px; text-align: left; }
+  /* 字母：relative top-px flex h-[19px] w-[19px] shrink-0 items-center justify-center rounded-full border text-[10.5px] font-semibold；
+     选中/对 border-primary bg-primary text-primary-foreground；错 border-destructive bg-destructive；平时 border-border text-muted-foreground */
+  .mq__letter { position: relative; top: 1px; display: flex; height: 19px; width: 19px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 9999px; border: 1px solid var(--border); font-size: 10.5px; font-weight: 600; color: var(--muted-foreground); transition: background-color var(--motion-base), border-color var(--motion-base), color var(--motion-base); }
+  .mq__letter.is-on { border-color: var(--primary); background: var(--primary); color: var(--primary-foreground); }
+  .mq__letter.is-wrong { border-color: var(--destructive); background: var(--destructive); color: var(--destructive-foreground); }
+  /* 选项正文：min-w-0 flex-1 text-[13.5px] leading-relaxed；判错时 text-muted-foreground */
+  .mq__body { min-width: 0; flex: 1; font-size: 13.5px; line-height: 1.625; }
+  .mq__body.is-wrong { color: var(--muted-foreground); }
+  /* 判定：mt-3 border-t border-border pt-2.5；text-[12.5px] leading-relaxed；结论 font-semibold text-primary / text-destructive */
+  .mq__ruling { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; font-size: 12.5px; line-height: 1.625; animation: dt-detail-in 180ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .mq__verdict { font-weight: 600; color: var(--primary); }
+  .mq__explain { margin-top: 4px; font-size: 12.5px; line-height: 1.625; color: var(--muted-foreground); }
+  .mq__challenge { margin-top: 8px; font-size: 12px; text-decoration: underline; }
+  /* 页脚：mt-3 flex items-center justify-between gap-3；提示 text-[11px] text-muted-foreground；
+     跳过 rounded-md px-2 py-1.5 text-[12px] text-muted-foreground；提交 rounded-md bg-primary px-3 py-1.5 text-[12px] font-medium，没选时 opacity-40 */
+  .mq__foot { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .mq__hint { font-size: 11px; color: var(--muted-foreground); }
+  .mq__skip { border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--muted-foreground); }
+  .mq__submit { border-radius: 6px; background: var(--primary); padding: 6px 12px; font-size: 12px; font-weight: 500; color: var(--primary-foreground); transition: opacity var(--motion-fast); }
+  .mq__submit[disabled] { opacity: 0.4; }
+  .mq__sent { margin-top: 10px; font-size: 11px; color: var(--muted-foreground); }
+  /* 输入框外层 */
+  .ms-composer-wrap { flex-shrink: 0; background: var(--background); padding: 0 16px 14px; }
+  @media (min-width: 640px) { .ms-composer-wrap { padding: 0 28px 16px; } }
+  .ms-composer-inner { margin: 0 auto; max-width: 844px; }
+  /* 文本区：px-4 pt-3.5 pb-2；textarea text-[16px] leading-relaxed，占位 text-muted-foreground */
+  .ms-input { padding: 14px 16px 8px; font-size: 16px; line-height: 1.625; min-height: 46px; }
+  .ms-input.is-empty { color: var(--muted-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* 工具条：px-3 pb-2 pt-0.5，flex wrap items-center justify-end gap-1 */
+  .ms-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px; padding: 2px 12px 8px; }
+  /* 资源键、模型键：inline-flex h-8 items-center rounded-lg px-2 text-[14px] font-medium text-muted-foreground */
+  .ms-tbtn { display: inline-flex; height: 32px; align-items: center; gap: 4px; border-radius: 8px; padding: 0 8px; font-size: 14px; font-weight: 500; color: var(--muted-foreground); }
+  .ms-tbtn__label { display: none; font-size: 12.5px; }
+  @container chat-composer (min-width: 600px) { .ms-tbtn__label { display: inline; } }
+  /* 麦克风：inline-flex h-8 w-8 items-center justify-center rounded-[10px] text-muted-foreground */
+  .ms-mic { display: inline-flex; height: 32px; width: 32px; align-items: center; justify-content: center; border-radius: 10px; color: var(--muted-foreground); }
+  /* 发送键四态（SEND_STATE_CLASS）：idle ring-1 ring-inset ring-border 灰字；ready bg-primary + ring-[3px] primary 18%；streaming bg-primary + 外圈转圈 */
+  .ms-send { position: relative; margin-left: 4px; display: inline-grid; height: 32px; width: 32px; flex-shrink: 0; place-items: center; border-radius: 9999px; color: var(--muted-foreground); box-shadow: inset 0 0 0 1px var(--border); transition: background-color 200ms, box-shadow 200ms, transform 200ms; }
+  .ms-send.is-ready { background: var(--primary); color: var(--primary-foreground); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent); }
+  .ms-send.is-streaming { background: var(--primary); color: var(--primary-foreground); box-shadow: none; }
+  .ms-send__ring { position: absolute; inset: -3px; border-radius: 9999px; border: 2px solid color-mix(in srgb, var(--primary) 15%, transparent); border-top-color: var(--primary); animation: spin 1s linear infinite; }
+  .ms-surface { container: chat-composer / inline-size; }
+  /* 彩纸画布：pointer-events-none fixed inset-0 z-[999] */
+  .ms-confetti { pointer-events: none; position: fixed; inset: 0; z-index: 999; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, Shell, cx, DATA, ActivityHeader, ActivityRow, Prose, ProgressRing } = DT;
+const { useEffect, useRef } = DT.hooks;
+
+DT.ICONS["chevrons-left"] = '<path d="m11 17-5-5 5-5M18 17l-5-5 5-5"/>';
+DT.ICONS["bookmark-plus"] = '<path d="M12 7v6M15 10H9M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"/>';
+DT.ICONS["panel-right"] = '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/>';
+
+const T = {
+  "Learning topics": "精通目标",
+  "masteryMode.outline": "编辑大纲",
+  "masteryMode.study": "学习",
+  "masteryMode.review": "复习",
+  "Save to Notebook": "保存到笔记本",
+  "Activity": "活动",
+  "Outline": "大纲",
+  "Hide outline": "隐藏目录",
+  "Ask your tutor about “{{waypoint}}”…": "问导师关于「{{waypoint}}」的问题…",
+  "Medium": "中等",
+  "Pick the option you think is right.": "选出你认为正确的选项。",
+  "Skip this one": "跳过这题",
+  "Submit": "提交",
+  "Answer submitted — your tutor is checking it.": "答案已提交——正在批改。",
+  "Correct": "正确",
+  "Review or challenge this assessment": "复核或申诉本次判定",
+  "DeepTutor responded.": "已完成",
+  "{{name}} Reasoning…": "{{name}} 推理中…",
+  "Tool Calling…": "调用工具中…",
+  "{{count}} tool calls": "{{count}} 次工具调用",
+  "Copy": "复制",
+  "Regenerate": "重新生成",
+};
+const tt = (key, vars) => T[key].replace(/\{\{(\w+)\}\}/g, (_, k) => String(vars[k]));
+
+const STATUS = { mastered: "mastered", in_progress: "learning", not_started: "new" };
+const MODULES = DATA.mastery.modules.map((m) => ({
+  id: m.id,
+  name: m.title,
+  points: m.points.map((p) => ({ id: p.id, name: p.title, status: p.id === "m2-p1" ? "mastered" : STATUS[p.status] })),
+}));
+const ALL = MODULES.flatMap((m) => m.points);
+const nameOf = (id) => ALL.find((p) => p.id === id).name;
+
+const QUESTION = {
+  meta: [nameOf("m2-p2"), T["Medium"]].join(" · "),
+  prompt: "例 8.3 算出双侧 p ≈ 0.0098。下面哪种说法对？",
+  options: [
+    { label: "A", body: "原假设为真的概率约为 0.98%" },
+    { label: "B", body: "如果原假设为真，抽到至少这么极端的样本，概率约为 0.98%" },
+    { label: "C", body: "备择假设为真的概率约为 99%" },
+    { label: "D", body: "这次检验犯第一类错误的概率约为 0.98%" },
+  ],
+  correct: "B",
+  explanation: "p 值是先假定 H0 为真、再算出来的条件概率，问的是这样的数据有多罕见，不是哪个假设为真的概率。",
+};
+const OPENING = "上一站「单样本 t 统计量」过了。这一站看你怎么理解 p 值，先来一道探查题。";
+const NUDGE =
+  "选对了。不过这一站是**概念题**，选择题打不开这道门：请你用自己的话讲一遍，p 值是在什么条件下算出来的概率？为什么它不是 $H₀$ 为真的概率？";
+const EXPLAIN =
+  "p 值是先假定 H0 为真，再算拿到这么极端甚至更极端数据的概率。条件就是 H0 为真，所以它没法反过来告诉我 H0 为真的概率。";
+const PASS =
+  "讲得很清楚：条件是 $H₀$ 为真，问的是数据有多罕见，你也说出了为什么不能反过来读。这一站过了，下一站是**拒绝域与临界值**。";
+
+const initial = {
+  picked: null,
+  card: "open",
+  t2: null,
+  t2text: "",
+  draft: "",
+  focus: false,
+  user: null,
+  t3: null,
+  t3text: "",
+  mastered: [],
+  just: null,
+  confetti: 0,
+  waypoint: "m2-p2",
+  send: "idle",
+  pressed: null,
+};
+
+const steps = [
+  { at: 1600, set: { picked: "B" } },
+  { at: 800, set: { pressed: "submit" } },
+  { at: 200, set: { card: "sent", pressed: null } },
+  { at: 500, set: { t2: { phase: "running", rows: [{ title: "Mastery Grade", state: "running" }] } } },
+  { at: 80, scroll: { sel: "#ms-scroll", bottom: true, ms: 360 } },
+  { at: 1300, set: { card: "graded", t2: { phase: "running", rows: [{ title: "Mastery Grade", state: "done" }] } } },
+  { label: "graded" },
+  { at: 500, stream: { key: "t2text", text: NUDGE, chunk: [1, 3], ms: [22, 46] } },
+  { at: 200, set: { t2: { phase: "settled", rows: [{ title: "Mastery Grade", state: "done" }], duration: "4s" } } },
+  { at: 60, scroll: { sel: "#ms-scroll", bottom: true, ms: 360 } },
+  { at: 900, set: { focus: true } },
+  { at: 300, type: { key: "draft", text: EXPLAIN, cps: 17 } },
+  { at: 500, set: { send: "ready" } },
+  { at: 500, set: (s) => ({ user: s.draft, draft: "", focus: false, send: "streaming" }) },
+  { label: "explained" },
+  { at: 80, scroll: { sel: "#ms-scroll", bottom: true, ms: 360 } },
+  { at: 500, set: { t3: { phase: "running", rows: [{ title: "Mastery Assess", state: "running" }] } } },
+  { at: 60, scroll: { sel: "#ms-scroll", bottom: true, ms: 300 } },
+  { at: 1700, set: { t3: { phase: "running", rows: [{ title: "Mastery Assess", state: "done" }, { title: "Mastery Status", state: "running" }] } } },
+  { at: 900, set: { t3: { phase: "running", rows: [{ title: "Mastery Assess", state: "done" }, { title: "Mastery Status", state: "done" }] } } },
+  { at: 300, stream: { key: "t3text", text: PASS, chunk: [1, 3], ms: [22, 46] } },
+  { at: 150, set: (s) => ({ t3: Object.assign({}, s.t3, { phase: "settled", duration: "5s" }), send: "idle", mastered: ["m2-p2"], just: "m2-p2", confetti: s.confetti + 1 }) },
+  { label: "gate-cleared" },
+  { at: 60, scroll: { sel: "#ms-scroll", bottom: true, ms: 360 } },
+  { at: 2600, set: { waypoint: "m2-p3", just: null } },
+  { label: "next-waypoint" },
+  { at: 3600 },
+];
+
+/* ─── 彩纸：LevelUpCelebration.tsx 的参数照搬，随机数换成确定性的 ─── */
+const COLORS = ["#FF4D6D", "#FF8A3D", "#FFC53D", "#3DD68C", "#38BDF8", "#7C7CFF", "#F472B6"];
+const DURATION = 3200;
+const TAIL_FADE = 550;
+const BASE_FRAME_MS = 1000 / 60;
+function seeded(seed) {
+  let x = seed >>> 0;
+  return () => {
+    x = (x * 1664525 + 1013904223) >>> 0;
+    return x / 4294967296;
+  };
+}
+function makeParticle(c, rnd) {
+  const nearField = rnd() < 0.18;
+  const speed = nearField ? 6 + rnd() * 7 : 17 + Math.sqrt(rnd()) * 17;
+  const angle = -Math.PI / 2 + c.aim + (rnd() - 0.5) * c.spread;
+  const roll = rnd();
+  const shape = roll < 0.66 ? "paper" : roll < 0.88 ? "sequin" : "streamer";
+  const w = shape === "streamer" ? 3 + rnd() * 2 : 7 + rnd() * 5;
+  const h = shape === "streamer" ? 14 + rnd() * 10 : shape === "sequin" ? w : w * (0.5 + rnd() * 0.35);
+  return {
+    x: c.x + (rnd() - 0.5) * 26, y: c.y + (rnd() - 0.5) * 14,
+    vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, w, h,
+    color: COLORS[Math.floor(rnd() * COLORS.length)], shape,
+    tilt: rnd() * Math.PI * 2, tiltSpin: (rnd() - 0.5) * 0.24,
+    flip: rnd() * Math.PI * 2, flipSpeed: (shape === "sequin" ? 0.18 : 0.09) * (0.6 + rnd() * 0.9),
+    wobble: rnd() * Math.PI * 2, wobbleSpeed: 0.04 + rnd() * 0.05, wobbleStrength: 0.35 + rnd() * 0.9,
+    life: 1, decay: (nearField ? 0.0026 : 0.0034) + rnd() * 0.0028,
+  };
+}
+function Confetti() {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const canvas = ref.current;
+    const ctx = canvas && canvas.getContext("2d");
+    if (!ctx) return;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cannons = [
+      { x: width * 0.14, y: height * 0.88, aim: 0.42, spread: 0.72, count: 62, delay: 0 },
+      { x: width * 0.86, y: height * 0.88, aim: -0.42, spread: 0.72, count: 62, delay: 110 },
+      { x: width * 0.5, y: height * 0.94, aim: 0, spread: 1.0, count: 56, delay: 260 },
+    ];
+    const rnd = seeded(20261029);
+    const particles = [];
+    const fired = cannons.map(() => false);
+    const GRAVITY = 0.42, DRAG_X = 0.968, DRAG_Y = 0.995, TERMINAL_VY = 9;
+    let raf = 0;
+    let last = performance.now();
+    const start = last;
+    const tick = (now) => {
+      const elapsed = now - start;
+      const step = Math.min((now - last) / BASE_FRAME_MS, 3);
+      last = now;
+      cannons.forEach((c, i) => {
+        if (!fired[i] && elapsed >= c.delay) {
+          fired[i] = true;
+          for (let n = 0; n < c.count; n++) particles.push(makeParticle(c, rnd));
+        }
+      });
+      ctx.clearRect(0, 0, width, height);
+      const tailStart = DURATION - TAIL_FADE;
+      const tailFade = elapsed > tailStart ? Math.max(0, 1 - (elapsed - tailStart) / TAIL_FADE) : 1;
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.vx *= Math.pow(DRAG_X, step);
+        p.vy *= Math.pow(DRAG_Y, step);
+        p.vy += GRAVITY * step;
+        if (p.vy > TERMINAL_VY) p.vy = TERMINAL_VY;
+        p.wobble += p.wobbleSpeed * step;
+        const settled = Math.max(0, 1 - Math.abs(p.vx) / 6);
+        p.x += (p.vx + Math.cos(p.wobble) * p.wobbleStrength * settled) * step;
+        p.y += p.vy * step;
+        p.tilt += p.tiltSpin * step;
+        p.flip += p.flipSpeed * step;
+        p.life -= p.decay * step;
+        if (p.life <= 0 || p.y - 40 > height) {
+          particles.splice(i, 1);
+          continue;
+        }
+        const alpha = Math.min(1, p.life * 2.2);
+        const squash = Math.cos(p.flip);
+        ctx.save();
+        ctx.globalAlpha = alpha * (squash < 0 ? 0.76 : 1) * tailFade;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.tilt);
+        ctx.scale(1, squash);
+        ctx.fillStyle = p.color;
+        if (p.shape === "sequin") {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+      if (elapsed < DURATION && (particles.length > 0 || elapsed < 400)) raf = requestAnimationFrame(tick);
+      else ctx.clearRect(0, 0, width, height);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return html`<canvas ref=${ref} class="ms-confetti" aria-hidden="true"></canvas>`;
+}
+
+function statusOf(s, p) {
+  return s.mastered.includes(p.id) ? "mastered" : p.status;
+}
+
+function Outline({ s }) {
+  const done = ALL.filter((p) => statusOf(s, p) === "mastered").length;
+  return html`<nav aria-label=${T["Outline"]} style=${{ paddingBottom: 40 }}>
+    <div class="row" style=${{ justifyContent: "space-between", gap: 8 }}>
+      <span class="ms-o-label">${T["Outline"]}</span>
+      <div class="row" style=${{ gap: 8 }}>
+        <span class="ms-o-count">${done}/${ALL.length}</span>
+        <span class="ms-o-hide" title=${T["Hide outline"]}><${Icon} name="chevrons-left" size=${14} /></span>
+      </div>
+    </div>
+    <div class="ms-o-modules">
+      ${MODULES.map(
+        (m, mi) => html`<section key=${m.id}>
+          <div class="row" style=${{ alignItems: "baseline", gap: 8 }}>
+            <span class="ms-o-idx">${String(mi + 1).padStart(2, "0")}</span>
+            <h2 class="ms-o-name">${m.name}</h2>
+          </div>
+          <ul class="ms-o-list">
+            ${m.points.map((p) => {
+              const st = statusOf(s, p);
+              const current = p.id === s.waypoint;
+              const just = p.id === s.just;
+              const dot = st === "mastered" ? "is-mastered" : current ? "is-current" : st === "learning" ? "is-learning" : "is-new";
+              return html`<li key=${p.id} style=${{ position: "relative" }}>
+                <div class=${cx("ms-o-row", { "mastery-just-mastered-row": just, "is-current": current && !just })}>
+                  <span class=${cx("ms-o-markbox", { "mastery-just-mastered-halo": just })} key=${p.id + (just ? "-just" : "")}>
+                    <span class=${cx("ms-dot", dot, { "mastery-just-mastered-dot": just })}></span>
+                  </span>
+                  <span class=${cx("ms-o-text", { "is-current": current || just, "is-mastered": st === "mastered" && !current && !just })}>${p.name}</span>
+                </div>
+              </li>`;
+            })}
+          </ul>
+        </section>`
+      )}
+    </div>
+  </nav>`;
+}
+
+function QuestionCard({ s }) {
+  const graded = s.card === "graded";
+  const picked = s.picked;
+  return html`<div class=${cx("mq", { "is-right": graded })}>
+    <div class="mq__meta">${QUESTION.meta}</div>
+    <div class="mq__prompt">${QUESTION.prompt}</div>
+    <div class="mq__options">
+      ${QUESTION.options.map((o) => {
+        const on = graded ? o.label === QUESTION.correct : o.label === picked;
+        return html`<div key=${o.label} class="mq__opt">
+          <span class=${cx("mq__letter", { "is-on": on })}>${o.label}</span>
+          <span class="mq__body">${o.body}</span>
+        </div>`;
+      })}
+    </div>
+    ${graded
+      ? html`<div class="mq__ruling">
+          <div><span class="mq__verdict">${T["Correct"]}</span></div>
+          <div class="mq__explain">${QUESTION.explanation}</div>
+          <button type="button" class="mq__challenge">${T["Review or challenge this assessment"]}</button>
+        </div>`
+      : s.card === "sent"
+        ? html`<div class="mq__sent">${T["Answer submitted — your tutor is checking it."]}</div>`
+        : html`<div class="mq__foot">
+            <span class="mq__hint">${T["Pick the option you think is right."]}</span>
+            <div class="row" style=${{ gap: 4 }}>
+              <button type="button" class="mq__skip">${T["Skip this one"]}</button>
+              <button type="button" class=${cx("mq__submit", { "dt-press": s.pressed === "submit" })} disabled=${!picked}>${T["Submit"]}</button>
+            </div>
+          </div>`}
+  </div>`;
+}
+
+function Turn({ turn, text, children }) {
+  const running = turn.phase === "running";
+  const calls = turn.rows.length;
+  return html`<div class="ms-turn animate-fade-in">
+    <${ActivityHeader}
+      label=${running ? (turn.rows.some((r) => r.state === "running") ? T["Tool Calling…"] : tt("{{name}} Reasoning…", { name: "DeepTutor" })) : T["DeepTutor responded."]}
+      settled=${!running}
+      duration=${running ? null : turn.duration}
+      summary=${running ? null : tt("{{count}} tool calls", { count: calls })}
+      expandable=${!running}
+      expanded=${false}
+    />
+    ${running
+      ? html`<div class="ms-rows">${turn.rows.map((r) => html`<${ActivityRow} key=${r.title} state=${r.state} title=${r.title} breathing=${r.state === "running"} />`)}</div>`
+      : null}
+    ${text ? html`<${Prose} text=${text} caret=${running} />` : null}
+    ${children}
+    ${!running
+      ? html`<div class="ms-actions">
+          <span title=${T["Copy"]}><${Icon} name="copy" size=${15} strokeWidth=${1.5} /></span>
+          <span title=${T["Regenerate"]}><${Icon} name="refresh-cw" size=${15} strokeWidth=${1.5} /></span>
+        </div>`
+      : null}
+  </div>`;
+}
+
+function render(s) {
+  const done = ALL.filter((p) => statusOf(s, p) === "mastered").length;
+  const waypointName = nameOf(s.waypoint);
+  const t2Running = s.t2 && s.t2.phase === "running";
+  const t3Running = s.t3 && s.t3.phase === "running";
+  return html`<${Shell} active="/learning">
+    <main class="ms-main mastery-shell">
+      <header class="ms-head">
+        <span class="ms-icon-btn" title=${T["Learning topics"]}><${Icon} name="arrow-left" size=${16} /></span>
+        <div class="row min0 grow" style=${{ marginLeft: 6, alignItems: "baseline", gap: 8 }}>
+          <h1 class="ms-topic">${DATA.mastery.title}</h1>
+          <span class="ms-slash" aria-hidden="true">/</span>
+          <span class="ms-waypoint animate-fade-in" key=${s.waypoint}>${waypointName}</span>
+        </div>
+        <div class="ms-modes" role="group" aria-label="会话模式">
+          ${["outline", "study", "review"].map(
+            (m) => html`<span key=${m} class=${cx("ms-mode", { "is-on": m === "study" })}><span class="ms-mode__dot"></span>${T["masteryMode." + m]}</span>`
+          )}
+        </div>
+        <div class="row" style=${{ gap: 6, paddingLeft: 8 }}>
+          <span class="ms-icon-btn" title=${T["Save to Notebook"]}><${Icon} name="bookmark-plus" size=${16} /></span>
+          <span class="ms-icon-btn" title=${T["Activity"]}><${Icon} name="panel-right" size=${16} /></span>
+          <${ProgressRing} value=${done / ALL.length} size=${18} stroke=${2} showLabel=${false} />
+          <span class="ms-count">${done}/${ALL.length}</span>
+        </div>
+      </header>
+
+      <div class="ms-body">
+        <aside class="ms-aside"><${Outline} s=${s} /></aside>
+        <section class="ms-chat">
+          <div class="ms-scroll" id="ms-scroll" data-dt-scroll data-chat-scroll-root="true">
+            <div class="ms-column">
+              <div class="ms-turns">
+                <${Turn} turn=${{ phase: "settled", rows: [{ title: "Mastery Status", state: "done" }, { title: "Mastery Quiz", state: "done" }], duration: "3s" }} text=${OPENING}>
+                  <${QuestionCard} s=${s} />
+                <//>
+                ${s.t2 ? html`<${Turn} turn=${s.t2} text=${s.t2text} />` : null}
+                ${s.user ? html`<div class="ms-user animate-fade-in"><div class="dt-user-bubble">${s.user}</div></div>` : null}
+                ${s.t3 ? html`<${Turn} turn=${s.t3} text=${s.t3text} />` : null}
+              </div>
+            </div>
+          </div>
+          <div class="ms-composer-wrap">
+            <div class="ms-composer-inner">
+              <div class="dt-composer ms-surface">
+                <div class=${cx("ms-input", { "is-empty": !s.draft, "dt-caret": s.focus })}>
+                  ${s.draft || (s.focus ? "" : tt("Ask your tutor about “{{waypoint}}”…", { waypoint: waypointName }))}
+                </div>
+                <div class="ms-toolbar">
+                  <span class="ms-tbtn" style=${{ marginRight: "auto" }}><${Icon} name="plus" size=${16} strokeWidth=${1.8} /></span>
+                  <span class="ms-tbtn"><${Icon} name="sparkles" size=${16} strokeWidth=${1.7} /><span class="ms-tbtn__label">deepseek-chat</span><${Icon} name="chevron-down" size=${13} /></span>
+                  <span class="ms-mic"><${Icon} name="mic" size=${16} strokeWidth=${1.9} /></span>
+                  <span class=${cx("ms-send", { "is-ready": s.send === "ready" || (s.draft && s.send === "idle"), "is-streaming": s.send === "streaming" || t2Running || t3Running })}>
+                    ${s.send === "streaming" || t2Running || t3Running ? html`<span class="ms-send__ring"></span>` : null}
+                    ${s.send === "streaming" || t2Running || t3Running
+                      ? html`<${Icon} name="square" size=${10} strokeWidth=${2.6} style=${{ fill: "currentColor" }} />`
+                      : html`<${Icon} name="arrow-up" size=${16} strokeWidth=${2.5} />`}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      ${s.confetti ? html`<${Confetti} key=${s.confetti} />` : null}
+    </main>
+  <//>`;
+}
+
+DT.run({ T, initial, steps, render });
+</script>
+</body>
+</html>

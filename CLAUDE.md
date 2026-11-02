@@ -14,6 +14,7 @@ uv run zensical build              # 构建到 site/
 python3 scripts/check-links.py     # AI 链路校验：父级链接 + 死链 + nav 注册 + 笔记未答题 + 图片/demo 资源死链 + 入口的复制带源地址标记 + 源码存档无人引用；写完文章必跑
 ./deploy.sh                        # git pull --ff-only → check-links → 构建 → md 源镜像 + llms.txt + skill 整包 → 同步 COS
 node scripts/validate-lieflat-charts.mjs   # 只在改 data-visualization/lieflat-charts 时跑：48 篇 reference ↔ 48 个 demo 一一对应
+node scripts/check-deeptutor-demos.mjs     # 只在改 projects/deeptutor/assets/demos 时跑：15 个仿真 demo 逐步无 DOM 渲染、class 有定义、滚动目标在、嵌入高度对得上；加 --locale <DeepTutor>/web/locales/zh/app.json 再核文案
 python3 scripts/check-leetcode.py         # 只在改 notes/leetcode 时跑：每篇 python 块拼起来真跑 assert + 五段骨架 + 热题 100 覆盖
 python3 scripts/course.py status           # 列出笔记里还空着的自问题（```conflict 块）；checkout、add 留给以后的课程
 bash scripts/course-smoke.sh               # 只在改 courses-src/git/assets/ 时跑：33 个 init.sh 各跑两遍

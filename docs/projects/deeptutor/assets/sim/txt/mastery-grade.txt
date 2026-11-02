@@ -1,0 +1,20 @@
+1) exact_verdict：照服务端存的答案键判
+   q-alpha  「b」                                 correct（置信度 1）
+   q-alpha  「选 B」                              correct（置信度 1）
+   q-alpha  「若 H0 为真，照这个规则检验…」       correct（置信度 1）
+   q-alpha  「A 或 B 吧」                         ungraded（置信度 0）
+   q-alpha  「A」                                 incorrect（置信度 1）
+   q-name   「弃真」                              correct（置信度 1）
+   q-name   「取伪错误」                          None → 交给模型判
+
+2) Verdict.receipt：模型判定只有置信度 ≥ 0.8 才算数
+   correct    置信度 0.92  → result=correct, final=True, is_correct=True
+   incorrect  置信度 0.75  → result=ungraded, final=False, is_correct=None
+
+3) grade_answer：拿不到判定时的确定性比对
+   choice 「 b 」                                             对
+   short  「弃真错误。」                                      对
+   short  「弃真」                                            错
+   open   「在 H0 为真的前提下，得到同样极端或更极端结果的概率」对
+   open   「p 值就是 H0 为真的概率」                          对
+   （open 题的答案键是「H0 为真，同样极端或更极端，概率」，按逗号拆成三个关键词，命中六成算对）

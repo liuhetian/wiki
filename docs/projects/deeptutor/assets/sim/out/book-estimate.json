@@ -1,0 +1,122 @@
+{
+  "depth_scale": {
+    "brief": 0.5,
+    "standard": 1.0,
+    "deep": 1.6
+  },
+  "basis": {
+    "brief": {
+      "theory": {
+        "blocks": 8.0,
+        "words": 1800,
+        "seconds": 210
+      },
+      "derivation": {
+        "blocks": 7.0,
+        "words": 1800,
+        "seconds": 195
+      },
+      "history": {
+        "blocks": 7.0,
+        "words": 1850,
+        "seconds": 195
+      },
+      "practice": {
+        "blocks": 7.0,
+        "words": 1100,
+        "seconds": 165
+      },
+      "concept": {
+        "blocks": 7.0,
+        "words": 1300,
+        "seconds": 165
+      },
+      "overview": {
+        "blocks": 3.0,
+        "words": 0.0,
+        "seconds": 0.0
+      }
+    },
+    "standard": {
+      "theory": {
+        "blocks": 8.0,
+        "words": 3600,
+        "seconds": 210
+      },
+      "derivation": {
+        "blocks": 7.0,
+        "words": 3600,
+        "seconds": 195
+      },
+      "history": {
+        "blocks": 7.0,
+        "words": 3700,
+        "seconds": 195
+      },
+      "practice": {
+        "blocks": 7.0,
+        "words": 2200,
+        "seconds": 165
+      },
+      "concept": {
+        "blocks": 7.0,
+        "words": 2600,
+        "seconds": 165
+      },
+      "overview": {
+        "blocks": 3.0,
+        "words": 0.0,
+        "seconds": 0.0
+      }
+    },
+    "deep": {
+      "theory": {
+        "blocks": 8.0,
+        "words": 5760,
+        "seconds": 210
+      },
+      "derivation": {
+        "blocks": 7.0,
+        "words": 5760,
+        "seconds": 195
+      },
+      "history": {
+        "blocks": 7.0,
+        "words": 5920,
+        "seconds": 195
+      },
+      "practice": {
+        "blocks": 7.0,
+        "words": 3520,
+        "seconds": 165
+      },
+      "concept": {
+        "blocks": 7.0,
+        "words": 4160,
+        "seconds": 165
+      },
+      "overview": {
+        "blocks": 3.0,
+        "words": 0.0,
+        "seconds": 0.0
+      }
+    }
+  },
+  "spine": {
+    "brief": {
+      "words": 7800,
+      "seconds": 945,
+      "shown": "5 章 · ~7800 字 · ~16 分钟"
+    },
+    "standard": {
+      "words": 15600,
+      "seconds": 945,
+      "shown": "5 章 · ~15600 字 · ~16 分钟"
+    },
+    "deep": {
+      "words": 24960,
+      "seconds": 945,
+      "shown": "5 章 · ~25000 字 · ~16 分钟"
+    }
+  }
+}

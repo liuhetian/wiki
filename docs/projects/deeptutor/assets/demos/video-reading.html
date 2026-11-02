@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="640">
+<title>DeepTutor 仿真 demo：沉浸式阅读 · 视频</title>
+<!--
+  Goal      视频也能问「第几分钟说的」：播放时字幕条和转写列表跟着走，开着「跟随播放」，当前那句始终滚在列表中间；
+            伴读的回答带 [01:40] 这样的时间戳，点一下播放头就跳过去
+  Surface   /learning/reading/[workspaceId]/sessions/[sessionId]（视频资料）· components/reading/workspace/MediaReadingStage.tsx
+  Sources   components/reading/workspace/MediaReadingStage.tsx 230-262（跟随时把当前句滚到中间）、544-578（10 高的小头栏）、
+            579-605（舞台 p-5、max-w-[980px]、视频 aspect-video rounded-2xl 阴影）、664-694（字幕条：当前句 + 下一句）、
+            722-780（「当前段落」卡、上一题/下一个）、870-960（转写搜索、匹配计数、上下匹配、跟随播放）、963-1030（转写行）；
+            components/reading/workspace/SourceNavigator.tsx 425-452（视频资料的片段行：w-10 时间 + 三行文字）；
+            components/reading/workspace/ReadingWorkspace.tsx 446-608（头栏和网格，同阅读 demo）；
+            lib/reading-media-citations.ts 1-22（[MM:SS] 改写成 #dt-media-time-秒数）；lib/reading-media-time.ts 10-18（时间格式 m:ss）；
+            deeptutor/video_learning/service.py 229-253（片段 20–90 秒、按句末切）；locales/zh/app.json
+  Layout    学习模式：44px 头栏 → 左 230px 片段目录 | 中 视频舞台（可滚）| 5px | 右伴读
+  Data      DT.DATA.lecture（6 分钟讲课，12 条字幕、3 个章节）
+  Autoplay  从 1:28 播起，字幕条换句 → 舞台滚到转写卡，当前句跟着滚到中间 → 暂停、提问 →
+            回答带 [01:40]、[02:08] → 点 01:40，播放头跳回、字幕和列表跟上，一圈约 31s
+  Height    640
+  Deviations 上游三栏要视口 ≥ 1280px，这里 iframe ≥ 980px 就三栏，窄了收起目录；B 站播放器是上游内嵌的 iframe，
+            这里画成一块深色讲课幻灯片加一条通用控制条；时间按演示节奏快进，不是真实时长
+  Checks    转写行当前句 bg-[primary 10%] text-primary；跟随按钮开着时 border-primary；时间戳链接 href 前缀 #dt-media-time-
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  /* 头栏和三栏，同 reading.html（ReadingWorkspace.tsx 451、598-608） */
+  .vr-main { display: flex; height: 100%; min-height: 0; flex-direction: column; overflow: hidden; background: var(--background); }
+  .vr-head { display: flex; height: 44px; flex-shrink: 0; align-items: center; gap: 6px; border-bottom: 1px solid var(--border); background: var(--card); padding: 0 10px; }
+  .vr-hbtn { display: flex; height: 28px; width: 28px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 6px; color: var(--muted-foreground); }
+  .vr-hbtn.is-on { color: var(--primary); }
+  .vr-title { min-width: 0; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-serif); font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; }
+  .vr-grid { position: relative; display: grid; min-height: 0; flex: 1; grid-template-rows: minmax(0, 1fr); overflow: hidden; grid-template-columns: minmax(0, 1fr) 5px minmax(300px, 340px); }
+  @media (min-width: 980px) { .vr-grid { grid-template-columns: minmax(184px, 230px) minmax(360px, 1fr) 5px minmax(330px, 380px); } }
+  .vr-nav { display: none; min-height: 0; min-width: 0; flex-direction: column; border-right: 1px solid var(--border); background: var(--card); }
+  @media (min-width: 980px) { .vr-nav { display: flex; } }
+  .vr-nav__head { display: flex; height: 44px; flex-shrink: 0; align-items: center; gap: 4px; border-bottom: 1px solid var(--border); padding: 0 8px; }
+  .vr-tab { display: inline-flex; height: 28px; min-width: 0; align-items: center; gap: 6px; border-radius: 6px; padding: 0 8px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  .vr-tab.is-on { background: var(--muted); color: var(--foreground); }
+  .vr-tab.is-on svg { color: var(--primary); }
+  .vr-search { margin: 8px 8px 0; display: flex; height: 32px; flex-shrink: 0; align-items: center; gap: 8px; border-radius: 8px; border-width: 1px; background: var(--card); padding: 0 10px; font-size: 12px; color: var(--muted-foreground); }
+  .vr-nav__list { margin-top: 8px; min-height: 0; flex: 1; overflow-y: auto; padding: 0 8px 12px; }
+  .vr-mat { display: flex; align-items: center; gap: 4px; border-radius: 8px; background: color-mix(in srgb, var(--primary) 10%, transparent); color: var(--primary); }
+  .vr-mat__btn { display: flex; min-width: 0; flex: 1; align-items: center; gap: 8px; padding: 8px; font-size: 12.5px; font-weight: 500; line-height: 1.35; }
+  .vr-branch { margin: 2px 0 0 8px; border-left: 1px solid var(--border); padding-left: 4px; }
+  /* 片段行：mb-0.5 flex w-full gap-2 rounded-lg px-2 py-2；当前 bg-muted text-primary，其余 text-muted-foreground；
+     时间 mt-0.5 w-10 shrink-0 text-[11px] font-medium tabular-nums text-primary；文字 line-clamp-3 text-[12px] leading-[1.45] */
+  .vr-seg { margin-bottom: 2px; display: flex; width: 100%; gap: 8px; border-radius: 8px; padding: 8px; color: var(--muted-foreground); transition: background-color var(--motion-base), color var(--motion-base); }
+  .vr-seg.is-on { background: var(--muted); color: var(--primary); }
+  .vr-seg__t { margin-top: 2px; width: 40px; flex-shrink: 0; font-size: 11px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--primary); }
+  .vr-seg__text { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 12px; line-height: 1.45; }
+  .vr-nav__foot { flex-shrink: 0; border-top: 1px solid var(--border); padding: 8px 12px; font-size: 11px; color: var(--muted-foreground); }
+  /* 中栏：bg-secondary；舞台：flex h-full min-h-0 flex-col */
+  .vr-center { position: relative; display: flex; min-height: 0; min-width: 0; flex-direction: column; overflow: hidden; background: var(--secondary); }
+  /* 小头栏：flex h-10 shrink-0 items-center justify-between border-b border-border bg-background px-3；两行 text-[10.5px] */
+  .vr-stagehead { display: flex; height: 40px; flex-shrink: 0; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--background); padding: 0 12px; }
+  .vr-stagehead p { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; }
+  .vr-official { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--primary); }
+  /* 舞台滚动：min-h-0 flex-1 overflow-y-auto p-5 lg:p-7；内层 mx-auto max-w-[980px] flex-col */
+  .vr-stage { min-height: 0; flex: 1; overflow-y: auto; padding: 20px; }
+  .vr-stage__inner { margin: 0 auto; display: flex; max-width: 980px; flex-direction: column; }
+  /* 视频：relative aspect-video w-full overflow-hidden bg-black shadow-[0_18px_50px_rgba(0,0,0,.18)] rounded-2xl */
+  .vr-video { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 16px; background: #000; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18); container-type: inline-size; }
+  /* 以下是「讲课幻灯片」和通用播放条，代替上游内嵌的 B 站播放器 */
+  .vr-slide { position: absolute; inset: 0 0 11cqw; display: flex; flex-direction: column; justify-content: center; padding: 0 9cqw; background: radial-gradient(ellipse at 20% 10%, #23305a 0%, #111827 70%); color: #f3f4f6; }
+  .vr-slide__kicker { font-size: 2.4cqw; letter-spacing: 0.18em; color: #93c5fd; }
+  .vr-slide__title { margin-top: 1.6cqw; font-family: var(--font-serif); font-size: 5.6cqw; font-weight: 600; line-height: 1.25; }
+  .vr-slide__line { margin-top: 2.6cqw; font-size: 2.9cqw; line-height: 1.6; color: #d1d5db; }
+  .vr-slide__formula { margin-top: 2.2cqw; display: inline-block; align-self: flex-start; border-radius: 1cqw; background: rgba(255, 255, 255, 0.08); padding: 1cqw 2cqw; font-family: "Times New Roman", var(--font-serif); font-style: italic; font-size: 3.1cqw; }
+  .vr-sub { position: absolute; left: 0; right: 0; bottom: 13.5cqw; text-align: center; padding: 0 6cqw; }
+  .vr-sub span { border-radius: 0.6cqw; background: rgba(0, 0, 0, 0.62); padding: 0.4cqw 1.4cqw; font-size: 2.6cqw; line-height: 1.6; color: #fff; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .vr-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 11cqw; display: flex; align-items: center; gap: 2.4cqw; padding: 0 3cqw; background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.35)); color: #fff; }
+  .vr-bar__time { font-size: 2.3cqw; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .vr-track { position: relative; height: 0.8cqw; flex: 1; border-radius: 9999px; background: rgba(255, 255, 255, 0.25); }
+  .vr-track__buf { position: absolute; inset: 0 auto 0 0; border-radius: 9999px; background: rgba(255, 255, 255, 0.35); }
+  .vr-track__play { position: absolute; inset: 0 auto 0 0; border-radius: 9999px; background: #00aeec; transition: width 600ms linear; }
+  .vr-track__knob { position: absolute; top: 50%; height: 2.2cqw; width: 2.2cqw; margin: -1.1cqw 0 0 -1.1cqw; border-radius: 9999px; background: #fff; box-shadow: 0 0 0 0.5cqw rgba(0, 174, 236, 0.35); transition: left 600ms linear; }
+  .vr-track__mark { position: absolute; top: -0.4cqw; bottom: -0.4cqw; width: 0.3cqw; background: rgba(255, 255, 255, 0.7); }
+  /* 字幕条：grid shrink-0 grid-cols-1 gap-1 rounded-xl border border-border bg-card px-3 py-2 text-[11.5px] leading-[1.55]；
+     行 flex items-baseline gap-2 rounded-md px-1 py-0.5；当前 font-medium text-foreground，下一句 text-muted-foreground；时间 w-9 text-right text-[10px] tabular-nums */
+  .vr-caption { margin-top: 12px; display: grid; gap: 4px; border-radius: 12px; border-width: 1px; background: var(--card); padding: 8px 12px; font-size: 11.5px; line-height: 1.55; }
+  .vr-cap { display: flex; min-width: 0; align-items: baseline; gap: 8px; border-radius: 6px; padding: 2px 4px; color: var(--muted-foreground); }
+  .vr-cap.is-now { font-weight: 500; color: var(--foreground); }
+  .vr-cap__t { width: 36px; flex-shrink: 0; text-align: right; font-size: 10px; font-weight: 400; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+  .vr-cap__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* 当前段落卡：mt-4 flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3；
+     标签 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary；值 mt-1 truncate text-[11px] text-muted-foreground；
+     上一题/下一个 rounded-lg px-2 py-1 text-[10.5px] text-muted-foreground */
+  .vr-passage { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; border-radius: 12px; border-width: 1px; background: var(--card); padding: 12px 16px; }
+  .vr-passage__label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--primary); }
+  .vr-passage__value { margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: var(--muted-foreground); }
+  .vr-mini { border-radius: 8px; padding: 4px 8px; font-size: 10.5px; color: var(--muted-foreground); }
+  .vr-mini--icon { border-radius: 6px; padding: 6px; }
+  /* 笔记卡：mt-3 rounded-xl border border-border bg-card；按钮 flex w-full items-center gap-2 px-3 py-2 text-[11px] text-muted-foreground */
+  .vr-notes { margin-top: 12px; border-radius: 12px; border-width: 1px; background: var(--card); }
+  .vr-notes__add { display: flex; width: 100%; align-items: center; gap: 8px; padding: 8px 12px; font-size: 11px; color: var(--muted-foreground); }
+  /* 转写卡：mt-4 rounded-xl border border-border bg-card；头 flex flex-wrap items-center gap-2 border-b border-border px-3 py-2 */
+  .vr-tx { margin-top: 16px; border-radius: 12px; border-width: 1px; background: var(--card); }
+  .vr-tx__head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); padding: 8px 12px; }
+  /* 搜索：relative min-w-[180px] flex-1；输入 h-8 w-full rounded-lg border border-border bg-background pl-8 pr-2 text-[10.5px] */
+  .vr-tx__search { position: relative; display: flex; height: 32px; min-width: 180px; flex: 1; align-items: center; border-radius: 8px; border-width: 1px; background: var(--background); padding: 0 8px 0 32px; font-size: 10.5px; color: var(--muted-foreground); }
+  .vr-tx__search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); }
+  /* 上下匹配：rounded-md border border-border p-1.5，disabled opacity-40 */
+  .vr-tx__step { border-radius: 6px; border-width: 1px; padding: 6px; color: var(--muted-foreground); opacity: 0.4; }
+  /* 跟随播放：inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-[10px] font-medium；开着 border-primary text-primary */
+  .vr-follow { display: inline-flex; align-items: center; gap: 4px; border-radius: 8px; border: 1px solid var(--border); padding: 6px 8px; font-size: 10px; font-weight: 500; color: var(--muted-foreground); }
+  .vr-follow.is-on { border-color: var(--primary); color: var(--primary); }
+  /* 列表：max-h-[min(48vh,460px)] min-h-[180px] overflow-y-auto p-2，行间 space-y-0.5 */
+  .vr-tx__list { max-height: min(48vh, 460px); min-height: 180px; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+  /* 行：flex w-full items-baseline gap-2 rounded-md px-2 py-1 text-left text-[10.5px]；当前 bg-[primary 10%] text-primary */
+  .vr-cue { display: flex; width: 100%; align-items: baseline; gap: 8px; border-radius: 6px; padding: 4px 8px; text-align: left; font-size: 10.5px; transition: background-color var(--motion-base), color var(--motion-base); }
+  .vr-cue.is-on { background: color-mix(in srgb, var(--primary) 10%, transparent); color: var(--primary); }
+  .vr-cue__t { width: 36px; flex-shrink: 0; text-align: right; font-size: 10px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+  .vr-cue__text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-width: 0; line-height: 1.5; }
+  .vr-sep { position: relative; }
+  .vr-sep::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; transform: translateX(-50%); background: var(--border); }
+  /* 伴读：同 reading.html */
+  .vr-companion { display: flex; min-height: 0; min-width: 0; flex-direction: column; background: var(--card); }
+  .vr-c-scroll { min-height: 0; flex: 1; overflow-y: auto; padding: 16px 16px 40px; scrollbar-gutter: stable; }
+  .vr-welcome { margin: 0 auto; display: flex; min-height: 100%; max-width: 290px; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; text-align: center; }
+  .vr-welcome__title { margin-top: 20px; font-family: var(--font-serif); font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
+  .vr-welcome__body { margin-top: 8px; font-size: 12.5px; line-height: 1.625; color: var(--muted-foreground); }
+  .vr-turns { display: flex; flex-direction: column; gap: 22px; }
+  .vr-turn .dt-act-header { margin-bottom: 12px; }
+  .vr-rows { margin: -4px 0 12px; }
+  .vr-user { display: flex; justify-content: flex-end; }
+  .vr-user .dt-user-bubble { max-width: 88%; }
+  /* 正文里的普通 # 链接（RichMarkdownRenderer.tsx a 分支）：text-primary underline decoration-primary/40 underline-offset-2 */
+  a[href^="#dt-media-time-"] { color: var(--primary); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--primary) 40%, transparent); text-underline-offset: 2px; font-variant-numeric: tabular-nums; border-radius: 4px; }
+  .vr-hot a[href="#dt-media-time-100"] { text-decoration-color: var(--primary); animation: turn-flash 1.3s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
+  .vr-c-composer { flex-shrink: 0; padding: 4px 12px 12px; }
+  .vr-input { padding: 12px 14px 6px; font-size: 15px; line-height: 1.625; min-height: 42px; }
+  .vr-input.is-empty { color: var(--muted-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vr-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 4px; padding: 2px 10px 8px; }
+  .vr-tbtn { display: inline-flex; height: 32px; align-items: center; gap: 4px; border-radius: 8px; padding: 0 8px; color: var(--muted-foreground); }
+  .vr-mic { display: inline-flex; height: 32px; width: 32px; align-items: center; justify-content: center; border-radius: 10px; color: var(--muted-foreground); }
+  .vr-send { position: relative; margin-left: 4px; display: inline-grid; height: 32px; width: 32px; flex-shrink: 0; place-items: center; border-radius: 9999px; color: var(--muted-foreground); box-shadow: inset 0 0 0 1px var(--border); transition: background-color 200ms, box-shadow 200ms; }
+  .vr-send.is-ready { background: var(--primary); color: var(--primary-foreground); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent); }
+  .vr-send.is-streaming { background: var(--primary); color: var(--primary-foreground); box-shadow: none; }
+  .vr-send__ring { position: absolute; inset: -3px; border-radius: 9999px; border: 2px solid color-mix(in srgb, var(--primary) 15%, transparent); border-top-color: var(--primary); animation: spin 1s linear infinite; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, cx, DATA, ActivityHeader, ActivityRow, Prose } = DT;
+
+DT.ICONS["list-tree"] = '<path d="M8 5h13M13 12h8M13 19h8M3 10a2 2 0 0 0 2 2h3"/><path d="M3 5v12a2 2 0 0 0 2 2h3"/>';
+DT.ICONS["panel-left-close"] = '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18M16 15l-3-3 3-3"/>';
+DT.ICONS["panel-right-close"] = '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18M8 9l3 3-3 3"/>';
+DT.ICONS["chevrons-down"] = '<path d="m7 6 5 5 5-5M7 13l5 5 5-5"/>';
+
+const T = {
+  "Back to folder": "返回资料组",
+  "Collapse contents": "收起目录",
+  "Add material": "添加资料",
+  "Exit learning mode": "退出学习模式",
+  "New conversation": "新对话",
+  "Reading companion": "阅读伙伴",
+  "Contents": "目录",
+  "Annotations": "标注",
+  "Close contents": "关闭目录",
+  "Search materials and contents": "搜索资料和目录",
+  "{{count}} passages available to the companion": "AI 伙伴可读取 {{count}} 个段落",
+  "Open official": "在官方页面打开",
+  "Enter fullscreen": "进入全屏",
+  "Current passage": "当前段落",
+  "Add segment note": "添加片段笔记",
+  "Previous": "上一题",
+  "Next": "下一个",
+  "Add a note for this segment": "为当前片段添加笔记",
+  "Search transcript": "搜索字幕",
+  "Previous transcript match": "上一处字幕匹配",
+  "Next transcript match": "下一处字幕匹配",
+  "Follow playback": "跟随播放",
+  "Read and ask as you go": "边读边问",
+  "Ask about this material…": "就这份资料提问…",
+  "{{name}} Exploring…": "{{name}} 探索中…",
+  "Tool Calling…": "调用工具中…",
+  "DeepTutor responded.": "已完成",
+  "{{count}} tool calls": "{{count}} 次工具调用",
+};
+const tt = (key, vars) => T[key].replace(/\{\{(\w+)\}\}/g, (_, k) => String(vars[k]));
+/* 上游 WorkspaceChrome.tsx 的欢迎语说明对视频也一样 */
+const WELCOME_BODY = "在文档里选中任意一段，就地提问、解释或翻译；也可以直接在下面问。回答会标出出处页码。";
+
+const LECTURE = DATA.lecture;
+const CUES = LECTURE.cues;
+/* lib/reading-media-time.ts formatMediaTime：m:ss */
+const mt = (sec) => Math.floor(sec / 60) + ":" + String(Math.floor(sec % 60)).padStart(2, "0");
+/* 片段：video_learning/service.py build_segments 按句末把字幕并成 20–90 秒一段 */
+const SEGMENT_STARTS = [0, 3, 5, 7, 9, 11];
+const SEGMENTS = SEGMENT_STARTS.map((ci, i) => {
+  const end = i + 1 < SEGMENT_STARTS.length ? CUES[SEGMENT_STARTS[i + 1]].t : LECTURE.duration;
+  return { locator: i + 1, t: CUES[ci].t, end, title: mt(CUES[ci].t), text: CUES[ci].text };
+});
+const cueAt = (time) => CUES.findIndex((c) => time >= c.t && time < c.end);
+const segAt = (time) => SEGMENTS.find((sg) => time >= sg.t && time < sg.end);
+const chapterAt = (time) => LECTURE.chapters.filter((c) => c.t <= time).slice(-1)[0];
+
+const QUESTION = "老师说 p 值是条件概率，条件是什么？在视频哪儿讲的？";
+const ANSWER_RAW =
+  "条件是**原假设为真**。讲定义时，老师特意强调了「在原假设成立的前提下」这几个字 [01:40]，紧接着说 p 值是一个条件概率，条件就是 $H₀$ 为真 [02:08]。";
+/* lib/reading-media-citations.ts linkifyMediaTimestamps */
+const ANSWER = ANSWER_RAW.replace(/\[(\d{1,2}):(\d{2})\]/g, (raw, m, s) => raw + "(#dt-media-time-" + (Number(m) * 60 + Number(s)) + ")");
+
+const initial = {
+  time: 88,
+  playing: true,
+  draft: "",
+  focus: false,
+  user: null,
+  turn: null,
+  answer: "",
+  hot: false,
+  send: "idle",
+};
+
+const tick = (t) => ({ at: 700, set: { time: t } });
+const rows = (...states) =>
+  ["Search Material", "Read Material"].slice(0, states.length).map((title, i) => ({ title, state: states[i] }));
+
+const steps = [
+  { label: "playing" },
+  { at: 200, scroll: { sel: "#vr-list", to: '[data-active-cue="true"]', block: "center", behavior: "instant" } },
+  tick(92),
+  tick(96),
+  tick(100),
+  { at: 0, scroll: { sel: "#vr-list", to: '[data-active-cue="true"]', block: "center", ms: 300 } },
+  tick(104),
+  tick(108),
+  { at: 200, scroll: { sel: "#vr-stage", to: '[data-vr="caption"]', block: "start", offset: 8, ms: 600 } },
+  tick(112),
+  tick(116),
+  tick(120),
+  tick(124),
+  tick(128),
+  { at: 0, scroll: { sel: "#vr-list", to: '[data-active-cue="true"]', block: "center", ms: 300 } },
+  { label: "followed" },
+  tick(132),
+  tick(136),
+  { at: 900, set: { playing: false, focus: true } },
+  { at: 300, type: { key: "draft", text: QUESTION, cps: 15 } },
+  { at: 300, set: { send: "ready" } },
+  { at: 450, set: (s) => ({ user: s.draft, draft: "", focus: false, send: "streaming", turn: { phase: "running", rows: rows("running") } }) },
+  { at: 1300, set: { turn: { phase: "running", rows: rows("done", "running") } } },
+  { at: 1100, set: { turn: { phase: "running", rows: rows("done", "done") } } },
+  { at: 300, stream: { key: "answer", text: ANSWER, chunk: [1, 3], ms: [20, 44] } },
+  { at: 200, set: { turn: { phase: "settled", rows: rows("done", "done"), duration: "5s" }, send: "idle" } },
+  { at: 60, scroll: { sel: "#vr-cscroll", bottom: true, ms: 360 } },
+  { label: "answered" },
+  { at: 1400, set: { hot: true } },
+  { at: 260, set: { time: 100, playing: true } },
+  { at: 0, scroll: { sel: "#vr-stage", top: 0, ms: 500 } },
+  { at: 0, scroll: { sel: "#vr-list", to: '[data-active-cue="true"]', block: "center", behavior: "instant" } },
+  { label: "seeked" },
+  tick(103),
+  tick(106),
+  tick(109),
+  { at: 2600, set: { hot: false } },
+];
+
+function Player({ s }) {
+  const ch = chapterAt(s.time);
+  const cue = CUES[cueAt(s.time)];
+  const pct = (s.time / LECTURE.duration) * 100;
+  return html`<div class="vr-video" data-vr="video">
+    <div class="vr-slide">
+      <div class="vr-slide__kicker">统计学 · 第 8 讲</div>
+      <div class="vr-slide__title">什么是 p 值</div>
+      <div class="vr-slide__line animate-fade-in" key=${ch.t}>${ch.title}</div>
+      ${ch.t >= 100 ? html`<div class="vr-slide__formula">p = P( |T| ≥ 2.80 | H₀ 为真 )</div>` : html`<div class="vr-slide__formula">x̄ = 52.3，μ₀ = 50，n = 25</div>`}
+    </div>
+    ${cue ? html`<div class="vr-sub"><span>${cue.text}</span></div>` : null}
+    <div class="vr-bar">
+      <${Icon} name=${s.playing ? "pause" : "play"} size=${16} style=${{ fill: "currentColor" }} />
+      <span class="vr-bar__time">${mt(s.time)} / ${mt(LECTURE.duration)}</span>
+      <div class="vr-track">
+        <div class="vr-track__buf" style=${{ width: Math.min(100, pct + 18) + "%" }}></div>
+        <div class="vr-track__play" style=${{ width: pct + "%" }}></div>
+        ${LECTURE.chapters.slice(1).map((c) => html`<span key=${c.t} class="vr-track__mark" style=${{ left: (c.t / LECTURE.duration) * 100 + "%" }}></span>`)}
+        <div class="vr-track__knob" style=${{ left: pct + "%" }}></div>
+      </div>
+      <${Icon} name="captions" size=${16} />
+      <${Icon} name="maximize-2" size=${14} />
+    </div>
+  </div>`;
+}
+
+function Navigator({ s }) {
+  const seg = segAt(s.time);
+  return html`<aside class="vr-nav">
+    <div class="vr-nav__head">
+      <div class="row min0 grow" role="tablist" style=${{ gap: 2 }}>
+        <span class="vr-tab is-on"><${Icon} name="list-tree" size=${12} /><span class="truncate">${T["Contents"]}</span></span>
+        <span class="vr-tab"><${Icon} name="highlighter" size=${12} /><span class="truncate">${T["Annotations"]}</span></span>
+      </div>
+      <span class="vr-hbtn" title=${T["Close contents"]}><${Icon} name="x" size=${13} /></span>
+    </div>
+    <label class="vr-search"><${Icon} name="search" size=${12} />${T["Search materials and contents"]}</label>
+    <div class="vr-nav__list">
+      <div class="vr-mat">
+        <span class="vr-mat__btn"><${Icon} name="circle-play" size=${12} /><span class="clamp2">${LECTURE.title}</span></span>
+        <span class="vr-hbtn" style=${{ marginRight: 4, height: 22, width: 22 }}><${Icon} name="chevron-down" size=${11} /></span>
+      </div>
+      <div class="vr-branch">
+        ${SEGMENTS.map(
+          (sg) => html`<div key=${sg.locator} class=${cx("vr-seg", { "is-on": seg && seg.locator === sg.locator })}>
+            <span class="vr-seg__t">${sg.title}</span>
+            <span class="vr-seg__text">${sg.text}</span>
+          </div>`
+        )}
+      </div>
+    </div>
+    <div class="vr-nav__foot">${tt("{{count}} passages available to the companion", { count: SEGMENTS.length })}</div>
+  </aside>`;
+}
+
+function Stage({ s }) {
+  const ci = cueAt(s.time);
+  const now = CUES[ci];
+  const next = CUES[ci + 1];
+  const seg = segAt(s.time);
+  return html`<section class="vr-center">
+    <div class="vr-stagehead">
+      <div class="min0">
+        <p style=${{ fontWeight: 600 }}>${LECTURE.title}</p>
+        <p class="muted">Bilibili · ${seg.title}</p>
+      </div>
+      <div class="row" style=${{ gap: 8 }}>
+        <span class="vr-mini vr-mini--icon" title=${T["Enter fullscreen"]}><${Icon} name="maximize-2" size=${11} /></span>
+        <span class="vr-official">${T["Open official"]}<${Icon} name="external-link" size=${9} /></span>
+      </div>
+    </div>
+    <div class="vr-stage" id="vr-stage" data-dt-scroll>
+      <div class="vr-stage__inner">
+        <${Player} s=${s} />
+        <div class="vr-caption" aria-live="polite" data-vr="caption">
+          ${[now, next].map((row, i) =>
+            row
+              ? html`<div key=${row.t} class=${cx("vr-cap", { "is-now": i === 0 })}>
+                  <span class="vr-cap__t">${mt(row.t)}</span>
+                  <span class="vr-cap__text">${row.text}</span>
+                </div>`
+              : null
+          )}
+        </div>
+        <div class="vr-passage">
+          <div class="min0">
+            <p class="vr-passage__label">${T["Current passage"]}</p>
+            <p class="vr-passage__value">${seg.title}</p>
+          </div>
+          <div class="row" style=${{ gap: 4 }}>
+            <span class="vr-mini vr-mini--icon" title=${T["Add segment note"]}><${Icon} name="sticky-note" size=${12} /></span>
+            <span class="vr-mini">${T["Previous"]}</span>
+            <span class="vr-mini">${T["Next"]}</span>
+          </div>
+        </div>
+        <div class="vr-notes">
+          <span class="vr-notes__add"><${Icon} name="plus" size=${12} />${T["Add a note for this segment"]}</span>
+        </div>
+        <div class="vr-tx" data-vr="transcript">
+          <div class="vr-tx__head">
+            <label class="vr-tx__search"><${Icon} name="search" size=${12} />${T["Search transcript"]}</label>
+            <div class="row" style=${{ gap: 4 }}>
+              <span class="vr-tx__step" title=${T["Previous transcript match"]}><${Icon} name="chevron-up" size=${11} /></span>
+              <span class="vr-tx__step" title=${T["Next transcript match"]}><${Icon} name="chevron-down" size=${11} /></span>
+              <span class="vr-follow is-on"><${Icon} name="chevrons-down" size=${11} />${T["Follow playback"]}</span>
+            </div>
+          </div>
+          <div class="vr-tx__list" id="vr-list" data-dt-scroll>
+            ${CUES.map((c, i) => {
+              const on = i === ci;
+              return html`<div key=${c.t} class=${cx("vr-cue", { "is-on": on })} data-active-cue=${on ? "true" : undefined} data-transcript-cue=${i}>
+                <span class="vr-cue__t">${mt(c.t)}</span>
+                <span class="vr-cue__text">${c.text}</span>
+              </div>`;
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function Turn({ s }) {
+  const t = s.turn;
+  const running = t.phase === "running";
+  const toolBusy = t.rows.some((r) => r.state === "running");
+  return html`<div class="vr-turn animate-fade-in" role="article">
+    <${ActivityHeader}
+      label=${running ? (toolBusy ? T["Tool Calling…"] : tt("{{name}} Exploring…", { name: "DeepTutor" })) : T["DeepTutor responded."]}
+      settled=${!running}
+      duration=${running ? null : t.duration}
+      summary=${running ? null : tt("{{count}} tool calls", { count: t.rows.length })}
+      expandable=${!running}
+    />
+    ${running ? html`<div class="vr-rows">${t.rows.map((r) => html`<${ActivityRow} key=${r.title} state=${r.state} title=${r.title} breathing=${r.state === "running"} />`)}</div>` : null}
+    ${s.answer ? html`<div class=${s.hot ? "vr-hot" : ""}><${Prose} text=${s.answer} caret=${running} /></div>` : null}
+  </div>`;
+}
+
+function render(s) {
+  const streaming = s.send === "streaming";
+  return html`<main class="vr-main" data-reading-workspace="" data-learning="true">
+    <header class="vr-head">
+      <span class="vr-hbtn" title=${T["Back to folder"]}><${Icon} name="arrow-left" size=${14} /></span>
+      <span class="vr-hbtn is-on" title=${T["Collapse contents"]}><${Icon} name="panel-left-close" size=${14} /></span>
+      <span class="vr-title">第 8 章　${DATA.book.chapter.title}</span>
+      <span class="vr-hbtn" title=${T["Add material"]}><${Icon} name="plus" size=${14} /></span>
+      <div class="row" style=${{ marginLeft: "auto", gap: 2 }}>
+        <span class="vr-hbtn"><${Icon} name="volume-2" size=${14} /></span>
+        <span class="vr-hbtn"><${Icon} name="list-checks" size=${14} /></span>
+        <span class="vr-hbtn is-on" title=${T["Exit learning mode"]}><${Icon} name="minimize-2" size=${14} /></span>
+        <span class="vr-hbtn"><${Icon} name="ellipsis" size=${14} /></span>
+        <span class="vr-hbtn" title=${T["New conversation"]}><${Icon} name="square-pen" size=${14} /></span>
+        <span class="vr-hbtn is-on" title=${T["Reading companion"]}><${Icon} name="panel-right-close" size=${14} /></span>
+      </div>
+    </header>
+    <div class="vr-grid">
+      <${Navigator} s=${s} />
+      <${Stage} s=${s} />
+      <div class="vr-sep" role="separator"></div>
+      <aside class="vr-companion">
+        <div class="vr-c-scroll" id="vr-cscroll" data-dt-scroll data-chat-scroll-root="true">
+          ${s.user
+            ? html`<div class="vr-turns">
+                <div class="vr-user animate-fade-in"><div class="dt-user-bubble">${s.user}</div></div>
+                ${s.turn ? html`<${Turn} s=${s} />` : null}
+              </div>`
+            : html`<div class="vr-welcome">
+                <${Icon} name="captions" size=${30} strokeWidth=${1.4} style=${{ color: "var(--primary)" }} />
+                <p class="vr-welcome__title">${T["Read and ask as you go"]}</p>
+                <p class="vr-welcome__body">${WELCOME_BODY}</p>
+              </div>`}
+        </div>
+        <div class="vr-c-composer">
+          <div class="dt-composer">
+            <div class=${cx("vr-input", { "is-empty": !s.draft, "dt-caret": s.focus })}>${s.draft || (s.focus ? "" : T["Ask about this material…"])}</div>
+            <div class="vr-toolbar">
+              <span class="vr-tbtn" style=${{ marginRight: "auto" }}><${Icon} name="plus" size=${16} strokeWidth=${1.8} /></span>
+              <span class="vr-tbtn"><${Icon} name="sparkles" size=${16} strokeWidth=${1.7} /><${Icon} name="chevron-down" size=${13} /></span>
+              <span class="vr-mic"><${Icon} name="mic" size=${16} strokeWidth=${1.9} /></span>
+              <span class=${cx("vr-send", { "is-ready": s.send === "ready" || (s.draft && !streaming), "is-streaming": streaming })}>
+                ${streaming ? html`<span class="vr-send__ring"></span>` : null}
+                ${streaming
+                  ? html`<${Icon} name="square" size=${10} strokeWidth=${2.6} style=${{ fill: "currentColor" }} />`
+                  : html`<${Icon} name="arrow-up" size=${16} strokeWidth=${2.5} />`}
+              </span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>`;
+}
+
+DT.run({ T, initial, steps, render });
+</script>
+</body>
+</html>

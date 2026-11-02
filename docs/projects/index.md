@@ -20,6 +20,7 @@ copy_source: true
 - [wiki 介绍](wiki/index.md) —— 这个 wiki 自己的事：[目标与计划](wiki/roadmap.md)、[怎么当远程 skill 用](wiki/everything-skill.md)、[板块怎么分](wiki/sections.md)、用到的技术一项一页（[对象存储部署](wiki/cos-deploy/index.md)、[自建 git-lfs 后端](wiki/git-lfs.md)、[打码](wiki/age-mosaic.md)），文末能力时间线按日期列出在 Zensical 之上加过的每项功能，附当时的需求原话和改了哪里
 - [Docmost](docmost/index.md) —— 粗讲：不是一个人用的在线记事本，是自托管的团队 wiki；主路径是每页一份 Yjs 文档，经 Hocuspocus 实时合并多人改动，停笔 10 秒连同 JSON 和纯文本一起落库；开源版模型不参与，AI 在闭源 ee 子模块；追问两条：不是 Office 套件，Bases 要付费、ppt 只有演示模式；和 git 仓库加 Zensical 比，差在谁来写、谁来读
 - [TiddlyWiki](tiddlywiki/index.md) —— 粗讲：整个 wiki 可以只是一个 HTML 文件；打开时从文件里的 JSON 读出全部 tiddler，内核和界面也是 tiddler；存盘把模板渲染成新文件，浏览器里兜底是下载副本，写回原文件靠服务器或扩展
+- [DeepTutor](deeptutor/index.md) —— 细讲：领域是 AI 辅导，以「聊天网页加一个 PDF、再加一句当老师的 prompt」为 baseline，按知识库、一轮对话的运行时、学习模式流水线、精通路径、Book 引擎、沉浸阅读与视频、记忆、学习空间八条功能线讲问题和功能，每步配源码模版和实跑效果，每个界面配一个照源码做的自动播放仿真 demo；重心是「什么时候算学会」由程序的硬门算，不由模型说了算
 
 ### AI 角色扮演
 

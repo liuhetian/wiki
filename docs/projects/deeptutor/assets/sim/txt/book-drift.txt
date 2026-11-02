@@ -1,0 +1,21 @@
+新书第一次检查：has_drift=False，过期页 []
+
+基线（每份原始文件一个 sha256）：
+  习题答案.docx      sha256:bdbd1413756f1ebd…
+  应用统计学.pdf      sha256:e73aa270b3fb38a2…
+  第8章讲义.md       sha256:c0195401524f28a0…
+  整库指纹      sha256-paths-v1:75fa441d13f1931…
+
+什么都没改：has_drift=False，过期页 []
+
+改了「第8章讲义.md」里的一句之后：
+  has_drift          True
+  changed_kbs        ['应用统计学']
+  changed_documents  {'应用统计学': ['第8章讲义.md']}
+  stale_page_ids     ['pg_c4', 'pg_c5']
+  fallback           True
+
+  pg_c2  两类错误与显著性水平   不动
+  pg_c3  单样本 t 检验     不动
+  pg_c4  p 值到底说了什么    过期
+  pg_c5  功效与样本量       过期

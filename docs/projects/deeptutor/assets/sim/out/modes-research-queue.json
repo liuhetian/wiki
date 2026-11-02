@@ -1,0 +1,126 @@
+{
+  "appends": [
+    {
+      "append": "三种常见的误读",
+      "similarity": {
+        "block_1": 0.111,
+        "block_2": 0.923,
+        "block_3": 0.0
+      },
+      "verdict": "拒绝：和 block_2「三种常见误读」太像"
+    },
+    {
+      "append": "效应量与置信区间",
+      "similarity": {
+        "block_1": 0.105,
+        "block_2": 0.0,
+        "block_3": 0.0
+      },
+      "verdict": "排进队尾：block_4，parent=block_2"
+    },
+    {
+      "append": "P 值的定义与条件概率",
+      "similarity": {
+        "block_1": 1.0,
+        "block_2": 0.0,
+        "block_3": 0.0,
+        "block_4": 0.105
+      },
+      "verdict": "拒绝：和 block_1「p 值的定义与条件概率」太像"
+    },
+    {
+      "append": "样本量对 p 值的影响",
+      "similarity": {
+        "block_1": 0.364,
+        "block_2": 0.0,
+        "block_3": 0.0,
+        "block_4": 0.105
+      },
+      "verdict": "排进队尾：block_5，parent=block_2"
+    },
+    {
+      "append": "多重比较时 p 值怎么校正",
+      "similarity": {
+        "block_1": 0.25,
+        "block_2": 0.0,
+        "block_3": 0.167,
+        "block_4": 0.0,
+        "block_5": 0.333
+      },
+      "verdict": "拒绝：队列满了（max_length=5）"
+    }
+  ],
+  "queue": {
+    "research_id": "p-value-misreadings",
+    "created_at": "（运行时间，略）",
+    "blocks": [
+      {
+        "block_id": "block_1",
+        "sub_topic": "p 值的定义与条件概率",
+        "overview": "",
+        "status": "completed",
+        "tool_traces": [],
+        "iteration_count": 0,
+        "created_at": "（运行时间，略）",
+        "updated_at": "（运行时间，略）",
+        "metadata": {}
+      },
+      {
+        "block_id": "block_2",
+        "sub_topic": "三种常见误读",
+        "overview": "",
+        "status": "completed",
+        "tool_traces": [],
+        "iteration_count": 0,
+        "created_at": "（运行时间，略）",
+        "updated_at": "（运行时间，略）",
+        "metadata": {}
+      },
+      {
+        "block_id": "block_3",
+        "sub_topic": "报告检验结果时该给什么",
+        "overview": "",
+        "status": "completed",
+        "tool_traces": [],
+        "iteration_count": 0,
+        "created_at": "（运行时间，略）",
+        "updated_at": "（运行时间，略）",
+        "metadata": {}
+      },
+      {
+        "block_id": "block_4",
+        "sub_topic": "效应量与置信区间",
+        "overview": "",
+        "status": "completed",
+        "tool_traces": [],
+        "iteration_count": 0,
+        "created_at": "（运行时间，略）",
+        "updated_at": "（运行时间，略）",
+        "metadata": {
+          "parent_block_id": "block_2"
+        }
+      },
+      {
+        "block_id": "block_5",
+        "sub_topic": "样本量对 p 值的影响",
+        "overview": "",
+        "status": "completed",
+        "tool_traces": [],
+        "iteration_count": 0,
+        "created_at": "（运行时间，略）",
+        "updated_at": "（运行时间，略）",
+        "metadata": {
+          "parent_block_id": "block_2"
+        }
+      }
+    ],
+    "statistics": {
+      "total_blocks": 5,
+      "pending": 0,
+      "researching": 0,
+      "completed": 5,
+      "failed": 0,
+      "total_tool_calls": 0
+    }
+  }
+}

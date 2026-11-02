@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="600">
+<title>DeepTutor 仿真 demo：测验卡</title>
+<!--
+  Goal      「出 4 道题」不是一段文字，是一张能作答的测验卡：先探索资料、再规划题型、再逐题出；
+            选项判对判错、题号染色、解析展开，答过的题能收藏、归类
+  Surface   /chat 里 deep_question 能力的结果 · components/quiz/QuizViewer.tsx
+  Sources   components/quiz/QuizViewer.tsx 778-888（外框、工具栏、题号、进度条）、890-968（题头标签、收藏、归类、追问）、
+            970-1043（题干、选项四态）、1068-1100（填空）、1196-1263（检查答案、正误、重试、AI 评判）、1265-1410（参考答案、解析）；
+            components/quiz/CategoryMenu.tsx 108-130；features/chat/trace/TracePresentation.tsx 400-405、1576-1597（活动头文字）；
+            features/chat/trace/ActivityOrb.tsx 18-30；components/activity/*；
+            components/chat/home/ChatComposer.tsx 182-194、1093-1130、1447（输入框、能力 chip、发送键）；
+            features/capabilities/presentation.tsx 114-117（测验 = pen-line）；
+            deeptutor/agents/question/pipeline.py 95-97（exploring → planning → quizzing）
+  Layout    Shell（当前项 主页）→ 对话列（用户消息 → 活动头和三行 → 测验卡）+ 底部输入框
+  Data      DT.DATA.quiz 四道题、DT.DATA.book
+  Autoplay  探索 → 规划 → 出题 4/4 → 已完成 → 第 1 题选 B 判对、收藏 → 下一题选 B 判错（A 绿、B 红）→
+            第 4 题填空「弃真」判对、展开参考答案，一圈约 31s
+  Height    600
+  Deviations 题干的 KaTeX 渲染换成纯文本；追问对话不展开
+  Checks    按钮、正误、参考答案、解析与语言包一致
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  .qz-wrap { display: flex; height: 100%; flex-direction: column; }
+  .qz-scroll { min-height: 0; flex: 1; overflow-y: auto; }
+  /* 对话列：mx-auto max-w-[768px] px-4 */
+  .qz-col { margin: 0 auto; max-width: 768px; padding: 24px 20px 16px; display: flex; flex-direction: column; gap: 18px; }
+  /* 外框：overflow-hidden rounded-xl border bg-card */
+  .qv { overflow: hidden; border-radius: 12px; border: 1px solid var(--border); background: var(--card); }
+  /* 工具栏：flex items-center gap-2 border-b px-3 py-2 */
+  .qv-bar { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); padding: 8px 12px; }
+  /* 翻页：h-8 w-8 rounded-md border bg-muted/60 shadow-sm；禁用 bg-transparent opacity-40 */
+  .qv-nav { display: inline-flex; height: 32px; width: 32px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 6px; border: 1px solid var(--border); background: color-mix(in srgb, var(--muted) 60%, transparent); box-shadow: var(--shadow-sm); }
+  .qv-nav[disabled] { background: transparent; color: var(--muted-foreground); opacity: 0.4; box-shadow: none; }
+  .qv-count { font-size: 11px; font-weight: 600; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+  /* 题号：h-6 w-6 rounded-full text-[10px] font-semibold；当前 bg-primary text-white shadow-sm；对 bg-green-100 text-green-700；错 bg-red-100 text-red-700 */
+  .qv-chip { display: flex; height: 24px; width: 24px; align-items: center; justify-content: center; border-radius: 9999px; font-size: 10px; font-weight: 600; background: var(--muted); color: var(--muted-foreground); transition: all 150ms; }
+  .qv-chip.is-current { background: var(--primary); color: #fff; box-shadow: var(--shadow-sm); }
+  .qv-chip.is-correct { background: #dcfce7; color: var(--tw-green-700); }
+  .qv-chip.is-wrong { background: #fee2e2; color: #b91c1c; }
+  .qv-chip.is-done { background: color-mix(in srgb, var(--primary) 15%, transparent); color: var(--primary); }
+  /* 进度条：h-0.5 bg-muted；条 bg-primary transition-all duration-300 */
+  .qv-progress { height: 2px; background: var(--muted); }
+  .qv-progress > i { display: block; height: 100%; background: var(--primary); transition: width 300ms; }
+  .qv-body { padding: 12px 16px; }
+  /* 标签：rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase；难度 medium bg-amber-50 text-amber-600 */
+  .qv-tag { border-radius: 6px; background: var(--muted); padding: 2px 6px; font-size: 10px; font-weight: 500; color: var(--muted-foreground); }
+  .qv-tag.is-upper { text-transform: uppercase; }
+  .qv-tag--medium { background: var(--tw-amber-50); color: var(--tw-amber-600); }
+  .qv-tag--easy { background: var(--tw-green-50); color: #16a34a; }
+  /* 收藏：rounded-lg p-1.5；已收藏 scale-110 text-amber-500 */
+  .qv-icon { border-radius: 8px; padding: 6px; color: var(--muted-foreground); transition: transform 150ms, color 150ms; }
+  .qv-icon.is-on { transform: scale(1.1); color: var(--tw-amber-500); }
+  /* 追问：ml-1 inline-flex gap-1 rounded-lg border border-primary/60 bg-primary/10 px-2 py-1 text-[12px] font-medium text-primary */
+  .qv-follow { margin-left: 4px; display: inline-flex; align-items: center; gap: 4px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--primary) 60%, transparent); background: color-mix(in srgb, var(--primary) 10%, transparent); padding: 4px 8px; font-size: 12px; font-weight: 500; color: var(--primary); }
+  /* 题干：mb-3 text-[14px] leading-relaxed */
+  .qv-q { margin-bottom: 12px; font-size: 14px; line-height: 1.625; }
+  /* 选项：flex w-full items-start gap-2.5 rounded-lg border px-3 py-2 text-[13px] */
+  .qv-opts { display: flex; flex-direction: column; gap: 6px; }
+  .qv-opt { display: flex; width: 100%; align-items: flex-start; gap: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--background); padding: 8px 12px; text-align: left; font-size: 13px; transition: all 150ms; }
+  .qv-opt.is-selected { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 6%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 20%, transparent); }
+  .qv-opt.is-correct { border-color: var(--tw-green-500); background: var(--tw-green-50); color: #166534; }
+  .qv-opt.is-wrong { border-color: var(--tw-red-400); background: var(--tw-red-50); color: #b91c1c; }
+  /* 字母圈：mt-[1px] h-5 w-5 rounded-full border text-[11px] font-bold */
+  .qv-key { margin-top: 1px; display: flex; height: 20px; width: 20px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 9999px; border: 1px solid var(--border); font-size: 11px; font-weight: 700; color: var(--muted-foreground); }
+  .qv-opt.is-selected .qv-key { border-color: var(--primary); background: var(--primary); color: #fff; }
+  .qv-opt.is-correct .qv-key { border-color: var(--tw-green-500); background: var(--tw-green-500); color: #fff; }
+  .qv-opt.is-wrong .qv-key { border-color: var(--tw-red-400); background: var(--tw-red-400); color: #fff; }
+  /* 填空：标题 mb-1 text-[10px] font-semibold uppercase tracking-wider；输入 rounded-lg border px-3 py-2 text-[13px] */
+  .qv-fill-label { margin-bottom: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: color-mix(in srgb, var(--muted-foreground) 70%, transparent); }
+  .qv-input { min-height: 38px; border-radius: 8px; border: 1px solid var(--border); padding: 8px 12px; font-size: 13px; }
+  .qv-input.is-focus { border-color: var(--primary); }
+  .qv-input.is-correct { border-color: var(--tw-green-500); background: var(--tw-green-50); }
+  /* 按钮行：mt-3 flex flex-wrap items-center gap-2 */
+  .qv-actions { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  /* 检查答案：inline-flex gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-[12px] font-medium text-white disabled:opacity-30 */
+  .qv-check { display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; background: var(--primary); padding: 6px 12px; font-size: 12px; font-weight: 500; color: #fff; }
+  .qv-check[disabled] { opacity: 0.3; }
+  /* 正误：rounded-md px-2 py-0.5 text-[11px] font-semibold */
+  .qv-verdict { border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
+  .qv-verdict.is-correct { background: #dcfce7; color: var(--tw-green-700); }
+  .qv-verdict.is-wrong { background: #fee2e2; color: #b91c1c; }
+  /* 重试：rounded-lg bg-muted px-2.5 py-1.5 text-[12px] font-medium text-muted-foreground；AI 评判同追问样式 */
+  .qv-retry { display: inline-flex; align-items: center; gap: 4px; border-radius: 8px; background: var(--muted); padding: 6px 10px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  .qv-judge { display: inline-flex; align-items: center; gap: 4px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--primary) 60%, transparent); background: color-mix(in srgb, var(--primary) 10%, transparent); padding: 6px 10px; font-size: 12px; font-weight: 500; color: var(--primary); }
+  /* 解析框：mt-3 space-y-2 rounded-lg border bg-background px-3 py-2.5；小标题 text-[10px] font-semibold uppercase tracking-wider */
+  .qv-review { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--background); padding: 10px 12px; }
+  .qv-kicker { margin-bottom: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted-foreground); }
+  .qv-review p { font-size: 13px; line-height: 1.625; }
+  /* 输入框：rounded-[26px] border bg-card；能力 chip h-8 rounded-lg px-2 text-[14px] font-medium；发送 h-8 w-8 rounded-full，空闲 ring-1 ring-border */
+  .qz-composer-wrap { flex-shrink: 0; padding: 4px 20px 16px; }
+  .qz-composer { margin: 0 auto; max-width: 768px; padding: 12px 12px 8px 16px; }
+  .qz-placeholder { padding: 2px 4px 10px; font-size: 15px; color: color-mix(in srgb, var(--muted-foreground) 75%, transparent); }
+  .qz-cap { display: inline-flex; height: 32px; align-items: center; gap: 6px; border-radius: 8px; padding: 0 8px; font-size: 14px; font-weight: 500; color: var(--primary); background: color-mix(in srgb, var(--primary) 8%, transparent); }
+  .qz-kb { display: inline-flex; height: 28px; align-items: center; gap: 6px; border-radius: 9999px; border: 1px solid var(--border); padding: 0 10px; font-size: 12px; color: var(--muted-foreground); }
+  .qz-send { display: inline-grid; height: 32px; width: 32px; place-items: center; border-radius: 9999px; color: var(--muted-foreground); box-shadow: inset 0 0 0 1px var(--border); }
+  .qz-acts { display: flex; flex-direction: column; gap: 0; padding-left: 2px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, Shell, cx, DATA, ActivityHeader, ActivityRow } = DT;
+
+DT.ICONS["folder-plus"] = "<path d=\"M12 10v6M9 13h6M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>";
+
+const T = {
+  "{{name}} Exploring…": "{{name}} 探索中…",
+  "{{name}} Planning…": "{{name}} 规划中…",
+  "{{name}} Quizzing…": "{{name}} 出题中…",
+  "DeepTutor responded.": "已完成",
+  "Exploring": "正在探索",
+  "Planning": "规划",
+  "Writing the question…": "正在出题…",
+  "Previous": "上一题",
+  "Next": "下一个",
+  "Check Answer": "检查答案",
+  "Correct": "正确",
+  "Incorrect": "错误",
+  "Retry": "重试",
+  "AI Judge": "AI 评判",
+  "Reference Answer": "参考答案",
+  "Explanation": "解析",
+  "Fill in the Blank": "填空题",
+  "Type your answer...": "在此输入答案…",
+  "Bookmark": "收藏",
+  "Follow-up": "追问对话",
+  "How can I help you today?": "今天我能帮您什么？",
+  "Quiz": "测验",
+  "Knowledge": "知识库",
+};
+const tr = (key, vars) => String(T[key] ?? key).replace(/\{\{(\w+)\}\}/g, (_, k) => (vars && k in vars ? vars[k] : ""));
+
+const LETTERS = ["A", "B", "C", "D"];
+const DIFF = ["medium", "medium", "easy", "easy"];
+const QS = DATA.quiz;
+const ASK = "出 4 道假设检验的题，选择和填空都要";
+const FILL = QS[3];
+
+/* answers[i] = { pick, typed, submitted }；correct 按题算 */
+const initial = { phase: "exploring", qcount: 0, idx: 0, answers: [{}, {}, {}, {}], bookmarked: false, focus: false, typed: "", review: false };
+const setAns = (i, patch) => (s) => ({ answers: s.answers.map((a, k) => (k === i ? Object.assign({}, a, patch) : a)) });
+
+const steps = [
+  { at: 1500, set: { phase: "planning" } },
+  { at: 1300, set: { phase: "quizzing", qcount: 1 } },
+  { at: 500, advance: { key: "qcount", by: 1, max: 4 } },
+  { at: 500, advance: { key: "qcount", by: 1, max: 4 } },
+  { at: 500, advance: { key: "qcount", by: 1, max: 4 } },
+  { at: 700, set: { phase: "done" } },
+  { label: "quiz-ready" },
+  { at: 1700, set: setAns(0, { pick: 1 }) },
+  { at: 900, set: setAns(0, { submitted: true }) },
+  { at: 300, scroll: { sel: "#qz-scroll", bottom: true, ms: 480 } },
+  { at: 1400, set: { bookmarked: true } },
+  { label: "q1-done" },
+  { at: 1600, set: { idx: 1 } },
+  { at: 1500, set: setAns(1, { pick: 1 }) },
+  { at: 900, set: setAns(1, { submitted: true }) },
+  { at: 300, scroll: { sel: "#qz-scroll", bottom: true, ms: 480 } },
+  { label: "q2-done" },
+  { at: 2600, set: { idx: 3 } },
+  { at: 800, set: { focus: true } },
+  { at: 200, type: { key: "typed", text: FILL.answer, cps: 6 } },
+  { at: 700, set: (s) => Object.assign(setAns(3, { submitted: true, typed: s.typed })(s), { focus: false }) },
+  { at: 300, scroll: { sel: "#qz-scroll", bottom: true, ms: 480 } },
+  { label: "q4-done" },
+  { at: 3200, set: {} },
+];
+
+function correctOf(i, a) {
+  const q = QS[i];
+  if (!a || !a.submitted) return null;
+  return q.kind === "fill" ? (a.typed || "").trim() === q.answer : a.pick === q.answer;
+}
+
+function QuizCard({ s }) {
+  const total = QS.length;
+  const i = s.idx;
+  const q = QS[i];
+  const a = s.answers[i] || {};
+  const done = s.answers.filter((x) => x.submitted).length;
+  const ok = correctOf(i, a);
+  return html`<div class="qv animate-fade-in">
+    <div class="qv-bar">
+      <button type="button" class="qv-nav" disabled=${i === 0} title=${T["Previous"]}><${Icon} name="chevron-left" size=${18} strokeWidth=${2.5} /></button>
+      <span class="qv-count">${done}/${total}</span>
+      <div class="row grow" style=${{ flexWrap: "wrap", gap: 4 }}>
+        ${QS.map((_, k) => {
+          const c = correctOf(k, s.answers[k]);
+          return html`<span key=${k} class=${cx("qv-chip", { "is-current": k === i, "is-correct": k !== i && c === true, "is-wrong": k !== i && c === false })}>${k + 1}</span>`;
+        })}
+      </div>
+      <button type="button" class="qv-nav" disabled=${i === total - 1} title=${T["Next"]}><${Icon} name="chevron-right" size=${18} strokeWidth=${2.5} /></button>
+    </div>
+    <div class="qv-progress"><i style=${{ width: ((i + 1) / total) * 100 + "%" }}></i></div>
+    <div class="qv-body" key=${i}>
+      <div class="row" style=${{ marginBottom: 8, justifyContent: "space-between", gap: 8 }}>
+        <div class="row" style=${{ flexWrap: "wrap", gap: 6 }}>
+          <span class="qv-tag is-upper">Q${i + 1}</span>
+          <span class=${cx("qv-tag is-upper", "qv-tag--" + DIFF[i])}>${DIFF[i]}</span>
+          <span class="qv-tag">${q.kind === "fill" ? "fill_in_blank" : "choice"}</span>
+        </div>
+        ${a.submitted
+          ? html`<div class="row" style=${{ gap: 4 }}>
+              <span class=${cx("qv-icon", { "is-on": i === 0 && s.bookmarked })} title=${T["Bookmark"]}>
+                <${Icon} name="bookmark" size=${18} strokeWidth=${i === 0 && s.bookmarked ? 2.5 : 1.8} style=${i === 0 && s.bookmarked ? { fill: "currentColor" } : null} />
+              </span>
+              <span class="qv-icon" style=${{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 500 }}><${Icon} name="folder-plus" size=${14} /></span>
+              <span class="qv-follow"><${Icon} name="message-square-plus" size=${13} />${T["Follow-up"]}</span>
+            </div>`
+          : null}
+      </div>
+      <div class="qv-q">${q.prompt}</div>
+      ${q.kind === "choice"
+        ? html`<div class="qv-opts">
+            ${q.options.map((text, k) => {
+              const sel = a.pick === k;
+              const isCorrect = k === q.answer;
+              const cls = !a.submitted ? { "is-selected": sel } : { "is-correct": isCorrect, "is-wrong": sel && !isCorrect };
+              return html`<div key=${k} class=${cx("qv-opt", cls)}>
+                <span class="qv-key">${a.submitted && isCorrect ? html`<${Icon} name="check" size=${11} />` : LETTERS[k]}</span>
+                <div class="min0" style=${{ lineHeight: 1.625 }}>${text}</div>
+              </div>`;
+            })}
+          </div>`
+        : html`<div>
+            <div class="qv-fill-label">${T["Fill in the Blank"]}</div>
+            <div class=${cx("qv-input", { "is-focus": s.focus, "is-correct": a.submitted && ok, "dt-caret": s.focus })}>
+              ${(a.submitted ? a.typed : s.typed) || (s.focus ? "" : html`<span class="muted">${T["Type your answer..."]}</span>`)}
+            </div>
+          </div>`}
+      <div class="qv-actions">
+        ${!a.submitted
+          ? html`<button type="button" class="qv-check" disabled=${q.kind === "choice" ? a.pick === undefined : !s.typed}><${Icon} name="eye" size=${13} />${T["Check Answer"]}</button>`
+          : html`<span class=${cx("qv-verdict", ok ? "is-correct" : "is-wrong")}>${ok ? T["Correct"] : T["Incorrect"]}</span>
+              <span class="qv-retry"><${Icon} name="rotate-ccw" size=${11} />${T["Retry"]}</span>
+              <span class="qv-judge"><${Icon} name="sparkles" size=${11} />${T["AI Judge"]}</span>`}
+      </div>
+      ${a.submitted
+        ? html`<div class="qv-review animate-fade-in">
+            <div class="row" style=${{ paddingBottom: 6 }}>
+              <span class="qv-kicker" style=${{ marginBottom: 0 }}>${q.kind === "fill" ? T["Reference Answer"] : T["Explanation"]}</span>
+              <span class="muted" style=${{ marginLeft: "auto" }}><${Icon} name="chevron-down" size=${13} /></span>
+            </div>
+            ${q.kind === "fill" ? html`<div><div class="qv-kicker">${T["Reference Answer"]}</div><p>${q.answer}</p></div>` : null}
+            <div><div class="qv-kicker">${T["Explanation"]}</div><p class="muted">${q.explanation}</p></div>
+          </div>`
+        : null}
+    </div>
+  </div>`;
+}
+
+function Activity({ s }) {
+  const live = s.phase !== "done";
+  const label =
+    s.phase === "exploring" ? tr("{{name}} Exploring…", { name: "DeepTutor" })
+    : s.phase === "planning" ? tr("{{name}} Planning…", { name: "DeepTutor" })
+    : s.phase === "quizzing" ? tr("{{name}} Quizzing…", { name: "DeepTutor" })
+    : T["DeepTutor responded."];
+  const secs = { exploring: "1s", planning: "3s", quizzing: 3 + s.qcount + "s", done: "8s" }[s.phase];
+  return html`<div class="col" style=${{ gap: 10 }}>
+    <${ActivityHeader} label=${label} duration=${secs} settled=${!live} orb=${s.phase === "quizzing" ? "solving" : "working"} expandable=${!live} expanded=${false} />
+    ${live
+      ? html`<div class="qz-acts">
+          <${ActivityRow} state=${s.phase === "exploring" ? "running" : "done"} title=${T["Exploring"]} detail=${DATA.book.title + " · 第 8 章"} breathing=${s.phase === "exploring"} />
+          ${s.phase !== "exploring" ? html`<${ActivityRow} state=${s.phase === "planning" ? "running" : "done"} title=${T["Planning"]} detail="4 道 · choice 3 · fill_in_blank 1" breathing=${s.phase === "planning"} />` : null}
+          ${s.phase === "quizzing" ? html`<${ActivityRow} state="running" title=${T["Writing the question…"]} detail=${s.qcount + "/4"} mono=${true} breathing=${true} />` : null}
+        </div>`
+      : null}
+  </div>`;
+}
+
+function render(s) {
+  return html`<${Shell} active="/chat" recents=${["假设检验练习", "p 值的含义", "例 8.3 怎么算"]} activeRecent=${0}>
+    <div class="qz-wrap">
+      <div class="qz-scroll" id="qz-scroll" data-dt-scroll data-chat-scroll-root="true">
+        <div class="qz-col">
+          <div class="dt-user-bubble">${ASK}</div>
+          <${Activity} s=${s} />
+          ${s.phase === "done" ? html`<${QuizCard} s=${s} />` : null}
+        </div>
+      </div>
+      <div class="qz-composer-wrap">
+        <div class="dt-composer qz-composer">
+          <div class="qz-placeholder">${T["How can I help you today?"]}</div>
+          <div class="row" style=${{ gap: 6 }}>
+            <span class="muted" style=${{ padding: 6 }}><${Icon} name="plus" size=${18} strokeWidth=${1.7} /></span>
+            <span class="qz-cap"><${Icon} name="pen-line" size=${16} strokeWidth=${1.7} />${T["Quiz"]}<${Icon} name="chevron-down" size=${13} /></span>
+            <span class="qz-kb"><${Icon} name="database" size=${13} />${DATA.kb.name}</span>
+            <span class="grow"></span>
+            <span class="qz-send"><${Icon} name="arrow-up" size=${16} /></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  <//>`;
+}
+
+DT.run({ T, initial, steps, render, options: { replayAt: "top-right" } });
+</script>
+</body>
+</html>

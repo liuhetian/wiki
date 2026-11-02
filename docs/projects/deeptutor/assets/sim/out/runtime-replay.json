@@ -1,0 +1,116 @@
+{
+  "a": [
+    {
+      "type": "stage_start",
+      "source": "chat",
+      "stage": "responding",
+      "content": "",
+      "metadata": {},
+      "session_id": "",
+      "turn_id": "",
+      "seq": 1,
+      "timestamp": "（运行时间，略）"
+    },
+    {
+      "type": "thinking",
+      "source": "chat",
+      "stage": "responding",
+      "content": "先查教材里 p 值的定义",
+      "metadata": {},
+      "session_id": "",
+      "turn_id": "",
+      "seq": 2,
+      "timestamp": "（运行时间，略）"
+    },
+    {
+      "type": "tool_call",
+      "source": "chat",
+      "stage": "responding",
+      "content": "rag",
+      "metadata": {
+        "args": {
+          "query": "p 值 定义"
+        }
+      },
+      "session_id": "",
+      "turn_id": "",
+      "seq": 3,
+      "timestamp": "（运行时间，略）"
+    },
+    {
+      "type": "tool_result",
+      "source": "chat",
+      "stage": "responding",
+      "content": "命中 p.248 三段",
+      "metadata": {
+        "tool": "rag"
+      },
+      "session_id": "",
+      "turn_id": "",
+      "seq": 4,
+      "timestamp": "（运行时间，略）"
+    }
+  ],
+  "b": [
+    {
+      "type": "content",
+      "source": "chat",
+      "stage": "responding",
+      "content": "不能。",
+      "metadata": {},
+      "session_id": "",
+      "turn_id": "",
+      "seq": 5,
+      "timestamp": "（运行时间，略）"
+    },
+    {
+      "type": "content",
+      "source": "chat",
+      "stage": "responding",
+      "content": "p 值是先假定原假设为真",
+      "metadata": {},
+      "session_id": "",
+      "turn_id": "",
+      "seq": 6,
+      "timestamp": "（运行时间，略）"
+    },
+    {
+      "type": "content",
+      "source": "chat",
+      "stage": "responding",
+      "content": "再算出来的概率。",
+      "metadata": {},
+      "session_id": "",
+      "turn_id": "",
+      "seq": 7,
+      "timestamp": "（运行时间，略）"
+    },
+    {
+      "type": "stage_end",
+      "source": "chat",
+      "stage": "responding",
+      "content": "",
+      "metadata": {},
+      "session_id": "",
+      "turn_id": "",
+      "seq": 8,
+      "timestamp": "（运行时间，略）"
+    },
+    {
+      "type": "result",
+      "source": "chat",
+      "stage": "",
+      "content": "",
+      "metadata": {
+        "response": "（完整答案）"
+      },
+      "session_id": "",
+      "turn_id": "",
+      "seq": 9,
+      "timestamp": "（运行时间，略）"
+    }
+  ],
+  "latest_seq": 9,
+  "answered": "先讲定义，再讲误读",
+  "headless": ""
+}

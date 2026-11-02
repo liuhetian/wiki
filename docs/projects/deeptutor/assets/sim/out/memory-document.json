@@ -1,0 +1,47 @@
+{
+  "trace_event": {
+    "id": "chat:01M62X46R9YHW15R3RM2T1YMG3",
+    "ts": "2026-10-29T04:01:41.641959+00:00",
+    "surface": "chat",
+    "kind": "turn",
+    "payload": {
+      "user": "p 值小于 0.05 就能说明原假设是错的吗？",
+      "assistant_chars": 212,
+      "kb": [
+        "应用统计学"
+      ]
+    },
+    "session_id": "sess_0412",
+    "turn_id": "turn_7"
+  },
+  "legacy": "# Chat\n\n## 理解偏差\n- 常把 p 值读成「H0 为真的概率」，第二次讲解后能自己纠正[^m_01JCA6Z3R8QK4T7W2N5P9X1B3D]\n- 例 8.3 第一次算 t 时忘了除以标准误[^m_01JCA6Z3R8QK4T7W2N5P9X1B3E]\n\n## 学习偏好\n- 喜欢先看例题再看定义[^m_01JCA6Z3R8QK4T7W2N5P9X1B3F]\n\n[^m_01JCA6Z3R8QK4T7W2N5P9X1B3D]: chat:sess_0412, quiz:q_0415_2\n[^m_01JCA6Z3R8QK4T7W2N5P9X1B3E]: chat:sess_0412\n[^m_01JCA6Z3R8QK4T7W2N5P9X1B3F]: chat:sess_0409\n",
+  "entries": [
+    {
+      "id": "m_01JCA6Z3R8QK4T7W2N5P9X1B3D",
+      "section": "理解偏差",
+      "text": "常把 p 值读成「H0 为真的概率」，第二次讲解后能自己纠正",
+      "refs": [
+        "chat:sess_0412",
+        "quiz:q_0415_2"
+      ]
+    },
+    {
+      "id": "m_01JCA6Z3R8QK4T7W2N5P9X1B3E",
+      "section": "理解偏差",
+      "text": "例 8.3 第一次算 t 时忘了除以标准误",
+      "refs": [
+        "chat:sess_0412"
+      ]
+    },
+    {
+      "id": "m_01JCA6Z3R8QK4T7W2N5P9X1B3F",
+      "section": "学习偏好",
+      "text": "喜欢先看例题再看定义",
+      "refs": [
+        "chat:sess_0409"
+      ]
+    }
+  ],
+  "serialized": "# Chat\n\n## 理解偏差\n\n- 常把 p 值读成「H0 为真的概率」，第二次讲解后能自己纠正 [^1], [^2] <!--m_01JCA6Z3R8QK4T7W2N5P9X1B3D-->\n- 例 8.3 第一次算 t 时忘了除以标准误 [^1] <!--m_01JCA6Z3R8QK4T7W2N5P9X1B3E-->\n\n## 学习偏好\n\n- 喜欢先看例题再看定义 [^3] <!--m_01JCA6Z3R8QK4T7W2N5P9X1B3F-->\n\n---\n\n[^1]: chat:sess_0412\n[^2]: quiz:q_0415_2\n[^3]: chat:sess_0409\n",
+  "idempotent": true
+}

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="520">
+<title>DeepTutor 仿真 demo：运行状态与能力就绪</title>
+<!--
+  Goal      设置里一张「运行就绪」表：七组能力各自什么状态，只有必需的或配了又坏的才进「需要处理」；
+            知识库换了嵌入模型要重建索引，重建完一刷新，这一行从「需处理」变「就绪」
+  Surface   /settings/status · components/settings/SettingsRuntimePage.tsx → SettingsStatusPanel + SettingsReadinessPanel
+  Sources   components/settings/SettingsReadinessPanel.tsx 34-48（状态配色）、232-341（面板）、343-436（分组和行）；
+            lib/settings-readiness.ts 4-10、27-31、69-77、121-131（五态、严重度、组序、折叠规则）；
+            components/settings/SettingsMain.tsx 47-98（返回按钮、248px 导航栏、内容区）；
+            components/settings/SettingsNav.tsx 58-116（搜索框、分组、导航项）；
+            features/settings/navigation/settings-pages.ts 13-32、80-122、133-155（分组、页名、图标）；
+            features/settings/navigation/settings-nav.ts 113-547（各页标签和图标）；
+            components/settings/SettingsStatusPanel.tsx 29-50、MemoryUsageItem.tsx 135-146、
+            features/runtime-status/RuntimeHealthCard.tsx 50-58（状态条）；
+            deeptutor/services/config/readiness.py 135-187、495-536、602-620（行标签和状态判定）
+  Layout    无应用侧栏：设置自带的 248px 导航（iframe 窄于 768px 时换成顶栏）+ 内容区
+  Data      本页自拟的 34 行就绪状态；知识库名取 DT.DATA.kb.name
+  Autoplay  加载 → 表出现 → 滚到就绪面板 → 展开一组折叠项 → 回到面板顶 → 刷新 → 知识库一行翻成就绪、需要处理清空，一圈约 19s
+  Height    520
+  Deviations 供应商图标（ProviderIcon 的品牌图）换成 12px 字母方块；
+            状态条里内存项的数值是写死的
+  Checks    五种状态、七个组名、摘要、需要处理的文案与语言包一致
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  /* SettingsMain：fixed inset-0 flex h-dvh overflow-hidden bg-background */
+  .st-shell { display: flex; height: 100%; overflow: hidden; background: var(--background); }
+  /* 导航栏：hidden w-[248px] shrink-0 flex-col border-r border-border/60 bg-[color-mix(in_srgb,var(--muted)_25%,var(--background))] md:flex */
+  .st-aside { display: none; width: 248px; flex-shrink: 0; flex-direction: column; border-right: 1px solid color-mix(in srgb, var(--border) 60%, transparent); background: color-mix(in srgb, var(--muted) 25%, var(--background)); }
+  @media (min-width: 768px) { .st-aside { display: flex; } .st-topbar { display: none !important; } }
+  /* 返回按钮：flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[13px] font-medium text-foreground */
+  .st-back { display: flex; align-items: center; gap: 8px; border-radius: 6px; padding: 6px 10px; font-size: 13px; font-weight: 500; color: var(--foreground); }
+  /* 搜索：w-full rounded-full bg-muted py-2.5 pl-8 pr-7 text-[13px] placeholder:text-muted-foreground/70 */
+  .st-search { position: relative; margin: 0 10px 8px; }
+  .st-search > svg { position: absolute; left: 10px; top: 12px; color: var(--muted-foreground); }
+  .st-search > div { width: 100%; border-radius: 9999px; background: var(--muted); padding: 10px 28px 10px 32px; font-size: 13px; line-height: 18px; color: color-mix(in srgb, var(--muted-foreground) 70%, transparent); }
+  .st-nav { min-height: 0; flex: 1; overflow-y: auto; padding: 0 10px 24px; }
+  /* 组名：px-2.5 pb-1.5 pt-5 text-[12px] font-medium text-muted-foreground */
+  .st-group { padding: 20px 10px 6px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  /* 导航项：flex min-h-9 items-center gap-2 rounded-lg px-2.5 py-2 text-[13px]；当前 bg-accent font-medium */
+  .st-item { display: flex; min-height: 36px; align-items: center; gap: 8px; border-radius: 8px; padding: 8px 10px; font-size: 13px; color: var(--foreground); }
+  .st-item + .st-item { margin-top: 2px; }
+  .st-item.is-active { background: var(--accent); font-weight: 500; }
+  /* 窄屏顶栏：flex h-14 shrink-0 items-center justify-between border-b border-border/50 px-3 md:hidden */
+  .st-topbar { display: flex; height: 56px; flex-shrink: 0; align-items: center; justify-content: space-between; border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); padding: 0 12px; }
+  /* 内容：min-h-0 flex-1 overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable] */
+  .st-main { display: flex; min-width: 0; flex: 1; flex-direction: column; overflow: hidden; }
+  .st-scroll { min-height: 0; flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-gutter: stable; }
+  /* PageContainer：mx-auto max-w-[1180px] px-6 md:px-9 py-7 lg:py-9，外加 pb-20 */
+  .st-container { margin: 0 auto; width: 100%; max-width: 1180px; padding: 28px 24px 80px; }
+  @media (min-width: 768px) { .st-container { padding-left: 36px; padding-right: 36px; } }
+  /* PageHeader：mb-6；标题 dt-page-title font-serif font-semibold tracking-[-0.02em]；描述 mt-1.5 text-[12.5px] leading-relaxed */
+  .st-header { margin-bottom: 24px; }
+  .st-title { line-height: 1.5; letter-spacing: -0.02em; }
+  .st-desc { margin-top: 6px; max-width: 672px; font-size: 12.5px; line-height: 1.625; color: var(--muted-foreground); }
+  /* 状态条：flex flex-wrap items-center gap-x-5 gap-y-2.5 border-y border-border/60 py-2.5 */
+  .st-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent); padding: 10px 0; }
+  .st-strip__item { display: flex; align-items: center; gap: 10px; }
+  .st-strip__dot { height: 8px; width: 8px; flex-shrink: 0; border-radius: 9999px; background: var(--tw-emerald-500); }
+  /* 项名 text-[13px] font-medium leading-none tracking-tight；值 text-[12px] leading-none */
+  .st-strip__name { font-size: 13px; font-weight: 500; line-height: 1; letter-spacing: -0.025em; }
+  .st-strip__val { font-size: 12px; line-height: 1; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+  /* 面板：mt-8；头 mb-2 flex items-start justify-between gap-4；h2 text-[15px] font-semibold tracking-tight；摘要 mt-1 text-[12.5px] leading-relaxed */
+  .rd { margin-top: 32px; }
+  .rd__head { margin-bottom: 8px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .rd__title { font-size: 15px; font-weight: 600; letter-spacing: -0.025em; }
+  .rd__summary { margin-top: 4px; font-size: 12.5px; line-height: 1.625; color: var(--muted-foreground); }
+  /* 刷新：inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11.5px] text-muted-foreground */
+  .rd__refresh { display: inline-flex; flex-shrink: 0; align-items: center; gap: 6px; border-radius: 8px; border: 1px solid var(--border); padding: 6px 10px; font-size: 11.5px; color: var(--muted-foreground); transition: opacity var(--motion-fast), color var(--motion-fast); }
+  .rd__refresh[disabled] { opacity: 0.5; }
+  .rd__body { border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent); }
+  /* 加载：flex items-center gap-2 py-3 text-[12.5px] text-muted-foreground */
+  .rd__loading { display: flex; align-items: center; gap: 8px; padding: 12px 0; font-size: 12.5px; color: var(--muted-foreground); }
+  /* 小标题：pt-3 pb-1 text-[12px] font-medium text-muted-foreground */
+  .rd__h3 { padding: 12px 0 4px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  /* 没有要处理的：flex items-center gap-2 border-t border-border/50 py-2.5 text-[12.5px]；勾 text-emerald-500 */
+  .rd__none { display: flex; align-items: center; gap: 8px; border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent); padding: 10px 0; font-size: 12.5px; color: var(--muted-foreground); }
+  .rd__none svg { color: var(--tw-emerald-500); }
+  /* 要处理的一行：flex flex-wrap items-center justify-between gap-x-4 border-b border-border/50 py-2.5 */
+  .rd__list { border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent); }
+  .rd__att { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 16px; border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); padding: 10px 0; font-size: 12.5px; }
+  /* 打开：inline-flex items-center gap-1 text-[11.5px] text-muted-foreground */
+  .rd__open { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--muted-foreground); }
+  /* 组：pt-4；组头 flex items-baseline justify-between gap-3 pb-1；计数 text-[11px] opacity-70 */
+  .rd__group { padding-top: 16px; }
+  .rd__ghead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 4px; }
+  .rd__gcount { font-size: 11px; color: var(--muted-foreground); opacity: 0.7; }
+  .rd__rows { border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent); }
+  /* 折叠：summary py-2 text-[11.5px] text-muted-foreground */
+  .rd__fold { padding: 8px 0; font-size: 11.5px; color: var(--muted-foreground); display: flex; align-items: center; gap: 4px; }
+  .rd__fold.is-open { color: var(--foreground); }
+  /* 行：flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5 border-b border-border/40 py-2 */
+  .rd__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 12px; border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent); padding: 8px 0; }
+  .rd__label { font-size: 12.5px; color: var(--foreground); }
+  .rd__detail { font-size: 11.5px; color: var(--muted-foreground); }
+  .rd__model { display: flex; min-width: 0; align-items: center; gap: 6px; }
+  .rd__model span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); font-size: 11px; color: var(--muted-foreground); }
+  .rd__prov { display: inline-flex; height: 12px; width: 12px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 3px; background: var(--foreground); color: var(--background); font-size: 8px; font-weight: 700; line-height: 1; }
+  /* 状态字：shrink-0 text-[11px]，颜色见 STATE_TONES / SEVERITY_TONES */
+  .rd__state { flex-shrink: 0; font-size: 11px; }
+  .tone-enabled_verified { color: var(--tw-emerald-600); }
+  .tone-available_disabled { color: var(--muted-foreground); }
+  .tone-unavailable, .tone-not_selected { color: var(--muted-foreground); opacity: 0.6; }
+  .tone-misconfigured, .tone-warning { color: var(--tw-amber-600); }
+  .tone-blocker { color: var(--tw-amber-700); }
+  .rd__appear { animation: dt-detail-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .rd__flash { animation: st-row-flash 1600ms cubic-bezier(0.33, 0, 0.2, 1) both; }
+  @keyframes st-row-flash {
+    0% { background-color: color-mix(in srgb, var(--tw-emerald-500) 16%, transparent); }
+    100% { background-color: transparent; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, cx, DATA } = DT;
+
+DT.ICONS["settings-2"] = "<path d=\"M14 17H5M19 7h-9\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/><circle cx=\"7\" cy=\"7\" r=\"3\"/>";
+DT.ICONS["bar-chart-3"] = "<path d=\"M3 3v16a2 2 0 0 0 2 2h16M18 17V9M13 17V5M8 17v-3\"/>";
+DT.ICONS["key-round"] = "<path d=\"M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z\"/><circle cx=\"16.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/>";
+DT.ICONS["image"] = "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>";
+DT.ICONS["clapperboard"] = "<path d=\"m12.296 3.464 3.02 3.956M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3zM3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM6.18 5.276l3.1 3.899\"/>";
+DT.ICONS["chart-no-axes-combined"] = "<path d=\"M12 16v5M16 14.639V21M20 10.656V21M22 3l-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15M4 18.463V21M8 14.656V21\"/>";
+DT.ICONS["wrench"] = "<path d=\"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z\"/>";
+
+const T = {
+  "Back to app": "返回应用",
+  "Search settings": "搜索设置",
+  "System": "系统",
+  "Network": "网络",
+  "About": "关于",
+  "Runtime status": "运行状态",
+  "Check configured services and resolve connection problems.": "查看已配置的服务，排查连接问题。",
+  "Backend": "后端",
+  "Online": "在线",
+  "Turn runtime": "对话运行时",
+  "Healthy": "健康",
+  "System memory": "内存",
+  "{{used}} · {{percent}}% of {{total}}": "{{used}} · 占 {{total}} 的 {{percent}}%",
+  "readiness.title": "运行就绪",
+  "readiness.blurb": "当前设置下，哪些能力可以真正跑起来。",
+  "readiness.refresh": "刷新",
+  "readiness.loading": "正在检查可用状态…",
+  "readiness.summary.ready": "{{n}} 项就绪",
+  "readiness.summary.available": "{{n}} 项可开启",
+  "readiness.summary.idle": "{{n}} 项未配置",
+  "readiness.attention.title": "需要处理",
+  "readiness.attention.none": "没有需要处理的项。",
+  "readiness.attention.open": "打开",
+  "readiness.group.ready": "{{n}} 项就绪",
+  "readiness.group.folded": "另有 {{n}} 项未启用",
+  "readiness.state.enabled_verified": "就绪",
+  "readiness.state.available_disabled": "可开启",
+  "readiness.state.unavailable": "不可用",
+  "readiness.state.misconfigured": "需处理",
+  "readiness.state.not_selected": "未配置",
+  "readiness.section.catalog": "模型服务",
+  "readiness.section.knowledge": "知识库",
+  "readiness.section.document_parsing": "文档解析",
+  "readiness.section.tools": "聊天工具",
+  "readiness.section.visualizers": "可视化",
+  "readiness.section.video_learning": "视频学习",
+  "readiness.section.runtime": "运行时",
+  "readiness.detail.active_profile_not_selected": "还没有选择供应商",
+  "readiness.detail.parser_not_selected": "已安装，当前未使用",
+  "readiness.detail.parser_package_missing": "未安装",
+  "readiness.detail.knowledge_base_needs_reindex": "需要重建索引",
+  "readiness.detail.visualizer_disabled": "已安装，未启用",
+  "readiness.detail.visualizer_runtime_missing": "缺少运行环境依赖",
+  "readiness.detail.tool_disabled": "可用，未启用",
+  "readiness.detail.tool_backend_not_configured": "已开启，但背后的服务还没有配置",
+  "readiness.detail.video_provider_not_configured": "未配置",
+  "readiness.detail.redis_not_configured": "未配置",
+  "Chat model": "对话模型",
+  "Task model": "任务模型",
+  "Embedding model": "嵌入模型",
+  "Web search": "联网搜索",
+  "Text to speech": "语音合成",
+  "Speech to text": "语音识别",
+  "Image generation": "文生图",
+  "Video generation": "文生视频",
+  "Brainstorm tool": "头脑风暴工具",
+  "Web search tool": "联网搜索工具",
+  "Paper search tool": "论文检索工具",
+  "Zotero search tool": "Zotero 检索工具",
+  "Reason tool": "深度推理工具",
+  "GeoGebra tool": "GeoGebra 工具",
+  "Image generation tool": "文生图工具",
+  "Video generation tool": "文生视频工具",
+  "Native YouTube": "原生 YouTube",
+  "Invidious": "Invidious",
+  "In-memory turn coordination": "内存轮次协调",
+  "Redis turn coordination": "Redis 轮次协调",
+  "Mind map": "思维导图",
+  "Interactive HTML": "交互式 HTML",
+  "Text-only": "仅文本",
+};
+const tr = (key, vars) => String(T[key] ?? key).replace(/\{\{(\w+)\}\}/g, (_, k) => (vars && k in vars ? vars[k] : ""));
+
+/* settings-pages.ts SETTINGS_PAGE_GROUPS；页名是代码里的 { zh, en } 对象（settings-nav.ts、settings-pages.ts），不在语言包 */
+const NAV = [
+  { group: "个人", pages: [["常规", "settings-2"], ["工作区", "folder-open"], ["数据迁移", "archive"], ["外观", "palette"], ["用量统计", "bar-chart-3"]] },
+  { group: "模型与服务", pages: [["提供方", "key-round"], ["语言模型", "brain"], ["后台任务模型", "list-checks"], ["嵌入模型", "database"], ["搜索", "search"], ["语音", "audio-lines"], ["多模态生成", "image"]] },
+  { group: "学习与对话", pages: [["对话", "sparkles"], ["附件", "paperclip"], ["视频学习", "clapperboard"], ["学习进度", "chart-no-axes-combined"], ["记忆", "brain-circuit"]] },
+  { group: "功能与集成", pages: [["工具", "wrench"], ["能力", "sliders-horizontal"], ["伙伴与智能体", "bot"], ["知识与文档", "library"]] },
+  { group: T["System"], pages: [[T["Network"], "network"], [T["Runtime status"], "activity", true], [T["About"], "info"]] },
+  { group: "已归档", pages: [["已归档的聊天", "archive"]] },
+];
+
+/* 行：[id, section, 标签键, 状态, detail_code, required, 模型, 供应商首字母]
+   标签和状态判定照 deeptutor/services/config/readiness.py */
+const ROWS = [
+  ["catalog.llm", "catalog", "Chat model", "enabled_verified", "", true, "deepseek-chat", "D"],
+  ["catalog.task", "catalog", "Task model", "enabled_verified", "", false, "deepseek-chat", "D"],
+  ["catalog.embedding", "catalog", "Embedding model", "enabled_verified", "", true, DATA.kb.embedding.model, "O"],
+  ["catalog.search", "catalog", "Web search", "enabled_verified", "", false, "tavily", "T"],
+  ["catalog.tts", "catalog", "Text to speech", "not_selected", "active_profile_not_selected"],
+  ["catalog.stt", "catalog", "Speech to text", "not_selected", "active_profile_not_selected"],
+  ["catalog.imagegen", "catalog", "Image generation", "not_selected", "active_profile_not_selected"],
+  ["catalog.videogen", "catalog", "Video generation", "not_selected", "active_profile_not_selected"],
+  ["knowledge.0", "knowledge", DATA.kb.name, "KB", ""],
+  ["parser.pymupdf4llm", "document_parsing", "PyMuPDF4LLM", "enabled_verified", "", true],
+  ["parser.markitdown", "document_parsing", "markitdown", "available_disabled", "parser_not_selected"],
+  ["parser.text_only", "document_parsing", "Text-only", "available_disabled", "parser_not_selected"],
+  ["parser.mineru", "document_parsing", "MinerU", "unavailable", "parser_package_missing"],
+  ["parser.docling", "document_parsing", "Docling", "unavailable", "parser_package_missing"],
+  ["tool.brainstorm", "tools", "Brainstorm tool", "enabled_verified", ""],
+  ["tool.web_search", "tools", "Web search tool", "enabled_verified", ""],
+  ["tool.paper_search", "tools", "Paper search tool", "enabled_verified", ""],
+  ["tool.reason", "tools", "Reason tool", "enabled_verified", ""],
+  ["tool.zotero_search", "tools", "Zotero search tool", "available_disabled", "tool_disabled"],
+  ["tool.geogebra_analysis", "tools", "GeoGebra tool", "available_disabled", "tool_disabled"],
+  ["tool.imagegen", "tools", "Image generation tool", "unavailable", "tool_backend_not_configured"],
+  ["tool.videogen", "tools", "Video generation tool", "unavailable", "tool_backend_not_configured"],
+  ["visualizer.svg", "visualizers", "SVG", "enabled_verified", ""],
+  ["visualizer.mermaid", "visualizers", "Mermaid", "enabled_verified", ""],
+  ["visualizer.mindmap", "visualizers", "Mind map", "enabled_verified", ""],
+  ["visualizer.chartjs", "visualizers", "Chart.js", "enabled_verified", ""],
+  ["visualizer.html", "visualizers", "Interactive HTML", "enabled_verified", ""],
+  ["visualizer.manim_video", "visualizers", "Manim animation", "unavailable", "visualizer_runtime_missing"],
+  ["visualizer.manim_image", "visualizers", "Manim storyboard", "unavailable", "visualizer_runtime_missing"],
+  ["visualizer.geogebra", "visualizers", "GeoGebra", "available_disabled", "visualizer_disabled"],
+  ["video.youtube", "video_learning", "Native YouTube", "enabled_verified", ""],
+  ["video.invidious", "video_learning", "Invidious", "not_selected", "video_provider_not_configured"],
+  ["runtime.coordination.memory", "runtime", "In-memory turn coordination", "enabled_verified", ""],
+  ["runtime.coordination.redis", "runtime", "Redis turn coordination", "not_selected", "redis_not_configured"],
+].map(([id, section, label, state, detail, required = false, model = "", provider = ""]) => ({ id, section, label, state, detail, required, model, provider }));
+
+const SECTION_ORDER = ["catalog", "knowledge", "document_parsing", "tools", "visualizers", "video_learning", "runtime"];
+const USABLE = new Set(["enabled_verified", "available_disabled"]);
+const severityOf = (r) => (r.required && !USABLE.has(r.state) ? "blocker" : r.state === "misconfigured" ? "warning" : null);
+const prominent = (r) => r.state === "enabled_verified" || severityOf(r) !== null;
+const detailOf = (r) => (r.state === "enabled_verified" || !r.detail ? "" : tr("readiness.detail." + r.detail));
+
+function rowsFor(s) {
+  return ROWS.map((r) =>
+    r.state !== "KB"
+      ? r
+      : Object.assign({}, r, s.kbReady
+          ? { state: "enabled_verified", detail: "" }
+          : { state: "misconfigured", detail: "knowledge_base_needs_reindex" })
+  );
+}
+
+const initial = { loaded: false, loading: true, kbReady: false, fold: null, flash: false, pressed: false };
+
+const steps = [
+  { at: 1300, set: { loaded: true, loading: false } },
+  { label: "loaded" },
+  { at: 1500, scroll: { sel: "#st-scroll", to: "#readiness", ms: 520 } },
+  { at: 2300, scroll: { sel: "#st-scroll", to: '[data-section="catalog"]', offset: 8, ms: 520 } },
+  { at: 1100, set: { fold: "catalog" } },
+  { label: "folded-open" },
+  { at: 2400, set: { fold: null } },
+  { at: 300, scroll: { sel: "#st-scroll", to: "#readiness", ms: 520 } },
+  { at: 1000, set: { pressed: true } },
+  { at: 160, set: { pressed: false, loading: true } },
+  { at: 1300, set: { loading: false, kbReady: true, flash: true } },
+  { label: "refreshed" },
+  { at: 2600, scroll: { sel: "#st-scroll", to: '[data-section="knowledge"]', offset: 8, ms: 520 } },
+  { at: 2400, set: { flash: false } },
+];
+
+function Row({ r, s }) {
+  const sev = severityOf(r);
+  const detail = detailOf(r);
+  return html`<li class=${cx("rd__row", { rd__flash: s.flash && r.section === "knowledge" })}>
+    <span class="row" style=${{ flexWrap: "wrap", alignItems: "baseline", gap: "2px 8px", minWidth: 0 }}>
+      <span class="rd__label">${tr(r.label)}</span>
+      ${detail ? html`<span class="rd__detail">${detail}</span>` : null}
+    </span>
+    <span class="row" style=${{ gap: 8, minWidth: 0 }}>
+      ${r.model
+        ? html`<span class="rd__model">${r.provider ? html`<span class="rd__prov">${r.provider}</span>` : null}<span>${r.model}</span></span>`
+        : null}
+      <span class=${cx("rd__state", "tone-" + (sev || r.state))}>${tr("readiness.state." + r.state)}</span>
+    </span>
+  </li>`;
+}
+
+function Group({ section, rows, s }) {
+  const shown = rows.filter(prominent);
+  const folded = rows.filter((r) => !prominent(r));
+  const ready = rows.filter((r) => r.state === "enabled_verified").length;
+  const open = s.fold === section;
+  return html`<div class="rd__group rd__appear" data-section=${section}>
+    <div class="rd__ghead">
+      <h3 class="rd__h3" style=${{ padding: 0 }}>${tr("readiness.section." + section)}</h3>
+      ${ready > 0 ? html`<span class="rd__gcount">${tr("readiness.group.ready", { n: ready })}</span>` : null}
+    </div>
+    <ul class="rd__rows">${shown.map((r) => html`<${Row} key=${r.id} r=${r} s=${s} />`)}</ul>
+    ${folded.length
+      ? html`<div>
+          <div class=${cx("rd__fold", { "is-open": open })}>${tr("readiness.group.folded", { n: folded.length })}</div>
+          ${open ? html`<ul class="rd__rows rd__appear" style=${{ paddingBottom: 4 }}>${folded.map((r) => html`<${Row} key=${r.id} r=${r} s=${s} />`)}</ul>` : null}
+        </div>`
+      : null}
+  </div>`;
+}
+
+function Panel({ s }) {
+  const rows = rowsFor(s);
+  const count = (st) => rows.filter((r) => r.state === st).length;
+  const summary = s.loaded
+    ? [
+        tr("readiness.summary.ready", { n: count("enabled_verified") }),
+        count("available_disabled") > 0 && tr("readiness.summary.available", { n: count("available_disabled") }),
+        count("unavailable") + count("not_selected") > 0 && tr("readiness.summary.idle", { n: count("unavailable") + count("not_selected") }),
+      ].filter(Boolean).join(" · ")
+    : tr("readiness.blurb");
+  const attention = rows.filter(severityOf);
+  return html`<section class="rd" id="readiness">
+    <header class="rd__head">
+      <div class="min0">
+        <h2 class="rd__title">${tr("readiness.title")}</h2>
+        <p class="rd__summary">${summary}</p>
+      </div>
+      <button type="button" class=${cx("rd__refresh", { "dt-press": s.pressed })} disabled=${s.loading}>
+        <${Icon} name=${s.loading ? "loader-2" : "refresh-ccw"} size=${12} class=${s.loading ? "animate-spin" : ""} />
+        ${tr("readiness.refresh")}
+      </button>
+    </header>
+    <div class="rd__body">
+      ${!s.loaded
+        ? html`<p class="rd__loading"><${Icon} name="loader-2" size=${14} class="animate-spin" />${tr("readiness.loading")}</p>`
+        : html`<div>
+            <h3 class="rd__h3">${tr("readiness.attention.title")}</h3>
+            ${attention.length === 0
+              ? html`<p class="rd__none rd__appear" key="none"><${Icon} name="check" size=${14} />${tr("readiness.attention.none")}</p>`
+              : html`<ul class="rd__list">
+                  ${attention.map(
+                    (r) => html`<li key=${r.id} class="rd__att">
+                      <span class="min0"><span class=${"tone-" + severityOf(r)}>${tr(r.label)}</span><span class="muted"> · ${detailOf(r)}</span></span>
+                      <span class="rd__open">${tr("readiness.attention.open")}<${Icon} name="arrow-up-right" size=${12} /></span>
+                    </li>`
+                  )}
+                </ul>`}
+            <div>
+              ${SECTION_ORDER.map((sec) => html`<${Group} key=${sec} section=${sec} rows=${rows.filter((r) => r.section === sec)} s=${s} />`)}
+            </div>
+          </div>`}
+    </div>
+  </section>`;
+}
+
+function render(s) {
+  return html`<div class="st-shell">
+    <aside class="st-aside">
+      <div style=${{ padding: "16px 10px 6px" }}>
+        <div class="st-back"><${Icon} name="arrow-left" size=${16} strokeWidth=${1.7} />${T["Back to app"]}</div>
+      </div>
+      <div class="st-search"><${Icon} name="search" size=${14} strokeWidth=${1.8} /><div>${T["Search settings"]}</div></div>
+      <nav class="st-nav" id="st-nav" data-dt-scroll>
+        ${NAV.map(
+          (g) => html`<div key=${g.group} style=${{ marginBottom: 2 }}>
+            <p class="st-group">${g.group}</p>
+            ${g.pages.map(
+              ([label, icon, active]) => html`<div key=${label} class=${cx("st-item", { "is-active": active })} data-active=${active ? "true" : null}>
+                <${Icon} name=${icon} size=${15} strokeWidth=${1.8} />
+                <span>${label}</span>
+              </div>`
+            )}
+          </div>`
+        )}
+      </nav>
+    </aside>
+    <main class="st-main">
+      <div class="st-topbar">
+        <div class="st-back"><${Icon} name="arrow-left" size=${16} strokeWidth=${1.7} />${T["Back to app"]}</div>
+        <span class="muted" style=${{ padding: 8 }}><${Icon} name="menu" size=${18} /></span>
+      </div>
+      <div class="st-scroll" id="st-scroll" data-dt-scroll>
+        <div class="st-container dt-page-container">
+          <header class="st-header">
+            <h1 class="dt-page-title st-title">${T["Runtime status"]}</h1>
+            <p class="st-desc">${T["Check configured services and resolve connection problems."]}</p>
+          </header>
+          <section class="st-strip">
+            <div class="st-strip__item">
+              <span class="st-strip__dot"></span>
+              <div class="row" style=${{ alignItems: "baseline", gap: 8 }}>
+                <span class="st-strip__name">${T["Backend"]}</span><span class="st-strip__val">${T["Online"]}</span>
+              </div>
+            </div>
+            <div class="row" style=${{ gap: 8 }}>
+              <span class="st-strip__name" style=${{ letterSpacing: 0 }}>${T["Turn runtime"]}</span>
+              <${DT.StatusChip} tone="success">${T["Healthy"]}<//>
+            </div>
+            <div class="st-strip__item">
+              <span class="st-strip__dot"></span>
+              <div class="row" style=${{ alignItems: "baseline", gap: 8 }}>
+                <span class="st-strip__name">${T["System memory"]}</span>
+                <span class="st-strip__val">${tr("{{used}} · {{percent}}% of {{total}}", { used: "1.8 GB", percent: 23, total: "7.8 GB" })}</span>
+              </div>
+            </div>
+          </section>
+          <${Panel} s=${s} />
+        </div>
+      </div>
+    </main>
+  </div>`;
+}
+
+DT.run({
+  T,
+  initial,
+  steps: [{ scroll: { sel: "#st-nav", to: '[data-active="true"]', block: "center", behavior: "instant" } }].concat(steps),
+  render,
+});
+</script>
+</body>
+</html>

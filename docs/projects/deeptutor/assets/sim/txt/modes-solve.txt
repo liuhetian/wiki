@@ -1,0 +1,22 @@
+solve_plan 交了 5 条，空目标那条被丢掉，服务端编号 S1、S2、S3、S4
+
+做完 S2 后折叠成的一行和留下的计划（_context_checkpoint）：
+  summary: [S2] 算标准误和 t 统计量 — done. se = 0.82，t = 2.80
+  [Solve plan]
+  - S1 [done] 写出 H0: μ = 50 和 H1: μ ≠ 50
+  - S2 [done] 算标准误和 t 统计量
+  - S3 [next] 查 t0.975(24)，比较 |t|
+  - S4 [todo] 下结论并解释 p 值
+  Work S3 now, then call solve_finish_step.
+
+三次重规划：
+  「查表太慢，改用 p 值法」→ replanned（已用 1/2）
+  「再加一步置信区间对照」→ replanned（已用 2/2）
+  「又想换回临界值法」→ budget_exhausted
+
+最后一步完成后的计划：
+  [Solve plan]
+  - S1 [done] 算双侧 p 值
+  - S2 [done] 算 95% 置信区间
+  - S3 [done] 下结论
+  All steps are done: write the final answer now.

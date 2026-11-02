@@ -1,0 +1,41 @@
+{
+  "batches": [
+    {
+      "label": "合法的一批：加一条、改一条、删一条",
+      "accepted": true,
+      "reason": "",
+      "unchanged": false
+    },
+    {
+      "label": "加的一条超过 240 字",
+      "accepted": false,
+      "reason": "add: text length must be 1..240 (got 242)",
+      "unchanged": true
+    },
+    {
+      "label": "加的一条没写来源",
+      "accepted": false,
+      "reason": "add: refs must be non-empty",
+      "unchanged": true
+    },
+    {
+      "label": "来源写成一句话",
+      "accepted": false,
+      "reason": "add: malformed ref '第 3 次对话'",
+      "unchanged": true
+    },
+    {
+      "label": "删除理由不在白名单里",
+      "accepted": false,
+      "reason": "delete: reason must be one of ['contradicted', 'low-signal', 'stale', 'superseded']",
+      "unchanged": true
+    },
+    {
+      "label": "同一批里先改后删同一条",
+      "accepted": false,
+      "reason": "batch conflict: edit and delete on same id m_01JCA6Z3R8QK4T7W2N5P9X1B3F",
+      "unchanged": true
+    }
+  ],
+  "final": "# Chat\n\n## 理解偏差\n\n- 已能说清 p 值是先假定 H0 为真的条件概率 [^1], [^2] <!--m_01JCA6Z3R8QK4T7W2N5P9X1B3D-->\n- 边界题（p 恰在 α 附近）会把结论判反 [^3] <!--m_01M62X46SJ1SMWEGA6NNEVEMZ7-->\n\n## 学习偏好\n\n- 喜欢先看例题再看定义 [^4] <!--m_01JCA6Z3R8QK4T7W2N5P9X1B3F-->\n\n---\n\n[^1]: chat:sess_0412\n[^2]: chat:sess_0420\n[^3]: quiz:q_0418_2\n[^4]: chat:sess_0409\n"
+}

@@ -1,0 +1,142 @@
+{
+  "whitelist": [
+    "brainstorm",
+    "web_search",
+    "paper_search",
+    "zotero_search",
+    "reason",
+    "geogebra_analysis",
+    "imagegen",
+    "videogen"
+  ],
+  "cases": [
+    {
+      "case": "聊天：挂了「应用统计学」库，开了联网搜索和深度推理，有记忆",
+      "tools": [
+        "workspace_list",
+        "workspace_read",
+        "workspace_search",
+        "workspace_present",
+        "web_search",
+        "reason",
+        "rag",
+        "kb_files",
+        "knowledge_frontier",
+        "read_memory",
+        "write_memory",
+        "learning_status",
+        "learning_update",
+        "web_fetch",
+        "github",
+        "ask_user",
+        "cron"
+      ]
+    },
+    {
+      "case": "聊天：没挂库，用户开关里塞了 rag 和 exec",
+      "tools": [
+        "workspace_list",
+        "workspace_read",
+        "workspace_search",
+        "workspace_present",
+        "web_search",
+        "read_memory",
+        "write_memory",
+        "learning_status",
+        "learning_update",
+        "web_fetch",
+        "github",
+        "ask_user",
+        "cron"
+      ]
+    },
+    {
+      "case": "解题 deep_solve：同第一行，再加解题自带的三个工具",
+      "tools": [
+        "workspace_list",
+        "workspace_read",
+        "workspace_search",
+        "workspace_present",
+        "web_search",
+        "reason",
+        "rag",
+        "kb_files",
+        "knowledge_frontier",
+        "read_memory",
+        "solve_plan",
+        "solve_finish_step",
+        "solve_replan",
+        "write_memory",
+        "learning_status",
+        "learning_update",
+        "web_fetch",
+        "github",
+        "ask_user",
+        "cron"
+      ]
+    },
+    {
+      "case": "Obsidian 笔记库（独占的知识能力），旁边还挂了一个普通库",
+      "tools": [
+        "workspace_list",
+        "workspace_read",
+        "workspace_search",
+        "workspace_present",
+        "obsidian_search",
+        "obsidian_read",
+        "rag",
+        "kb_files",
+        "knowledge_frontier",
+        "ask_user"
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "message": "帮我出 5 道假设检验的测验题",
+      "workspace_mode": "",
+      "route": {
+        "requested_capability": "chat",
+        "capability": "deep_question",
+        "confidence": 0.96,
+        "strategy": "rule",
+        "reason": "The user explicitly asked to generate a quiz question set.",
+        "auto_routed": true
+      }
+    },
+    {
+      "message": "给我出几道考试题，第 8 章的",
+      "workspace_mode": "",
+      "route": {
+        "requested_capability": "chat",
+        "capability": "deep_question",
+        "confidence": 0.96,
+        "strategy": "rule",
+        "reason": "The user explicitly asked to generate a quiz question set.",
+        "auto_routed": true
+      }
+    },
+    {
+      "message": "考考我 p 值",
+      "workspace_mode": "",
+      "route": null
+    },
+    {
+      "message": "Generate 5 quiz questions on hypothesis testing",
+      "workspace_mode": "",
+      "route": {
+        "requested_capability": "chat",
+        "capability": "deep_question",
+        "confidence": 0.96,
+        "strategy": "rule",
+        "reason": "The user explicitly asked to generate a quiz question set.",
+        "auto_routed": true
+      }
+    },
+    {
+      "message": "帮我出 5 道假设检验的测验题",
+      "workspace_mode": "mastery",
+      "route": null
+    }
+  ]
+}

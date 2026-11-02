@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="600">
+<title>DeepTutor 仿真 demo：智能写作</title>
+<!--
+  Goal      左边写 markdown、右边同步预览；选中一条，在浮层里说一句要怎么改，AI 先查知识库再改，改完原地替换
+  Surface   /co-writer/[docId] · features/co-writer/components/CoWriterWorkspace.tsx
+  Sources   features/co-writer/components/CoWriterWorkspace.tsx 116-125（工具和模式选项）、1196-1282（格式工具栏条目）、
+              1699-1826（顶栏：返回、标题、字数、右侧图标和「全文」按钮）、1828-1900（格式工具栏、同步滚动、GFM/KaTeX/Mermaid）、
+              1903-2000（编辑器 | 拖拽条 | 预览，默认各 50%）、2060-2304（选区浮层：输入、工具和模式下拉、运行记录）、
+              2307-2318（底部状态条）、2528-2561（顶栏图标按钮）；
+            features/co-writer/hooks/useSplitPane.ts 18（editorRatio 默认 0.5）；
+            components/activity/ActivityRow.tsx（浮层里的运行记录行）
+  Layout    Shell（智能写作）→ 顶栏 → 格式工具栏 → 编辑器 | 预览 → 状态条
+  Data      DT.DATA.cowriter
+  Autoplay  稿子逐行写进编辑器、预览跟着渲染 → 选中第二条 → 浮层弹出 → 打字指令 → 应用 AI 编辑 →
+            检索知识库、回复 → 原地替换并高亮 → 底部绿条「已将 AI 编辑应用到所选内容」，一圈约 16s
+  Height    600
+  Deviations 编辑器画成按行的 div（上游是 textarea），选区画成浅蓝底；浮层画在编辑器里（上游 fixed 定位、可拖）；
+            模型选择器只画按钮
+  Checks    工具栏条目顺序和分隔、面板标题、浮层文案、状态条文案与语言包一致
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  /* flex h-full flex-col overflow-hidden bg-background */
+  .cw-shell { position: relative; display: flex; height: 100%; flex-direction: column; overflow: hidden; background: var(--background); }
+  /* 顶栏：flex shrink-0 items-center justify-between border-b px-4 py-1.5 */
+  .cw-top { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 6px 16px; gap: 8px; }
+  .cw-crumbs { display: flex; min-width: 0; align-items: center; gap: 12px; font-size: 14px; color: var(--muted-foreground); }
+  /* 返回：inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium */
+  .cw-back { display: inline-flex; flex-shrink: 0; align-items: center; gap: 4px; border-radius: 6px; padding: 2px 6px; font-size: 12px; font-weight: 500; }
+  .cw-slash { color: color-mix(in srgb, var(--muted-foreground) 40%, transparent); }
+  /* 标题：truncate rounded-md border border-transparent px-2 py-0.5 font-medium text-foreground */
+  .cw-doc { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-radius: 6px; padding: 2px 8px; font-weight: 500; color: var(--foreground); }
+  .cw-count { font-size: 12px; white-space: nowrap; }
+  .cw-saved { font-size: 10px; color: color-mix(in srgb, var(--muted-foreground) 60%, transparent); white-space: nowrap; }
+  /* ToolbarIconBtn：inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground */
+  .cw-ibtn { display: inline-flex; height: 32px; width: 32px; align-items: center; justify-content: center; border-radius: 8px; color: var(--muted-foreground); }
+  /* 外链：inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium */
+  .cw-pro { display: inline-flex; align-items: center; gap: 4px; border-radius: 9999px; border-width: 1px; padding: 4px 10px; font-size: 11px; font-weight: 500; color: var(--muted-foreground); white-space: nowrap; }
+  .cw-vsep { margin: 0 4px; height: 20px; width: 1px; background: var(--border); }
+  /* 全文：inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-[12.5px] font-medium */
+  .cw-full { display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; background: var(--primary); padding: 6px 12px; font-size: 12.5px; font-weight: 500; color: var(--primary-foreground); white-space: nowrap; }
+  /* 格式工具栏：flex shrink-0 items-center gap-0.5 overflow-x-auto border-b px-3 py-1 */
+  .cw-fmt { display: flex; flex-shrink: 0; align-items: center; gap: 2px; overflow: hidden; border-bottom: 1px solid var(--border); padding: 4px 12px; }
+  /* 按钮：shrink-0 rounded-md p-1.5 text-muted-foreground，图标 16 */
+  .cw-fbtn { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 6px; padding: 6px; color: var(--muted-foreground); }
+  .cw-fbtn__sigma { width: 16px; text-align: center; font-size: 11px; font-weight: 600; line-height: 1; }
+  .cw-fsep { margin: 0 4px; height: 16px; width: 1px; flex-shrink: 0; background: var(--border); }
+  /* 右侧：ml-auto flex items-center gap-1.5 pl-3 text-[10.5px] */
+  .cw-fright { margin-left: auto; display: flex; flex-shrink: 0; align-items: center; gap: 6px; padding-left: 12px; font-size: 10.5px; color: var(--muted-foreground); }
+  /* 同步滚动开：rounded-lg px-2 py-1 text-[10.5px] font-medium bg-primary/10 text-primary，点 h-1.5 w-1.5 bg-primary */
+  .cw-sync { display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; padding: 4px 8px; font-weight: 500; background: color-mix(in srgb, var(--primary) 10%, transparent); color: var(--primary); }
+  .cw-sync i { display: inline-block; height: 6px; width: 6px; border-radius: 9999px; background: var(--primary); }
+  .cw-tag { border-radius: 6px; background: var(--muted); padding: 2px 6px; }
+  .cw-tsep { margin: 0 2px; height: 12px; width: 1px; background: var(--border); }
+  @media (max-width: 760px) { .cw-tag, .cw-tsep { display: none; } }
+  /* 分栏：relative flex min-h-0 flex-1；每栏 flex min-h-0 flex-col，宽 50% */
+  .cw-split { position: relative; display: flex; min-height: 0; flex: 1; }
+  .cw-pane { display: flex; min-height: 0; width: 50%; flex-direction: column; min-width: 0; }
+  /* 栏头：flex shrink-0 items-center justify-between border-b px-3 py-1；标题 text-xs font-medium */
+  .cw-phead { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 4px 12px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  /* 拖拽条：relative flex h-full w-1 shrink-0 border-x；中间 h-10 w-[3px] rounded-full 把手 */
+  .cw-resizer { position: relative; display: flex; height: 100%; width: 4px; flex-shrink: 0; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+  .cw-resizer i { position: absolute; left: 50%; top: 50%; height: 40px; width: 3px; transform: translate(-50%, -50%); border-radius: 9999px; background: color-mix(in srgb, var(--muted-foreground) 30%, transparent); }
+  /* 编辑器：flex-1 bg-transparent p-4 font-mono text-[13px] leading-relaxed */
+  .cw-editor { position: relative; min-height: 0; flex: 1; overflow-y: auto; padding: 16px; font-family: var(--font-mono); font-size: 13px; line-height: 1.625; }
+  .cw-line { min-height: 1.625em; white-space: pre-wrap; word-break: break-word; }
+  .cw-line.is-selected { background: color-mix(in srgb, var(--primary) 20%, transparent); border-radius: 2px; }
+  .cw-line.is-fresh { animation: cw-fresh 1600ms cubic-bezier(0.33, 0, 0.2, 1) both; border-radius: 2px; }
+  @keyframes cw-fresh {
+    0% { background-color: color-mix(in srgb, var(--tw-emerald-500) 26%, transparent); }
+    100% { background-color: transparent; }
+  }
+  .cw-placeholder { color: var(--muted-foreground); }
+  /* 预览：flex-1 overflow-y-auto p-5 */
+  .cw-preview { min-height: 0; flex: 1; overflow-y: auto; padding: 20px; }
+  .cw-preview .prose { font-size: 15px; }
+  .cw-preview .prose li.is-fresh { animation: cw-fresh 1600ms cubic-bezier(0.33, 0, 0.2, 1) both; }
+  /* 选区浮层：dt-popup-up rounded-2xl border bg-popover p-2.5 shadow-lg，宽 360 */
+  .cw-pop { position: absolute; z-index: 50; width: 360px; max-width: calc(100% - 24px); border-radius: 16px; border-width: 1px; background: var(--popover); padding: 10px; box-shadow: var(--shadow-lg); }
+  .cw-pop__grip { margin: 0 auto 8px; height: 4px; width: 40px; border-radius: 9999px; background: color-mix(in srgb, var(--border) 80%, transparent); }
+  /* 输入：h-10 w-full rounded-xl pl-3 pr-10 text-[13px] */
+  .cw-pop__input { position: relative; display: flex; height: 40px; align-items: center; border-radius: 12px; padding: 0 40px 0 12px; font-size: 13px; background: color-mix(in srgb, var(--muted) 40%, transparent); }
+  .cw-pop__input.is-empty { color: var(--muted-foreground); }
+  /* 应用：h-7 w-7 rounded-[10px] bg-primary text-primary-foreground */
+  .cw-pop__go { position: absolute; right: 6px; top: 6px; display: inline-flex; height: 28px; width: 28px; align-items: center; justify-content: center; border-radius: 10px; background: var(--primary); color: var(--primary-foreground); transition: opacity 150ms; }
+  .cw-pop__go[disabled] { opacity: 0.25; }
+  /* 下拉：flex h-8 w-full items-center justify-between rounded-lg border px-2.5 text-[12.5px] */
+  .cw-pop__grid { margin-top: 8px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .cw-pop__select { display: flex; height: 32px; width: 100%; align-items: center; justify-content: space-between; border-radius: 8px; border-width: 1px; padding: 0 10px; font-size: 12.5px; }
+  .cw-pop__model { margin-top: 8px; display: flex; justify-content: flex-end; }
+  .cw-pop__chip { display: inline-flex; height: 32px; align-items: center; gap: 6px; border-radius: 8px; padding: 0 8px; font-size: 14px; font-weight: 500; color: var(--muted-foreground); }
+  /* 运行记录：mt-2 rounded-xl border border-border/70 bg-muted/18 px-3 py-2 */
+  .cw-pop__trace { margin-top: 8px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--border) 70%, transparent); background: color-mix(in srgb, var(--muted) 18%, transparent); padding: 8px 12px; }
+  /* 状态条：shrink-0 border-t px-4 py-1.5 text-xs；成功 border-emerald-200 bg-emerald-50 text-emerald-600 */
+  .cw-status { flex-shrink: 0; border-top: 1px solid #a7f3d0; background: var(--tw-emerald-50); padding: 6px 16px; font-size: 12px; color: var(--tw-emerald-600); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, Shell, cx, DATA, ActivityRow, Prose } = DT;
+
+/* 格式工具栏用到、运行时里没有的 lucide 图标 */
+DT.ICONS["eraser"] = "<path d=\"M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21M5.082 11.09l8.828 8.828\"/>";
+DT.ICONS["heading-1"] = "<path d=\"M4 12h8M4 18V6M12 18V6M17 12l3-2v8\"/>";
+DT.ICONS["heading-3"] = "<path d=\"M4 12h8M4 18V6M12 18V6M17.5 10.5c1.7-1 3.5 0 3.5 1.5a2 2 0 0 1-2 2M17 17.5c2 1.5 4 .3 4-1.5a2 2 0 0 0-2-2\"/>";
+DT.ICONS["heading-4"] = "<path d=\"M12 18V6M17 10v3a1 1 0 0 0 1 1h3M21 10v8M4 12h8M4 18V6\"/>";
+DT.ICONS["heading-5"] = "<path d=\"M4 12h8M4 18V6M12 18V6M17 13v-3h4M17 17.7c.4.2.8.3 1.3.3 1.5 0 2.7-1.1 2.7-2.5S19.8 13 18.3 13H17\"/>";
+DT.ICONS["heading-6"] = "<path d=\"M4 12h8M4 18V6M12 18V6\"/><circle cx=\"19\" cy=\"16\" r=\"2\"/><path d=\"M20 10c-2 2-3 3.5-3 6\"/>";
+DT.ICONS["italic"] = "<path d=\"M19 4h-9M14 20H5M15 4 9 20\"/>";
+DT.ICONS["strikethrough"] = "<path d=\"M16 4H9a3 3 0 0 0-2.83 4M14 12a4 4 0 0 1 0 8H6M4 12h16\"/>";
+DT.ICONS["braces"] = "<path d=\"M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1\"/>";
+DT.ICONS["minus"] = "<path d=\"M5 12h14\"/>";
+DT.ICONS["table-2"] = "<path d=\"M3 9h18M9 3v18\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/>";
+DT.ICONS["image"] = "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>";
+DT.ICONS["code-2"] = "<path d=\"m18 16 4-4-4-4M6 8l-4 4 4 4M14.5 4l-5 16\"/>";
+DT.ICONS["workflow"] = "<rect width=\"8\" height=\"8\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M7 11v4a2 2 0 0 0 2 2h4\"/><rect width=\"8\" height=\"8\" x=\"13\" y=\"13\" rx=\"2\"/>";
+
+const T = {
+  "Co-Writer": "智能写作",
+  "words": "词",
+  "chars": "字符",
+  "Saved": "已保存",
+  "Clear": "清空",
+  "Export Markdown": "导出 Markdown",
+  "Export Word": "导出 Word",
+  "Save to Notebook": "保存到笔记本",
+  "Load Example Template": "加载示例模板",
+  "Pro Vide Writing": "Pro Vide Writing",
+  "Full Draft": "全文",
+  "Undo": "撤销",
+  "Redo": "重做",
+  "Heading 1": "标题 1",
+  "Heading 2": "标题 2",
+  "Heading 3": "标题 3",
+  "Heading 4": "标题 4",
+  "Heading 5": "标题 5",
+  "Heading 6": "标题 6",
+  "Bold": "粗体",
+  "Italic": "斜体",
+  "Strikethrough": "删除线",
+  "Inline Code": "行内代码",
+  "Blockquote": "引用",
+  "Bullet List": "无序列表",
+  "Numbered List": "有序列表",
+  "Task List": "任务列表",
+  "Horizontal Rule": "分割线",
+  "Table": "表格",
+  "Link": "链接",
+  "Image": "图片",
+  "Code Block": "代码块",
+  "Mermaid Diagram": "Mermaid 图表",
+  "Math Block": "数学公式",
+  "Sync Scroll": "同步滚动",
+  "Editor": "编辑器",
+  "Preview": "预览",
+  "Collapse editor": "收起编辑器",
+  "Collapse preview": "收起预览",
+  "Start writing in Markdown...": "开始用 Markdown 写作…",
+  "Nothing to preview yet.": "暂无内容可预览。",
+  "Tell AI what to do with the selection...": "告诉 AI 如何处理所选内容…",
+  "Apply AI edit": "应用 AI 编辑",
+  "Knowledge Base": "知识库",
+  "Rewrite": "重写",
+  "Response": "回复",
+  "Running tools and preparing the final edit...": "正在运行工具并准备最终编辑…",
+  "Applied AI edit to the selection.": "已将 AI 编辑应用到所选内容。",
+  "Drag to resize, double-click to reset": "拖动以调整大小，双击复位",
+};
+
+/* CoWriterWorkspace.tsx 1196-1282 的工具栏，顺序和分隔照抄 */
+const TOOLBAR = [
+  ["undo-2", "Undo"], ["redo-2", "Redo"], "|",
+  ["heading-1", "Heading 1"], ["heading-2", "Heading 2"], ["heading-3", "Heading 3"], ["heading-4", "Heading 4"], ["heading-5", "Heading 5"], ["heading-6", "Heading 6"], "|",
+  ["bold", "Bold"], ["italic", "Italic"], ["strikethrough", "Strikethrough"], ["braces", "Inline Code"], "|",
+  ["quote", "Blockquote"], ["list", "Bullet List"], ["list-ordered", "Numbered List"], ["list-todo", "Task List"], "|",
+  ["minus", "Horizontal Rule"], ["table-2", "Table"], ["link", "Link"], ["image", "Image"], "|",
+  ["code-2", "Code Block"], ["workflow", "Mermaid Diagram"], ["sigma", "Math Block"],
+];
+
+const CW = DATA.cowriter;
+const LINES = CW.draft.replace(/\n$/, "").split("\n");
+const TARGET = 3; /* 第二条要点，在稿子的第 4 行 */
+const ORIGINAL = CW.draft;
+const EDITED = LINES.map((l, i) => (i === TARGET ? CW.replaced : l)).join("\n") + "\n";
+const QUERY = "p 值 定义";
+const RESPONSE = CW.replaced.replace(/^- /, "");
+
+const initial = {
+  draft: "",
+  selected: false,
+  pop: false,
+  instr: "",
+  applying: false,
+  pressed: false,
+  trace: [],
+  response: false,
+  fresh: false,
+  status: false,
+};
+
+function counts(text) {
+  const chars = text.replace(/\s/g, "").length;
+  const words = (text.match(/[一-鿿]/g) || []).length + (text.match(/[A-Za-z0-9.]+/g) || []).length;
+  return [words, chars];
+}
+
+const steps = [
+  { at: 700, stream: { key: "draft", text: ORIGINAL, chunk: [2, 6], ms: [40, 80] } },
+  { label: "drafted" },
+  { at: 1100, set: { selected: true } },
+  { at: 500, set: { pop: true } },
+  { at: 500, type: { key: "instr", text: CW.instruction, cps: 15 } },
+  { at: 500, set: { pressed: true, applying: true } },
+  { at: 500, set: { pressed: false, trace: [{ state: "running", detail: QUERY }] } },
+  { at: 1400, set: { trace: [{ state: "done", detail: QUERY }] } },
+  { at: 400, set: { response: true } },
+  { at: 1300, set: { pop: false, applying: false, selected: false, draft: EDITED, fresh: true, status: true, instr: "", trace: [], response: false } },
+  { label: "applied" },
+  { at: 3400, set: { fresh: false } },
+];
+
+function Editor({ s }) {
+  const lines = s.draft ? s.draft.replace(/\n$/, "").split("\n") : [];
+  return html`<div class="cw-editor" data-dt-scroll>
+    ${lines.length
+      ? lines.map(
+          (l, i) => html`<div key=${i + (s.fresh && i === TARGET ? "f" : "")} class=${cx("cw-line", { "is-selected": s.selected && i === TARGET, "is-fresh": s.fresh && i === TARGET })}>${l || " "}</div>`
+        )
+      : html`<span class="cw-placeholder">${T["Start writing in Markdown..."]}</span>`}
+    ${s.pop ? html`<${Popover} s=${s} />` : null}
+  </div>`;
+}
+
+function Popover({ s }) {
+  return html`<div class="cw-pop dt-popup-up" style=${{ top: 128, left: 12 }}>
+    <div class="cw-pop__grip" aria-hidden="true"></div>
+    <div class=${cx("cw-pop__input", { "is-empty": !s.instr })}>
+      <span class="truncate">${s.instr || T["Tell AI what to do with the selection..."]}</span>
+      <button type="button" class=${cx("cw-pop__go", { "dt-press": s.pressed })} disabled=${!s.instr} title=${T["Apply AI edit"]}>
+        ${s.applying ? html`<${Icon} name="loader-2" size=${13} class="animate-spin" />` : html`<${Icon} name="arrow-right" size=${13} />`}
+      </button>
+    </div>
+    <div class="cw-pop__grid">
+      <span class="cw-pop__select"><span class="truncate">${T["Knowledge Base"]}</span><${Icon} name="chevron-down" size=${14} /></span>
+      <span class="cw-pop__select"><span class="truncate">${T["Rewrite"]}</span><${Icon} name="chevron-down" size=${14} /></span>
+    </div>
+    <div class="cw-pop__model">
+      <span class="cw-pop__chip"><${Icon} name="sparkle" size=${16} strokeWidth=${1.7} /><span>deepseek-chat</span><${Icon} name="chevron-down" size=${13} /></span>
+    </div>
+    ${s.applying || s.trace.length || s.response
+      ? html`<div class="cw-pop__trace">
+          ${s.trace.map(
+            (r, i) => html`<${ActivityRow} key=${i} state=${r.state} title=${T["Knowledge Base"]} detail=${r.detail} mono=${true} breathing=${r.state === "running"} />`
+          )}
+          ${s.response ? html`<${ActivityRow} state="done" title=${T["Response"]} detail=${RESPONSE} />` : null}
+          ${s.applying && !s.trace.length && !s.response
+            ? html`<${ActivityRow} state="running" title=${T["Running tools and preparing the final edit..."]} breathing=${true} />`
+            : null}
+        </div>`
+      : null}
+  </div>`;
+}
+
+function render(s) {
+  const [words, chars] = counts(s.draft);
+  return html`<${Shell} active="/co-writer">
+    <div class="cw-shell">
+      <header class="cw-top">
+        <div class="cw-crumbs min0">
+          <span class="cw-back"><${Icon} name="chevron-left" size=${14} strokeWidth=${1.7} /><span>${T["Co-Writer"]}</span></span>
+          <span class="cw-slash">/</span>
+          <span class="cw-doc">${CW.title}</span>
+          <span class="muted" style=${{ padding: 4, display: "inline-flex" }}><${Icon} name="pen-line" size=${12} strokeWidth=${1.7} /></span>
+          <span class="cw-count">${words} ${T["words"]} · ${chars} ${T["chars"]}</span>
+          ${s.draft ? html`<span class="cw-saved">${T["Saved"]}</span>` : null}
+        </div>
+        <div class="row" style=${{ gap: 8 }}>
+          <span class="cw-ibtn" title=${T["Clear"]}><${Icon} name="eraser" size=${17} strokeWidth=${1.7} /></span>
+          <span class="cw-ibtn" title=${T["Export Markdown"]}><${Icon} name="download" size=${17} strokeWidth=${1.7} /></span>
+          <span class="cw-ibtn" title=${T["Export Word"]}><${Icon} name="file-down" size=${17} strokeWidth=${1.7} /></span>
+          <span class="cw-ibtn" title=${T["Save to Notebook"]}><${Icon} name="notebook-pen" size=${17} strokeWidth=${1.7} /></span>
+          <span class="cw-ibtn" title=${T["Load Example Template"]}><${Icon} name="file-text" size=${17} strokeWidth=${1.7} /></span>
+          <span class="cw-pro"><span>${T["Pro Vide Writing"]}</span><${Icon} name="arrow-up-right" size=${12} strokeWidth=${1.8} /></span>
+          <span class="cw-vsep"></span>
+          <span class="cw-full"><${Icon} name="wand-sparkles" size=${13} />${T["Full Draft"]}</span>
+        </div>
+      </header>
+      <div class="cw-fmt">
+        ${TOOLBAR.map((item, i) =>
+          item === "|"
+            ? html`<span key=${i} class="cw-fsep"></span>`
+            : html`<span key=${i} class="cw-fbtn" title=${T[item[1]]}>
+                ${item[0] === "sigma" ? html`<span class="cw-fbtn__sigma">Σ</span>` : html`<${Icon} name=${item[0]} size=${16} />`}
+              </span>`
+        )}
+        <div class="cw-fright">
+          <span class="cw-sync"><i></i>${T["Sync Scroll"]}</span>
+          <span class="cw-tsep"></span>
+          <span class="cw-tag">GFM</span>
+          <span class="cw-tag">KaTeX</span>
+          <span class="cw-tag">Mermaid</span>
+        </div>
+      </div>
+      <div class="cw-split">
+        <div class="cw-pane">
+          <div class="cw-phead"><span>${T["Editor"]}</span><${Icon} name="chevron-left" size=${14} /></div>
+          <${Editor} s=${s} />
+        </div>
+        <div class="cw-resizer" title=${T["Drag to resize, double-click to reset"]}><i></i></div>
+        <div class="cw-pane">
+          <div class="cw-phead"><span>${T["Preview"]}</span><${Icon} name="chevron-right" size=${14} /></div>
+          <div class="cw-preview">
+            ${s.draft ? html`<${Prose} text=${s.draft} />` : html`<p class="muted" style=${{ fontStyle: "italic", fontFamily: "var(--font-serif)" }}>${T["Nothing to preview yet."]}</p>`}
+          </div>
+        </div>
+      </div>
+      ${s.status ? html`<div class="cw-status animate-fade-in">${T["Applied AI edit to the selection."]}</div>` : null}
+    </div>
+  <//>`;
+}
+
+DT.run({ T, initial, steps, render });
+</script>
+</body>
+</html>

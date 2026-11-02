@@ -482,6 +482,16 @@ nav:
               - projects/docmost/index.md
           - TiddlyWiki:
               - projects/tiddlywiki/index.md
+          - DeepTutor:
+              - projects/deeptutor/index.md
+              - 知识库: projects/deeptutor/knowledge.md
+              - 一轮对话的运行时: projects/deeptutor/runtime.md
+              - 学习模式流水线: projects/deeptutor/modes.md
+              - 精通路径: projects/deeptutor/mastery.md
+              - Book 引擎: projects/deeptutor/book.md
+              - 沉浸阅读与视频: projects/deeptutor/reading.md
+              - 记忆: projects/deeptutor/memory.md
+              - 学习空间: projects/deeptutor/space.md
       - AI 角色扮演:
           - 梨园 Liyuan:
               - projects/liyuan/index.md
@@ -1348,6 +1358,7 @@ nav:
               - 酒馆 SillyTavern: maintenance/projects/sillytavern.md
               - DeepSeek Harness: maintenance/projects/deepseek-harness.md
               - OpenAI Evals: maintenance/projects/openai-evals.md
+              - DeepTutor: maintenance/projects/deeptutor.md
       - 本站:
           - Zensical 升级评估:
               - maintenance/zensical-upgrade/index.md

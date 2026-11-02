@@ -1,0 +1,36 @@
+{
+  "notebook_entries_ddl": "CREATE TABLE IF NOT EXISTS notebook_entries (\n                    id INTEGER PRIMARY KEY AUTOINCREMENT,\n                    session_id TEXT REFERENCES sessions(id) ON DELETE SET NULL,\n                    origin_type TEXT NOT NULL DEFAULT 'conversation',\n                    origin_ref TEXT NOT NULL,\n                    turn_id TEXT NOT NULL DEFAULT '',\n                    question_id TEXT NOT NULL,\n                    question TEXT NOT NULL,\n                    question_type TEXT DEFAULT '',\n                    options_json TEXT DEFAULT '{}',\n                    correct_answer TEXT DEFAULT '',\n                    explanation TEXT DEFAULT '',\n                    difficulty TEXT DEFAULT '',\n                    user_answer TEXT DEFAULT '',\n                    user_answer_images_json TEXT DEFAULT '[]',\n                    source TEXT NOT NULL DEFAULT 'deep_question',\n                    material_id TEXT NOT NULL DEFAULT '',\n                    material_title TEXT NOT NULL DEFAULT '',\n                    section_id TEXT NOT NULL DEFAULT '',\n                    section_title TEXT NOT NULL DEFAULT '',\n                    score_trend TEXT NOT NULL DEFAULT 'new',\n                    assessment_type TEXT NOT NULL DEFAULT '',\n                    result TEXT NOT NULL DEFAULT '',\n                    mastery_path_id TEXT NOT NULL DEFAULT '',\n                    knowledge_point_id TEXT NOT NULL DEFAULT '',\n                    attempt_count INTEGER NOT NULL DEFAULT 1,\n                    hints_used INTEGER NOT NULL DEFAULT 0,\n                    confidence REAL,\n                    response_time REAL,\n                    quality REAL,\n                    is_correct INTEGER DEFAULT 0,\n                    resolved INTEGER DEFAULT 0,\n                    bookmarked INTEGER DEFAULT 0,\n                    followup_session_id TEXT DEFAULT '',\n                    ai_judgment TEXT DEFAULT '',\n                    created_at REAL NOT NULL,\n                    updated_at REAL NOT NULL,\n                    UNIQUE(origin_type, origin_ref, turn_id, question_id)\n                );",
+  "practice_review_state": [
+    {
+      "entry_id": 1,
+      "is_mistake": 1,
+      "first_wrong_at": 1761700000.0,
+      "due_at": 1761786400.0,
+      "interval_days": 1.0,
+      "ease": 2.5,
+      "streak": 0,
+      "lapses": 0,
+      "review_count": 0,
+      "last_review_at": null,
+      "version": 0
+    },
+    {
+      "entry_id": 3,
+      "is_mistake": 1,
+      "first_wrong_at": 1761703600.0,
+      "due_at": 1761790000.0,
+      "interval_days": 1.0,
+      "ease": 2.5,
+      "streak": 0,
+      "lapses": 0,
+      "review_count": 0,
+      "last_review_at": null,
+      "version": 1
+    }
+  ],
+  "triggers": [
+    "practice_capture_insert",
+    "practice_capture_update",
+    "practice_invalidate_question"
+  ]
+}

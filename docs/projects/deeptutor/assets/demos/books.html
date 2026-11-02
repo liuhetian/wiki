@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="640">
+<title>DeepTutor 仿真 demo：从书脊到一页页编出来的书</title>
+<!--
+  Goal      Book 不是一口气写完：先给一份书脊让你改，底部先报「几章、多少字、要生成几分钟」，确认后一章一章编，
+            第一章编好就能读；知识库改了，横幅告诉你哪页过期了
+  Surface   /learning/books/[bookId] · app/(workspace)/learning/books/BooksRoute.tsx
+  Sources   app/(workspace)/learning/books/components/SpineEditor.tsx 60-110（生成范围按钮、内容类型选项）、
+              292-470（书脊头部、章节卡、学习目标、虚线「添加章节」）、470-600（底部：几章、约多少字、预计几分钟、
+              全部内容类型、生成全部 / 只生成第一章、确认主线、底下一行说明）；
+            SpineEditor.tsx 213-228、430-446（估算：按章累加，字数 Math.round(/100)*100，分钟 Math.ceil(秒/60)）；
+            components/BookSidebar.tsx 20-50（章节状态 → 活动标记）、141-311（232px 侧栏、全部书籍、书名、导出、重建、章节列表）；
+            components/activity/ActivityMark.tsx（12px：编写中是小球，已写好是实心蓝圈，排队是空心灰圈）；
+            components/BookGenerationActivity.tsx 33、164-200（46px 进度条、{{done}}/{{total}} 章、暂停生成）；
+            lib/book-activity.ts 420-436（「正在编写《标题》」）；
+            components/PageReader.tsx 458-500（页头：标题 26px、学习目标、页面状态标签、收藏）、
+              548-600（「正在规划内容块…」「正在编译页面…」、正文 max-w-[78ch] gap-6）；
+            components/blocks/TextBlock.tsx、CalloutBlock.tsx 12-62（key_idea 琥珀色左竖线）、
+              ConceptGraphBlock.tsx 84-110（概念图 · N 个概念 · M 条关系，正文是 mermaid）、QuizBlock.tsx 84-290（快速检查）；
+            components/BookHealthBanner.tsx 182-350（琥珀横幅：知识库变了、几页可能过期、重新编译第一个过期页面、标记为已查看）；
+            components/Mermaid.tsx 25-63（theme base，themeVariables 取主题色，htmlLabels false，curve basis）
+  Layout    第一幕：Shell（个性化学习）→ 书脊编辑器；第二幕：Shell → BookSidebar 232px | 进度条 + 横幅 + 页面阅读器
+  Data      DT.DATA.spine、book、example
+  Autoplay  书脊（底部估算 5 章 · 约 15600 字 · 预计生成 16 分钟）→ 滚到第 3 章补一条目标 → 确认主线 → 概览已就绪、第 1 章编写中 →
+            规划、编译、正文逐块出来（文本、提示、概念图、快速检查）→ 第 1 章写好、第 2 章开始 →
+            显示答案 → 知识库漂移横幅，一圈约 27s
+  Height    640
+  Deviations 估算照 book/estimate.py 实跑的 standard 深度数（sim/out/book-estimate.json）按前端加法算出，不是现场请求；
+            书里的正文、概念图、题是本 demo 写的；
+            进度条的展开历史、书内聊天侧栏不画
+  Checks    书脊、侧栏、进度条、阅读器、横幅文案与语言包一致；mermaid 只在 useEffect 里调
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  /* ── 第一幕：SpineEditor ── */
+  .bk-spine { display: flex; height: 100%; flex-direction: column; }
+  /* 头：border-b bg-card/60 px-6 py-4；h2 text-lg font-semibold；p mt-1 text-sm text-muted-foreground */
+  .bk-spine__head { border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--card) 60%, transparent); padding: 16px 24px; }
+  .bk-spine__head h2 { font-size: 18px; line-height: 28px; font-weight: 600; }
+  .bk-spine__head p { margin-top: 4px; font-size: 14px; line-height: 20px; color: var(--muted-foreground); }
+  /* 主体：flex-1 overflow-y-auto px-6 py-4；列 mx-auto max-w-3xl flex-col gap-3 */
+  .bk-spine__body { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 24px; }
+  .bk-spine__list { margin: 0 auto; display: flex; width: 100%; max-width: 768px; flex-direction: column; gap: 12px; }
+  /* 章节卡：rounded-2xl border bg-card p-4 shadow-sm */
+  .bk-card { border-radius: 16px; border-width: 1px; background: var(--card); padding: 16px; box-shadow: var(--shadow-sm); }
+  /* 标题输入：flex-1 rounded-lg border border-transparent px-2 py-1 text-base font-semibold */
+  .bk-card__title { flex: 1; min-width: 0; border-radius: 8px; border: 1px solid transparent; padding: 4px 8px; font-size: 16px; line-height: 24px; font-weight: 600; }
+  /* 小按钮：rounded-md border p-1 text-muted-foreground；删除 border-rose-300/60 text-rose-500 */
+  .bk-card__btn { display: inline-flex; border-radius: 6px; border-width: 1px; padding: 4px; color: var(--muted-foreground); }
+  .bk-card__btn[disabled] { opacity: 0.3; }
+  .bk-card__btn.is-danger { border-color: rgb(253 164 175 / 0.6); color: #f43f5e; }
+  /* 两列：mt-3 grid gap-3 sm:grid-cols-2；标签 text-xs text-muted-foreground */
+  .bk-card__grid { margin-top: 12px; display: grid; gap: 12px; }
+  @media (min-width: 640px) { .bk-card__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .bk-field { font-size: 12px; line-height: 16px; color: var(--muted-foreground); display: block; }
+  /* 输入框：mt-1 w-full rounded-md border bg-background px-2 py-1.5 text-sm */
+  .bk-input { margin-top: 4px; display: flex; width: 100%; align-items: center; justify-content: space-between; border-radius: 6px; border-width: 1px; background: var(--background); padding: 6px 8px; font-size: 14px; line-height: 20px; color: var(--foreground); min-height: 34px; white-space: pre-wrap; }
+  .bk-input.is-placeholder { color: var(--muted-foreground); }
+  .bk-input.is-focus { border-color: color-mix(in srgb, var(--primary) 40%, transparent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 10%, transparent); }
+  .bk-input--area { display: block; }
+  .bk-field__hint { margin-top: 4px; display: block; font-size: 11px; line-height: 1.375; color: color-mix(in srgb, var(--muted-foreground) 80%, transparent); }
+  /* 添加章节：rounded-xl border border-dashed bg-card px-3 py-2 text-sm font-medium text-muted-foreground */
+  .bk-add { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 12px; border: 1px dashed var(--border); background: var(--card); padding: 8px 12px; font-size: 14px; font-weight: 500; color: var(--muted-foreground); }
+  /* 底：border-t bg-card/60 px-6 py-3 */
+  .bk-spine__foot { border-top: 1px solid var(--border); background: color-mix(in srgb, var(--card) 60%, transparent); padding: 12px 24px; }
+  .bk-spine__footrow { margin: 0 auto; display: flex; width: 100%; max-width: 768px; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  /* 估算：flex items-center gap-3 text-[11px] text-muted-foreground；每项 inline-flex gap-1，图标 h-3 w-3 */
+  .bk-est { display: flex; align-items: center; gap: 12px; font-size: 11px; color: var(--muted-foreground); }
+  .bk-est > span { display: inline-flex; align-items: center; gap: 4px; font-variant-numeric: tabular-nums; }
+  /* 内容类型：inline-flex gap-1.5 rounded-lg border px-2.5 py-[7px] text-[11px] font-medium */
+  .bk-types { display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; border-width: 1px; padding: 7px 10px; font-size: 11px; font-weight: 500; color: var(--muted-foreground); }
+  /* 生成范围：inline-flex overflow-hidden rounded-lg border text-[11px]；项 px-2.5 py-1.5 font-medium，选中 bg-primary/12 */
+  .bk-scope { display: inline-flex; overflow: hidden; border-radius: 8px; border-width: 1px; font-size: 11px; }
+  .bk-scope > span { padding: 6px 10px; font-weight: 500; color: var(--muted-foreground); }
+  .bk-scope > span.is-on { background: color-mix(in srgb, var(--primary) 12%, transparent); color: var(--foreground); }
+  /* 确认：inline-flex gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium */
+  .bk-confirm { display: inline-flex; align-items: center; gap: 8px; border-radius: 8px; background: var(--primary); padding: 8px 16px; font-size: 14px; font-weight: 500; color: var(--primary-foreground); }
+  /* 说明：mx-auto mt-2 min-h-[1.25rem] max-w-3xl text-[11px] leading-5 */
+  .bk-spine__note { margin: 8px auto 0; min-height: 20px; max-width: 768px; font-size: 11px; line-height: 20px; color: var(--muted-foreground); }
+
+  /* ── 第二幕 ── */
+  .bk-book { display: flex; height: 100%; width: 100%; }
+  /* BookSidebar：flex h-full w-[232px] flex-col gap-3 border-r bg-card/40 px-3 py-4 */
+  .bk-side { display: flex; height: 100%; width: 232px; flex-shrink: 0; flex-direction: column; gap: 12px; border-right: 1px solid var(--border); background: color-mix(in srgb, var(--card) 40%, transparent); padding: 16px 12px; }
+  @media (max-width: 700px) { .bk-side { width: 200px; } }
+  /* 全部书籍：inline-flex gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground */
+  .bk-side__back { display: inline-flex; align-items: center; gap: 6px; border-radius: 6px; padding: 4px 8px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  .bk-side__collapse { display: inline-flex; height: 28px; width: 28px; align-items: center; justify-content: center; border-radius: 6px; color: var(--muted-foreground); }
+  /* 书名 line-clamp-2 text-sm font-semibold；下面 mt-0.5 text-[10px] uppercase tracking-wider */
+  .bk-side__title { font-size: 14px; line-height: 20px; font-weight: 600; }
+  .bk-side__meta { margin-top: 2px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); }
+  /* 按钮：inline-flex justify-center gap-1.5 rounded-md border bg-card px-2 py-1.5 text-xs font-medium text-muted-foreground */
+  .bk-side__btn { display: inline-flex; width: 100%; align-items: center; justify-content: center; gap: 6px; border-radius: 6px; border-width: 1px; background: var(--card); padding: 6px 8px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  /* 「章节」：mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] */
+  .bk-side__label { margin-bottom: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted-foreground); }
+  /* 章节行：flex w-full items-start justify-between gap-2 rounded-md py-1.5 pr-2 pl-2 text-xs；当前 bg-primary/15 text-foreground；概览 border border-dashed */
+  .bk-page { display: flex; width: 100%; align-items: flex-start; justify-content: space-between; gap: 8px; border-radius: 6px; padding: 6px 8px; font-size: 12px; line-height: 16px; color: var(--muted-foreground); }
+  .bk-page.is-active { background: color-mix(in srgb, var(--primary) 15%, transparent); color: var(--foreground); }
+  .bk-page.is-overview { border: 1px dashed var(--border); }
+  .bk-pages { display: flex; flex-direction: column; gap: 4px; }
+  /* ActivityMark：12px 盒；已就绪实心蓝圈、排队空心灰圈（r 5.1，描边 1.25，盒 7px），编写中是小球 */
+  .bk-mark { position: relative; display: inline-flex; height: 12px; width: 12px; flex-shrink: 0; align-items: center; justify-content: center; margin-top: 1px; }
+  .bk-mark .dt-orb { transform: scale(0.66); color: var(--tw-blue-600); }
+  .bk-mark svg { transition: color 300ms ease-out, opacity 300ms ease-out; }
+  .bk-mark.is-ready svg { color: var(--tw-blue-600); }
+  .bk-mark.is-queued svg { color: var(--muted-foreground); opacity: 0.45; }
+  /* 右栏：flex min-w-0 flex-1 flex-col overflow-hidden */
+  .bk-main { display: flex; min-width: 0; flex: 1; flex-direction: column; overflow: hidden; }
+  /* 进度条：relative shrink-0 border-b，内 mx-auto max-w-[78ch] flex items-center gap-3 px-6，高 46 */
+  .bk-strip { position: relative; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+  .bk-strip__in { margin: 0 auto; display: flex; height: 46px; width: 100%; max-width: 78ch; align-items: center; gap: 12px; padding: 0 24px; }
+  .bk-strip__count { flex-shrink: 0; font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--muted-foreground); opacity: 0.6; }
+  /* ControlButton：inline-flex gap-1.5 rounded-md px-2 py-1 text-[12px] font-medium text-muted-foreground */
+  .bk-strip__btn { display: inline-flex; flex-shrink: 0; align-items: center; gap: 6px; border-radius: 6px; padding: 4px 8px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); white-space: nowrap; }
+  /* 横幅：mx-6 mt-4 rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-sm */
+  .bk-banner { margin: 16px 24px 0; flex-shrink: 0; border-radius: 12px; border: 1px solid rgb(252 211 77 / 0.6); background: var(--tw-amber-50); padding: 12px 16px; font-size: 14px; line-height: 20px; color: #78350f; box-shadow: var(--shadow-sm); }
+  .bk-banner code { border-radius: 4px; background: rgb(255 255 255 / 0.4); padding: 0 4px; font-family: var(--font-mono); font-size: 11px; }
+  .bk-banner__small { margin-top: 6px; font-size: 12px; line-height: 16px; opacity: 0.9; }
+  /* 按钮：rounded border border-current px-1.5 py-0.5 text-xs；右侧 rounded-md border border-current px-2 py-1 text-xs font-medium */
+  .bk-banner__inline { margin-left: 4px; display: inline-flex; align-items: center; gap: 4px; border-radius: 4px; border: 1px solid currentColor; padding: 2px 6px; font-size: 12px; }
+  .bk-banner__btn { white-space: nowrap; border-radius: 6px; border: 1px solid currentColor; padding: 4px 8px; font-size: 12px; font-weight: 500; }
+  /* PageReader 头：border-b bg-card/60 px-8 py-5；内 mx-auto max-w-[78ch]；h1 text-[26px] font-semibold leading-tight tracking-tight */
+  .bk-reader { position: relative; display: flex; min-height: 0; flex: 1; flex-direction: column; }
+  .bk-reader__head { border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--card) 60%, transparent); padding: 20px 32px; backdrop-filter: blur(8px); }
+  .bk-reader__headin { margin: 0 auto; display: flex; width: 100%; max-width: 78ch; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .bk-reader__title { font-size: 26px; line-height: 1.25; font-weight: 600; letter-spacing: -0.025em; }
+  /* 学习目标：mt-3 space-y-0.5 text-[12.5px] text-muted-foreground */
+  .bk-reader__obj { margin-top: 12px; font-size: 12.5px; line-height: 18px; color: var(--muted-foreground); }
+  /* 状态标签（t(page.status)）：rounded-full bg-muted px-2.5 py-0.5 text-[11px] uppercase tracking-wider */
+  .bk-reader__kind { border-radius: 9999px; background: var(--muted); padding: 2px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); white-space: nowrap; }
+  .bk-reader__icon { display: inline-flex; height: 24px; width: 24px; align-items: center; justify-content: center; border-radius: 6px; color: var(--muted-foreground); }
+  /* 正文滚动：flex-1 overflow-y-auto px-8 py-8；article mx-auto max-w-[78ch] flex-col gap-6 */
+  .bk-reader__body { min-height: 0; flex: 1; overflow-y: auto; padding: 32px; }
+  .bk-article { margin: 0 auto; display: flex; width: 100%; max-width: 78ch; flex-direction: column; gap: 24px; }
+  .bk-article .prose { font-size: 16px; }
+  /* Callout key_idea：relative flex gap-3 border-l-[3px] border-amber-400/70 bg-amber-50/60 text-amber-950 py-2 pl-4 pr-3；
+     标签 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700；正文 text-[14.5px] leading-relaxed */
+  .bk-callout { position: relative; display: flex; gap: 12px; border-left: 3px solid rgb(251 191 36 / 0.7); background: rgb(255 251 235 / 0.6); color: #451a03; padding: 8px 12px 8px 16px; }
+  .bk-callout__label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.16em; color: var(--tw-amber-700); }
+  .bk-callout__body { font-size: 14.5px; line-height: 1.625; }
+  /* ConceptGraph：figure rounded-2xl border bg-card p-3 shadow-sm；header mb-2 gap-2 text-xs muted */
+  .bk-graph { overflow: hidden; border-radius: 16px; border-width: 1px; background: var(--card); padding: 12px; box-shadow: var(--shadow-sm); }
+  .bk-graph__head { margin-bottom: 8px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted-foreground); }
+  .bk-graph__svg { min-height: 120px; display: flex; justify-content: center; }
+  .bk-graph__svg svg { max-width: 100%; height: auto; }
+  .bk-graph__pending { font-size: 12px; color: var(--muted-foreground); }
+  /* Quick Check：mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary，两侧 h-px bg-primary/20 */
+  .bk-qc { margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.16em; color: var(--primary); }
+  .bk-qc i { height: 1px; flex: 1; background: color-mix(in srgb, var(--primary) 20%, transparent); }
+  /* 题卡：rounded-xl border bg-background p-3 */
+  .bk-q { border-radius: 12px; border-width: 1px; background: var(--background); padding: 12px; }
+  .bk-q__stem { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 20px; font-weight: 500; }
+  .bk-q__diff { border-radius: 9999px; background: var(--muted); padding: 2px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); font-weight: 400; }
+  /* 选项：flex items-start gap-2 rounded-lg border px-3 py-2 text-sm；默认 bg-card；正确 border-emerald-300 bg-emerald-50 text-emerald-900 */
+  .bk-opts { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .bk-opt { display: flex; width: 100%; align-items: flex-start; gap: 8px; border-radius: 8px; border-width: 1px; background: var(--card); padding: 8px 12px; font-size: 14px; line-height: 20px; transition: background-color var(--motion-base), border-color var(--motion-base), color var(--motion-base); }
+  .bk-opt__key { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; color: var(--muted-foreground); line-height: 20px; }
+  .bk-opt.is-correct { border-color: #6ee7b7; background: var(--tw-emerald-50); color: #064e3b; }
+  /* 显示答案：inline-flex gap-1.5 rounded-md border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground */
+  .bk-q__foot { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .bk-q__reveal { display: inline-flex; align-items: center; gap: 6px; border-radius: 6px; border-width: 1px; background: var(--card); padding: 4px 10px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  .bk-q__answer { font-size: 12px; color: var(--muted-foreground); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script src="/vendor/mermaid/mermaid.min.js"></script>
+<script>
+"use strict";
+const { html, Icon, Shell, cx, DATA, ActivityHeader, Orb, Prose } = DT;
+const { useRef, useEffect, useState } = DT.hooks;
+
+/* 运行时里没有的几个 lucide 图标 */
+DT.ICONS["clock-3"] = "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6h4\"/>";
+DT.ICONS["blocks"] = "<path d=\"M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2\"/><rect width=\"8\" height=\"8\" x=\"14\" y=\"2\" rx=\"1\"/>";
+DT.ICONS["compass"] = "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z\"/>";
+DT.ICONS["x-circle"] = "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m15 9-6 6M9 9l6 6\"/>";
+
+const T = {
+  "Review the chapter spine": "检查章节主线",
+  "Reorder, rename, or remove chapters before the book starts compiling.": "在书籍开始编译前，可调整顺序、重命名或删除章节。",
+  "Content type": "内容类型",
+  "Summary": "总结",
+  "Learning objectives (one per line)": "学习目标（每行一个）",
+  "Add chapter": "添加章节",
+  "{{count}} chapters": "{{count}} 章",
+  "~{{count}} words": "约 {{count}} 字",
+  "~{{count}} min to generate": "预计生成 {{count}} 分钟",
+  "All content types": "全部内容类型",
+  "Generate all chapters": "生成全部章节",
+  "First chapter only": "只生成第一章",
+  "Confirm spine": "确认主线",
+  "Every chapter is written now, in order. You can read the first one while the rest are still coming.": "现在就按顺序生成全部章节。第一章生成后即可开始阅读，其余章节会陆续补上。",
+  "Move up": "上移",
+  "Move down": "下移",
+  "Theory": "理论",
+  "Derivation": "推导",
+  "Practice": "练习",
+  "Concept": "概念",
+  "Long-form explanation with diagrams + flash cards + a quiz.": "长篇解释，包含图示、闪卡和测验。",
+  "Step-by-step derivation, often with animation + verifying code.": "分步推导，通常包含动画和验证代码。",
+  "Quiz-heavy chapter with a runnable code scaffold + explanation.": "以测验为主，包含可运行代码脚手架和解释。",
+  "Definition + figure + flash cards + common-pitfall callout.": "定义、图示、闪卡与常见误区提示。",
+  "All books": "全部书籍",
+  "Collapse chapters": "折叠章节",
+  "Export Markdown": "导出 Markdown",
+  "Rebuild book": "重建书籍",
+  "Chapters": "章节",
+  "Overview": "概览",
+  "Writing {{title}}": "正在编写《{{title}}》",
+  "{{done}}/{{total}} chapters": "{{done}}/{{total}} 章",
+  "Pause generation": "暂停生成",
+  "Planning the blocks…": "正在规划内容块…",
+  "Compiling page…": "正在编译页面…",
+  "Bookmark this chapter": "收藏本章",
+  "Force regenerate": "强制重新生成",
+  "Quick Check": "快速检查",
+  "Reveal answer": "显示答案",
+  "Hide answer": "隐藏答案",
+  "Answer": "答案",
+  "Concept map · {{concepts}} concepts · {{relations}} relations": "概念图 · {{concepts}} 个概念 · {{relations}} 条关系",
+  "Your knowledge bases changed since this book was generated.": "自本书生成后，你的知识库发生了变化。",
+  "Updated": "最近更新",
+  "{{count}} previously-compiled page may be out of date.": "{{count}} 个已编译页面可能已过期。",
+  "Recompile first stale page": "重新编译第一个过期页面",
+  "Mark as seen": "标记为已查看",
+  "planning": "规划中",
+  "generating": "生成中",
+  "ready": "就绪",
+};
+const tr = (key, vars) => T[key].replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k]);
+
+/* SpineEditor.tsx CONTENT_TYPE_OPTIONS 里用到的四种 */
+const TYPES = {
+  theory: ["Theory", "Long-form explanation with diagrams + flash cards + a quiz."],
+  derivation: ["Derivation", "Step-by-step derivation, often with animation + verifying code."],
+  practice: ["Practice", "Quiz-heavy chapter with a runnable code scaffold + explanation."],
+  concept: ["Concept", "Definition + figure + flash cards + common-pitfall callout."],
+};
+
+/* 演示自拟的书 */
+const BOOK_TITLE = "假设检验：从直觉到判断";
+const KINDS = ["concept", "theory", "derivation", "theory", "practice"];
+const SUMMARIES = ["从灌装线的一个问题说起", "两种错误各自的代价", "例 8.3 从头算一遍", "条件概率和三种误读", "多大的样本才够"];
+const SPINE = DATA.spine.map((c, i) => Object.assign({}, c, { kind: KINDS[i], summary: SUMMARIES[i] }));
+const EXTRA_OBJ = "对比 t 检验和 z 检验的适用条件";
+/* 估算：book/estimate.py 的 chapter_basis 给每种内容类型一章的字数和秒数（standard 深度），
+   前端 SpineEditor.tsx 213-228 按章累加，字数取整到百、分钟向上取整；只看内容类型，和学习目标条数无关。
+   下面五个数取自实跑原件 sim/out/book-estimate.json 的 basis.standard */
+const BASIS = {
+  theory: { words: 3600, seconds: 210 },
+  derivation: { words: 3600, seconds: 195 },
+  practice: { words: 2200, seconds: 165 },
+  concept: { words: 2600, seconds: 165 },
+};
+const estimate = () => {
+  let words = 0;
+  let seconds = 0;
+  for (const c of SPINE) {
+    words += BASIS[c.kind].words;
+    seconds += BASIS[c.kind].seconds;
+  }
+  return { words: Math.round(words / 100) * 100, minutes: Math.ceil(seconds / 60) };
+};
+
+const CH1 = SPINE[0];
+const EX = DATA.example;
+const BLOCK_TEXT_1 =
+  "灌装线标称每瓶 50 毫升，抽检 25 瓶，均值是 52.3。多出来的 2.3 毫升，可能是机器真的偏了，也可能只是这一批抽得不巧。" +
+  "**假设检验**要回答的就是：差距大到什么程度，才不再像是运气。";
+const BLOCK_TEXT_2 =
+  "做法是先立一个靶子。原假设 $H_0$：μ = 50，机器没偏；备择假设 $H_1$：μ ≠ 50。然后在「$H_0$ 为真」的前提下，看这批数据有多罕见——" +
+  "罕见到一定程度，就拒绝 $H_0$。";
+const CALLOUT = { label: "核心思想", body: "检验从不证明 H0 为真，只问手上的数据够不够推翻它。" };
+const GRAPH = [
+  "flowchart LR",
+  "  A[原假设 H0] --> B[检验统计量 t]",
+  "  B --> C[p 值]",
+  "  D[显著性水平 α] --> E{p 小于 α？}",
+  "  C --> E",
+  "  E -->|是| F[拒绝 H0]",
+  "  E -->|否| G[不能拒绝 H0]",
+].join("\n");
+const QUIZ = {
+  stem: "例子里的原假设 H0 是哪一个？",
+  difficulty: "easy",
+  options: [["A", "μ = 52.3"], ["B", "μ = 50"], ["C", "μ ≠ 50"], ["D", "x̄ = 50"]],
+  answer: "B",
+};
+
+const initial = {
+  phase: "spine",
+  focus: false,
+  extra: "",
+  pressConfirm: false,
+  confirming: false,
+  chapters: ["queued", "queued", "queued", "queued", "queued"],
+  reader: "planning",
+  blocks: 0,
+  text1: "",
+  reveal: false,
+  pressReveal: false,
+  banner: false,
+};
+
+const setCh = (i, st) => (s) => ({ chapters: s.chapters.map((c, k) => (k === i ? st : c)) });
+
+const steps = [
+  { at: 1400, scroll: { sel: "#bk-spine-body", to: "[data-ch=\"c3\"]", block: "start", offset: 8, ms: 700 } },
+  { at: 300, set: { focus: true } },
+  { at: 200, type: { key: "extra", text: EXTRA_OBJ, cps: 15 } },
+  { label: "objective-added" },
+  { at: 1200, set: { focus: false } },
+  { at: 300, set: { pressConfirm: true, confirming: true } },
+  { at: 800, set: { phase: "book", pressConfirm: false, chapters: ["running", "queued", "queued", "queued", "queued"] } },
+  { label: "spine-confirmed" },
+  { at: 1300, set: { reader: "compiling" } },
+  { at: 1200, set: { reader: "writing", blocks: 1 } },
+  { at: 100, stream: { key: "text1", text: BLOCK_TEXT_1, chunk: [2, 5], ms: [24, 44] } },
+  { at: 300, set: { blocks: 2 } },
+  { at: 900, set: { blocks: 3 } },
+  { at: 900, set: { blocks: 4 } },
+  { at: 1200, set: { blocks: 5 } },
+  { label: "page-written" },
+  { at: 300, set: (s) => Object.assign(setCh(0, "ready")(s), {}) },
+  { at: 200, set: setCh(1, "running") },
+  { at: 300, scroll: { sel: "#bk-reader-body", bottom: true, ms: 800 } },
+  { at: 1200, set: { pressReveal: true } },
+  { at: 250, set: { reveal: true, pressReveal: false } },
+  { at: 2600, set: setCh(1, "ready") },
+  { at: 200, set: setCh(2, "running") },
+  { at: 600, set: { banner: true } },
+  { label: "drift" },
+  { at: 4200 },
+];
+
+/* ActivityMark：编写中小球；已就绪实心蓝圈；排队空心灰圈 */
+function Mark({ state }) {
+  if (state === "running") return html`<span class="bk-mark"><${Orb} mode="working" tone="live" /></span>`;
+  const ready = state === "ready";
+  return html`<span class=${cx("bk-mark", ready ? "is-ready" : "is-queued")}>
+    <svg viewBox="0 0 12 12" width="7" height="7"><circle cx="6" cy="6" r="5.1" stroke="currentColor" stroke-width="1.25" fill=${ready ? "currentColor" : "transparent"} /></svg>
+  </span>`;
+}
+
+function SpineEditor({ s }) {
+  const est = estimate(); /* 15600 字、16 分钟 */
+  return html`<div class="bk-spine">
+    <header class="bk-spine__head">
+      <h2>${T["Review the chapter spine"]}</h2>
+      <p>${T["Reorder, rename, or remove chapters before the book starts compiling."]}</p>
+    </header>
+    <div class="bk-spine__body" id="bk-spine-body" data-dt-scroll>
+      <div class="bk-spine__list">
+        ${SPINE.map((c, i) => {
+          const [kindLabel, kindDesc] = TYPES[c.kind];
+          const objectives = c.objectives.concat(i === 2 && (s.extra || s.focus) ? [s.extra] : []);
+          return html`<div key=${c.id} class="bk-card" data-ch=${c.id}>
+            <div class="row" style=${{ alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+              <div class="bk-card__title">${c.title}</div>
+              <div class="row" style=${{ gap: 4 }}>
+                <button type="button" class="bk-card__btn" disabled=${i === 0} title=${T["Move up"]}><${Icon} name="arrow-up" size=${14} /></button>
+                <button type="button" class="bk-card__btn" disabled=${i === SPINE.length - 1} title=${T["Move down"]}><${Icon} name="arrow-down" size=${14} /></button>
+                <span class="bk-card__btn is-danger"><${Icon} name="trash-2" size=${14} /></span>
+              </div>
+            </div>
+            <div class="bk-card__grid">
+              <label class="bk-field">
+                <span class="row" style=${{ gap: 4 }}>${T["Content type"]}<span style=${{ fontSize: 10, opacity: 0.6 }}>ⓘ</span></span>
+                <span class="bk-input">${T[kindLabel]}<${Icon} name="chevron-down" size=${14} style=${{ opacity: 0.6 }} /></span>
+                <span class="bk-field__hint">${T[kindDesc]}</span>
+              </label>
+              <label class="bk-field">
+                ${T["Summary"]}
+                <span class="bk-input">${c.summary}</span>
+              </label>
+            </div>
+            <label class="bk-field" style=${{ marginTop: 12 }}>
+              ${T["Learning objectives (one per line)"]}
+              <span class=${cx("bk-input bk-input--area", { "is-focus": i === 2 && s.focus })}>${objectives.map(
+                (o, k) => html`<span key=${k} class=${cx({ "dt-caret": i === 2 && s.focus && k === objectives.length - 1 })} style=${{ display: "block", minHeight: 20 }}>${o}</span>`
+              )}</span>
+            </label>
+          </div>`;
+        })}
+        <span class="bk-add"><${Icon} name="plus" size=${16} />${T["Add chapter"]}</span>
+      </div>
+    </div>
+    <footer class="bk-spine__foot">
+      <div class="bk-spine__footrow">
+        <div class="bk-est">
+          <span><${Icon} name="layers" size=${12} />${tr("{{count}} chapters", { count: SPINE.length })}</span>
+          <span><${Icon} name="file-text" size=${12} />${tr("~{{count}} words", { count: est.words })}</span>
+          <span><${Icon} name="clock-3" size=${12} />${tr("~{{count}} min to generate", { count: est.minutes })}</span>
+        </div>
+        <div class="row" style=${{ gap: 8, flexWrap: "wrap" }}>
+          <span class="bk-types"><${Icon} name="blocks" size=${12} />${T["All content types"]}<${Icon} name="chevron-down" size=${12} /></span>
+          <span class="bk-scope"><span class="is-on">${T["Generate all chapters"]}</span><span>${T["First chapter only"]}</span></span>
+          <span class=${cx("bk-confirm", { "dt-press": s.pressConfirm })}>
+            ${s.confirming ? html`<${Icon} name="loader-2" size=${16} class="animate-spin" />` : html`<${Icon} name="check-circle-2" size=${16} />`}
+            ${T["Confirm spine"]}
+          </span>
+        </div>
+      </div>
+      <p class="bk-spine__note">${T["Every chapter is written now, in order. You can read the first one while the rest are still coming."]}</p>
+    </footer>
+  </div>`;
+}
+
+let graphSeq = 0;
+function ConceptGraph() {
+  const ref = useRef(null);
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const mermaid = window.mermaid;
+    if (!mermaid || !ref.current) return undefined;
+    let alive = true;
+    const css = getComputedStyle(document.documentElement);
+    const v = (name, fallback) => (css.getPropertyValue(name) || fallback).trim();
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      securityLevel: "strict",
+      fontFamily: getComputedStyle(document.body).fontFamily,
+      flowchart: { useMaxWidth: true, htmlLabels: false, curve: "basis" },
+      themeVariables: {
+        primaryColor: v("--card", "#ffffff"),
+        primaryTextColor: v("--foreground", "#0d0d0d"),
+        primaryBorderColor: v("--border", "#e5e5e5"),
+        lineColor: v("--muted-foreground", "#6e6e6e"),
+        secondaryColor: v("--muted", "#f2f2f2"),
+        tertiaryColor: v("--background", "#ffffff"),
+        textColor: v("--foreground", "#0d0d0d"),
+        mainBkg: v("--card", "#ffffff"),
+      },
+    });
+    graphSeq += 1;
+    mermaid.render("bk-graph-" + graphSeq, GRAPH).then(({ svg }) => {
+      if (alive && ref.current) {
+        ref.current.innerHTML = svg;
+        setReady(true);
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return html`<figure class="bk-graph animate-fade-in">
+    <header class="bk-graph__head"><${Icon} name="compass" size=${14} /><span>${tr("Concept map · {{concepts}} concepts · {{relations}} relations", { concepts: 7, relations: 6 })}</span></header>
+    <div class="bk-graph__svg" ref=${ref}>${ready ? null : html`<span class="bk-graph__pending">${T["Compiling page…"]}</span>`}</div>
+  </figure>`;
+}
+
+function QuickCheck({ s }) {
+  return html`<section class="animate-fade-in">
+    <div class="bk-qc"><i></i>${T["Quick Check"]}<i></i></div>
+    <div class="bk-q">
+      <div class="bk-q__stem">
+        <div class="row" style=${{ alignItems: "flex-start", gap: 8 }}><span>1.</span><span>${QUIZ.stem}</span></div>
+        <span class="bk-q__diff">${QUIZ.difficulty}</span>
+      </div>
+      <div class="bk-opts">
+        ${QUIZ.options.map(([k, label]) => {
+          const correct = s.reveal && k === QUIZ.answer;
+          return html`<div key=${k} class=${cx("bk-opt", { "is-correct": correct })}>
+            <span class="bk-opt__key">${k}.</span>
+            <span class="grow min0">${label}</span>
+            ${correct ? html`<${Icon} name="check-circle-2" size=${16} style=${{ marginTop: 2 }} />` : null}
+          </div>`;
+        })}
+      </div>
+      <div class="bk-q__foot">
+        <span class=${cx("bk-q__reveal", { "dt-press": s.pressReveal })}><${Icon} name=${s.reveal ? "eye-off" : "eye"} size=${14} />${s.reveal ? T["Hide answer"] : T["Reveal answer"]}</span>
+        ${s.reveal ? html`<span class="bk-q__answer">${T["Answer"]}: <span class="mono" style=${{ color: "var(--foreground)" }}>${QUIZ.answer}</span></span>` : null}
+      </div>
+    </div>
+  </section>`;
+}
+
+function Reader({ s }) {
+  const writing = s.reader !== "writing";
+  return html`<div class="bk-reader">
+    <header class="bk-reader__head">
+      <div class="bk-reader__headin">
+        <div class="min0 grow">
+          <h1 class="bk-reader__title">${CH1.title}</h1>
+          <ul class="bk-reader__obj">${CH1.objectives.map((o, i) => html`<li key=${i}>• ${o}</li>`)}</ul>
+        </div>
+        <div class="row" style=${{ gap: 8, flexShrink: 0 }}>
+          <span class="bk-reader__kind">${T[s.reader === "planning" ? "planning" : s.chapters[0] === "ready" ? "ready" : "generating"]}</span>
+          <span class="bk-reader__icon" title=${T["Bookmark this chapter"]}><${Icon} name="bookmark" size=${14} /></span>
+        </div>
+      </div>
+    </header>
+    <div class="bk-reader__body" id="bk-reader-body" data-dt-scroll>
+      ${writing
+        ? html`<div style=${{ margin: "0 auto", maxWidth: "78ch" }}>
+            <${ActivityHeader} label=${s.reader === "planning" ? T["Planning the blocks…"] : T["Compiling page…"]} />
+          </div>`
+        : html`<article class="bk-article">
+            ${s.blocks >= 1 ? html`<div class="animate-fade-in"><${Prose} text=${s.text1} caret=${s.blocks === 1} /></div>` : null}
+            ${s.blocks >= 2 ? html`<div class="animate-fade-in"><${Prose} text=${BLOCK_TEXT_2} /></div>` : null}
+            ${s.blocks >= 3
+              ? html`<div class="bk-callout animate-fade-in">
+                  <${Icon} name="lightbulb" size=${16} style=${{ marginTop: 3, color: "var(--tw-amber-700)" }} />
+                  <div class="min0" style=${{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <div class="bk-callout__label">${CALLOUT.label}</div>
+                    <div class="bk-callout__body">${CALLOUT.body}</div>
+                  </div>
+                </div>`
+              : null}
+            ${s.blocks >= 4 ? html`<${ConceptGraph} />` : null}
+            ${s.blocks >= 5 ? html`<${QuickCheck} s=${s} />` : null}
+          </article>`}
+    </div>
+  </div>`;
+}
+
+function BookView({ s }) {
+  const done = s.chapters.filter((c) => c === "ready").length;
+  const live = s.chapters.findIndex((c) => c === "running");
+  return html`<div class="bk-book animate-fade-in">
+    <aside class="bk-side">
+      <div class="row" style=${{ justifyContent: "space-between", gap: 8 }}>
+        <span class="bk-side__back"><${Icon} name="arrow-left" size=${14} />${T["All books"]}</span>
+        <span class="bk-side__collapse" title=${T["Collapse chapters"]}><${Icon} name="chevron-left" size=${14} /></span>
+      </div>
+      <div style=${{ padding: "0 4px" }}>
+        <div class="bk-side__title clamp2">${BOOK_TITLE}</div>
+        <div class="bk-side__meta">${tr("{{count}} chapters", { count: SPINE.length })}</div>
+      </div>
+      <span class="bk-side__btn"><${Icon} name="download" size=${14} />${T["Export Markdown"]}</span>
+      <span class="bk-side__btn"><${Icon} name="rotate-ccw" size=${14} />${T["Rebuild book"]}</span>
+      <section class="grow min0" style=${{ overflowY: "auto" }}>
+        <div class="bk-side__label">${T["Chapters"]}</div>
+        <ul class="bk-pages">
+          <li class="bk-page is-overview">
+            <span class="row min0" style=${{ alignItems: "flex-start", gap: 6 }}><${Icon} name="compass" size=${12} style=${{ marginTop: 1, color: "var(--primary)" }} /><span class="clamp2">${T["Overview"]}</span></span>
+            <${Mark} state="ready" />
+          </li>
+          ${SPINE.map(
+            (c, i) => html`<li key=${c.id} class=${cx("bk-page", { "is-active": i === 0 })}>
+              <span class="clamp2">${c.title}</span>
+              <${Mark} state=${s.chapters[i]} />
+            </li>`
+          )}
+        </ul>
+      </section>
+    </aside>
+    <div class="bk-main">
+      <div class="bk-strip">
+        <div class="bk-strip__in">
+          <div class="min0 grow">
+            <${ActivityHeader} label=${tr("Writing {{title}}", { title: SPINE[Math.max(0, live)].title })} expandable=${true} />
+          </div>
+          <span class="bk-strip__count">${tr("{{done}}/{{total}} chapters", { done, total: SPINE.length })}</span>
+          <span class="bk-strip__btn"><${Icon} name="pause" size=${12} />${T["Pause generation"]}</span>
+        </div>
+      </div>
+      ${s.banner
+        ? html`<div class="bk-banner animate-pop-in">
+            <div class="row" style=${{ alignItems: "flex-start", gap: 12 }}>
+              <${Icon} name="alert-triangle" size=${16} style=${{ marginTop: 2 }} />
+              <div class="grow min0">
+                <strong>${T["Your knowledge bases changed since this book was generated."]}</strong>${" "}
+                <span style=${{ opacity: 0.9 }}>${T["Updated"]}: <code>${DATA.kb.name}</code>.</span>
+                <div class="bk-banner__small">
+                  ${tr("{{count}} previously-compiled page may be out of date.", { count: 1 })}
+                  <span class="bk-banner__inline"><${Icon} name="refresh-ccw" size=${12} />${T["Recompile first stale page"]}</span>
+                </div>
+              </div>
+              <span class="bk-banner__btn">${T["Mark as seen"]}</span>
+            </div>
+          </div>`
+        : null}
+      <${Reader} s=${s} />
+    </div>
+  </div>`;
+}
+
+function render(s) {
+  return html`<${Shell} active="/learning">
+    ${s.phase === "spine" ? html`<${SpineEditor} s=${s} />` : html`<${BookView} s=${s} />`}
+  <//>`;
+}
+
+DT.run({ T, initial, steps, render, options: { loopDelay: 2200 } });
+</script>
+</body>
+</html>

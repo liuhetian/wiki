@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="560">
+<title>DeepTutor 仿真 demo：知识中心与索引版本</title>
+<!--
+  Goal      知识库按嵌入配置存版本：默认嵌入模型换了，没有哪个版本对得上，标「需要重新索引」；
+            选新模型完整重建，日志一批批走完，新版本发布成「已激活」，旧版本原样留着
+  Surface   /knowledge-bases/[kbName] · components/knowledge/KnowledgeBaseDetail.tsx
+  Sources   components/knowledge/KnowledgeBaseDetail.tsx 75-88（页签）、206-301（头栏、页签条）、303-310（日志、正文）；
+            components/knowledge/KbIndexVersionsSection.tsx 188-270（标题、重建按钮）、300-336（横幅、最近索引条）、337-363（版本列表）、
+            381-436（重建弹窗）、444-584（版本行）；
+            components/knowledge/KbStatusBadge.tsx 27-61；components/knowledge/KbTaskLogs.tsx 30-63；
+            components/common/ProcessLogs.tsx 40-95；components/knowledge/EmbeddingModelSelector.tsx 20-52；
+            components/common/Modal.tsx 20-25、133-176；components/knowledge/KbDocumentList.tsx 334-360、466-475；
+            lib/knowledge-helpers.ts 302-305、331-363；lib/doc-attachments.ts 384-403；
+            deeptutor/services/rag/index_versioning.py 1-40（version-N 目录）；
+            deeptutor/api/routers/knowledge.py 3885、3917 与 knowledge/progress_tracker.py 63（进度文案）
+  Layout    Shell（当前项 学习空间）→ 库详情：头栏 + 页签条 + 日志 + 正文
+  Data      DT.DATA.kb（库名、文件、原嵌入模型）；三个 version-N 目录是本页自拟
+  Autoplay  文件页签 → 切到「索引版本」→ 看到不匹配横幅 → 重建索引 → 弹窗里选 text-embedding-3-large → 开始完整重建 →
+            日志 12 批走完 → 新版本 version-3 已激活、徽标变就绪，一圈约 27s
+  Height    560
+  Deviations 引擎图标（llamaindex.png）换成中性方块；GitHub 页签的品牌图标换成 git-branch；文件页签的右侧预览只画几行字
+  Checks    页签、状态、版本行文案与语言包一致
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  /* main：flex h-full flex-1 flex-col overflow-hidden bg-background */
+  .kc { display: flex; height: 100%; flex: 1; flex-direction: column; overflow: hidden; position: relative; }
+  /* 头栏：border-b border-border bg-card px-6 py-4 */
+  .kc-head { border-bottom: 1px solid var(--border); background: var(--card); padding: 16px 24px 0; }
+  .kc-engine { margin-top: 2px; display: flex; height: 36px; width: 36px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 10px; background: #111827; color: #fff; }
+  /* 返回：mb-1.5 inline-flex items-center gap-1 text-[11.5px] font-medium text-muted-foreground */
+  .kc-back { margin-bottom: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 500; color: var(--muted-foreground); }
+  /* h1：truncate font-serif text-[18px] font-semibold tracking-tight */
+  .kc-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-serif); font-size: 18px; font-weight: 600; letter-spacing: -0.025em; }
+  /* 默认：inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700 */
+  .kc-pill { display: inline-flex; align-items: center; gap: 4px; border-radius: 9999px; padding: 2px 8px; font-size: 10px; font-weight: 500; }
+  .kc-pill--amber { background: #fef3c7; color: var(--tw-amber-700); }
+  .kc-pill--emerald { background: #d1fae5; color: var(--tw-emerald-700); }
+  .kc-pill--sky { background: #e0f2fe; color: #0369a1; }
+  /* meta：mt-1 text-[12px] text-muted-foreground */
+  .kc-meta { margin-top: 4px; font-size: 12px; color: var(--muted-foreground); }
+  /* 页签条：-mb-3 mt-3 flex gap-1 overflow-x-auto；一项 inline-flex items-center gap-1.5 rounded-t-md px-3 py-2 text-[12.5px] font-medium border-b-2 */
+  .kc-tabs { margin-top: 12px; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  .kc-tab { display: inline-flex; flex-shrink: 0; align-items: center; gap: 6px; border-radius: 6px 6px 0 0; border-bottom: 2px solid transparent; padding: 8px 12px; font-size: 12.5px; font-weight: 500; color: var(--muted-foreground); white-space: nowrap; }
+  .kc-tab.is-active { border-bottom-color: var(--primary); color: var(--foreground); }
+  /* 日志段：shrink-0 space-y-2 border-b border-border px-6 py-3 */
+  .kc-logs { flex-shrink: 0; border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; flex-direction: column; gap: 8px; }
+  /* ProcessLogs：rounded-lg border bg-card；summary px-3 py-2 text-[13px] font-medium；正文 max-h-[220px] px-3 py-2.5 font-mono text-[11px] leading-[1.7] */
+  .pl { border-radius: 8px; border: 1px solid var(--border); background: var(--card); }
+  .pl__sum { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; font-size: 13px; font-weight: 500; }
+  .pl__count { border-radius: 9999px; background: var(--muted); padding: 2px 6px; font-size: 10px; font-weight: 400; color: var(--muted-foreground); }
+  .pl__body { border-top: 1px solid var(--border); background: var(--background); max-height: 92px; overflow-y: auto; padding: 10px 12px; font-family: var(--font-mono); font-size: 11px; line-height: 1.7; color: var(--muted-foreground); }
+  .pl__ln { margin-right: 8px; color: var(--border); user-select: none; white-space: pre; }
+  /* 进度：h-1.5 flex-1 rounded-full bg-border/70；条 bg-primary transition-all duration-300 */
+  .kc-bar { height: 6px; flex: 1; overflow: hidden; border-radius: 9999px; background: color-mix(in srgb, var(--border) 70%, transparent); }
+  .kc-bar > i { display: block; height: 100%; border-radius: 9999px; background: var(--primary); transition: width 300ms; }
+  .kc-body { min-height: 0; flex: 1; overflow: hidden; }
+  /* 正文：h-full overflow-y-auto px-6 py-5；内层 mx-auto max-w-3xl */
+  .kc-scroll { height: 100%; overflow-y: auto; padding: 20px 24px; }
+  .kc-inner { margin: 0 auto; max-width: 768px; display: flex; flex-direction: column; gap: 16px; }
+  /* 重建按钮（琥珀）：rounded-md border border-amber-300 bg-amber-50 px-2.5 py-1 text-[12px] font-medium text-amber-700 */
+  .kc-reindex { display: inline-flex; flex-shrink: 0; align-items: center; gap: 6px; border-radius: 6px; border: 1px solid #fcd34d; background: var(--tw-amber-50); padding: 4px 10px; font-size: 12px; font-weight: 500; color: var(--tw-amber-700); }
+  .kc-reindex[disabled] { opacity: 0.5; }
+  /* 横幅：rounded-lg border border-amber-200 bg-amber-50/80 px-3 py-2 text-[12px] text-amber-700 */
+  .kc-banner { border-radius: 8px; border: 1px solid var(--tw-amber-200); background: color-mix(in srgb, var(--tw-amber-50) 80%, transparent); padding: 8px 12px; font-size: 12px; color: var(--tw-amber-700); }
+  /* 最近索引条：flex flex-wrap items-center gap-x-2 rounded-lg border bg-muted/30 px-3 py-2 text-[11.5px] */
+  .kc-last { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; border-radius: 8px; border: 1px solid var(--border); background: color-mix(in srgb, var(--muted) 30%, transparent); padding: 8px 12px; font-size: 11.5px; color: var(--muted-foreground); }
+  /* 版本列表：divide-y rounded-lg border bg-background；行 flex items-center gap-3 px-3 py-2.5 */
+  .kc-list { border-radius: 8px; border: 1px solid var(--border); background: var(--background); }
+  .kc-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; }
+  .kc-row + .kc-row { border-top: 1px solid var(--border); }
+  /* 状态方块：h-7 w-7 rounded-md；激活 bg-emerald-100 text-emerald-600；其余 bg-muted text-muted-foreground */
+  .kc-state { display: flex; height: 28px; width: 28px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 6px; background: var(--muted); color: var(--muted-foreground); }
+  .kc-state.is-active { background: #d1fae5; color: var(--tw-emerald-600); }
+  .kc-vname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 500; }
+  /* 小标签：rounded-full px-1.5 py-0.5 text-[10px] */
+  .kc-tag { border-radius: 9999px; padding: 2px 6px; font-size: 10px; }
+  .kc-tag--active { background: #d1fae5; color: var(--tw-emerald-700); font-weight: 500; }
+  .kc-tag--legacy { background: var(--muted); color: var(--muted-foreground); }
+  /* 版本元信息：mt-0.5 flex flex-wrap gap-x-2 text-[10.5px] */
+  .kc-vmeta { margin-top: 2px; display: flex; flex-wrap: wrap; gap: 2px 8px; font-size: 10.5px; color: var(--muted-foreground); }
+  /* 文件页签：左 220px 列表 bg-card/40 border-r；行 rounded-md py-1.5，当前 bg-primary/10 */
+  .kf { display: flex; height: 100%; min-height: 0; }
+  .kf-aside { display: flex; height: 100%; width: 220px; flex-shrink: 0; flex-direction: column; border-right: 1px solid var(--border); background: color-mix(in srgb, var(--card) 40%, transparent); }
+  .kf-file { display: flex; align-items: center; gap: 8px; border-radius: 6px; padding: 6px 4px 6px 8px; }
+  .kf-file.is-active { background: color-mix(in srgb, var(--primary) 10%, transparent); }
+  .kf-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 500; }
+  .kf-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; color: var(--muted-foreground); }
+  .kf-preview { flex: 1; min-width: 0; overflow: hidden; padding: 20px 28px; background: var(--secondary); }
+  .kf-page { margin: 0 auto; max-width: 420px; border-radius: 10px; background: #fff; padding: 22px 26px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 8px 24px -12px rgba(0, 0, 0, 0.18); font-family: var(--font-serif); font-size: 12px; line-height: 1.8; color: #222; }
+  .tint-red { color: rgb(239 68 68 / 0.8); }
+  .tint-blue { color: rgb(59 130 246 / 0.8); }
+  .tint-violet { color: rgb(139 92 246 / 0.8); }
+  /* 弹窗：fixed inset-0 bg-overlay backdrop-blur-sm；卡 bg-card border rounded-2xl shadow-2xl w-[400px]；头 p-4 border-b font-bold；脚 p-4 border-t */
+  .md-scrim { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: var(--overlay); backdrop-filter: blur(4px); animation: dt-overlay-in 160ms ease-out; }
+  .md-card { width: 400px; max-width: calc(100% - 2rem); display: flex; flex-direction: column; border-radius: 16px; border: 1px solid var(--border); background: var(--card); box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); animation: dt-pop-in 200ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .md-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 16px; font-weight: 700; }
+  .md-foot { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border); padding: 16px; }
+  /* 弹窗按钮：rounded-md border px-3 py-1.5 text-[12px]；主 bg-primary font-medium */
+  .md-btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 6px; padding: 6px 12px; font-size: 12px; }
+  .md-btn--ghost { border: 1px solid var(--border); }
+  .md-btn--primary { background: var(--primary); color: var(--primary-foreground); font-weight: 500; }
+  /* 下拉：w-full rounded-lg border bg-background px-3 py-2 text-sm */
+  .md-select { display: flex; align-items: center; justify-content: space-between; width: 100%; border-radius: 8px; border: 1px solid var(--border); background: var(--background); padding: 8px 12px; font-size: 14px; }
+  .md-select.is-open { border-color: var(--ring); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 15%, transparent); }
+  .md-opts { margin-top: 4px; border-radius: 8px; border: 1px solid var(--border); background: var(--popover); box-shadow: var(--shadow-lg); padding: 4px; font-size: 13px; }
+  .md-opt { border-radius: 6px; padding: 6px 10px; }
+  .md-opt.is-hot { background: var(--accent); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, Shell, cx, DATA } = DT;
+
+DT.ICONS["file-type-2"] = "<path d=\"M12 22h6a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v6\"/><path d=\"M14 2v5a1 1 0 0 0 1 1h5M3 16v-1.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5V16M6 22h2M7 14v8\"/>";
+DT.ICONS["file-code-2"] = "<path d=\"M4 12.15V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2h-3.35\"/><path d=\"M14 2v5a1 1 0 0 0 1 1h5M5 16l-3 3 3 3M9 22l3-3-3-3\"/>";
+DT.ICONS["terminal"] = "<path d=\"M12 19h8M4 17l6-6-6-6\"/>";
+DT.ICONS["clock-3"] = "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6h4\"/>";
+
+const T = {
+  "Knowledge bases": "知识库",
+  "Default": "默认",
+  "Updated": "最近更新",
+  "Last indexed": "最近索引",
+  "d": "维",
+  "Needs reindex": "需要重新索引",
+  "Processing live": "实时处理中",
+  "Ready": "就绪",
+  "Files": "文件",
+  "Add documents": "添加文档",
+  "Linked folders": "关联文件夹",
+  "GitHub": "GitHub",
+  "Web": "网络",
+  "Index versions": "索引版本",
+  "Settings": "设置",
+  "Each embedding configuration gets its own stored vector index.": "每个 embedding 配置都对应一个独立存储的向量索引。",
+  "Re-index": "重建索引",
+  "Re-indexing…": "正在重建索引…",
+  "The active embedding configuration doesn't match any ready index version. Re-index to rebuild against the current embedding model.": "当前激活的 embedding 配置没有匹配到任何可用的索引版本。请使用当前模型重新索引。",
+  "{{count}} indexed docs": "索引了 {{count}} 个文档",
+  "Active version": "当前激活版本",
+  "Active": "已激活",
+  "Legacy": "旧版",
+  "Inactive version": "未激活版本",
+  "Rebuild index with current defaults": "使用当前默认配置重建索引",
+  "Start full re-index": "开始完整重建",
+  "Cancel": "取消",
+  "Embedding model": "嵌入模型",
+  "This knowledge base keeps using the selected model when the global default changes.": "此知识库始终使用所选模型，不受全局默认模型变更影响。",
+  "This rebuild uses the selected embedding and the role defaults shown below. Change role models in Settings. The configuration is fixed when you confirm; the previous version is preserved if rebuilding fails.": "本次重建将采用所选嵌入模型和下列角色默认配置。请在设置中修改角色模型。确认提交后固定本次配置；重建失败时保留原索引版本。",
+  "Process Logs": "处理日志",
+  "Current phase": "当前阶段",
+  "Re-indexing {{count}} document(s) with the selected embedding model...": "正在使用所选嵌入模型重新索引 {{count}} 个文档……",
+  "Embedding batches: {{current}}/{{total}}": "向量化批次：{{current}}/{{total}}",
+  "Finalizing index publication": "正在完成索引发布",
+};
+const tr = (key, vars) => String(T[key] ?? key).replace(/\{\{(\w+)\}\}/g, (_, k) => (vars && k in vars ? vars[k] : ""));
+
+const KB = DATA.kb;
+const OLD = KB.embedding;
+const NEW = { model: "text-embedding-3-large", dim: 3072 };
+const BATCHES = 12;
+const NOW = "2026/10/29 09:12:40";
+const SECTIONS = [
+  ["files", "Files", "file-text"],
+  ["add", "Add documents", "upload"],
+  ["folders", "Linked folders", "folder-sync"],
+  ["github", "GitHub", "git-branch"],
+  ["web", "Web", "globe"],
+  ["versions", "Index versions", "layers"],
+  ["settings", "Settings", "settings"],
+];
+const FILE_SPEC = { pdf: ["file-type-2", "tint-red"], md: ["file-code-2", "tint-violet"], docx: ["file-text", "tint-blue"] };
+
+/* 版本目录：index_versioning.py 的 version-N；最老的是旧布局，标题即 meta 里的 "legacy" */
+const VERSIONS = [
+  { version: "version-2", model: OLD.model, dimension: OLD.dim, binding: "openai", created: "2026/10/21 14:02:11", sig: "a91f03c7d2" },
+  { version: "legacy", model: "bge-m3", dimension: 1024, binding: "ollama", created: "2026/9/30 09:47:05", sig: "5e0b8d14c9", legacy: true },
+];
+const V3 = { version: "version-3", model: NEW.model, dimension: NEW.dim, binding: "openai", created: NOW, sig: "3f9c2a71b0" };
+
+const initial = { section: "files", pressedTab: null, modal: false, selectOpen: false, picked: false, pressed: null, running: false, batch: 0, logs: [], done: false };
+
+const logStep = (line) => (s) => ({ logs: s.logs.concat([line]) });
+const batchSteps = [];
+for (let b = 1; b <= BATCHES; b++) {
+  batchSteps.push({ at: b === 1 ? 700 : 330, set: (s) => ({ batch: b, logs: s.logs.concat([tr("Embedding batches: {{current}}/{{total}}", { current: b, total: BATCHES })]) }) });
+  if (b === 4 || b === 8 || b === 12) batchSteps.push({ scroll: { sel: "#pl-body", bottom: true, ms: 200 } });
+}
+
+const steps = [
+  { at: 2200, set: { pressedTab: "versions" } },
+  { at: 200, set: { section: "versions", pressedTab: null } },
+  { label: "versions" },
+  { at: 2600, set: { pressed: "reindex" } },
+  { at: 250, set: { pressed: null, modal: true } },
+  { at: 1000, set: { selectOpen: true } },
+  { at: 1100, set: { selectOpen: false, picked: true } },
+  { at: 1200, set: { pressed: "start" } },
+  { at: 250, set: { pressed: null, modal: false, running: true, logs: [tr("Re-indexing {{count}} document(s) with the selected embedding model...", { count: KB.files.length })] } },
+  { label: "running" },
+].concat(batchSteps, [
+  { at: 500, set: logStep(tr("Finalizing index publication")) },
+  { scroll: { sel: "#pl-body", bottom: true, ms: 200 } },
+  { at: 900, set: { running: false, done: true } },
+  { label: "published" },
+  { at: 3800, set: {} },
+]);
+
+function Header({ s }) {
+  const live = s.running;
+  const ready = s.done;
+  const badge = live
+    ? html`<span class="kc-pill kc-pill--sky"><${Icon} name="clock-3" size=${12} />${T["Processing live"]}</span>`
+    : ready
+      ? html`<span class="kc-pill kc-pill--emerald"><${Icon} name="check-circle-2" size=${12} />${T["Ready"]}</span>`
+      : html`<span class="kc-pill kc-pill--amber"><${Icon} name="alert-triangle" size=${12} />${T["Needs reindex"]}</span>`;
+  const emb = ready ? NEW : OLD;
+  return html`<div class="kc-head">
+    <div class="row" style=${{ alignItems: "flex-start", gap: 12 }}>
+      <span class="kc-engine" title="LlamaIndex"><${Icon} name="layers" size=${18} strokeWidth=${1.7} /></span>
+      <div class="min0 grow">
+        <span class="kc-back"><${Icon} name="arrow-left" size=${14} />${T["Knowledge bases"]}</span>
+        <div class="row" style=${{ flexWrap: "wrap", gap: 8 }}>
+          <h1 class="kc-title">${KB.name}</h1>
+          <span class="kc-pill kc-pill--amber"><${Icon} name="star" size=${12} style=${{ fill: "currentColor" }} />${T["Default"]}</span>
+          ${badge}
+        </div>
+        <p class="kc-meta">
+          llamaindex · ${emb.model} · ${emb.dim}${T["d"]} · ${T["Updated"]} ${ready ? NOW : VERSIONS[0].created} · ${T["Last indexed"]} ${ready ? NOW : VERSIONS[0].created}
+        </p>
+      </div>
+    </div>
+    <nav class="kc-tabs">
+      ${SECTIONS.map(
+        ([key, label, icon]) => html`<span key=${key} class=${cx("kc-tab", { "is-active": s.section === key, "dt-press": s.pressedTab === key })}>
+          <${Icon} name=${icon} size=${13} />${T[label]}
+        </span>`
+      )}
+    </nav>
+  </div>`;
+}
+
+function Logs({ s }) {
+  if (!s.logs.length) return null;
+  const pct = Math.round((s.batch / BATCHES) * 100);
+  return html`<section class="kc-logs">
+    <div class="pl">
+      <div class="pl__sum">
+        <span class="row" style=${{ gap: 6 }}><${Icon} name="terminal" size=${13} strokeWidth=${1.7} />${T["Process Logs"]}<span class="pl__count">${s.logs.length}</span></span>
+        <span class="row" style=${{ gap: 8 }}>
+          ${s.running ? html`<span style=${{ color: "var(--primary)" }}><${Icon} name="loader-2" size=${12} class="animate-spin" /></span>` : null}
+          <span class="muted" style=${{ transform: "rotate(180deg)" }}><${Icon} name="chevron-down" size=${13} /></span>
+        </span>
+      </div>
+      <div class="pl__body" id="pl-body" data-dt-scroll>
+        ${s.logs.map((line, i) => html`<div key=${i} style=${{ whiteSpace: "pre-wrap", wordBreak: "break-all" }}><span class="pl__ln">${String(i + 1).padStart(3)}</span>${line}</div>`)}
+      </div>
+    </div>
+    ${s.running
+      ? html`<div class="row" style=${{ gap: 12 }}>
+          <div class="kc-bar"><i style=${{ width: Math.max(pct, 4) + "%" }}></i></div>
+          <span style=${{ fontSize: 11, color: "var(--muted-foreground)" }}>${T["Current phase"]}: ${pct}%</span>
+        </div>`
+      : null}
+  </section>`;
+}
+
+function VersionRow({ v, active }) {
+  const legacy = !!v.legacy;
+  return html`<li class=${cx("kc-row", { "animate-pop-in": v === V3 })}>
+    <div class=${cx("kc-state", { "is-active": active })} title=${active ? T["Active version"] : T["Inactive version"]}>
+      <${Icon} name=${active ? "star" : legacy ? "clock" : "check-circle-2"} size=${14} style=${active ? { fill: "currentColor" } : null} />
+    </div>
+    <div class="min0 grow">
+      <div class="row" style=${{ gap: 8 }}>
+        <span class="kc-vname">${v.version}</span>
+        ${active ? html`<span class="kc-tag kc-tag--active">${T["Active"]}</span>` : null}
+        ${legacy && !active ? html`<span class="kc-tag kc-tag--legacy">${T["Legacy"]}</span>` : null}
+      </div>
+      <div class="kc-vmeta">
+        <span>${v.dimension}${T["d"]}</span><span>${v.binding}</span><span>${v.created}</span><span class="mono">${v.sig}</span>
+      </div>
+    </div>
+  </li>`;
+}
+
+function VersionsTab({ s }) {
+  const versions = s.done ? [V3].concat(VERSIONS) : VERSIONS;
+  const mismatch = !s.done && !s.running;
+  return html`<div class="kc-inner">
+    <div class="row" style=${{ justifyContent: "space-between", gap: 12 }}>
+      <div class="row" style=${{ gap: 8 }}>
+        <span class="muted"><${Icon} name="layers" size=${14} /></span>
+        <div>
+          <div style=${{ fontSize: 12.5, fontWeight: 500 }}>
+            ${T["Index versions"]}<span class="pl__count" style=${{ marginLeft: 8 }}>${versions.length}</span>
+          </div>
+          <p style=${{ fontSize: 11, color: "var(--muted-foreground)" }}>${T["Each embedding configuration gets its own stored vector index."]}</p>
+        </div>
+      </div>
+      ${!s.done
+        ? html`<button type="button" class=${cx("kc-reindex", { "dt-press": s.pressed === "reindex" })} disabled=${s.running}>
+            <${Icon} name=${s.running ? "loader-2" : "refresh-cw"} size=${12} class=${s.running ? "animate-spin" : ""} />
+            ${s.running ? T["Re-indexing…"] : T["Re-index"]}
+          </button>`
+        : null}
+    </div>
+    ${mismatch ? html`<div class="kc-banner">${T["The active embedding configuration doesn't match any ready index version. Re-index to rebuild against the current embedding model."]}</div>` : null}
+    <div class="kc-last">
+      <${Icon} name="clock" size=${14} />
+      <span>${T["Last indexed"]}: <span style=${{ fontWeight: 500, color: "var(--foreground)" }}>${s.done ? NOW : VERSIONS[0].created}</span></span>
+      <span>· ${tr("{{count}} indexed docs", { count: KB.files.length })}</span>
+    </div>
+    <ul class="kc-list">${versions.map((v) => html`<${VersionRow} key=${v.version} v=${v} active=${s.done && v === V3} />`)}</ul>
+  </div>`;
+}
+
+function FilesTab() {
+  return html`<div class="kf">
+    <aside class="kf-aside">
+      <div class="row" style=${{ gap: 6, padding: "10px 10px 6px" }}>
+        <span style=${{ fontSize: 12, fontWeight: 500 }}>${T["Files"]}</span>
+        <span class="pl__count" style=${{ padding: "0 6px" }}>${KB.files.length}</span>
+      </div>
+      <ul style=${{ padding: "0 6px", display: "flex", flexDirection: "column", gap: 1 }}>
+        ${KB.files.map((f, i) => {
+          const [icon, tint] = FILE_SPEC[f.name.split(".").pop()];
+          return html`<li key=${f.name} class=${cx("kf-file", { "is-active": i === 0 })}>
+            <${Icon} name=${icon} size=${13} strokeWidth=${1.6} class=${tint} />
+            <div class="min0 grow">
+              <div class="kf-name">${f.name}</div>
+              <div class="kf-sub">${f.size} · ${i === 1 ? "3 天前" : "8 天前"}</div>
+            </div>
+          </li>`;
+        })}
+      </ul>
+    </aside>
+    <div class="kf-preview">
+      <div class="kf-page">
+        <p style=${{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>第 8 章 假设检验</p>
+        ${DATA.pages[236].slice(1, 4).map((p) => html`<p key=${p.id} style=${{ marginBottom: 8 }}>${p.text}</p>`)}
+      </div>
+    </div>
+  </div>`;
+}
+
+function Modal({ s }) {
+  if (!s.modal) return null;
+  return html`<div class="md-scrim">
+    <div class="md-card">
+      <div class="md-head"><span>${T["Rebuild index with current defaults"]}</span><span class="muted"><${Icon} name="x" size=${20} /></span></div>
+      <div style=${{ padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style=${{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <label style=${{ fontSize: 12, fontWeight: 500 }}>${T["Embedding model"]}</label>
+          <div class=${cx("md-select", { "is-open": s.selectOpen })}>
+            <span class="truncate">${s.picked ? NEW.model + " · OpenAI · " + NEW.dim + T["d"] : OLD.model + " · OpenAI · " + OLD.dim + T["d"]}</span>
+            <${Icon} name="chevron-down" size=${14} />
+          </div>
+          ${s.selectOpen
+            ? html`<div class="md-opts animate-pop-in">
+                <div class="md-opt">${OLD.model} · OpenAI · ${OLD.dim}${T["d"]}</div>
+                <div class="md-opt is-hot">${NEW.model} · OpenAI · ${NEW.dim}${T["d"]}</div>
+                <div class="md-opt">bge-m3 · Ollama · 1024${T["d"]}</div>
+              </div>`
+            : null}
+          <p style=${{ fontSize: 12, color: "var(--muted-foreground)" }}>${T["This knowledge base keeps using the selected model when the global default changes."]}</p>
+        </div>
+        <p style=${{ fontSize: 12, color: "var(--muted-foreground)" }}>${T["This rebuild uses the selected embedding and the role defaults shown below. Change role models in Settings. The configuration is fixed when you confirm; the previous version is preserved if rebuilding fails."]}</p>
+      </div>
+      <div class="md-foot">
+        <button type="button" class="md-btn md-btn--ghost">${T["Cancel"]}</button>
+        <button type="button" class=${cx("md-btn md-btn--primary", { "dt-press": s.pressed === "start" })}>${T["Start full re-index"]}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function render(s) {
+  return html`<${Shell} active="/space">
+    <div class="kc">
+      <${Header} s=${s} />
+      <${Logs} s=${s} />
+      <div class="kc-body">
+        ${s.section === "files" ? html`<${FilesTab} />` : html`<div class="kc-scroll" data-dt-scroll><${VersionsTab} s=${s} /></div>`}
+      </div>
+      <${Modal} s=${s} />
+    </div>
+  <//>`;
+}
+
+DT.run({ T, initial, steps, render });
+</script>
+</body>
+</html>

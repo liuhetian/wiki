@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="680">
+<title>DeepTutor 仿真 demo：沉浸式阅读</title>
+<!--
+  Goal      聊天里的引用落到原文那一句上：助手调 Reader Goto，阅读器跳到第 248 页、把被引那句闪一下再停成浅蓝；
+            Reader Annotate 在页上留一条 AI 高亮，左栏「标注」多一条；点回答里的 p.236，跳回第 236 页那句；
+            再按「就这一页测一测」，伴读栏出一张题卡
+  Surface   /learning/reading/[workspaceId]/sessions/[sessionId] · components/reading/workspace/ReadingWorkspace.tsx
+  Sources   components/reading/workspace/ReadingWorkspace.tsx 446-596（44px 头栏、按钮次序）、598-608（三栏网格）、
+            677-735（中栏 bg-secondary、ReaderPane 不带自己的标注栏）；
+            components/reading/workspace/SourceNavigator.tsx 211-251（左栏页签）、263-270（搜索框）、362-422（资料行）、
+            506-518（底栏计数）、552-570（NavigatorTab）、597-660（目录行）；
+            components/reading/AnnotationList.tsx 68-180（标注列表：按页分组、色条、AI 徽标）；
+            components/reading/AnnotationLayer.tsx 8-14、70-90（高亮色和混合模式）、114（闪烁矩形）；
+            components/reading/ReaderPane.tsx 966-1058（阅读器头栏、页码「第 n 页 / 共 N」）、1336-1360（头栏按钮）；
+            components/reading/PdfDocumentView.tsx 32（页距 16）、491（dt-reader-scroll bg-secondary px-6 py-4）；
+            components/reading/PdfPage.tsx 181-205（页卡阴影、ring、未渲染时的等宽页码水印）；
+            components/reading/workspace/ReadingCompanion.tsx 365-500（伴读栏）；WorkspaceChrome.tsx 80-150（欢迎语和选段插画）；
+            components/reading/workspace/ReadAloudButton.tsx 40-75（朗读、测一测按钮）；
+            components/reading/workspace/ReadingActionCards.tsx 90-175（动作卡）；ReadingExtensionBar.tsx 384-560（题目选项）；
+            lib/reading-citations.ts 39-60（[p.N] 改写成 #dt-locator-N 链接）；lib/reading-api.ts 34-40（标注色）；
+            features/chat/trace/TracePresentation.tsx 324-332、1574-1588；app/globals.css 1175-1221；locales/zh/app.json
+  Layout    学习模式（上游 Fullscreen learning：盖住应用侧栏）：44px 头栏 →
+            左 230px 目录/标注 | 中 阅读器（页卡一张张竖排）| 5px 分隔 | 右 330–380px 伴读
+  Data      DT.DATA.pages（第 234–250 页的正文）、question、answer、book
+  Autoplay  在第 246 页读例 8.3 → 打字提问 → Search Material、Read Material → Reader Goto 跳到第 248 页闪那一句 →
+            Reader Annotate 留高亮、左栏切到「标注」→ 回答吐出 p.248、p.236 → 点 p.236 跳回去闪 →
+            按「就这一页测一测」出题卡、选一项判对，一圈约 33s
+  Height    680
+  Deviations 上游三栏要视口 ≥ 1280px（xl），这里 iframe ≥ 980px 就三栏，窄于 980 收起目录，只留阅读器和伴读；
+            页面没有 PDF 光栅，正文用衬线字排进页卡，字号按页宽缩放（cqw）；页高按 A4 比例；
+            没有正文的页画成上游「还没渲染」的样子（只有等宽页码）；跳转照上游是瞬间跳，不做平滑滚动
+  Checks    闪烁用 dt-reader-flash（保留浅蓝，下一次跳转替换）；页码 chip 用 a[href^="#dt-locator-"]；
+            滚动目标 [data-page] 都在 #rd-scroll 里
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  /* main：reading-v2 flex h-full min-h-0 flex-col overflow-hidden bg-background */
+  .rd-main { display: flex; height: 100%; min-height: 0; flex-direction: column; overflow: hidden; background: var(--background); }
+  /* 头栏：flex h-11 shrink-0 items-center gap-1.5 border-b border-border bg-card px-2.5 */
+  .rd-head { display: flex; height: 44px; flex-shrink: 0; align-items: center; gap: 6px; border-bottom: 1px solid var(--border); background: var(--card); padding: 0 10px; }
+  /* 头栏按钮：flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground；打开着的 text-primary */
+  .rd-hbtn { display: flex; height: 28px; width: 28px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 6px; color: var(--muted-foreground); }
+  .rd-hbtn.is-on { color: var(--primary); }
+  .rd-hbtn.is-press { background: var(--muted); color: var(--foreground); }
+  /* 资料组名：truncate font-serif text-[13.5px] font-semibold tracking-[-0.01em] */
+  .rd-title { min-width: 0; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-serif); font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; }
+  /* 网格：伴读开、目录开 → [minmax(184px,230px)_minmax(360px,1fr)_5px_minmax(330px,420px)]（见头注偏离项） */
+  .rd-grid { position: relative; display: grid; min-height: 0; flex: 1; grid-template-rows: minmax(0, 1fr); overflow: hidden; grid-template-columns: minmax(0, 1fr) 5px minmax(300px, 340px); }
+  @media (min-width: 980px) { .rd-grid { grid-template-columns: minmax(184px, 230px) minmax(360px, 1fr) 5px minmax(330px, 380px); } }
+  .rd-nav { display: none; }
+  @media (min-width: 980px) { .rd-nav { display: flex; } }
+  /* 左栏：min-h-0 min-w-0 flex-col border-r border-border bg-card */
+  .rd-nav { min-height: 0; min-width: 0; flex-direction: column; border-right: 1px solid var(--border); background: var(--card); }
+  /* 左栏头：flex h-11 shrink-0 items-center gap-1 border-b border-border px-2 */
+  .rd-nav__head { display: flex; height: 44px; flex-shrink: 0; align-items: center; gap: 4px; border-bottom: 1px solid var(--border); padding: 0 8px; }
+  /* NavigatorTab：inline-flex h-7 min-w-0 items-center gap-1.5 rounded-md px-2 text-[12px] font-medium；当前 bg-muted text-foreground，图标 text-primary */
+  .rd-tab { display: inline-flex; height: 28px; min-width: 0; align-items: center; gap: 6px; border-radius: 6px; padding: 0 8px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  .rd-tab.is-on { background: var(--muted); color: var(--foreground); }
+  .rd-tab.is-on svg { color: var(--primary); }
+  /* 计数：rounded-full bg-background px-1.5 text-[10.5px] tabular-nums text-muted-foreground */
+  .rd-tab__count { border-radius: 9999px; background: var(--background); padding: 0 6px; font-size: 10.5px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+  /* 搜索：mx-2 mt-2 flex h-8 items-center gap-2 rounded-lg border border-border bg-card px-2.5，输入 text-[12px] */
+  .rd-search { margin: 8px 8px 0; display: flex; height: 32px; flex-shrink: 0; align-items: center; gap: 8px; border-radius: 8px; border-width: 1px; background: var(--card); padding: 0 10px; font-size: 12px; color: var(--muted-foreground); }
+  .rd-nav__list { margin-top: 8px; min-height: 0; flex: 1; overflow-y: auto; padding: 0 8px 12px; }
+  /* 资料行：flex items-center gap-1 rounded-lg，当前 bg-[primary 10%] text-primary；按钮 px-2 py-2，名 line-clamp-2 text-[12.5px] font-medium leading-[1.35] */
+  .rd-mat { display: flex; align-items: center; gap: 4px; border-radius: 8px; background: color-mix(in srgb, var(--primary) 10%, transparent); color: var(--primary); }
+  .rd-mat__btn { display: flex; min-width: 0; flex: 1; align-items: center; gap: 8px; padding: 8px; font-size: 12.5px; font-weight: 500; line-height: 1.35; }
+  /* 目录分支：ml-2 mt-0.5 border-l border-border pl-1 */
+  .rd-branch { margin: 2px 0 0 8px; border-left: 1px solid var(--border); padding-left: 4px; }
+  /* 目录行：mb-0.5 flex items-center gap-1 rounded-lg；当前 bg-[primary 10%] text-primary；按钮 flex items-baseline gap-2 px-2 py-1.5；
+     页码 w-7 text-right text-[11px] tabular-nums text-muted-foreground；标题 line-clamp-3 text-[12px] leading-[1.5] */
+  .rd-row { margin-bottom: 2px; display: flex; align-items: baseline; gap: 8px; border-radius: 8px; padding: 6px 8px; transition: background-color var(--motion-base), color var(--motion-base); }
+  .rd-row.is-on { background: color-mix(in srgb, var(--primary) 10%, transparent); color: var(--primary); }
+  .rd-row__loc { width: 28px; flex-shrink: 0; text-align: right; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+  .rd-row__text { min-width: 0; font-size: 12px; line-height: 1.5; }
+  /* 底栏：shrink-0 border-t border-border px-3 py-2 text-[11px] text-muted-foreground */
+  .rd-nav__foot { flex-shrink: 0; border-top: 1px solid var(--border); padding: 8px 12px; font-size: 11px; color: var(--muted-foreground); }
+  /* 标注列表：页签 grid grid-cols-2 gap-1 border-b border-border p-2 */
+  .rd-anno-tabs { display: grid; flex-shrink: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; border-bottom: 1px solid var(--border); padding: 8px; }
+  .rd-anno-tabs .rd-tab { justify-content: center; }
+  .rd-anno-list { min-height: 0; flex: 1; overflow-y: auto; padding: 8px 10px; }
+  /* 组头：sticky top-0 mb-1 bg-background/95 px-1 py-1 font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground */
+  .rd-anno-group { position: sticky; top: 0; margin-bottom: 4px; background: color-mix(in srgb, var(--background) 95%, transparent); padding: 4px; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-foreground); }
+  /* 条目：relative rounded-lg border px-2.5 py-2；当前 border-ring bg-muted/60；色条 absolute left-0 top-2 bottom-2 w-[3px] rounded-full */
+  .rd-anno { position: relative; border-radius: 8px; border: 1px solid transparent; padding: 8px 10px; }
+  .rd-anno.is-on { border-color: var(--ring); background: color-mix(in srgb, var(--muted) 60%, transparent); }
+  .rd-anno__swatch { position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 9999px; }
+  .rd-anno__quote { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; padding-left: 6px; font-size: 12px; line-height: 1.55; }
+  /* AI 徽标：inline-flex items-center gap-1 rounded-full bg-[primary 10%] px-1.5 py-[1px] text-[10px] font-medium text-primary */
+  .rd-ai { display: inline-flex; align-items: center; gap: 4px; border-radius: 9999px; background: color-mix(in srgb, var(--primary) 10%, transparent); padding: 1px 6px; font-size: 10px; font-weight: 500; color: var(--primary); }
+  /* 中栏：relative min-h-0 min-w-0 overflow-hidden border-r border-border bg-secondary */
+  .rd-center { position: relative; display: flex; min-height: 0; min-width: 0; flex-direction: column; overflow: hidden; background: var(--secondary); }
+  /* 阅读器头栏：flex h-11 shrink-0 items-center gap-1 border-b border-border px-2.5（外层 bg-background） */
+  .rd-reader-head { display: flex; height: 44px; flex-shrink: 0; align-items: center; gap: 4px; border-bottom: 1px solid var(--border); background: var(--background); padding: 0 10px; }
+  .rd-reader-title { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 500; }
+  /* 页码：shrink-0 px-1 text-[11.5px] tabular-nums text-muted-foreground */
+  .rd-pageno { flex-shrink: 0; padding: 0 4px; font-size: 11.5px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+  /* 头栏小按钮：h-7 w-7 rounded-lg，激活 bg-[primary 12%] text-primary */
+  .rd-rbtn { display: inline-flex; height: 28px; width: 28px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 8px; color: var(--muted-foreground); }
+  /* 页的「桌面」：dt-reader-scroll h-full overflow-y-auto overscroll-contain bg-secondary px-6 py-4；页距 16 */
+  .rd-scroll { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 16px 24px; }
+  .rd-pages { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  /* 页卡：relative mx-auto shrink-0 overflow-hidden rounded-[10px] bg-white
+     shadow-[0_1px_3px_rgba(0,0,0,0.10),0_8px_24px_-12px_rgba(0,0,0,0.18)] ring-1 ring-black/[0.06] */
+  .rd-page { position: relative; flex-shrink: 0; width: min(100%, 560px); aspect-ratio: 210 / 297; overflow: hidden; border-radius: 10px; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 8px 24px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.06); container-type: inline-size; }
+  /* 未渲染：pointer-events-none absolute inset-0 flex items-center justify-center；font-mono text-[11px] text-black/25 */
+  .rd-page__ghost { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 11px; color: rgba(0, 0, 0, 0.25); }
+  /* 以下是页面里的「排版」，模拟 PDF 光栅，按页宽缩放 */
+  .rd-paper { position: absolute; inset: 0; padding: 8.5cqw 10.5cqw 9cqw; color: #1a1a1a; font-family: var(--font-serif); }
+  .rd-runhead { display: flex; justify-content: space-between; border-bottom: 0.18cqw solid #cfcfcf; padding-bottom: 1.2cqw; font-size: 1.85cqw; letter-spacing: 0.08em; color: #666; }
+  .rd-para { margin-top: 2.6cqw; font-size: 2.55cqw; line-height: 1.78; text-align: justify; text-indent: 2em; }
+  .rd-para.is-heading { margin-top: 5cqw; text-indent: 0; font-family: var(--font-sans); font-size: 3.6cqw; font-weight: 700; letter-spacing: 0.02em; }
+  .rd-para span { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .rd-folio { position: absolute; left: 0; right: 0; bottom: 4.5cqw; text-align: center; font-size: 1.9cqw; color: #777; }
+  /* 标注：rgb(250 220 90 / .6) mix-blend-multiply，圆角 2px（AnnotationLayer.tsx COLOR_INK.yellow） */
+  .rd-mark { background: rgb(250 220 90 / 0.6); mix-blend-mode: multiply; border-radius: 2px; position: relative; }
+  .rd-mark__dot { position: absolute; top: -0.5cqw; right: -0.5cqw; height: 6px; width: 6px; border-radius: 9999px; background: var(--primary); box-shadow: var(--shadow-sm); }
+  /* 被点中的页码 chip：上游 hover 时是 primary 22%，这里再借 turn-flash 的一圈光表示「点了」 */
+  .rd-hot-236 a[href="#dt-locator-236"] { background: color-mix(in srgb, var(--primary) 22%, transparent); animation: turn-flash 1.3s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
+  /* 分隔条：中间一根 1px 的 bg-border */
+  .rd-sep { position: relative; }
+  .rd-sep::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; transform: translateX(-50%); background: var(--border); }
+  /* 伴读：flex min-h-0 min-w-0 flex-col bg-card */
+  .rd-companion { display: flex; min-height: 0; min-width: 0; flex-direction: column; background: var(--card); }
+  /* 消息区：min-h-0 flex-1 overflow-y-auto px-4 pb-10 pt-4 [scrollbar-gutter:stable] */
+  .rd-c-scroll { min-height: 0; flex: 1; overflow-y: auto; padding: 16px 16px 40px; scrollbar-gutter: stable; }
+  /* 欢迎：mx-auto flex min-h-full max-w-[290px] flex-col items-center justify-center py-10 text-center；
+     标题 mt-5 font-serif text-[18px] font-medium tracking-[-0.01em]；说明 mt-2 text-[12.5px] leading-relaxed text-muted-foreground */
+  .rd-welcome { margin: 0 auto; display: flex; min-height: 100%; max-width: 290px; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; text-align: center; }
+  .rd-welcome__title { margin-top: 20px; font-family: var(--font-serif); font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
+  .rd-welcome__body { margin-top: 8px; font-size: 12.5px; line-height: 1.625; color: var(--muted-foreground); }
+  .rd-turns { display: flex; flex-direction: column; gap: 22px; }
+  .rd-turn .dt-act-header { margin-bottom: 12px; }
+  .rd-rows { margin: -4px 0 12px; }
+  .rd-user { display: flex; justify-content: flex-end; }
+  .rd-user .dt-user-bubble { max-width: 88%; }
+  .rd-actions { margin-top: 4px; display: flex; gap: 2px; color: var(--muted-foreground); }
+  .rd-actions > span { display: inline-flex; border-radius: 6px; padding: 4px; }
+  /* 动作卡：overflow-hidden rounded-xl border border-border bg-background；头 flex items-center gap-2 px-3 pb-1 pt-2.5，标题 text-[12px] font-semibold；
+     引文 mx-3 mt-1 line-clamp-3 border-l-2 border-primary pl-2.5 text-[11.5px]；体 px-3 pb-3 pt-2.5；脚 border-t px-2 py-1.5 */
+  .rd-card { margin-top: 16px; overflow: hidden; border-radius: 12px; border-width: 1px; background: var(--background); animation: dt-pop-in 200ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .rd-card__head { display: flex; align-items: center; gap: 8px; padding: 10px 12px 4px; }
+  .rd-card__title { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 600; }
+  .rd-card__x { display: inline-flex; height: 24px; width: 24px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 6px; color: var(--muted-foreground); }
+  .rd-card__quote { margin: 4px 12px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; border-left: 2px solid var(--primary); padding-left: 10px; font-size: 11.5px; line-height: 1.625; color: var(--muted-foreground); }
+  .rd-card__body { padding: 10px 12px 12px; font-size: 12.5px; line-height: 1.625; }
+  .rd-card__busy { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted-foreground); }
+  .rd-card__line { margin-top: 8px; height: 8px; border-radius: 4px; background: var(--muted); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  /* 选项：rounded-md border border-border px-2 py-1.5 text-left text-muted-foreground；按下 bg-muted text-foreground */
+  .rd-q__opts { margin-top: 4px; display: grid; gap: 4px; }
+  .rd-q__opt { border-radius: 6px; border-width: 1px; padding: 6px 8px; text-align: left; color: var(--muted-foreground); transition: background-color var(--motion-base), color var(--motion-base); }
+  .rd-q__opt.is-on { background: var(--muted); color: var(--foreground); }
+  .rd-q__verdict { margin-top: 4px; font-weight: 500; color: var(--tw-green-700); }
+  .rd-card__foot { display: flex; align-items: center; gap: 4px; border-top: 1px solid var(--border); padding: 6px 8px; }
+  /* CardButton：inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-[11.5px] font-medium text-muted-foreground */
+  .rd-card__btn { display: inline-flex; height: 28px; align-items: center; gap: 6px; border-radius: 6px; padding: 0 8px; font-size: 11.5px; font-weight: 500; color: var(--muted-foreground); }
+  /* 伴读输入框 */
+  .rd-c-composer { flex-shrink: 0; padding: 4px 12px 12px; }
+  .rd-input { padding: 12px 14px 6px; font-size: 15px; line-height: 1.625; min-height: 42px; }
+  .rd-input.is-empty { color: var(--muted-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rd-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 4px; padding: 2px 10px 8px; }
+  .rd-tbtn { display: inline-flex; height: 32px; align-items: center; gap: 4px; border-radius: 8px; padding: 0 8px; color: var(--muted-foreground); }
+  .rd-mic { display: inline-flex; height: 32px; width: 32px; align-items: center; justify-content: center; border-radius: 10px; color: var(--muted-foreground); }
+  /* 发送键四态，同 ChatComposer.tsx SEND_STATE_CLASS */
+  .rd-send { position: relative; margin-left: 4px; display: inline-grid; height: 32px; width: 32px; flex-shrink: 0; place-items: center; border-radius: 9999px; color: var(--muted-foreground); box-shadow: inset 0 0 0 1px var(--border); transition: background-color 200ms, box-shadow 200ms; }
+  .rd-send.is-ready { background: var(--primary); color: var(--primary-foreground); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent); }
+  .rd-send.is-streaming { background: var(--primary); color: var(--primary-foreground); box-shadow: none; }
+  .rd-send__ring { position: absolute; inset: -3px; border-radius: 9999px; border: 2px solid color-mix(in srgb, var(--primary) 15%, transparent); border-top-color: var(--primary); animation: spin 1s linear infinite; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, cx, DATA, ActivityHeader, ActivityRow, Prose } = DT;
+
+DT.ICONS["list-tree"] = '<path d="M8 5h13M13 12h8M13 19h8M3 10a2 2 0 0 0 2 2h3"/><path d="M3 5v12a2 2 0 0 0 2 2h3"/>';
+DT.ICONS["panel-left-close"] = '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18M16 15l-3-3 3-3"/>';
+DT.ICONS["panel-right-close"] = '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18M8 9l3 3-3 3"/>';
+DT.ICONS["message-square-quote"] = '<path d="M14 14a2 2 0 0 0 2-2V8h-2"/><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="M8 14a2 2 0 0 0 2-2V8H8"/>';
+
+const T = {
+  "Back to folder": "返回资料组",
+  "Collapse contents": "收起目录",
+  "Add material": "添加资料",
+  "Read aloud": "朗读",
+  "Quiz me on this page": "就这一页测一测",
+  "Exit learning mode": "退出学习模式",
+  "New conversation": "新对话",
+  "Reading companion": "阅读伙伴",
+  "Focus reading companion": "对话专注模式",
+  "Contents": "目录",
+  "Annotations": "标注",
+  "Citations": "引用",
+  "Close contents": "关闭目录",
+  "Search materials and contents": "搜索资料和目录",
+  "{{count}} pages": "{{count}} 页",
+  "{{unit}} {{n}} / {{total}}": "第 {{n}} {{unit}} / 共 {{total}}",
+  "Page": "页",
+  "AI": "AI",
+  "Back": "上一步",
+  "More": "更多",
+  "Read and ask as you go": "边读边问",
+  "Select any passage to ask about it, explain it or translate it — or just ask below. Answers point back to the page they come from.":
+    "在文档里选中任意一段，就地提问、解释或翻译；也可以直接在下面问。回答会标出出处页码。",
+  "Ask about this material…": "就这份资料提问…",
+  "{{name}} Exploring…": "{{name}} 探索中…",
+  "Tool Calling…": "调用工具中…",
+  "DeepTutor responded.": "已完成",
+  "{{count}} tool calls": "{{count}} 次工具调用",
+  "Working on it…": "正在处理…",
+  "Ask a follow-up": "继续追问",
+  "Dismiss": "关闭",
+  "Copy": "复制",
+  "Regenerate": "重新生成",
+};
+const tt = (key, vars) => T[key].replace(/\{\{(\w+)\}\}/g, (_, k) => String(vars[k]));
+
+const BOOK = DATA.book;
+const FIRST = 231;
+const LAST = 250;
+const PAGES = [];
+for (let p = FIRST; p <= LAST; p++) PAGES.push(p);
+const sectionOf = (page) => BOOK.sections.filter((s) => s.page <= page).slice(-1)[0];
+const quoteOf = (id) => {
+  const page = Number(id.split("-")[0]);
+  return DATA.pages[page].find((x) => x.id === id).text;
+};
+
+/* 共用的 Prose 不排下标，H_0 先换成 H₀，相当于上游 KaTeX 渲染后的样子 */
+const ANSWER = DATA.answer.replace(/H_0/g, "H₀");
+
+/* 上游 lib/reading-api.ts ANNOTATION_SWATCH.yellow */
+const SWATCH_YELLOW = "#facd5a";
+
+const QUIZ = {
+  quote: quoteOf("236-3"),
+  prompt: "显著性水平 α 是在什么时候给定的？",
+  options: ["看到样本、算出 p 值之后", "抽样之前，与这一个样本无关", "等结论出来再按需要调整"],
+  answer: 1,
+  verdict: "答对了：α 在抽样之前就已给定。",
+};
+
+const initial = {
+  page: 246,
+  flash: null,
+  marks: [],
+  nav: "contents",
+  draft: "",
+  focus: false,
+  user: null,
+  turn: null,
+  answer: "",
+  hotChip: null,
+  card: null,
+  pick: null,
+  press: null,
+  send: "idle",
+};
+
+const rows = (...states) =>
+  ["Search Material", "Read Material", "Reader Goto", "Reader Annotate"]
+    .slice(0, states.length)
+    .map((title, i) => ({ title, state: states[i] }));
+
+const steps = [
+  { at: 120, scroll: { sel: "#rd-scroll", to: '[data-page="246"]', block: "start", offset: 4, behavior: "instant" } },
+  { label: "reading-246" },
+  { at: 1400, set: { focus: true } },
+  { at: 300, type: { key: "draft", text: DATA.question, cps: 14 } },
+  { at: 300, set: { send: "ready" } },
+  { at: 450, set: (s) => ({ user: s.draft, draft: "", focus: false, send: "streaming", turn: { phase: "running", rows: rows("running") } }) },
+  { at: 1300, set: { turn: { phase: "running", rows: rows("done", "running") } } },
+  { at: 1100, set: { turn: { phase: "running", rows: rows("done", "done", "running") }, page: 248, flash: { id: "248-2", n: 1 } } },
+  { at: 0, scroll: { sel: "#rd-scroll", to: '[data-page="248"]', block: "start", offset: 4, behavior: "instant" } },
+  { label: "goto-248" },
+  { at: 1400, set: { turn: { phase: "running", rows: rows("done", "done", "done", "running") } } },
+  { at: 700, set: { turn: { phase: "running", rows: rows("done", "done", "done", "done") }, marks: ["248-1"], nav: "notes" } },
+  { label: "annotated" },
+  { at: 500, stream: { key: "answer", text: ANSWER, chunk: [1, 3], ms: [20, 44] } },
+  { at: 200, set: { turn: { phase: "settled", rows: rows("done", "done", "done", "done"), duration: "7s" }, send: "idle" } },
+  { at: 60, scroll: { sel: "#rd-cscroll", bottom: true, ms: 360 } },
+  { at: 1500, set: { hotChip: 236 } },
+  { at: 260, set: { page: 236, flash: { id: "236-3", n: 2 }, nav: "contents" } },
+  { at: 0, scroll: { sel: "#rd-scroll", to: '[data-page="236"]', block: "start", offset: 4, behavior: "instant" } },
+  { label: "chip-236" },
+  { at: 2600, set: { press: "quiz", hotChip: null } },
+  { at: 220, set: { press: null, card: "running" } },
+  { at: 60, scroll: { sel: "#rd-cscroll", bottom: true, ms: 360 } },
+  { at: 1600, set: { card: "done" } },
+  { at: 60, scroll: { sel: "#rd-cscroll", bottom: true, ms: 360 } },
+  { at: 1500, set: { pick: 1 } },
+  { label: "quizzed" },
+  { at: 3400 },
+];
+
+/* 选段插画（WorkspaceChrome.tsx SelectPassageMark） */
+function SelectPassageMark() {
+  const line = "color-mix(in srgb, var(--muted-foreground) 22%, transparent)";
+  return html`<svg width="64" height="72" viewBox="0 0 64 72" aria-hidden="true" style=${{ overflow: "visible" }}>
+    <rect x="8.5" y="4.5" width="47" height="63" rx="7" fill="var(--card)" stroke="var(--border)" />
+    <rect x="17" y="17" width="30" height="3" rx="1.5" fill=${line} />
+    <rect x="17" y="25" width="26" height="3" rx="1.5" fill=${line} />
+    <rect x="14.5" y="30.5" width="30" height="10" rx="2.5" fill="color-mix(in srgb, var(--primary) 16%, transparent)" />
+    <rect x="17" y="34" width="25" height="3" rx="1.5" fill="var(--primary)" />
+    <path d="M44.5 29v13" stroke-width="1.5" stroke-linecap="round" stroke="var(--primary)" />
+    <rect x="17" y="46" width="30" height="3" rx="1.5" fill=${line} />
+    <rect x="17" y="54" width="18" height="3" rx="1.5" fill=${line} />
+  </svg>`;
+}
+
+function PageCard({ page, s }) {
+  const paras = DATA.pages[page];
+  return html`<div class="rd-page" data-reader-unit=${page} data-page=${page}>
+    ${paras
+      ? html`<div class="rd-paper">
+          <div class="rd-runhead"><span>第 ${BOOK.chapter.no} 章　${BOOK.chapter.title}</span><span>${sectionOf(page).id}　${sectionOf(page).title}</span></div>
+          ${paras.map((p) => {
+            const flashing = s.flash && s.flash.id === p.id;
+            const marked = s.marks.includes(p.id);
+            const inner = flashing
+              ? html`<span class="dt-reader-flash" key=${"f" + s.flash.n}>${p.text}</span>`
+              : p.text;
+            return html`<p key=${p.id} class=${cx("rd-para", { "is-heading": p.heading })} data-para=${p.id}>
+              ${marked ? html`<span class="rd-mark">${inner}<span class="rd-mark__dot"></span></span>` : inner}
+            </p>`;
+          })}
+          <div class="rd-folio">${page}</div>
+        </div>`
+      : html`<div class="rd-page__ghost">${page}</div>`}
+  </div>`;
+}
+
+function Navigator({ s }) {
+  const current = sectionOf(s.page);
+  const notes = s.nav === "notes";
+  return html`<aside class="rd-nav">
+    <div class="rd-nav__head">
+      <div class="row min0 grow" role="tablist" style=${{ gap: 2 }}>
+        <span class=${cx("rd-tab", { "is-on": !notes })}><${Icon} name="list-tree" size=${12} /><span class="truncate">${T["Contents"]}</span></span>
+        <span class=${cx("rd-tab", { "is-on": notes })}>
+          <${Icon} name="highlighter" size=${12} /><span class="truncate">${T["Annotations"]}</span>
+          ${s.marks.length ? html`<span class="rd-tab__count">${s.marks.length}</span>` : null}
+        </span>
+      </div>
+      <span class="rd-hbtn" title=${T["Close contents"]}><${Icon} name="x" size=${13} /></span>
+    </div>
+    ${notes
+      ? html`<div class="col min0 grow">
+          <div class="rd-anno-tabs">
+            <span class="rd-tab is-on"><${Icon} name="highlighter" size=${12} />${T["Annotations"]}</span>
+            <span class="rd-tab"><${Icon} name="bookmark" size=${12} />${T["Citations"]}</span>
+          </div>
+          <div class="rd-anno-list">
+            <section>
+              <h4 class="rd-anno-group">${T["Page"]} 248</h4>
+              ${s.marks.map(
+                (id) => html`<div key=${id} class="rd-anno is-on animate-fade-in">
+                  <span class="rd-anno__swatch" style=${{ background: SWATCH_YELLOW }}></span>
+                  <p class="rd-anno__quote">${quoteOf(id)}</p>
+                  <div class="row" style=${{ marginTop: 4, gap: 6, paddingLeft: 6 }}>
+                    <span class="rd-ai"><${Icon} name="bot" size=${9} />${T["AI"]}</span>
+                  </div>
+                </div>`
+              )}
+            </section>
+          </div>
+        </div>`
+      : html`<div class="col min0 grow">
+          <label class="rd-search"><${Icon} name="search" size=${12} />${T["Search materials and contents"]}</label>
+          <div class="rd-nav__list">
+            <div class="rd-mat">
+              <span class="rd-mat__btn"><${Icon} name="file-text" size=${12} /><span class="clamp2">${BOOK.file}</span></span>
+              <span class="rd-hbtn" style=${{ marginRight: 4, height: 22, width: 22 }}><${Icon} name="chevron-down" size=${11} /></span>
+            </div>
+            <div class="rd-branch">
+              ${BOOK.sections.map(
+                (sec) => html`<div key=${sec.id} class=${cx("rd-row", { "is-on": sec.id === current.id })}>
+                  <span class="rd-row__loc">${sec.page}</span>
+                  <span class="rd-row__text">${sec.id}　${sec.title}</span>
+                </div>`
+              )}
+            </div>
+          </div>
+          <div class="rd-nav__foot">${tt("{{count}} pages", { count: BOOK.pages })}</div>
+        </div>`}
+  </aside>`;
+}
+
+function Turn({ s }) {
+  const t = s.turn;
+  const running = t.phase === "running";
+  const toolBusy = t.rows.some((r) => r.state === "running");
+  return html`<div class="rd-turn animate-fade-in" role="article">
+    <${ActivityHeader}
+      label=${running ? (toolBusy ? T["Tool Calling…"] : tt("{{name}} Exploring…", { name: "DeepTutor" })) : T["DeepTutor responded."]}
+      settled=${!running}
+      duration=${running ? null : t.duration}
+      summary=${running ? null : tt("{{count}} tool calls", { count: t.rows.length })}
+      expandable=${!running}
+    />
+    ${running ? html`<div class="rd-rows">${t.rows.map((r) => html`<${ActivityRow} key=${r.title} state=${r.state} title=${r.title} breathing=${r.state === "running"} />`)}</div>` : null}
+    ${s.answer
+      ? html`<div class=${s.hotChip ? "rd-hot-" + s.hotChip : ""}><${Prose} text=${s.answer} caret=${running} /></div>`
+      : null}
+    ${!running
+      ? html`<div class="rd-actions">
+          <span title=${T["Copy"]}><${Icon} name="copy" size=${15} strokeWidth=${1.5} /></span>
+          <span title=${T["Regenerate"]}><${Icon} name="refresh-cw" size=${15} strokeWidth=${1.5} /></span>
+        </div>`
+      : null}
+  </div>`;
+}
+
+function ActionCard({ s }) {
+  return html`<article class="rd-card">
+    <header class="rd-card__head">
+      <${Icon} name="sparkles" size=${12} style=${{ color: "var(--primary)" }} />
+      <h3 class="rd-card__title">${T["Quiz me on this page"]} · ${T["Page"]} 236</h3>
+      <span class="rd-card__x" title=${T["Dismiss"]}><${Icon} name="x" size=${13} /></span>
+    </header>
+    <blockquote class="rd-card__quote">${QUIZ.quote}</blockquote>
+    <div class="rd-card__body">
+      ${s.card === "running"
+        ? html`<div role="status">
+            <p class="rd-card__busy"><${Icon} name="loader-2" size=${12} class="animate-spin" />${T["Working on it…"]}</p>
+            <div class="rd-card__line" style=${{ width: "92%" }}></div>
+            <div class="rd-card__line" style=${{ width: "67%" }}></div>
+          </div>`
+        : html`<section class="animate-fade-in">
+            <fieldset style=${{ margin: 0, padding: 0, border: 0 }}>
+              <legend style=${{ fontWeight: 500 }}>${QUIZ.prompt}</legend>
+              <div class="rd-q__opts">
+                ${QUIZ.options.map((o, i) => html`<span key=${i} class=${cx("rd-q__opt", { "is-on": s.pick === i })}>${o}</span>`)}
+              </div>
+              ${s.pick !== null ? html`<p class="rd-q__verdict animate-fade-in">${QUIZ.verdict}</p>` : null}
+            </fieldset>
+          </section>`}
+    </div>
+    ${s.card === "done"
+      ? html`<footer class="rd-card__foot"><span class="rd-card__btn"><${Icon} name="message-square-quote" size=${13} />${T["Ask a follow-up"]}</span></footer>`
+      : null}
+  </article>`;
+}
+
+function render(s) {
+  const streaming = s.send === "streaming";
+  return html`<main class="rd-main" data-reading-workspace="" data-learning="true">
+    <header class="rd-head">
+      <span class="rd-hbtn" title=${T["Back to folder"]}><${Icon} name="arrow-left" size=${14} /></span>
+      <span class="rd-hbtn is-on" title=${T["Collapse contents"]}><${Icon} name="panel-left-close" size=${14} /></span>
+      <span class="rd-title">第 8 章　${BOOK.chapter.title}</span>
+      <span class="rd-hbtn" title=${T["Add material"]}><${Icon} name="plus" size=${14} /></span>
+      <div class="row" style=${{ marginLeft: "auto", gap: 2 }}>
+        <span class="rd-hbtn" title=${T["Read aloud"]}><${Icon} name="volume-2" size=${14} /></span>
+        <span class=${cx("rd-hbtn", { "is-press dt-press": s.press === "quiz" })} title=${T["Quiz me on this page"]}><${Icon} name="list-checks" size=${14} /></span>
+        <span class="rd-hbtn is-on" title=${T["Exit learning mode"]}><${Icon} name="minimize-2" size=${14} /></span>
+        <span class="rd-hbtn"><${Icon} name="ellipsis" size=${14} /></span>
+        <span class="rd-hbtn" title=${T["New conversation"]}><${Icon} name="square-pen" size=${14} /></span>
+        <span class="rd-hbtn is-on" title=${T["Reading companion"]}><${Icon} name="panel-right-close" size=${14} /></span>
+        <span class="rd-hbtn" title=${T["Focus reading companion"]}><${Icon} name="maximize-2" size=${14} /></span>
+      </div>
+    </header>
+
+    <div class="rd-grid">
+      <${Navigator} s=${s} />
+
+      <section class="rd-center">
+        <header class="rd-reader-head">
+          <${Icon} name="file-text" size=${14} style=${{ color: "var(--muted-foreground)" }} />
+          <span class="rd-reader-title">${BOOK.title}</span>
+          ${s.page !== 246 ? html`<span class="rd-rbtn" title=${T["Back"]}><${Icon} name="arrow-left" size=${14} /></span>` : null}
+          <span class="rd-pageno">${tt("{{unit}} {{n}} / {{total}}", { unit: T["Page"], n: s.page, total: BOOK.pages })}</span>
+          <span class="rd-rbtn"><${Icon} name="bookmark" size=${14} /></span>
+          <span class="rd-rbtn" title=${T["More"]}><${Icon} name="ellipsis" size=${14} /></span>
+        </header>
+        <div class="rd-scroll dt-reader-scroll" id="rd-scroll" data-dt-scroll>
+          <div class="rd-pages">${PAGES.map((p) => html`<${PageCard} key=${p} page=${p} s=${s} />`)}</div>
+        </div>
+      </section>
+
+      <div class="rd-sep" role="separator"></div>
+
+      <aside class="rd-companion">
+        <div class="rd-c-scroll" id="rd-cscroll" data-dt-scroll data-chat-scroll-root="true">
+          ${s.user
+            ? html`<div class="rd-turns">
+                <div class="rd-user animate-fade-in"><div class="dt-user-bubble">${s.user}</div></div>
+                ${s.turn ? html`<${Turn} s=${s} />` : null}
+              </div>`
+            : html`<div class="rd-welcome">
+                <${SelectPassageMark} />
+                <p class="rd-welcome__title">${T["Read and ask as you go"]}</p>
+                <p class="rd-welcome__body">${T["Select any passage to ask about it, explain it or translate it — or just ask below. Answers point back to the page they come from."]}</p>
+              </div>`}
+          ${s.card ? html`<${ActionCard} s=${s} />` : null}
+        </div>
+        <div class="rd-c-composer">
+          <div class="dt-composer">
+            <div class=${cx("rd-input", { "is-empty": !s.draft, "dt-caret": s.focus })}>${s.draft || (s.focus ? "" : T["Ask about this material…"])}</div>
+            <div class="rd-toolbar">
+              <span class="rd-tbtn" style=${{ marginRight: "auto" }}><${Icon} name="plus" size=${16} strokeWidth=${1.8} /></span>
+              <span class="rd-tbtn"><${Icon} name="sparkles" size=${16} strokeWidth=${1.7} /><${Icon} name="chevron-down" size=${13} /></span>
+              <span class="rd-mic"><${Icon} name="mic" size=${16} strokeWidth=${1.9} /></span>
+              <span class=${cx("rd-send", { "is-ready": s.send === "ready" || (s.draft && !streaming), "is-streaming": streaming })}>
+                ${streaming ? html`<span class="rd-send__ring"></span>` : null}
+                ${streaming
+                  ? html`<${Icon} name="square" size=${10} strokeWidth=${2.6} style=${{ fill: "currentColor" }} />`
+                  : html`<${Icon} name="arrow-up" size=${16} strokeWidth=${2.5} />`}
+              </span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>`;
+}
+
+DT.run({ T, initial, steps, render });
+</script>
+</body>
+</html>

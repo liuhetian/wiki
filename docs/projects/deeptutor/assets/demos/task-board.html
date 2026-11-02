@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="600">
+<title>DeepTutor 仿真 demo：任务看板</title>
+<!--
+  Goal      一张卡从「待办」走到「进行中」再到「已完成」，看板三栏、计数、进行中的数跟着变
+  Surface   /kanban · app/(workspace)/kanban/page.tsx
+  Sources   app/(workspace)/kanban/page.tsx 37-41（三栏和图标）、85-150（页头、添加栏）、175-260（栏和卡片）、
+            300-345（悬停出现的移动按钮）、386-401（空栏）、404-406（页脚）；
+            components/layout/FeaturePage.tsx 24、47、54-56、80-90（页面容器和页头）；
+            lib/task-board-api.ts 6-10（三栏默认色）；locales/zh/app.json 的 kanban.*、tasks.*
+  Layout    Shell（当前项 任务看板）→ 页头 → 添加栏 → 三栏
+  Data      DT.DATA.kanban、learner.workspace
+  Autoplay  打字「整理 8.4 节 p 值笔记」→ 添加 → 拖进「进行中」→ 悬停露出移动按钮 → 向前移到「已完成」，一圈约 17s
+  Height    600
+  Deviations 上游 .dt-page-grid-board 要容器 ≥ 800px 才排三列；iframe 窄，这里 ≥ 520px 就排三列。
+            拖拽画成「原卡变淡 + 目标栏描边」，不画跟手的影子卡
+  Checks    栏名、提示语、按钮文字与语言包一致；计数随卡片移动更新
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  /* FeaturePage：h-full overflow-y-auto bg-background [scrollbar-gutter:stable] */
+  .kb-page { height: 100%; overflow-y: auto; scrollbar-gutter: stable; }
+  /* PageContainer：mx-auto max-w-[1180px] px-6 md:px-9 py-7 lg:py-9 */
+  .kb-container { margin: 0 auto; width: 100%; max-width: 1180px; padding: 28px 24px; }
+  @media (min-width: 768px) { .kb-container { padding: 28px 36px; } }
+  /* PageHeader：mb-6 flex flex-col gap-4；≥640 容器时横排、底对齐 */
+  .kb-header { margin-bottom: 24px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  @container feature-page (min-width: 640px) {
+    .kb-header { flex-direction: row; align-items: flex-end; justify-content: space-between; }
+  }
+  .kb-title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  /* PAGE_TITLE_CLASS：dt-page-title font-serif font-semibold leading-normal tracking-[-0.02em] */
+  .kb-title { line-height: 1.5; letter-spacing: -0.02em; }
+  /* meta：rounded-md bg-muted/65 px-2 py-0.5 text-[11px] font-medium text-muted-foreground */
+  .kb-meta { border-radius: 6px; background: color-mix(in srgb, var(--muted) 65%, transparent); padding: 2px 8px; font-size: 11px; font-weight: 500; color: var(--muted-foreground); }
+  /* PAGE_DESCRIPTION_CLASS：mt-1.5 max-w-2xl text-[12.5px] leading-relaxed text-muted-foreground */
+  .kb-desc { margin-top: 6px; max-width: 672px; font-size: 12.5px; line-height: 1.625; color: var(--muted-foreground); }
+  /* 归档开关：inline-flex h-9 items-center gap-2 rounded-lg px-3 text-[13px] font-medium text-muted-foreground */
+  .kb-archive { display: inline-flex; height: 36px; align-items: center; gap: 8px; border-radius: 8px; padding: 0 12px; font-size: 13px; font-weight: 500; color: var(--muted-foreground); }
+  .kb-palette { display: inline-flex; height: 36px; width: 36px; align-items: center; justify-content: center; border-radius: 8px; color: var(--muted-foreground); }
+  .kb-palette i { display: block; height: 8px; width: 8px; border-radius: 9999px; margin: 0 -1px; box-shadow: 0 0 0 1.5px var(--background); }
+  /* 添加栏：mb-6 flex items-center gap-2 rounded-xl border border-border/80 bg-card p-1.5；有焦点时 border-primary/40 ring-[3px] ring-primary/5 */
+  .kb-add { margin-bottom: 24px; display: flex; align-items: center; gap: 8px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--border) 80%, transparent); background: var(--card); padding: 6px; transition: border-color var(--motion-base), box-shadow var(--motion-base); }
+  .kb-add.is-focus { border-color: color-mix(in srgb, var(--primary) 40%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 5%, transparent); }
+  /* input：min-w-0 flex-1 bg-transparent px-3 py-2 text-[13px] placeholder:text-muted-foreground/75 */
+  .kb-input { min-width: 0; flex: 1; padding: 8px 12px; font-size: 13px; line-height: 20px; }
+  .kb-input.is-empty { color: color-mix(in srgb, var(--muted-foreground) 75%, transparent); }
+  /* 添加按钮：rounded-lg bg-primary px-3.5 py-2 text-[13px] font-medium text-primary-foreground；
+     没字时 disabled:bg-muted disabled:text-muted-foreground disabled:opacity-60 */
+  .kb-add-btn { display: flex; flex-shrink: 0; align-items: center; gap: 6px; border-radius: 8px; background: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--primary-foreground); transition: background-color var(--motion-fast), color var(--motion-fast), opacity var(--motion-fast); }
+  .kb-add-btn[disabled] { background: var(--muted); color: var(--muted-foreground); opacity: 0.6; }
+  /* 看板：dt-page-grid dt-page-grid-board（见头注的偏离项） */
+  .kb-board { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  @container feature-page (min-width: 520px) { .kb-board { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  /* 栏：min-h-[12rem] rounded-2xl border p-3 sm:p-3.5；平时 border-border/45 bg-secondary/65；
+     拖进来时 border-primary/35 bg-primary/5 ring-2 ring-primary/10 */
+  .kb-col { min-height: 12rem; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--border) 45%, transparent); background: color-mix(in srgb, var(--secondary) 65%, transparent); padding: 12px; transition: background-color var(--motion-base), border-color var(--motion-base), box-shadow var(--motion-base); }
+  @media (min-width: 640px) { .kb-col { padding: 14px; } }
+  .kb-col.is-drop { border-color: color-mix(in srgb, var(--primary) 35%, transparent); background: color-mix(in srgb, var(--primary) 5%, transparent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 10%, transparent); }
+  /* 栏头：mb-3 flex items-center justify-between px-1 py-1.5；点 mt-1.5 h-2 w-2 rounded-full；
+     h2 text-[13px] font-semibold leading-5；提示 mt-0.5 text-[11px] leading-4；计数 text-[11px] font-medium tabular-nums */
+  .kb-col__head { margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; padding: 6px 4px; }
+  .kb-col__dot { margin-top: 6px; height: 8px; width: 8px; flex-shrink: 0; border-radius: 9999px; }
+  .kb-col__name { font-size: 13px; font-weight: 600; line-height: 20px; }
+  .kb-col__hint { margin-top: 2px; font-size: 11px; line-height: 16px; color: var(--muted-foreground); }
+  .kb-col__count { align-self: flex-start; padding: 2px 6px; font-size: 11px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+  .kb-col__cards { display: flex; flex-direction: column; gap: 10px; }
+  /* 卡片：rounded-xl border border-border/75 bg-card px-3.5 py-3 shadow-[0_1px_2px_rgba(0,0,0,0.025)]；
+     悬停 border-border shadow-[0_2px_8px_rgba(0,0,0,0.045)]；被拖时 opacity-45 */
+  .kb-card { position: relative; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--border) 75%, transparent); background: var(--card); padding: 12px 14px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.025); transition: border-color var(--motion-base), box-shadow var(--motion-base), opacity var(--motion-base); }
+  .kb-card.is-hover { border-color: var(--border); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.045); }
+  .kb-card.is-dragged { opacity: 0.45; }
+  /* 标题：block text-[13px] font-medium leading-6；备注 mt-1.5 text-xs leading-5 text-muted-foreground */
+  .kb-card__title { display: block; font-size: 13px; font-weight: 500; line-height: 24px; word-break: break-word; }
+  .kb-card__note { margin-top: 6px; font-size: 12px; line-height: 20px; color: var(--muted-foreground); }
+  /* 工作区标签：mt-3 inline-flex items-center gap-1.5 rounded-md bg-muted/50 px-2 py-1 text-[11px] leading-4 */
+  .kb-card__ws { margin-top: 12px; display: inline-flex; max-width: 100%; align-items: center; gap: 6px; border-radius: 6px; background: color-mix(in srgb, var(--muted) 50%, transparent); padding: 4px 8px; font-size: 11px; line-height: 16px; color: var(--muted-foreground); }
+  /* 悬停按钮条：absolute -right-0.5 -top-0.5 rounded-r-md bg-gradient-to-l from-popover from-80% pl-4，平时 opacity-0 */
+  .kb-card__tools { position: absolute; right: -2px; top: -2px; display: flex; align-items: center; gap: 2px; border-radius: 0 6px 6px 0; padding-left: 16px; background: linear-gradient(to left, var(--popover) 80%, transparent); opacity: 0; transition: opacity 150ms; }
+  .kb-card.is-hover .kb-card__tools { opacity: 1; }
+  /* 按钮：rounded-lg p-1.5 text-muted-foreground hover:bg-accent */
+  .kb-tool { border-radius: 8px; padding: 6px; color: var(--muted-foreground); transition: background-color var(--motion-fast); }
+  .kb-tool.is-pressed { background: var(--accent); color: var(--foreground); }
+  /* 空栏：flex min-h-28 flex-col items-center justify-center gap-2.5 rounded-xl border border-dashed border-border/65 px-4 py-6 */
+  .kb-empty { display: flex; min-height: 112px; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--border) 65%, transparent); padding: 24px 16px; text-align: center; font-size: 11px; color: var(--muted-foreground); }
+  .kb-empty svg { color: color-mix(in srgb, var(--muted-foreground) 40%, transparent); }
+  /* 页脚：mt-5 px-1 text-[11px] leading-5 text-muted-foreground */
+  .kb-foot { margin-top: 20px; padding: 0 4px; font-size: 11px; line-height: 20px; color: var(--muted-foreground); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, Shell, cx, DATA } = DT;
+
+const T = {
+  "Task Board": "任务看板",
+  "kanban.intro": "让任务从想法逐步走向完成。",
+  "kanban.working": "项进行中",
+  "kanban.todo": "待办",
+  "kanban.todoHint": "下一步与想法",
+  "kanban.doing": "进行中",
+  "kanban.doingHint": "正在处理的事",
+  "kanban.done": "已完成",
+  "kanban.doneHint": "完成的工作",
+  "kanban.placeholder": "添加任务…",
+  "kanban.add": "添加",
+  "kanban.empty": "将卡片拖到这里",
+  "kanban.back": "移回",
+  "kanban.forward": "向前移动",
+  "kanban.archive": "归档",
+  "kanban.showArchived": "显示已归档",
+  "kanban.footer": "任务保存在独立看板中，可分配到工作区，或关联到对话。",
+  "tasks.unassigned": "未分配工作区",
+};
+
+/* lib/task-board-api.ts DEFAULT_TASK_COLORS */
+const COLUMNS = [
+  { id: "todo", title: T["kanban.todo"], hint: T["kanban.todoHint"], icon: "circle-dashed", color: "#2563eb" },
+  { id: "doing", title: T["kanban.doing"], hint: T["kanban.doingHint"], icon: "circle-dot", color: "#a16207" },
+  { id: "done", title: T["kanban.done"], hint: T["kanban.doneHint"], icon: "circle-check", color: "#15803d" },
+];
+
+const WS = DATA.learner.workspace;
+const NEW_CARD = DATA.kanban[0];
+const SEED = DATA.kanban.slice(1).map((c, i) => Object.assign({}, c, { ws: i === 3 ? null : WS }));
+
+const initial = {
+  draft: "",
+  focus: false,
+  cards: SEED,
+  pressed: null,
+  dragging: null,
+  drop: null,
+  hover: null,
+  fresh: null,
+};
+
+const moveTo = (id, col) => (s) => ({ cards: s.cards.map((c) => (c.id === id ? Object.assign({}, c, { col }) : c)) });
+
+const steps = [
+  { at: 900, set: { focus: true } },
+  { at: 300, type: { key: "draft", text: NEW_CARD.title, cps: 13 } },
+  { at: 500, set: { pressed: "add" } },
+  { at: 220, set: (s) => ({ cards: [Object.assign({}, NEW_CARD, { ws: WS })].concat(s.cards), draft: "", focus: false, pressed: null, fresh: NEW_CARD.id }) },
+  { label: "added" },
+  { at: 1700, set: { dragging: NEW_CARD.id, drop: "doing", fresh: null } },
+  { at: 900, set: (s) => Object.assign(moveTo(NEW_CARD.id, "doing")(s), { dragging: null, drop: null, fresh: NEW_CARD.id }) },
+  { label: "dragged-to-doing" },
+  { at: 2200, set: { hover: NEW_CARD.id, fresh: null } },
+  { at: 900, set: { pressed: "forward" } },
+  { at: 240, set: (s) => Object.assign(moveTo(NEW_CARD.id, "done")(s), { pressed: null, hover: null, fresh: NEW_CARD.id }) },
+  { label: "moved-to-done" },
+  { at: 2600, set: { fresh: null } },
+];
+
+function Card({ card, colIndex, s }) {
+  const hovering = s.hover === card.id;
+  return html`<article
+    class=${cx("kb-card", { "is-hover": hovering, "is-dragged": s.dragging === card.id, "animate-pop-in": s.fresh === card.id })}
+    key=${card.id + card.col}
+  >
+    <strong class="kb-card__title">${card.title}</strong>
+    ${card.note ? html`<p class="kb-card__note">${card.note}</p>` : null}
+    <span class="kb-card__ws">
+      <${Icon} name="folder" size=${11} strokeWidth=${1.7} />
+      <span class="truncate">${card.ws === null ? T["tasks.unassigned"] : card.ws}</span>
+      <${Icon} name="chevron-down" size=${11} strokeWidth=${1.7} style=${{ opacity: 0.6 }} />
+    </span>
+    <div class="kb-card__tools">
+      ${colIndex > 0 ? html`<span class="kb-tool" title=${T["kanban.back"]}><${Icon} name="arrow-left" size=${16} /></span>` : null}
+      ${colIndex < 2
+        ? html`<span class=${cx("kb-tool", { "is-pressed": hovering && s.pressed === "forward" })} title=${T["kanban.forward"]}><${Icon} name="arrow-right" size=${16} /></span>`
+        : null}
+      <span class="kb-tool" title=${T["kanban.archive"]}><${Icon} name="archive" size=${15} /></span>
+    </div>
+  </article>`;
+}
+
+function render(s) {
+  const doing = s.cards.filter((c) => c.col === "doing").length;
+  return html`<${Shell} active="/kanban">
+    <div class="kb-page" data-dt-scroll>
+      <div class="kb-container dt-page-container">
+        <header class="kb-header">
+          <div class="min0">
+            <div class="kb-title-row">
+              <h1 class="dt-page-title kb-title">${T["Task Board"]}</h1>
+              <span class="kb-meta">${doing} ${T["kanban.working"]}</span>
+            </div>
+            <p class="kb-desc">${T["kanban.intro"]}</p>
+          </div>
+          <div class="row" style=${{ gap: 4 }}>
+            <span class="kb-palette" title="状态颜色">${COLUMNS.map((c) => html`<i key=${c.id} style=${{ background: c.color }}></i>`)}</span>
+            <span class="kb-archive"><${Icon} name="archive" size=${15} strokeWidth=${1.7} />${T["kanban.showArchived"]}</span>
+          </div>
+        </header>
+
+        <div class=${cx("kb-add", { "is-focus": s.focus })}>
+          <div class=${cx("kb-input", { "is-empty": !s.draft, "dt-caret": s.focus })}>${s.draft || (s.focus ? "" : T["kanban.placeholder"])}</div>
+          <button type="button" class=${cx("kb-add-btn", { "dt-press": s.pressed === "add" })} disabled=${!s.draft}>
+            <${Icon} name="plus" size=${15} strokeWidth=${1.8} />${T["kanban.add"]}
+          </button>
+        </div>
+
+        <div class="kb-board">
+          ${COLUMNS.map((col, index) => {
+            const cards = s.cards.filter((c) => c.col === col.id);
+            return html`<section key=${col.id} class=${cx("kb-col", { "is-drop": s.drop === col.id })} aria-label=${col.title}>
+              <div class="kb-col__head">
+                <div class="row" style=${{ alignItems: "flex-start", gap: 10 }}>
+                  <span class="kb-col__dot" style=${{ backgroundColor: col.color }}></span>
+                  <div>
+                    <h2 class="kb-col__name">${col.title}</h2>
+                    <p class="kb-col__hint">${col.hint}</p>
+                  </div>
+                </div>
+                <span class="kb-col__count">${cards.length}</span>
+              </div>
+              <div class="kb-col__cards">
+                ${cards.map((c) => html`<${Card} key=${c.id} card=${c} colIndex=${index} s=${s} />`)}
+                ${cards.length === 0
+                  ? html`<div class="kb-empty"><${Icon} name=${col.icon} size=${20} strokeWidth=${1.3} /><p>${T["kanban.empty"]}</p></div>`
+                  : null}
+              </div>
+            </section>`;
+          })}
+        </div>
+        <p class="kb-foot">${T["kanban.footer"]}</p>
+      </div>
+    </div>
+  <//>`;
+}
+
+DT.run({ T, initial, steps, render });
+</script>
+</body>
+</html>

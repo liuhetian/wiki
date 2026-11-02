@@ -1,0 +1,156 @@
+[
+  {
+    "case": "新格式：一题三选项，模型自己补了「其他」，还有一个只差一个空格的重复项",
+    "args": {
+      "questions": [
+        {
+          "header": "讲法",
+          "prompt": "你想先听哪部分？",
+          "options": [
+            {
+              "label": "先讲定义",
+              "description": "从条件概率说起"
+            },
+            {
+              "label": "先看例 8.3",
+              "description": "灌装线那道题，边算边讲"
+            },
+            {
+              "label": "先看例 8.3 ",
+              "description": "重复项"
+            },
+            "其他"
+          ]
+        }
+      ]
+    },
+    "payload": {
+      "intro": null,
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "你想先听哪部分？",
+          "header": "讲法",
+          "multi_select": false,
+          "options": [
+            {
+              "label": "先讲定义",
+              "description": "从条件概率说起"
+            },
+            {
+              "label": "先看例 8.3",
+              "description": "灌装线那道题，边算边讲"
+            }
+          ],
+          "allow_free_text": true,
+          "placeholder": null
+        }
+      ]
+    },
+    "error": null
+  },
+  {
+    "case": "旧格式：{question, options}",
+    "args": {
+      "question": "要不要顺手出两道题巩固？",
+      "options": [
+        "要",
+        "不要"
+      ]
+    },
+    "payload": {
+      "intro": null,
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "要不要顺手出两道题巩固？",
+          "header": null,
+          "multi_select": false,
+          "options": [
+            {
+              "label": "要",
+              "description": null
+            },
+            {
+              "label": "不要",
+              "description": null
+            }
+          ],
+          "allow_free_text": true,
+          "placeholder": null
+        }
+      ]
+    },
+    "error": null
+  },
+  {
+    "case": "一次塞了 5 题",
+    "args": {
+      "questions": [
+        {
+          "prompt": "第 1 题？"
+        },
+        {
+          "prompt": "第 2 题？"
+        },
+        {
+          "prompt": "第 3 题？"
+        },
+        {
+          "prompt": "第 4 题？"
+        },
+        {
+          "prompt": "第 5 题？"
+        }
+      ]
+    },
+    "payload": {
+      "intro": null,
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "第 1 题？",
+          "header": null,
+          "multi_select": false,
+          "options": [],
+          "allow_free_text": true,
+          "placeholder": null
+        },
+        {
+          "id": "q2",
+          "prompt": "第 2 题？",
+          "header": null,
+          "multi_select": false,
+          "options": [],
+          "allow_free_text": true,
+          "placeholder": null
+        },
+        {
+          "id": "q3",
+          "prompt": "第 3 题？",
+          "header": null,
+          "multi_select": false,
+          "options": [],
+          "allow_free_text": true,
+          "placeholder": null
+        },
+        {
+          "id": "q4",
+          "prompt": "第 4 题？",
+          "header": null,
+          "multi_select": false,
+          "options": [],
+          "allow_free_text": true,
+          "placeholder": null
+        }
+      ]
+    },
+    "error": null
+  },
+  {
+    "case": "空参数",
+    "args": {},
+    "payload": null,
+    "error": "`questions` must contain at least one question."
+  }
+]

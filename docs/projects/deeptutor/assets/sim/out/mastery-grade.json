@@ -1,0 +1,127 @@
+{
+  "exact": [
+    {
+      "question": "q-alpha",
+      "answer": "b",
+      "verdict": {
+        "result": "correct",
+        "confidence": 1.0,
+        "feedback": "α 是事先给定的第一类错误概率上限。"
+      }
+    },
+    {
+      "question": "q-alpha",
+      "answer": "选 B",
+      "verdict": {
+        "result": "correct",
+        "confidence": 1.0,
+        "feedback": "α 是事先给定的第一类错误概率上限。"
+      }
+    },
+    {
+      "question": "q-alpha",
+      "answer": "若 H0 为真，照这个规则检验，长期约有 5% 的时候会错误地拒绝它",
+      "verdict": {
+        "result": "correct",
+        "confidence": 1.0,
+        "feedback": "α 是事先给定的第一类错误概率上限。"
+      }
+    },
+    {
+      "question": "q-alpha",
+      "answer": "A 或 B 吧",
+      "verdict": {
+        "result": "ungraded",
+        "confidence": 0.0,
+        "feedback": "Choose one unambiguous option."
+      }
+    },
+    {
+      "question": "q-alpha",
+      "answer": "A",
+      "verdict": {
+        "result": "incorrect",
+        "confidence": 1.0,
+        "feedback": "α 是事先给定的第一类错误概率上限。"
+      }
+    },
+    {
+      "question": "q-name",
+      "answer": "弃真",
+      "verdict": {
+        "result": "correct",
+        "confidence": 1.0,
+        "feedback": "Matches the stored answer."
+      }
+    },
+    {
+      "question": "q-name",
+      "answer": "取伪错误",
+      "verdict": null
+    }
+  ],
+  "receipts": [
+    {
+      "verdict": {
+        "result": "correct",
+        "confidence": 0.92,
+        "feedback": "说到了「先假定 H0 为真」这一条件。"
+      },
+      "receipt": {
+        "result": "correct",
+        "final": true,
+        "needs_clarification": false,
+        "is_correct": true,
+        "feedback": "说到了「先假定 H0 为真」这一条件。",
+        "confidence": 0.92
+      }
+    },
+    {
+      "verdict": {
+        "result": "incorrect",
+        "confidence": 0.75,
+        "feedback": "像是把 p 值当成了 H0 为真的概率，但表述含糊。"
+      },
+      "receipt": {
+        "result": "ungraded",
+        "final": false,
+        "needs_clarification": true,
+        "is_correct": null,
+        "feedback": "像是把 p 值当成了 H0 为真的概率，但表述含糊。",
+        "confidence": 0.75
+      }
+    }
+  ],
+  "grade_answer": [
+    {
+      "type": "choice",
+      "user": " b ",
+      "expected": "B",
+      "correct": true
+    },
+    {
+      "type": "short",
+      "user": "弃真错误。",
+      "expected": "弃真错误",
+      "correct": true
+    },
+    {
+      "type": "short",
+      "user": "弃真",
+      "expected": "弃真错误",
+      "correct": false
+    },
+    {
+      "type": "open",
+      "user": "在 H0 为真的前提下，得到同样极端或更极端结果的概率",
+      "expected": "H0 为真，同样极端或更极端，概率",
+      "correct": true
+    },
+    {
+      "type": "open",
+      "user": "p 值就是 H0 为真的概率",
+      "expected": "H0 为真，同样极端或更极端，概率",
+      "correct": true
+    }
+  ]
+}

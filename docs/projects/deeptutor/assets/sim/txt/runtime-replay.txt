@@ -1,0 +1,17 @@
+浏览器 A 从头订阅，收到 #4 后刷新页面：
+  #1  stage_start  responding
+  #2  thinking     先查教材里 p 值的定义
+  #3  tool_call    rag
+  #4  tool_result  命中 p.248 三段
+
+浏览器 B 重连，带 after_seq=4：
+  #5  content      不能。
+  #6  content      p 值是先假定原假设为真
+  #7  content      再算出来的概率。
+  #8  stage_end    responding
+  #9  result       
+
+这一轮共发 9 个事件；A 收 4 个，B 收 5 个，没有重复也没有漏。
+
+wait_for_input，前端 50ms 后回答：「先讲定义，再讲误读」
+wait_for_input，没有前端、超时 50ms：''

@@ -1,0 +1,115 @@
+{
+  "extracted": [
+    "QuestionType 156-165",
+    "_VALID_QUESTION_TYPES 168-168",
+    "_TYPES_WITH_OPTIONS 169-169",
+    "_VALID_DIFFICULTIES 170-170",
+    "_CHOICE_KEYS 171-171",
+    "_FILL_IN_BLANK_TOKEN 172-172",
+    "_CONCEPT_ANSWERS 173-173",
+    "QuizTemplate 315-325",
+    "QuestionPipeline._parse_quiz_payload 1385-1404",
+    "QuestionPipeline._normalize_quiz_payload 1407-1448",
+    "QuestionPipeline._collect_quiz_issues 1451-1486"
+  ],
+  "cases": [
+    {
+      "case": "选择题，模型套了 ```json 围栏，正确答案写成了选项原文",
+      "template": {
+        "question_id": "q1",
+        "topic": "显著性水平的含义",
+        "question_type": "choice",
+        "difficulty": "medium",
+        "source": "custom",
+        "reference_question": null,
+        "reference_answer": null
+      },
+      "raw": "好的，题目如下：\n```json\n{\"question\": \"在 α = 0.05 下拒绝了 H0。下面哪一种说法是对的？\", \"options\": {\"a\": \"H0 为假的概率是 95%\", \"B\": \"若 H0 为真，照这个规则检验，长期约有 5% 的时候会错误地拒绝它\", \"C\": \"备择假设 H1 一定成立\", \"D\": \"这次检验的 p 值恰好等于 0.05\"}, \"correct_answer\": \"若 H0 为真，照这个规则检验，长期约有 5% 的时候会错误地拒绝它\", \"explanation\": \"α 是事先给定的第一类错误概率上限。\"}\n```",
+      "normalized": {
+        "question": "在 α = 0.05 下拒绝了 H0。下面哪一种说法是对的？",
+        "options": {
+          "A": "H0 为假的概率是 95%",
+          "B": "若 H0 为真，照这个规则检验，长期约有 5% 的时候会错误地拒绝它",
+          "C": "备择假设 H1 一定成立",
+          "D": "这次检验的 p 值恰好等于 0.05"
+        },
+        "correct_answer": "B",
+        "explanation": "α 是事先给定的第一类错误概率上限。",
+        "question_type": "choice"
+      },
+      "issues": []
+    },
+    {
+      "case": "选择题，只给了三个选项",
+      "template": {
+        "question_id": "q2",
+        "topic": "α 改成 0.01",
+        "question_type": "choice",
+        "difficulty": "hard",
+        "source": "custom",
+        "reference_question": null,
+        "reference_answer": null
+      },
+      "raw": "{\"question\": \"例 8.3 若改取 α = 0.01，结论是？\", \"options\": {\"A\": \"拒绝 H0\", \"B\": \"不拒绝 H0\", \"C\": \"无法判断\"}, \"correct_answer\": \"A\", \"explanation\": \"0.0098 < 0.01。\"}",
+      "normalized": {
+        "question": "例 8.3 若改取 α = 0.01，结论是？",
+        "options": {
+          "A": "拒绝 H0",
+          "B": "不拒绝 H0",
+          "C": "无法判断"
+        },
+        "correct_answer": "A",
+        "explanation": "0.0098 < 0.01。",
+        "question_type": "choice"
+      },
+      "issues": [
+        "choice_options_must_be_a_to_d"
+      ]
+    },
+    {
+      "case": "判断题，答案写成「对」",
+      "template": {
+        "question_id": "q3",
+        "topic": "p 值的含义",
+        "question_type": "concept",
+        "difficulty": "easy",
+        "source": "custom",
+        "reference_question": null,
+        "reference_answer": null
+      },
+      "raw": "{\"question\": \"p 值是在 H0 为真的前提下算出来的。\", \"correct_answer\": \"对\", \"explanation\": \"p 值是条件概率。\"}",
+      "normalized": {
+        "question": "p 值是在 H0 为真的前提下算出来的。",
+        "correct_answer": "true",
+        "explanation": "p 值是条件概率。",
+        "question_type": "concept",
+        "options": null
+      },
+      "issues": []
+    },
+    {
+      "case": "填空题，题干里没有 ____，也没写解析",
+      "template": {
+        "question_id": "q4",
+        "topic": "两类错误的名字",
+        "question_type": "fill_in_blank",
+        "difficulty": "easy",
+        "source": "custom",
+        "reference_question": null,
+        "reference_answer": null
+      },
+      "raw": "{\"question\": \"第一类错误又称什么错误？\", \"correct_answer\": \"弃真\"}",
+      "normalized": {
+        "question": "第一类错误又称什么错误？",
+        "correct_answer": "弃真",
+        "question_type": "fill_in_blank",
+        "explanation": "",
+        "options": null
+      },
+      "issues": [
+        "missing_explanation",
+        "fill_in_blank_question_must_contain_blank_token"
+      ]
+    }
+  ]
+}

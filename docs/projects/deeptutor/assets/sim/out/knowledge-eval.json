@@ -1,0 +1,110 @@
+{
+  "k": 5,
+  "cases": [
+    {
+      "id": "q1",
+      "query": "p 值是什么意思",
+      "gold": [
+        "p.248 第 1 段：定义",
+        "p.248 第 2 段：不是 H0 为真的概率"
+      ],
+      "ranking": [
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [],
+        [
+          1
+        ],
+        []
+      ],
+      "note": "第 1、2 名引的是同一段，第 4 名才拿到第二条"
+    },
+    {
+      "id": "q2",
+      "query": "第一类错误是什么",
+      "gold": [
+        "p.236 第 1 段：弃真错误"
+      ],
+      "ranking": [
+        [],
+        [],
+        [
+          0
+        ],
+        [],
+        []
+      ],
+      "note": "唯一一条标准段落排在第 3"
+    },
+    {
+      "id": "q3",
+      "query": "检验的功效怎么算",
+      "gold": [
+        "p.238 第 1 段：功效的定义",
+        "p.261：功效的计算"
+      ],
+      "ranking": [
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "note": "前 5 名一条都没中"
+    }
+  ],
+  "per_query": [
+    {
+      "query_id": "q1",
+      "k": 5,
+      "retrieved": 5,
+      "relevant_retrieved": 3,
+      "gold_count": 2,
+      "recall@5": 1.0,
+      "precision@5": 0.6,
+      "ndcg@5": 0.8772,
+      "mrr": 1.0,
+      "hit@5": 1.0,
+      "map@5": 0.75
+    },
+    {
+      "query_id": "q2",
+      "k": 5,
+      "retrieved": 5,
+      "relevant_retrieved": 1,
+      "gold_count": 1,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "ndcg@5": 0.5,
+      "mrr": 0.3333,
+      "hit@5": 1.0,
+      "map@5": 0.3333
+    },
+    {
+      "query_id": "q3",
+      "k": 5,
+      "retrieved": 5,
+      "relevant_retrieved": 0,
+      "gold_count": 2,
+      "recall@5": 0.0,
+      "precision@5": 0.0,
+      "ndcg@5": 0.0,
+      "mrr": 0.0,
+      "hit@5": 0.0,
+      "map@5": 0.0
+    }
+  ],
+  "aggregate": {
+    "recall@5": 0.6667,
+    "precision@5": 0.2667,
+    "ndcg@5": 0.4591,
+    "mrr": 0.4444,
+    "hit@5": 0.6667,
+    "map@5": 0.3611,
+    "queries": 3
+  }
+}

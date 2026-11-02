@@ -1,0 +1,58 @@
+{
+  "first_check": {
+    "book_id": "bk_demo",
+    "has_drift": false,
+    "new_kbs": [],
+    "removed_kbs": [],
+    "changed_kbs": [],
+    "changed_documents": {},
+    "current_fingerprints": {
+      "应用统计学": "sha256-paths-v1:75fa441d13f19310616c98fc91680b30b59c415747af31498101495fa4283307"
+    },
+    "stale_page_ids": [],
+    "fallback_stale_pages": false
+  },
+  "baseline": {
+    "documents": {
+      "习题答案.docx": "sha256:bdbd1413756f1ebde5bd03900bc22b0814dcd92b022f4fa053e7a6ebc723389d",
+      "应用统计学.pdf": "sha256:e73aa270b3fb38a2779b8c3b73acdad3e9d4a2ddca645772dbbf5a0437d94796",
+      "第8章讲义.md": "sha256:c0195401524f28a0f161bcdcb5e37ac3833777c0c0f748a1d42354819a8af10b"
+    },
+    "fingerprint": "sha256-paths-v1:75fa441d13f19310616c98fc91680b30b59c415747af31498101495fa4283307"
+  },
+  "unchanged": {
+    "book_id": "bk_demo",
+    "has_drift": false,
+    "new_kbs": [],
+    "removed_kbs": [],
+    "changed_kbs": [],
+    "changed_documents": {},
+    "current_fingerprints": {
+      "应用统计学": "sha256-paths-v1:75fa441d13f19310616c98fc91680b30b59c415747af31498101495fa4283307"
+    },
+    "stale_page_ids": [],
+    "fallback_stale_pages": false
+  },
+  "after_edit": {
+    "book_id": "bk_demo",
+    "has_drift": true,
+    "new_kbs": [],
+    "removed_kbs": [],
+    "changed_kbs": [
+      "应用统计学"
+    ],
+    "changed_documents": {
+      "应用统计学": [
+        "第8章讲义.md"
+      ]
+    },
+    "current_fingerprints": {
+      "应用统计学": "sha256-paths-v1:57ca044a7ba95177f2c6042b0dbc457f6c420315d09e40a349ffb1ea8dd3e591"
+    },
+    "stale_page_ids": [
+      "pg_c4",
+      "pg_c5"
+    ],
+    "fallback_stale_pages": true
+  }
+}

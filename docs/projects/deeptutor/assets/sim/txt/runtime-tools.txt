@@ -1,0 +1,20 @@
+用户能自己开关的工具（USER_TOGGLEABLE_TOOL_NAMES，8 个）：brainstorm、web_search、paper_search、zotero_search、reason、geogebra_analysis、imagegen、videogen
+
+【聊天：挂了「应用统计学」库，开了联网搜索和深度推理，有记忆】
+  workspace_list、workspace_read、workspace_search、workspace_present、web_search、reason、rag、kb_files、knowledge_frontier、read_memory、write_memory、learning_status、learning_update、web_fetch、github、ask_user、cron
+
+【聊天：没挂库，用户开关里塞了 rag 和 exec】
+  workspace_list、workspace_read、workspace_search、workspace_present、web_search、read_memory、write_memory、learning_status、learning_update、web_fetch、github、ask_user、cron
+
+【解题 deep_solve：同第一行，再加解题自带的三个工具】
+  workspace_list、workspace_read、workspace_search、workspace_present、web_search、reason、rag、kb_files、knowledge_frontier、read_memory、solve_plan、solve_finish_step、solve_replan、write_memory、learning_status、learning_update、web_fetch、github、ask_user、cron
+
+【Obsidian 笔记库（独占的知识能力），旁边还挂了一个普通库】
+  workspace_list、workspace_read、workspace_search、workspace_present、obsidian_search、obsidian_read、rag、kb_files、knowledge_frontier、ask_user
+
+哪句话会被改派到出题流水线 deep_question（route_explicit_quiz_request）：
+  「帮我出 5 道假设检验的测验题」 → deep_question
+  「给我出几道考试题，第 8 章的」 → deep_question
+  「考考我 p 值」 → 留在 chat
+  「Generate 5 quiz questions on hypothesis testing」 → deep_question
+  「帮我出 5 道假设检验的测验题」（在 mastery 工作区里） → 留在 chat

@@ -1,0 +1,196 @@
+{
+  "book": {
+    "id": "bk_demo",
+    "revision": 1,
+    "title": "假设检验：从直觉到判断",
+    "description": "用一条灌装线的例子，把第 8 章从直觉讲到判断。",
+    "status": "draft",
+    "proposal": null,
+    "knowledge_bases": [
+      "应用统计学"
+    ],
+    "language": "zh",
+    "depth": "standard",
+    "page_count": 0,
+    "chapter_count": 0,
+    "created_at": 1793246501.7621925,
+    "updated_at": 1793246501.762193,
+    "metadata": {},
+    "kb_fingerprints": {},
+    "kb_document_fingerprints": {},
+    "stale_page_ids": [],
+    "stale_detected_at": 0.0
+  },
+  "pages": [
+    {
+      "id": "pg_c4",
+      "book_id": "",
+      "chapter_id": "c4",
+      "title": "p 值到底说了什么",
+      "learning_objectives": [
+        "用条件概率解释 p 值",
+        "认出三种常见误读"
+      ],
+      "content_type": "theory",
+      "status": "pending",
+      "order": 4,
+      "blocks": [
+        {
+          "id": "blk_56d3951d1c",
+          "type": "section",
+          "status": "ready",
+          "title": "",
+          "params": {},
+          "payload": {
+            "intro": "p 值回答的是一个条件问题。",
+            "subsections": [
+              {
+                "heading": "先假定 H0 为真",
+                "body": "在 μ = 50 的前提下，抽到 t ≥ 2.80 或 t ≤ −2.80 的概率约为 0.0098。"
+              },
+              {
+                "heading": "它不是什么",
+                "body": "它不是 H0 为真的概率，也不是效应的大小。"
+              }
+            ],
+            "key_takeaway": "p 值是 P(数据这么极端 | H0)，不是 P(H0 | 数据)。"
+          },
+          "source_anchors": [],
+          "metadata": {},
+          "error": "",
+          "created_at": 1793246501.7622244,
+          "updated_at": 1793246501.7622247
+        },
+        {
+          "id": "blk_d9a778906d",
+          "type": "callout",
+          "status": "ready",
+          "title": "",
+          "params": {},
+          "payload": {
+            "label": "易错",
+            "body": "p > 0.05 只是证据不够，不等于 H0 为真。",
+            "bridge_text": "一个需要记住的要点。"
+          },
+          "source_anchors": [],
+          "metadata": {},
+          "error": "",
+          "created_at": 1793246501.7622309,
+          "updated_at": 1793246501.762231
+        },
+        {
+          "id": "blk_4eaa729bb1",
+          "type": "quiz",
+          "status": "ready",
+          "title": "检查一下",
+          "params": {},
+          "payload": {
+            "questions": [
+              {
+                "question": "例 8.3 改取 α = 0.01，结论是？",
+                "options": {
+                  "a": "拒绝 H0",
+                  "b": "不拒绝 H0"
+                },
+                "correct_answer": "A",
+                "explanation": "0.0098 < 0.01，仍然拒绝。"
+              }
+            ]
+          },
+          "source_anchors": [],
+          "metadata": {},
+          "error": "",
+          "created_at": 1793246501.7622352,
+          "updated_at": 1793246501.7622354
+        },
+        {
+          "id": "blk_a816802324",
+          "type": "flash_cards",
+          "status": "ready",
+          "title": "记忆钩子",
+          "params": {},
+          "payload": {
+            "cards": [
+              {
+                "front": "第一类错误",
+                "back": "弃真，概率 α"
+              },
+              {
+                "front": "第二类错误",
+                "back": "取伪，概率 β"
+              }
+            ]
+          },
+          "source_anchors": [],
+          "metadata": {},
+          "error": "",
+          "created_at": 1793246501.762239,
+          "updated_at": 1793246501.762239
+        },
+        {
+          "id": "blk_2127e4c7c3",
+          "type": "figure",
+          "status": "ready",
+          "title": "拒绝域",
+          "params": {},
+          "payload": {
+            "description": "t(24) 分布，两侧阴影是 |t| > 2.064 的拒绝域，竖线标出 t = 2.80。"
+          },
+          "source_anchors": [],
+          "metadata": {},
+          "error": "",
+          "created_at": 1793246501.7622423,
+          "updated_at": 1793246501.7622423
+        },
+        {
+          "id": "blk_4a5574bb0b",
+          "type": "animation",
+          "status": "ready",
+          "title": "p 值的面积",
+          "params": {},
+          "payload": {},
+          "source_anchors": [],
+          "metadata": {},
+          "error": "",
+          "created_at": 1793246501.7622452,
+          "updated_at": 1793246501.7622452
+        },
+        {
+          "id": "blk_43d522a576",
+          "type": "quiz",
+          "status": "error",
+          "title": "没生成出来的块",
+          "params": {},
+          "payload": {},
+          "source_anchors": [],
+          "metadata": {},
+          "error": "",
+          "created_at": 1793246501.7622488,
+          "updated_at": 1793246501.7622488
+        }
+      ],
+      "links": [],
+      "parent_page_id": "",
+      "error": "",
+      "created_at": 1793246501.762252,
+      "updated_at": 1793246501.7622523
+    },
+    {
+      "id": "pg_c5",
+      "book_id": "",
+      "chapter_id": "c5",
+      "title": "功效与样本量",
+      "learning_objectives": [],
+      "content_type": "theory",
+      "status": "pending",
+      "order": 5,
+      "blocks": [],
+      "links": [],
+      "parent_page_id": "",
+      "error": "",
+      "created_at": 1793246501.7622545,
+      "updated_at": 1793246501.7622545
+    }
+  ],
+  "markdown": "# 假设检验：从直觉到判断\n\n*用一条灌装线的例子，把第 8 章从直觉讲到判断。*\n\n**来源:** 应用统计学 · **章节:** 2\n\n---\n\n## p 值到底说了什么\n\n- 用条件概率解释 p 值\n- 认出三种常见误读\n\np 值回答的是一个条件问题。\n\n### 先假定 H0 为真\n\n在 μ = 50 的前提下，抽到 t ≥ 2.80 或 t ≤ −2.80 的概率约为 0.0098。\n\n### 它不是什么\n\n它不是 H0 为真的概率，也不是效应的大小。\n\n> **要点** — p 值是 P(数据这么极端 | H0)，不是 P(H0 | 数据)。\n\n一个需要记住的要点。\n\n> **易错** — p > 0.05 只是证据不够，不等于 H0 为真。\n\n#### 检查一下\n\n**1. 例 8.3 改取 α = 0.01，结论是？**\n\n- **A.** 拒绝 H0\n- **B.** 不拒绝 H0\n\n<details><summary>答案</summary>\n\nA\n\n</details>\n\n_0.0098 < 0.01，仍然拒绝。_\n\n#### 记忆钩子\n\n| 正面 | 背面 |\n| --- | --- |\n| 第一类错误 | 弃真，概率 α |\n| 第二类错误 | 取伪，概率 β |\n\n#### 拒绝域\n\nt(24) 分布，两侧阴影是 |t| > 2.064 的拒绝域，竖线标出 t = 2.80。\n\n#### p 值的面积\n\n_（animation 无法用文本表示，已省略。）_\n\n## 功效与样本量\n\n_（本章尚未生成。）_\n"
+}

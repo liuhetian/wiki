@@ -1,0 +1,39 @@
+{
+  "journal": {
+    "version": 1,
+    "updated_at": "",
+    "mission": {
+      "topic": "《应用统计学》第 8 章 假设检验",
+      "why": "下周课上要讲例 8.3",
+      "level": "研一",
+      "updated_at": ""
+    },
+    "last_session": {
+      "summary": "讲清了 p 值是条件概率；α 改成 0.01 时的边界题还会判错",
+      "next_focus": "拒绝域与临界值，然后做习题 8.4",
+      "updated_at": ""
+    },
+    "records": [
+      {
+        "id": "r1",
+        "title": "p 值不是 H0 为真的概率",
+        "insight": "自己能用灌装线的例子讲出来",
+        "created_at": ""
+      },
+      {
+        "id": "r2",
+        "title": "两类错误的命名",
+        "insight": "弃真是第一类，取伪是第二类",
+        "created_at": ""
+      },
+      {
+        "id": "r3",
+        "title": "t 统计量",
+        "insight": "标准误用 s/√n，自由度 n−1",
+        "created_at": ""
+      }
+    ]
+  },
+  "injected": "# Learning journal (carried over from earlier sessions)\n\n## Mission\n- Topic: 《应用统计学》第 8 章 假设检验\n- Why: 下周课上要讲例 8.3\n- Level: 研一\n\n## Last session\n- Summary: 讲清了 p 值是条件概率；α 改成 0.01 时的边界题还会判错\n- Next focus: 拒绝域与临界值，然后做习题 8.4\n\n_Pick up from where this leaves off, and record what this session changes with `learning_update`._\n",
+  "empty": ""
+}

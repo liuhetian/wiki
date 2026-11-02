@@ -1,0 +1,108 @@
+{
+  "steps": [
+    {
+      "step": "第 4 章 q1 答错（以为 α=0.01 时不拒绝）",
+      "score": 0,
+      "weak_chapters": [
+        "c4"
+      ]
+    },
+    {
+      "step": "第 2 章 q1 答对",
+      "score": 1,
+      "weak_chapters": [
+        "c4"
+      ]
+    },
+    {
+      "step": "第 2 章 q1 再答对一次",
+      "score": 1,
+      "weak_chapters": [
+        "c4"
+      ]
+    },
+    {
+      "step": "第 3 章 q2 答错",
+      "score": 1,
+      "weak_chapters": [
+        "c3",
+        "c4"
+      ]
+    },
+    {
+      "step": "第 4 章 q1 改对",
+      "score": 2,
+      "weak_chapters": [
+        "c3"
+      ]
+    }
+  ],
+  "visited": [
+    "pg_c2",
+    "pg_c3",
+    "pg_c4"
+  ],
+  "completion": 0.5,
+  "progress": {
+    "book_id": "bk_demo",
+    "current_page_id": "pg_c4",
+    "visited_page_ids": [
+      "pg_c2",
+      "pg_c3",
+      "pg_c4"
+    ],
+    "bookmarked_page_ids": [],
+    "quiz_attempts": [
+      {
+        "block_id": "blk_pg_c4_quiz",
+        "page_id": "pg_c4",
+        "question_id": "q1",
+        "user_answer": "B",
+        "is_correct": false,
+        "submission_id": "",
+        "timestamp": 1793246501.845907
+      },
+      {
+        "block_id": "blk_pg_c2_quiz",
+        "page_id": "pg_c2",
+        "question_id": "q1",
+        "user_answer": "B",
+        "is_correct": true,
+        "submission_id": "",
+        "timestamp": 1793246501.845931
+      },
+      {
+        "block_id": "blk_pg_c2_quiz",
+        "page_id": "pg_c2",
+        "question_id": "q1",
+        "user_answer": "B",
+        "is_correct": true,
+        "submission_id": "",
+        "timestamp": 1793246501.8459408
+      },
+      {
+        "block_id": "blk_pg_c3_quiz",
+        "page_id": "pg_c3",
+        "question_id": "q2",
+        "user_answer": "C",
+        "is_correct": false,
+        "submission_id": "",
+        "timestamp": 1793246501.845947
+      },
+      {
+        "block_id": "blk_pg_c4_quiz",
+        "page_id": "pg_c4",
+        "question_id": "q1",
+        "user_answer": "A",
+        "is_correct": true,
+        "submission_id": "",
+        "timestamp": 1793246501.8459525
+      }
+    ],
+    "weak_chapters": [
+      "c3"
+    ],
+    "score": 2,
+    "updated_at": 1793246501.8458936
+  }
+}

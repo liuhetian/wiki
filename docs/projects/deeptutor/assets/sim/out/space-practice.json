@@ -1,0 +1,307 @@
+{
+  "一直答「掌握了」": [
+    {
+      "interval_days": 3.0,
+      "ease": 2.5,
+      "streak": 1,
+      "lapses": 0,
+      "due_at": 1761959200.0,
+      "last_review_at": 1761700000.0,
+      "review_count": 1,
+      "version": 1,
+      "rating": "good"
+    },
+    {
+      "interval_days": 7.5,
+      "ease": 2.5,
+      "streak": 2,
+      "lapses": 0,
+      "due_at": 1762607200.0,
+      "last_review_at": 1761959200.0,
+      "review_count": 2,
+      "version": 2,
+      "rating": "good"
+    },
+    {
+      "interval_days": 18.75,
+      "ease": 2.5,
+      "streak": 3,
+      "lapses": 0,
+      "due_at": 1764227200.0,
+      "last_review_at": 1762607200.0,
+      "review_count": 3,
+      "version": 3,
+      "rating": "good"
+    },
+    {
+      "interval_days": 46.875,
+      "ease": 2.5,
+      "streak": 4,
+      "lapses": 0,
+      "due_at": 1768277200.0,
+      "last_review_at": 1764227200.0,
+      "review_count": 4,
+      "version": 4,
+      "rating": "good"
+    },
+    {
+      "interval_days": 117.188,
+      "ease": 2.5,
+      "streak": 5,
+      "lapses": 0,
+      "due_at": 1778402243.2,
+      "last_review_at": 1768277200.0,
+      "review_count": 5,
+      "version": 5,
+      "rating": "good"
+    },
+    {
+      "interval_days": 292.97,
+      "ease": 2.5,
+      "streak": 6,
+      "lapses": 0,
+      "due_at": 1803714851.2,
+      "last_review_at": 1778402243.2,
+      "review_count": 6,
+      "version": 6,
+      "rating": "good"
+    }
+  ],
+  "第三次「再练」": [
+    {
+      "interval_days": 3.0,
+      "ease": 2.5,
+      "streak": 1,
+      "lapses": 0,
+      "due_at": 1761959200.0,
+      "last_review_at": 1761700000.0,
+      "review_count": 1,
+      "version": 1,
+      "rating": "good"
+    },
+    {
+      "interval_days": 7.5,
+      "ease": 2.5,
+      "streak": 2,
+      "lapses": 0,
+      "due_at": 1762607200.0,
+      "last_review_at": 1761959200.0,
+      "review_count": 2,
+      "version": 2,
+      "rating": "good"
+    },
+    {
+      "interval_days": 0.007,
+      "ease": 2.3,
+      "streak": 0,
+      "lapses": 1,
+      "due_at": 1762607804.8,
+      "last_review_at": 1762607200.0,
+      "review_count": 3,
+      "version": 3,
+      "rating": "again"
+    },
+    {
+      "interval_days": 3.0,
+      "ease": 2.3,
+      "streak": 1,
+      "lapses": 1,
+      "due_at": 1762867004.8,
+      "last_review_at": 1762607804.8,
+      "review_count": 4,
+      "version": 4,
+      "rating": "good"
+    },
+    {
+      "interval_days": 6.9,
+      "ease": 2.3,
+      "streak": 2,
+      "lapses": 1,
+      "due_at": 1763463164.8,
+      "last_review_at": 1762867004.8,
+      "review_count": 5,
+      "version": 5,
+      "rating": "good"
+    }
+  ],
+  "一直「简单」": [
+    {
+      "interval_days": 3.9,
+      "ease": 2.65,
+      "streak": 1,
+      "lapses": 0,
+      "due_at": 1762036960.0,
+      "last_review_at": 1761700000.0,
+      "review_count": 1,
+      "version": 1,
+      "rating": "easy"
+    },
+    {
+      "interval_days": 13.435,
+      "ease": 2.8,
+      "streak": 2,
+      "lapses": 0,
+      "due_at": 1763197744.0,
+      "last_review_at": 1762036960.0,
+      "review_count": 2,
+      "version": 2,
+      "rating": "easy"
+    },
+    {
+      "interval_days": 48.903,
+      "ease": 2.9499999999999997,
+      "streak": 3,
+      "lapses": 0,
+      "due_at": 1767422963.2,
+      "last_review_at": 1763197744.0,
+      "review_count": 3,
+      "version": 3,
+      "rating": "easy"
+    },
+    {
+      "interval_days": 187.543,
+      "ease": 3.0,
+      "streak": 4,
+      "lapses": 0,
+      "due_at": 1783626678.4,
+      "last_review_at": 1767422963.2,
+      "review_count": 4,
+      "version": 4,
+      "rating": "easy"
+    },
+    {
+      "interval_days": 365.0,
+      "ease": 3.0,
+      "streak": 5,
+      "lapses": 0,
+      "due_at": 1815162678.4,
+      "last_review_at": 1783626678.4,
+      "review_count": 5,
+      "version": 5,
+      "rating": "easy"
+    },
+    {
+      "interval_days": 365.0,
+      "ease": 3.0,
+      "streak": 6,
+      "lapses": 0,
+      "due_at": 1846698678.4,
+      "last_review_at": 1815162678.4,
+      "review_count": 6,
+      "version": 6,
+      "rating": "easy"
+    },
+    {
+      "interval_days": 365.0,
+      "ease": 3.0,
+      "streak": 7,
+      "lapses": 0,
+      "due_at": 1878234678.4,
+      "last_review_at": 1846698678.4,
+      "review_count": 7,
+      "version": 7,
+      "rating": "easy"
+    },
+    {
+      "interval_days": 365.0,
+      "ease": 3.0,
+      "streak": 8,
+      "lapses": 0,
+      "due_at": 1909770678.4,
+      "last_review_at": 1878234678.4,
+      "review_count": 8,
+      "version": 8,
+      "rating": "easy"
+    },
+    {
+      "interval_days": 365.0,
+      "ease": 3.0,
+      "streak": 9,
+      "lapses": 0,
+      "due_at": 1941306678.4,
+      "last_review_at": 1909770678.4,
+      "review_count": 9,
+      "version": 9,
+      "rating": "easy"
+    }
+  ],
+  "一直「再练」": [
+    {
+      "interval_days": 0.007,
+      "ease": 2.3,
+      "streak": 0,
+      "lapses": 1,
+      "due_at": 1761700604.8,
+      "last_review_at": 1761700000.0,
+      "review_count": 1,
+      "version": 1,
+      "rating": "again"
+    },
+    {
+      "interval_days": 0.007,
+      "ease": 2.0999999999999996,
+      "streak": 0,
+      "lapses": 2,
+      "due_at": 1761701209.6,
+      "last_review_at": 1761700604.8,
+      "review_count": 2,
+      "version": 2,
+      "rating": "again"
+    },
+    {
+      "interval_days": 0.007,
+      "ease": 1.8999999999999997,
+      "streak": 0,
+      "lapses": 3,
+      "due_at": 1761701814.3999999,
+      "last_review_at": 1761701209.6,
+      "review_count": 3,
+      "version": 3,
+      "rating": "again"
+    },
+    {
+      "interval_days": 0.007,
+      "ease": 1.6999999999999997,
+      "streak": 0,
+      "lapses": 4,
+      "due_at": 1761702419.1999998,
+      "last_review_at": 1761701814.3999999,
+      "review_count": 4,
+      "version": 4,
+      "rating": "again"
+    },
+    {
+      "interval_days": 0.007,
+      "ease": 1.4999999999999998,
+      "streak": 0,
+      "lapses": 5,
+      "due_at": 1761703023.9999998,
+      "last_review_at": 1761702419.1999998,
+      "review_count": 5,
+      "version": 5,
+      "rating": "again"
+    },
+    {
+      "interval_days": 0.007,
+      "ease": 1.3,
+      "streak": 0,
+      "lapses": 6,
+      "due_at": 1761703628.7999997,
+      "last_review_at": 1761703023.9999998,
+      "review_count": 6,
+      "version": 6,
+      "rating": "again"
+    },
+    {
+      "interval_days": 0.007,
+      "ease": 1.3,
+      "streak": 0,
+      "lapses": 7,
+      "due_at": 1761704233.5999997,
+      "last_review_at": 1761703628.7999997,
+      "review_count": 7,
+      "version": 7,
+      "rating": "again"
+    }
+  ]
+}

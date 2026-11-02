@@ -1,0 +1,131 @@
+{
+  "signatures": {
+    "bge-m3": "cec3b5bd92e5be35",
+    "text-embedding-3-small": "39829713366c4ce3"
+  },
+  "stages": [
+    {
+      "title": "用 bge-m3 建好 version-1",
+      "versions": [
+        {
+          "version": "version-1",
+          "signature": "cec3b5bd92e5be35",
+          "model": "bge-m3",
+          "dimension": 1024,
+          "state": "—",
+          "ready": true,
+          "building_flag": false
+        }
+      ],
+      "find_matching_version": {
+        "用 bge-m3 读": "version-1",
+        "用 3-small 读": null
+      }
+    },
+    {
+      "title": "换成 3-small 重建中：version-2 已有输出，还没发布",
+      "versions": [
+        {
+          "version": "version-1",
+          "signature": "cec3b5bd92e5be35",
+          "model": "bge-m3",
+          "dimension": 1024,
+          "state": "—",
+          "ready": true,
+          "building_flag": false
+        },
+        {
+          "version": "version-2",
+          "signature": "version-2",
+          "model": "—",
+          "dimension": "—",
+          "state": "—",
+          "ready": false,
+          "building_flag": true
+        }
+      ],
+      "find_matching_version": {
+        "用 bge-m3 读": "version-1",
+        "用 3-small 读": null
+      }
+    },
+    {
+      "title": "version-2 发布",
+      "versions": [
+        {
+          "version": "version-1",
+          "signature": "cec3b5bd92e5be35",
+          "model": "bge-m3",
+          "dimension": 1024,
+          "state": "—",
+          "ready": true,
+          "building_flag": false
+        },
+        {
+          "version": "version-2",
+          "signature": "39829713366c4ce3",
+          "model": "text-embedding-3-small",
+          "dimension": 1536,
+          "state": "published",
+          "ready": true,
+          "building_flag": true
+        }
+      ],
+      "find_matching_version": {
+        "用 bge-m3 读": "version-1",
+        "用 3-small 读": "version-2"
+      }
+    },
+    {
+      "title": "version-3 重建到一半中断",
+      "versions": [
+        {
+          "version": "version-1",
+          "signature": "cec3b5bd92e5be35",
+          "model": "bge-m3",
+          "dimension": 1024,
+          "state": "—",
+          "ready": true,
+          "building_flag": false
+        },
+        {
+          "version": "version-2",
+          "signature": "39829713366c4ce3",
+          "model": "text-embedding-3-small",
+          "dimension": 1536,
+          "state": "published",
+          "ready": true,
+          "building_flag": true
+        },
+        {
+          "version": "version-3",
+          "signature": "version-3",
+          "model": "—",
+          "dimension": "—",
+          "state": "—",
+          "ready": false,
+          "building_flag": true
+        }
+      ],
+      "find_matching_version": {
+        "用 bge-m3 读": "version-1",
+        "用 3-small 读": "version-2"
+      }
+    }
+  ],
+  "meta_v2": {
+    "version": "version-2",
+    "signature": "39829713366c4ce3",
+    "binding": "openai",
+    "model": "text-embedding-3-small",
+    "dimension": 1536,
+    "base_url": "https://api.openai.com/v1",
+    "api_version": "",
+    "role_semantics": "",
+    "layout": "flat",
+    "created_at": "（运行时间，略）",
+    "provider": "llamaindex",
+    "state": "published",
+    "readiness_verified": true
+  }
+}

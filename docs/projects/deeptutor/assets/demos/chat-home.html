@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="720">
+<title>DeepTutor 仿真 demo：首页聊天的一轮</title>
+<!--
+  Goal      一轮对话从发问到收尾：活动头 + 工具行在答案上方折起，思考卡先开后合，答案带页码 chip，
+            模型半路用 ask_user 停下来问你，答完接着讲，最后是用量 pill 和面板
+  Surface   /chat · features/chat/components/ChatWorkspace.tsx + ChatComposer + ChatMessageList
+  Sources   features/chat/components/ChatWorkspace.tsx 779-813（问候语）、2389-2490（顶栏）、2507-2519（空状态）、
+              2560-2575（消息列 max-w-[960px] space-y-9 px-6）、2795-2815（starter 在 composer 下）；
+            components/chat/home/ChatComposer.tsx 120-160（能力菜单项）、182-194（SEND_STATE_CLASS）、
+              1082-1094（外框 rounded-[26px]）、1188-1260（能力 chip 和菜单）、1392-1475（模型、预算、麦克风、发送）；
+            components/chat/home/ChatComposer.module.css（工具栏、≥600px 才显示标签）；
+            components/chat/home/ComposerInput.tsx 525-531、712-735（占位语、16px 文本）；
+            components/chat/home/ComposerResources.tsx 238-266、KnowledgeSelector.tsx 76-112、ModelSelector.tsx 184-218、
+              ContextBudgetChip.tsx 92-123、231-250；
+            components/chat/home/StarterSuggestions.tsx 186-230；
+            features/capabilities/presentation.tsx（能力名、说明、图标；Solve、Research 是 secondary，收进「更多能力」）；
+            features/chat/trace/TracePresentation.tsx 176-237（工具行动词和 chip）、1585-1626（活动头文案）、
+              1838-1897（答案开始吐字时活动折起）；lib/trace-timing.ts 65-76（时长 7s 这种写法）；
+            components/common/ModelThinkingCard.tsx；components/chat/home/AskUserOptions.tsx 1198-1215、1225-1255、
+              1395-1450、1290-1345、1506-1600（问题页签、选项行、底部按钮、作答后的「你的回答」）；
+            features/chat/messages/ChatMessageList.tsx 1826-1890（用户气泡）、2491-2530（动作行 + 用量）；
+            features/chat/messages/UsageFooter.tsx（pill 和 272px 面板，数字照 zh 的 Intl 紧凑写法）
+  Layout    Shell（主页）→ 顶栏 → 消息列 → composer；空状态时问候语在上、starter 在 composer 下
+  Data      DT.DATA.question、answer、usage、learner.workspace、kb.name
+  Autoplay  空状态 → 能力菜单弹出又收起 → 打字 → 发送 → 检索知识库、读取来源 → 思考卡 → 答案流式 → ask_user →
+            选第 2 项提交 → 作答卡 → 续讲 → 已完成 → 用量面板，一圈约 30s
+  Height    720
+  Deviations 思考球用 7 个点的 CSS（上游是 thinking-orbs 画布）；logo 用黑底衬线 D；模型图标用中性字形
+            （上游是 DeepSeek 品牌标）；用量面板挂在 pill 上方（上游 portal 到 body、fixed 定位）；
+            问候语固定用「晚上好——想探索点什么？」（上游按钟点随机挑）
+  Checks    composer 各 chip、发送键四态、活动头文案、ask_user 文案、用量面板十行与语言包一致
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  /* chat-preview-shell flex h-full flex-col overflow-hidden bg-background */
+  .ch-shell { display: flex; height: 100%; flex-direction: column; overflow: hidden; background: var(--background); }
+  /* 顶栏：mx-auto flex w-full max-w-[960px] flex-wrap items-center justify-between gap-x-3 gap-y-1.5 px-6 pt-3 pb-0 */
+  .ch-top { margin: 0 auto; display: flex; width: 100%; max-width: 960px; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 12px; row-gap: 6px; padding: 12px 24px 0; min-height: 44px; }
+  /* 工作区面包屑：inline-flex shrink-0 items-center gap-1 rounded-lg px-1.5 py-1 text-[12.5px] text-muted-foreground */
+  .ch-crumb { display: inline-flex; flex-shrink: 0; align-items: center; gap: 4px; border-radius: 8px; padding: 4px 6px; font-size: 12.5px; color: var(--muted-foreground); }
+  /* 会话标题：rounded-xl px-2 py-1 font-serif text-[17px] font-semibold tracking-[-0.01em] */
+  .ch-title { min-width: 0; border-radius: 12px; padding: 4px 8px; font-family: var(--font-serif); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  /* HeaderActionButton：inline-flex h-8 w-8 items-center justify-center rounded-lg，图标 16 / 1.7 */
+  .ch-hbtn { display: inline-flex; height: 32px; width: 32px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 8px; color: var(--muted-foreground); }
+
+  /* 空状态：flex flex-1 items-end justify-center pb-14 px-6；h1 font-serif text-[40px] font-medium leading-[1.1] tracking-[-0.015em] */
+  .ch-empty { display: flex; width: 100%; flex: 1; min-height: 0; align-items: flex-end; justify-content: center; padding: 0 24px 56px; }
+  .ch-greet { display: flex; width: 100%; max-width: 960px; align-items: center; justify-content: center; gap: 16px; }
+  .ch-greet h1 { font-family: var(--font-serif); font-size: 40px; font-weight: 500; line-height: 1.1; letter-spacing: -0.015em; }
+  .ch-logo { display: inline-flex; height: 40px; width: 40px; align-items: center; justify-content: center; border-radius: 10px; background: var(--foreground); color: var(--background); font-family: var(--font-serif); font-size: 22px; font-weight: 700; }
+
+  /* 消息区：flex-1 overflow-y-auto pt-6，上下各一段渐隐遮罩，底部留 48px */
+  .ch-scroll { width: 100%; flex: 1; min-height: 0; overflow-y: auto; padding: 24px 0 48px; scrollbar-gutter: stable both-edges;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0px, #000 32px, #000 calc(100% - 40px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0px, #000 32px, #000 calc(100% - 40px), transparent 100%); }
+  /* data-chat-column：mx-auto w-full max-w-[960px] space-y-9 px-6 */
+  .ch-column { margin: 0 auto; width: 100%; max-width: 960px; padding: 0 24px; display: flex; flex-direction: column; gap: 36px; }
+  .ch-user { display: flex; justify-content: flex-end; }
+  .ch-assistant { min-width: 0; }
+  /* AssistantActivity 外层留 mb-3，展开时 pt-2 */
+  .ch-activity { margin-bottom: 12px; }
+  .ch-rows { padding-top: 8px; }
+  /* AssistantResponse：text-[16px] leading-[1.75] */
+  .ch-answer .prose { font-size: 16px; }
+  .ch-answer .prose p { line-height: 1.75; }
+
+  /* ask_user 卡：mt-3 rounded-xl border bg-card px-3.5 py-3 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_4px_14px_rgba(0,0,0,0.04)] */
+  .ch-ask { margin-top: 12px; border-radius: 12px; border-width: 1px; background: var(--card); padding: 12px 14px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 14px rgba(0, 0, 0, 0.04); }
+  .ch-ask.is-resolved { padding: 10px 14px; }
+  /* 状态行：mt-0.5 text-[11px] */
+  .ch-ask__status { margin-top: 2px; font-size: 11px; color: var(--muted-foreground); }
+  /* 骨架：h-4 w-2/3 animate-pulse rounded bg-foreground/8；h-9 w-full rounded-xl bg-foreground/5 */
+  .ch-ask__skel1 { height: 16px; width: 66%; border-radius: 4px; background: color-mix(in srgb, var(--foreground) 8%, transparent); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  .ch-ask__skel2 { margin-top: 6px; height: 36px; width: 100%; border-radius: 12px; background: color-mix(in srgb, var(--foreground) 5%, transparent); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  /* 页签：rounded-full border px-2 py-0.5 text-[11.5px] font-medium；当前 border-foreground/35 bg-foreground/5 */
+  .ch-ask__tab { display: inline-flex; align-items: center; gap: 6px; border-radius: 9999px; border: 1px solid color-mix(in srgb, var(--foreground) 35%, transparent); background: color-mix(in srgb, var(--foreground) 5%, transparent); padding: 2px 8px; font-size: 11.5px; font-weight: 500; }
+  .ch-ask__tabnum { display: flex; height: 16px; width: 16px; align-items: center; justify-content: center; border-radius: 9999px; font-size: 10px; background: color-mix(in srgb, var(--muted) 60%, transparent); color: var(--muted-foreground); }
+  .ch-ask__tabnum.is-done { background: var(--primary); color: var(--primary-foreground); }
+  /* 问题：text-[15px] font-medium leading-snug */
+  .ch-ask__q { margin-top: 6px; font-size: 15px; font-weight: 500; line-height: 1.375; }
+  /* 选项：-mx-1.5 flex items-start gap-2.5 rounded-lg px-1.5 py-1；选中 bg-foreground/6 */
+  .ch-ask__opt { margin: 0 -6px; display: flex; width: calc(100% + 12px); align-items: flex-start; gap: 10px; border-radius: 8px; padding: 4px 6px; transition: background-color var(--motion-fast); }
+  .ch-ask__opt.is-picked { background: color-mix(in srgb, var(--foreground) 6%, transparent); }
+  /* 编号：h-6 w-6 rounded-md text-[12px] font-semibold tabular-nums；选中 bg-primary text-primary-foreground */
+  .ch-ask__badge { display: flex; height: 24px; width: 24px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 6px; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; background: color-mix(in srgb, var(--foreground) 6%, transparent); color: var(--muted-foreground); transition: background-color var(--motion-fast), color var(--motion-fast); }
+  .ch-ask__opt.is-picked .ch-ask__badge { background: var(--primary); color: var(--primary-foreground); }
+  .ch-ask__label { display: block; font-size: 14px; font-weight: 500; line-height: 1.375; }
+  .ch-ask__desc { margin-top: 2px; display: block; font-size: 12.5px; line-height: 1.375; color: var(--muted-foreground); }
+  .ch-ask__other { font-size: 14px; color: var(--muted-foreground); }
+  /* 底栏：mt-2 flex items-center justify-between gap-2 border-t border-border/60 pt-2 */
+  .ch-ask__foot { margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent); padding-top: 8px; }
+  /* 跳过：rounded-md border px-2 py-1 text-[12px] font-medium text-muted-foreground；提交：rounded-md bg-primary px-2.5 py-1 text-[12px] */
+  .ch-ask__skip { border-radius: 6px; border-width: 1px; padding: 4px 8px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  .ch-ask__submit { border-radius: 6px; background: var(--primary); padding: 4px 10px; font-size: 12px; font-weight: 500; color: var(--primary-foreground); }
+  .ch-ask__submit[disabled] { opacity: 0.4; }
+  /* 作答后：标题行 text-[12.5px] font-medium text-muted-foreground；问 text-[12.5px] muted；答 text-[14px] font-medium */
+  .ch-ask__rhead { margin: 0 -6px 8px; display: flex; align-items: center; gap: 6px; padding: 4px 6px; font-size: 12.5px; font-weight: 500; color: var(--muted-foreground); }
+  .ch-ask__rq { font-size: 12.5px; line-height: 1.375; color: var(--muted-foreground); }
+  .ch-ask__ra { margin-top: 2px; font-size: 14px; font-weight: 500; line-height: 1.375; }
+
+  /* 动作行：mt-3 flex items-center；按钮 rounded-md p-1 text-muted-foreground，图标 15 / 1.5 */
+  .ch-actions { position: relative; margin-top: 12px; display: flex; align-items: center; }
+  .ch-act { display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; padding: 4px; color: var(--muted-foreground); }
+  /* UsageFooter pill：inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] text-muted-foreground */
+  .ch-usage { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; border-radius: 9999px; padding: 4px 10px; font-size: 11px; color: var(--muted-foreground); transition: background-color var(--motion-fast); }
+  .ch-usage.is-open { background: var(--muted); }
+  /* 面板：w-[272px] rounded-xl border bg-background p-3 text-xs shadow-lg */
+  .ch-panel { position: absolute; right: 0; bottom: calc(100% + 8px); z-index: 30; width: 272px; border-radius: 12px; border-width: 1px; background: var(--background); padding: 12px; font-size: 12px; box-shadow: var(--shadow-lg); }
+  .ch-panel__scope { margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+  .ch-panel__tab { flex: 1; border-radius: 6px; padding: 4px 8px; font-size: 11px; color: var(--muted-foreground); text-align: center; }
+  .ch-panel__tab.is-on { background: var(--muted); font-weight: 500; color: var(--foreground); }
+  .ch-panel__total { margin-bottom: 8px; display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  .ch-panel__row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-top: 6px; font-size: 11px; line-height: 16px; }
+
+  /* composer 外层：relative mx-auto w-full shrink-0 px-6 pb-5；空状态 max-w-[768px]，有消息 pt-1 max-w-[960px] */
+  .ch-composer-wrap { position: relative; z-index: 20; margin: 0 auto; width: 100%; max-width: 768px; flex-shrink: 0; padding: 0 24px 20px; }
+  .ch-composer-wrap.has-messages { max-width: 960px; padding-top: 4px; }
+  .ch-composer-fade { pointer-events: none; position: absolute; left: 0; right: 0; top: 0; height: 24px; transform: translateY(-100%); background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--background) 72%, transparent)); }
+  .ch-surface { container: chat-composer / inline-size; position: relative; }
+  /* ComposerInput：px-4 pt-3.5 pb-2；textarea text-[16px] leading-relaxed */
+  .ch-input { padding: 14px 16px 8px; font-size: 16px; line-height: 1.625; min-height: 54px; white-space: pre-wrap; }
+  .ch-input.is-empty { color: var(--muted-foreground); }
+  /* 工具栏（ChatComposer.module.css） */
+  .ch-toolbar-pad { padding: 2px 12px 8px; }
+  .ch-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px; }
+  .ch-context { display: flex; flex: 1 1 auto; min-width: 0; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .ch-acts { display: flex; flex: 0 0 auto; min-width: 0; align-items: center; justify-content: flex-end; gap: 6px; }
+  .ch-label { display: none; }
+  @container chat-composer (min-width: 600px) {
+    .ch-label { display: inline-flex; max-width: 140px; align-items: center; gap: 6px; margin-left: 6px; white-space: nowrap; }
+    .ch-label > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  }
+  /* 各 chip：inline-flex h-8 items-center rounded-lg px-2 text-[14px] font-medium */
+  .ch-chip { position: relative; display: inline-flex; height: 32px; flex-shrink: 0; align-items: center; border-radius: 8px; padding: 0 8px; font-size: 14px; font-weight: 500; color: var(--muted-foreground); transition: background-color 150ms, color 150ms, transform 150ms; }
+  .ch-chip.is-fg { color: var(--foreground); }
+  .ch-chip.is-primary { color: var(--primary); }
+  .ch-chip.is-open { background: color-mix(in srgb, var(--primary) 10%, transparent); color: var(--primary); }
+  .ch-chip__cap { margin-left: 6px; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .ch-chip__dot { position: absolute; right: -4px; top: -2px; height: 6px; width: 6px; border-radius: 9999px; background: var(--primary); }
+  .ch-kb-label { display: flex; max-width: 0; align-items: center; gap: 4px; overflow: hidden; white-space: nowrap; opacity: 0; transition: max-width 300ms ease-out, opacity 300ms ease-out, margin-left 300ms ease-out; }
+  .ch-kb-label.is-out { margin-left: 6px; max-width: 160px; opacity: 1; }
+  /* 能力菜单：dt-popup-up absolute bottom-full left-0 mb-1.5 w-[260px] rounded-xl border bg-popover py-1 shadow-lg */
+  .ch-capmenu { position: absolute; bottom: 100%; left: 0; z-index: 50; margin-bottom: 6px; width: 260px; border-radius: 12px; border-width: 1px; background: var(--popover); padding: 4px 0; box-shadow: var(--shadow-lg); }
+  /* CapMenuItem：flex items-center gap-2.5 px-3 py-1.5；选中 bg-primary/[0.06]；名 text-[12.5px] font-medium；说明 text-[11px] */
+  .ch-capitem { display: flex; width: 100%; align-items: center; gap: 10px; padding: 6px 12px; }
+  .ch-capitem.is-on { background: color-mix(in srgb, var(--primary) 6%, transparent); }
+  .ch-capitem.is-hover { background: color-mix(in srgb, var(--muted) 45%, transparent); }
+  .ch-capitem__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 500; line-height: 1.375; }
+  .ch-capitem__desc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; line-height: 1.375; color: var(--muted-foreground); }
+  /* 麦克风：h-8 w-8 rounded-[10px] text-muted-foreground */
+  .ch-mic { display: inline-flex; height: 32px; width: 32px; align-items: center; justify-content: center; border-radius: 10px; color: var(--muted-foreground); }
+  /* 发送：ml-1 inline-grid h-8 w-8 place-items-center rounded-full + SEND_STATE_CLASS */
+  .ch-send { position: relative; margin-left: 4px; display: inline-grid; height: 32px; width: 32px; flex-shrink: 0; place-items: center; border-radius: 9999px; transition: background-color 200ms, box-shadow 200ms, transform 200ms; }
+  .ch-send > svg { grid-column: 1; grid-row: 1; transition: opacity 200ms, transform 200ms; }
+  .ch-send[data-state="idle"] { color: var(--muted-foreground); box-shadow: inset 0 0 0 1px var(--border); }
+  .ch-send[data-state="ready"] { background: var(--primary); color: var(--primary-foreground); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent); }
+  .ch-send[data-state="streaming"] { background: var(--primary); color: var(--primary-foreground); }
+  .ch-send__ring { pointer-events: none; position: absolute; inset: -3px; border-radius: 9999px; border: 2px solid color-mix(in srgb, var(--primary) 15%, transparent); border-top-color: var(--primary); animation: spin 1s linear infinite; }
+  .ch-send .is-hide { opacity: 0; transform: scale(0.5); }
+  .ch-send .is-fill { fill: currentColor; }
+
+  /* StarterSuggestions：mx-auto max-w-[768px] px-6 pb-6；行 py-[5px] font-serif text-[15.5px] leading-[1.45] text-foreground/72 */
+  .ch-starters { margin: 0 auto; width: 100%; max-width: 768px; padding: 0 24px 24px; }
+  .ch-starter { display: flex; max-width: 100%; align-items: baseline; gap: 8px; padding: 5px 0; font-family: var(--font-serif); font-size: 15.5px; line-height: 1.45; letter-spacing: -0.005em; color: color-mix(in srgb, var(--foreground) 72%, transparent); transition: color 200ms; }
+  .ch-starter.is-hover { color: var(--primary); }
+  .ch-starter__arrow { flex-shrink: 0; color: color-mix(in srgb, var(--primary) 65%, transparent); transition: transform 200ms ease-out; }
+  .ch-starter.is-hover .ch-starter__arrow { transform: translateX(4px); color: var(--primary); }
+  .ch-spacer { flex: 1; min-height: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, Shell, cx, DATA, ActivityHeader, ActivityRow, Fold, ThinkingCard, Prose, useElapsed } = DT;
+const { useRef, useEffect } = DT.hooks;
+
+/* 上游 lucide 图标，运行时里没有的几个 */
+DT.ICONS["bookmark-plus"] = "<path d=\"M12 7v6M15 10H9M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z\"/>";
+DT.ICONS["panel-right"] = "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M15 3v18\"/>";
+DT.ICONS["bar-chart-3"] = "<path d=\"M3 3v16a2 2 0 0 0 2 2h16M18 17V9M13 17V5M8 17v-3\"/>";
+
+const T = {
+  "How can I help you today?": "今天我能帮您什么？",
+  "Evening — what shall we explore?": "晚上好——想探索点什么？",
+  "Chat": "聊天",
+  "Ask Questions": "主动提问",
+  "Quiz": "测验",
+  "Visualize": "可视化",
+  "Flexible conversation with any tool": "灵活对话，可使用任意工具",
+  "Let the model ask you questions to fill in missing context": "让模型向你提问，补充它尚不了解的上下文",
+  "Auto-validated question generation": "自动校验的题目生成",
+  "Generate charts, diagrams, interactive pages, or math animations": "生成图表、示意图、交互页面或数学动画",
+  "More Capabilities": "更多能力",
+  "Agent-loop driven modes": "由对话引擎驱动的模式",
+  "Resources": "资源",
+  "Suggest something else": "换一批",
+  "Save to Notebook": "保存到笔记本",
+  "Download Markdown": "下载 Markdown",
+  "Markdown note": "Markdown 笔记",
+  "Activity": "活动",
+  "{{name}} Reasoning…": "{{name}} 推理中…",
+  "Tool Calling…": "调用工具中…",
+  "{{name}} Exploring…": "{{name}} 探索中…",
+  "DeepTutor responded.": "已完成",
+  "{{count}} tool calls": "{{count}} 次工具调用",
+  "Searching knowledge": "检索知识库",
+  "Reading source": "读取来源",
+  "Writing the question…": "正在出题…",
+  "Sending your answers…": "正在发送回答…",
+  "Something else…": "其他…",
+  "Skip": "跳过",
+  "Submit": "提交",
+  "Your answers": "你的回答",
+  "Copy": "复制",
+  "Read aloud": "朗读",
+  "Regenerate": "重新生成",
+  "tokens": "tokens",
+  "Cache hit rate": "缓存命中率",
+  "This turn": "本轮对话",
+  "This session": "当前会话",
+  "Total tokens": "总 token 用量",
+  "Input tokens": "输入 token",
+  "Uncached input": "未缓存输入",
+  "Cache read": "缓存读取",
+  "Cache write": "缓存写入",
+  "Output tokens": "输出 token",
+  "Reasoning tokens": "推理 token",
+  "Model time": "模型用时",
+  "TTFT": "TTFT",
+  "TPS": "TPS",
+  "{{value}} s": "{{value}} 秒",
+  "{{value}} tok/s": "{{value}} tok/s",
+};
+const tr = (key, vars) => T[key].replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k]);
+
+/* 主页的能力菜单：非 secondary 的四个直接列出，Solve、Research 收进「更多能力」 */
+const CAPS = [
+  { key: "Chat", desc: "Flexible conversation with any tool", icon: "message-square" },
+  { key: "Ask Questions", desc: "Let the model ask you questions to fill in missing context", icon: "circle-help" },
+  { key: "Quiz", desc: "Auto-validated question generation", icon: "pen-line" },
+  { key: "Visualize", desc: "Generate charts, diagrams, interactive pages, or math animations", icon: "bar-chart-3" },
+];
+
+/* 演示自拟的内容（不在语言包里） */
+const WS = DATA.learner.workspace;
+const KB = DATA.kb.name;
+const MODEL = "deepseek-chat";
+const STARTERS = [
+  DATA.question,
+  "用灌装线的例子把单样本 t 检验走一遍",
+  "第一类错误和第二类错误怎么记不混",
+  "帮我出三道两类错误的判断题",
+];
+const RECENTS = ["例 8.3 的 t 怎么算", "两类错误速记", "第 8 章复习计划", "置信区间和检验的关系"];
+const THINK =
+  "用户问 p 值和原假设真假的关系。教材 p.248 写明 p 值是以 H0 为真为条件的概率，不是 H0 为真的概率；" +
+  "再用 p.236 的 α 定义说明拒绝规则的长期出错率。先给结论「不能」，再分两层讲。";
+const ASK = {
+  header: "下一步",
+  prompt: "接下来想怎么学？",
+  options: [
+    { label: "出一道判断题考考我", desc: "围绕 p 值和 α 的区别" },
+    { label: "用例 8.3 把 p 值算一遍", desc: "从 t = 2.80 查到 p ≈ 0.0098" },
+    { label: "讲讲三种常见误读", desc: "教材第 249 页" },
+  ],
+};
+const MORE =
+  "好，就用例 8.3：$t = (52.3 − 50) / 0.82 = 2.80$，自由度 24，双侧 $p ≈ 0.0098$ [p.248](#dt-locator-248)。" +
+  "它小于 0.05，所以拒绝 $H_0$；但这只说明「若 H0 为真，这样的数据不到百分之一的机会」。";
+
+const U = DATA.usage;
+const compact = new Intl.NumberFormat("zh", { notation: "compact", maximumFractionDigits: 1 });
+const num = (n) => (n == null ? "—" : n.toLocaleString("zh"));
+const rate = (n) => (n == null ? "—" : (n * 100).toFixed(1) + "%");
+const secs = (n) => (n == null ? "—" : tr("{{value}} s", { value: n.toFixed(2) }));
+const USAGE_ROWS = [
+  [T["Input tokens"], num(U.prompt_tokens)],
+  [T["Uncached input"], num(U.prompt_tokens - U.cached_tokens)],
+  [T["Cache read"], num(U.cached_tokens)],
+  [T["Cache write"], "—"],
+  [T["Output tokens"], num(U.completion_tokens)],
+  [T["Reasoning tokens"], num(312)],
+  [T["Cache hit rate"], rate(U.cache_hit_rate)],
+  [T["Model time"], secs(U.duration_seconds)],
+  [T["TTFT"], secs(U.ttft_seconds)],
+  [T["TPS"], tr("{{value}} tok/s", { value: U.tokens_per_second.toFixed(1) })],
+];
+
+const ROW_RAG = { id: "rag", title: T["Searching knowledge"], detail: "p 值 原假设 为真的概率", mono: false };
+const ROW_READ = { id: "read", title: T["Reading source"], detail: DATA.book.file + " · p.248", mono: false };
+
+const initial = {
+  capOpen: false,
+  capHover: null,
+  starterHover: null,
+  focus: false,
+  draft: "",
+  sent: false,
+  send: "idle",
+  rows: [],
+  foldOpen: false,
+  phase: "reasoning",
+  think: "",
+  thinkOpen: false,
+  thinkDone: false,
+  answer: "",
+  ask: null,
+  pick: null,
+  more: "",
+  done: false,
+  usageOpen: false,
+};
+
+const setRow = (id, patch) => (s) => ({ rows: s.rows.map((r) => (r.id === id ? Object.assign({}, r, patch) : r)) });
+
+const steps = [
+  { at: 900, set: { capOpen: true } },
+  { at: 500, set: { capHover: 1 } },
+  { at: 450, set: { capHover: 2 } },
+  { at: 450, set: { capHover: 3 } },
+  { at: 600, set: { capOpen: false, capHover: null } },
+  { label: "menu-closed" },
+  { at: 500, set: { starterHover: 0 } },
+  { at: 700, set: { starterHover: null, focus: true } },
+  { at: 150, type: { key: "draft", text: DATA.question, cps: 16 } },
+  { at: 200, set: { send: "ready" } },
+  { at: 700, set: { sent: true, send: "streaming", draft: "", focus: false, foldOpen: true } },
+  { label: "sent" },
+  { at: 700, set: (s) => ({ rows: s.rows.concat([Object.assign({ state: "running" }, ROW_RAG)]) }) },
+  { at: 1300, set: setRow("rag", { state: "done" }) },
+  { at: 150, set: (s) => ({ rows: s.rows.concat([Object.assign({ state: "running" }, ROW_READ)]) }) },
+  { at: 1200, set: setRow("read", { state: "done" }) },
+  { at: 250, set: { thinkOpen: true } },
+  { at: 150, stream: { key: "think", text: THINK, chunk: [2, 5], ms: [24, 46] } },
+  { at: 300, set: { thinkDone: true, thinkOpen: false, foldOpen: false, phase: "responding" } },
+  { label: "answer-start" },
+  { at: 250, stream: { key: "answer", text: DATA.answer, chunk: [1, 4], ms: [18, 40] } },
+  { at: 400, set: { ask: "loading" } },
+  { at: 1000, set: { ask: "question" } },
+  { label: "asked" },
+  { at: 1600, set: { pick: 1 } },
+  { at: 900, set: { ask: "sending" } },
+  { at: 700, set: { ask: "resolved" } },
+  { at: 300, stream: { key: "more", text: MORE, chunk: [1, 4], ms: [18, 40] } },
+  { at: 200, set: { done: true, phase: "done", send: "idle" } },
+  { label: "done" },
+  { at: 1300, set: { usageOpen: true } },
+  { at: 3400, set: { usageOpen: false } },
+];
+
+/* useChatAutoScroll 的效果：流式时一直贴着底 */
+function MessageScroll({ s, children }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (el && !s.usageOpen) el.scrollTop = el.scrollHeight;
+  });
+  return html`<div class="ch-scroll" id="ch-scroll" ref=${ref} data-chat-scroll-root="true" data-dt-scroll>${children}</div>`;
+}
+
+function SendButton({ state }) {
+  return html`<span class="ch-send" data-state=${state} title="发送">
+    ${state === "streaming" ? html`<span class="ch-send__ring"></span>` : null}
+    <${Icon} name="arrow-up" size=${16} strokeWidth=${2.5} class=${state === "streaming" ? "is-hide" : ""} />
+    <${Icon} name="square" size=${10} strokeWidth=${2.6} class=${cx("is-fill", { "is-hide": state !== "streaming" })} />
+  </span>`;
+}
+
+/* ContextBudgetChip 的 16px 圆环：半径 6.5、描边 2、底环 25% */
+function BudgetRing({ share }) {
+  const r = 6.5;
+  const c = 2 * Math.PI * r;
+  return html`<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style=${{ transform: "rotate(-90deg)" }}>
+    <circle cx="8" cy="8" r=${r} fill="none" stroke="currentColor" stroke-width="2" opacity="0.25" />
+    <circle cx="8" cy="8" r=${r} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      stroke-dasharray=${c.toFixed(3)} stroke-dashoffset=${(c * (1 - share)).toFixed(3)} />
+  </svg>`;
+}
+
+function Composer({ s }) {
+  const hasMessages = s.sent;
+  return html`<div class=${cx("ch-composer-wrap", { "has-messages": hasMessages })}>
+    ${hasMessages ? html`<div class="ch-composer-fade"></div>` : null}
+    <div class="dt-composer ch-surface">
+      <div class=${cx("ch-input", { "is-empty": !s.draft && !s.focus, "dt-caret": s.focus })}>${s.draft || (s.focus ? "" : T["How can I help you today?"])}</div>
+      <div class="ch-toolbar-pad">
+        <div class="ch-toolbar">
+          <div class="ch-context">
+            <div style=${{ position: "relative" }}>
+              <span class=${cx("ch-chip", s.capOpen ? "is-open" : "is-fg")}>
+                <${Icon} name="message-square" size=${16} strokeWidth=${1.7} />
+                <span class="ch-chip__cap">${T["Chat"]}<${Icon} name="chevron-down" size=${13} strokeWidth=${2} style=${{ transform: s.capOpen ? "rotate(180deg)" : "none", transition: "transform 200ms" }} /></span>
+              </span>
+              ${s.capOpen
+                ? html`<div class="ch-capmenu dt-popup-up">
+                    ${CAPS.map(
+                      (cap, i) => html`<div key=${cap.key} class=${cx("ch-capitem", { "is-on": i === 0, "is-hover": s.capHover === i })}>
+                        <${Icon} name=${cap.icon} size=${15} strokeWidth=${1.7} style=${{ color: i === 0 ? "var(--primary)" : "var(--muted-foreground)" }} />
+                        <div class="min0 grow">
+                          <div class="ch-capitem__name">${T[cap.key]}</div>
+                          <div class="ch-capitem__desc">${T[cap.desc]}</div>
+                        </div>
+                        ${i === 0 ? html`<${Icon} name="check" size=${14} strokeWidth=${2} style=${{ color: "var(--primary)" }} />` : null}
+                      </div>`
+                    )}
+                    <div class="ch-capitem">
+                      <${Icon} name="sparkles" size=${15} strokeWidth=${1.7} style=${{ color: "var(--muted-foreground)" }} />
+                      <div class="min0 grow">
+                        <div class="ch-capitem__name">${T["More Capabilities"]}</div>
+                        <div class="ch-capitem__desc">${T["Agent-loop driven modes"]}</div>
+                      </div>
+                      <${Icon} name="chevron-right" size=${14} style=${{ color: "var(--muted-foreground)" }} />
+                    </div>
+                  </div>`
+                : null}
+            </div>
+            <span class="ch-chip">
+              <${Icon} name="layers" size=${16} strokeWidth=${1.7} />
+              <span class="ch-label"><span>${T["Resources"]}</span><${Icon} name="chevron-right" size=${13} /></span>
+            </span>
+            <span class="ch-chip is-primary" title="选择知识库">
+              <${Icon} name="database" size=${16} strokeWidth=${1.7} />
+              <span class=${cx("ch-kb-label", { "is-out": s.focus && !s.draft })}><span class="truncate">${KB}</span><${Icon} name="chevron-down" size=${13} /></span>
+            </span>
+          </div>
+          <div class="ch-acts">
+            <span class="ch-chip" title="选择模型">
+              <${Icon} name="sparkle" size=${16} strokeWidth=${1.7} />
+              <span class="ch-label"><span>${MODEL}</span><${Icon} name="chevron-down" size=${13} /></span>
+            </span>
+            <span class="ch-chip tabular" style=${{ gap: 6 }} title="上下文用量">
+              <${BudgetRing} share=${s.sent ? 0.04 : 0.01} />
+              <span>${s.sent ? "4%" : "1%"}</span>
+            </span>
+            <span class="ch-mic" title="录制语音"><${Icon} name="mic" size=${16} strokeWidth=${1.9} /></span>
+            <${SendButton} state=${s.send} />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function AskCard({ s }) {
+  if (s.ask === "resolved") {
+    return html`<div class="ch-ask is-resolved animate-fade-in">
+      <div class="ch-ask__rhead">
+        <${Icon} name="chevron-down" size=${12} style=${{ opacity: 0.5 }} />
+        <span>${T["Your answers"]}</span>
+      </div>
+      <div class="ch-ask__rq">${ASK.prompt}</div>
+      <div class="ch-ask__ra">${ASK.options[s.pick].label}</div>
+    </div>`;
+  }
+  const loading = s.ask === "loading";
+  const status = loading ? T["Writing the question…"] : s.ask === "sending" ? T["Sending your answers…"] : null;
+  return html`<div class="ch-ask animate-fade-in">
+    ${status ? html`<div class="ch-ask__status">${status}</div>` : null}
+    ${loading
+      ? html`<div style=${{ marginTop: 8 }}><div class="ch-ask__skel1"></div><div class="ch-ask__skel2"></div></div>`
+      : html`<div>
+          <div class="ch-ask__q">${ASK.prompt}</div>
+          <div style=${{ marginTop: 6 }}>
+            ${ASK.options.map(
+              (o, i) => html`<div key=${i} class=${cx("ch-ask__opt", { "is-picked": s.pick === i })}>
+                <span class="ch-ask__badge">${i + 1}</span>
+                <span class="min0 grow" style=${{ paddingTop: 2 }}>
+                  <span class="ch-ask__label">${o.label}</span>
+                  <span class="ch-ask__desc">${o.desc}</span>
+                </span>
+              </div>`
+            )}
+            <div class="ch-ask__opt">
+              <span class="ch-ask__badge"><${Icon} name="pencil" size=${13} strokeWidth=${2} /></span>
+              <span class="ch-ask__other">${T["Something else…"]}</span>
+            </div>
+          </div>
+          <div class="ch-ask__foot">
+            <span></span>
+            <div class="row" style=${{ gap: 6 }}>
+              <span class="ch-ask__skip">${T["Skip"]}</span>
+              <button type="button" class=${cx("ch-ask__submit", { "dt-press": s.ask === "sending" })} disabled=${s.pick === null}>${T["Submit"]}</button>
+            </div>
+          </div>
+        </div>`}
+  </div>`;
+}
+
+function UsagePanel() {
+  return html`<div class="ch-panel animate-pop-in" role="dialog" aria-label="用量与性能">
+    <div class="ch-panel__scope">
+      <span class="ch-panel__tab is-on">${T["This turn"]}</span>
+      <span class="ch-panel__tab">${T["This session"]}</span>
+      <span class="ch-act" style=${{ marginLeft: 4 }}><${Icon} name="x" size=${13} /></span>
+    </div>
+    <div class="ch-panel__total">
+      <span style=${{ fontWeight: 500 }}>${T["Total tokens"]}</span>
+      <span class="tabular" style=${{ fontSize: 16, fontWeight: 600 }}>${num(U.total_tokens)}</span>
+    </div>
+    <dl style=${{ margin: 0 }}>
+      ${USAGE_ROWS.map(
+        ([k, v]) => html`<div key=${k} class="ch-panel__row"><dt class="muted">${k}</dt><dd class="tabular" style=${{ margin: 0, fontWeight: 500 }}>${v}</dd></div>`
+      )}
+    </dl>
+  </div>`;
+}
+
+function Assistant({ s, secs }) {
+  const running = s.rows.some((r) => r.state === "running");
+  const label = s.done
+    ? T["DeepTutor responded."]
+    : running
+      ? T["Tool Calling…"]
+      : s.phase === "responding"
+        ? tr("{{name}} Exploring…", { name: "DeepTutor" })
+        : tr("{{name}} Reasoning…", { name: "DeepTutor" });
+  const doneRows = s.rows.filter((r) => r.state === "done").length;
+  return html`<div class="ch-assistant">
+    <div class="ch-activity">
+      <${ActivityHeader}
+        label=${label}
+        duration=${Math.max(0, Math.round(secs)) + "s"}
+        summary=${doneRows ? tr("{{count}} tool calls", { count: doneRows }) : null}
+        settled=${s.done}
+        expandable=${s.rows.length > 0}
+        expanded=${s.foldOpen}
+      />
+      <${Fold} open=${s.foldOpen}>
+        <div class="ch-rows">
+          ${s.rows.map((r) => html`<${ActivityRow} key=${r.id} state=${r.state} title=${r.title} detail=${r.detail} mono=${r.mono} breathing=${r.state === "running"} />`)}
+        </div>
+      <//>
+    </div>
+    ${s.thinkOpen || s.think ? html`<${ThinkingCard} content=${s.think} open=${s.thinkOpen} closed=${s.thinkDone} />` : null}
+    ${s.answer ? html`<div class="ch-answer"><${Prose} text=${s.answer} caret=${!s.ask && !s.done} /></div>` : null}
+    ${s.ask ? html`<${AskCard} s=${s} />` : null}
+    ${s.more ? html`<div class="ch-answer" style=${{ marginTop: 16 }}><${Prose} text=${s.more} caret=${!s.done} /></div>` : null}
+    ${s.done
+      ? html`<div class="ch-actions animate-fade-in">
+          <div class="row" style=${{ gap: 4 }}>
+            <span class="ch-act" title=${T["Copy"]}><${Icon} name="copy" size=${15} strokeWidth=${1.5} /></span>
+            <span class="ch-act" title=${T["Read aloud"]}><${Icon} name="volume-2" size=${15} strokeWidth=${1.5} /></span>
+            <span class="ch-act" title=${T["Regenerate"]}><${Icon} name="refresh-ccw" size=${15} strokeWidth=${1.5} /></span>
+            <span class="ch-act" title="删除这一轮"><${Icon} name="trash-2" size=${15} strokeWidth=${1.5} /></span>
+          </div>
+          <span class=${cx("ch-usage", { "is-open": s.usageOpen })}>
+            <${Icon} name="database" size=${12} />
+            <span>${compact.format(U.total_tokens)} ${T["tokens"]}</span>
+            <span aria-hidden="true">·</span>
+            <span>${T["Cache hit rate"]} ${rate(U.cache_hit_rate)}</span>
+            <${Icon} name="chevron-down" size=${12} style=${{ transform: s.usageOpen ? "rotate(180deg)" : "none" }} />
+          </span>
+          ${s.usageOpen ? html`<${UsagePanel} />` : null}
+        </div>`
+      : null}
+  </div>`;
+}
+
+function ChatApp({ s, round }) {
+  const secs = useElapsed(s.sent && !s.done, round);
+  const recents = s.sent ? [DATA.question].concat(RECENTS) : RECENTS;
+  return html`<${Shell} active="/chat" recents=${recents} activeRecent=${s.sent ? 0 : -1}>
+    <div class="ch-shell">
+      <div class="ch-top">
+        <div class="row min0 grow" style=${{ gap: 8 }}>
+          <span class="ch-crumb"><${Icon} name="folder-open" size=${13} strokeWidth=${1.7} /><span class="truncate" style=${{ maxWidth: 140 }}>${WS}</span><${Icon} name="chevron-right" size=${13} style=${{ marginRight: -4, opacity: 0.6 }} /></span>
+          ${s.sent ? html`<span class="ch-title truncate animate-fade-in">${DATA.question}</span>` : null}
+        </div>
+        <div class="row" style=${{ gap: 2 }}>
+          <span class="ch-hbtn" title=${T["Save to Notebook"]}><${Icon} name="bookmark-plus" size=${16} strokeWidth=${1.7} /></span>
+          <span class="ch-hbtn" title=${T["Download Markdown"]}><${Icon} name="download" size=${16} strokeWidth=${1.7} /></span>
+          <span class="ch-hbtn" title=${T["Markdown note"]}><${Icon} name="notebook-pen" size=${16} strokeWidth=${1.7} /></span>
+          <span class="ch-hbtn" title=${T["Activity"]}><${Icon} name="panel-right" size=${16} strokeWidth=${1.7} /></span>
+        </div>
+      </div>
+      ${s.sent
+        ? html`<${MessageScroll} s=${s}>
+            <div class="ch-column" data-chat-column="true">
+              <div class="ch-user animate-fade-in"><div class="dt-user-bubble">${DATA.question}</div></div>
+              <${Assistant} s=${s} secs=${secs} />
+            </div>
+          <//>`
+        : html`<div class="ch-empty animate-fade-in">
+            <div class="ch-greet">
+              <span class="ch-logo">D</span>
+              <h1>${T["Evening — what shall we explore?"]}</h1>
+            </div>
+          </div>`}
+      <${Composer} s=${s} />
+      ${s.sent
+        ? null
+        : html`<div class="ch-starters animate-fade-in">
+            <ul>
+              ${STARTERS.map(
+                (line, i) => html`<li key=${i} style=${{ maxWidth: "100%" }}>
+                  <span class=${cx("ch-starter", { "is-hover": s.starterHover === i })}>
+                    <span class="truncate">${line}</span><span class="ch-starter__arrow" aria-hidden="true">→</span>
+                  </span>
+                </li>`
+              )}
+            </ul>
+            <div class="row" style=${{ gap: 6, paddingTop: 6, fontSize: 11.5, color: "color-mix(in srgb, var(--muted-foreground) 55%, transparent)" }}>
+              <${Icon} name="sparkles" size=${11} strokeWidth=${1.8} />${T["Suggest something else"]}
+            </div>
+          </div>`}
+      ${s.sent ? null : html`<div class="ch-spacer"></div>`}
+    </div>
+  <//>`;
+}
+
+/* hook 放在组件里：render 本身只是一个返回元素的函数 */
+function render(s, tl) {
+  return html`<${ChatApp} s=${s} round=${tl.round} />`;
+}
+
+DT.run({ T, initial, steps, render, options: { replayAt: "top-right", loopDelay: 2800 } });
+</script>
+</body>
+</html>

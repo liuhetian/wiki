@@ -1,0 +1,55 @@
+{
+  "config": {
+    "knowledge_bases": {
+      "应用统计学": {
+        "search_mode": "local"
+      },
+      "第8章讲义": {
+        "search_mode": "bogus"
+      }
+    },
+    "defaults": {
+      "provider_modes": {
+        "lightrag": "mix"
+      }
+    }
+  },
+  "results": [
+    {
+      "case": "这次调用指定 global",
+      "kb": "应用统计学",
+      "explicit": "global",
+      "mode": "global"
+    },
+    {
+      "case": "这次调用指定了引擎不认的 fast",
+      "kb": "应用统计学",
+      "explicit": "fast",
+      "mode": "local"
+    },
+    {
+      "case": "不指定，库设了 local",
+      "kb": "应用统计学",
+      "explicit": null,
+      "mode": "local"
+    },
+    {
+      "case": "不指定，库设了引擎不认的 bogus",
+      "kb": "第8章讲义",
+      "explicit": null,
+      "mode": "mix"
+    },
+    {
+      "case": "不指定，库没设",
+      "kb": "习题答案",
+      "explicit": null,
+      "mode": "mix"
+    },
+    {
+      "case": "连 kb_config.json 都没有",
+      "kb": "应用统计学",
+      "explicit": null,
+      "mode": "hybrid"
+    }
+  ]
+}

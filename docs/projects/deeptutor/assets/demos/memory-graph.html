@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="640">
+<title>DeepTutor 仿真 demo：记忆图谱</title>
+<!--
+  Goal      记忆不是黑盒：L1 原始事件在外圈、按七个场景切扇区，L2 事实在中圈、每条连回它引用的 L1 证据，
+            L3 综合在中心；悬停一条 L2 事实，整条引用链亮起来，其余压暗
+  Surface   /memory → /memory/graph · components/memory/MemoryHub.tsx、components/memory/MemoryGraph.tsx
+  Sources   components/memory/MemoryHub.tsx 49（L3 三个槽）、88-150（页头、三张层卡）、152-188（图谱入口卡）、190-256（LayerCard）；
+            components/memory/MemoryGraph.tsx 58-68（三层颜色、环线颜色）、156-200（画布底色、加载提示）、
+            224-258（图谱页头）、396-470（环、光晕）、486-574（扇区标签、L3 核心）、576-618（连边透明度规则）、
+            690-770（EdgePath 的二次曲线、NodeDot 的放大和光晕）、800-905（缩放、图层开关、图例）、906-960（悬停卡）；
+            lib/memory-graph.ts 288-320（DEFAULT_LAYOUT：1200² 画布、三层半径、扇区间隙）、380-470（扇区按数量分角度、最小占比 .12 / .025）、
+            748-762（场景和槽的标签）；deeptutor/services/memory/paths.py 49-58（七个场景）；locales/zh/app.json
+  Layout    Shell → 记忆中枢（三张层卡 + 图谱入口）→ 图谱页（头栏 + 画布，右上缩放和图层开关，左下图例）
+  Data      DT.DATA.memory，演示里补了一些 L1 事件让外圈不显得空
+  Autoplay  中枢停一下 → 点「记忆图谱」→ 加载提示 → 环画出、扇区和标签出现 → 节点按 L3、L2、L1 依次淡入 → 连边画出 →
+            锁定「聊天」里一条 L2 事实，引用链亮、其余压暗、悬停卡出现 → 关掉 L1 再打开，一圈约 24s
+  Height    640
+  Deviations 节点不移植上游 placeNodesInSlice 的六边形网格，每个扇区里按序号均匀取角、半径用 (i·7919) mod 97 散开；
+            扇区角度、层半径、颜色、连线曲率、标签位置照上游；画布不支持拖动和滚轮缩放，缩放百分比是演示值
+  Checks    三层颜色用 LAYER_COLOR 的 color-mix；锁定时非邻居节点不透明度 .18、选中节点放大 2.1 倍、光晕 2.5 倍
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  /* 中枢：FeaturePage（h-full overflow-y-auto）+ PageContainer + space-y-9 */
+  .mg-hub { height: 100%; overflow-y: auto; scrollbar-gutter: stable; }
+  .mg-container { margin: 0 auto; width: 100%; max-width: 1180px; padding: 28px 24px; display: flex; flex-direction: column; gap: 36px; }
+  @media (min-width: 768px) { .mg-container { padding: 28px 36px; } }
+  /* PageHeader：flex flex-col gap-4；容器 ≥640 横排 */
+  .mg-header { display: flex; flex-direction: column; gap: 16px; }
+  @container feature-page (min-width: 640px) { .mg-header { flex-direction: row; align-items: flex-end; justify-content: space-between; } }
+  .mg-title { line-height: 1.5; letter-spacing: -0.02em; }
+  .mg-desc { margin-top: 6px; max-width: 672px; font-size: 12.5px; line-height: 1.625; color: var(--muted-foreground); }
+  /* pageActionClass('secondary')：inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[12.5px] font-medium border border-border */
+  .mg-action { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; gap: 6px; border-radius: 8px; border-width: 1px; padding: 8px 14px; font-size: 12.5px; font-weight: 500; line-height: 18px; color: var(--foreground); }
+  .mg-link { display: inline-flex; align-items: center; gap: 6px; border-radius: 6px; border: 1px solid transparent; padding: 4px 10px; font-size: 12px; color: var(--muted-foreground); }
+  /* dt-page-grid dt-page-grid-3：容器 ≥520 两列、≥800 三列，gap 12 */
+  .mg-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  @container feature-page (min-width: 520px) { .mg-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @container feature-page (min-width: 800px) { .mg-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  /* LayerCard：flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 */
+  .mg-card { display: flex; flex-direction: column; gap: 16px; border-radius: 16px; border-width: 1px; background: var(--card); padding: 24px; }
+  /* 图标格：grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary */
+  .mg-card__icon { display: grid; height: 36px; width: 36px; place-items: center; border-radius: 8px; background: color-mix(in srgb, var(--primary) 10%, transparent); color: var(--primary); }
+  /* 标签：rounded-full border border-border bg-background px-2 py-0.5 text-[10.5px] font-medium uppercase tracking-wide text-muted-foreground */
+  .mg-tag { border-radius: 9999px; border-width: 1px; background: var(--background); padding: 2px 8px; font-size: 10.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.025em; color: var(--muted-foreground); }
+  .mg-card__title { font-size: 15px; font-weight: 600; }
+  /* 数：text-[28px] font-semibold tracking-tight；单位 text-[12px] text-muted-foreground */
+  .mg-card__stat { font-size: 28px; font-weight: 600; letter-spacing: -0.025em; }
+  .mg-card__unit { font-size: 12px; color: var(--muted-foreground); }
+  .mg-card__detail { font-size: 13px; line-height: 1.625; color: var(--muted-foreground); }
+  /* 图谱入口：relative block overflow-hidden rounded-2xl border border-border bg-card p-6，右侧一团 primary 16% 的径向光 */
+  .mg-callout { position: relative; display: block; overflow: hidden; border-radius: 16px; border-width: 1px; background: var(--card); padding: 24px; transition: transform var(--motion-base), border-color var(--motion-base), box-shadow var(--motion-base); }
+  .mg-callout.is-hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--primary) 40%, transparent); box-shadow: var(--shadow-sm); }
+  .mg-callout__glow { pointer-events: none; position: absolute; inset: 0; opacity: 0.8; background: radial-gradient(ellipse 60% 80% at 92% 50%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 70%); }
+  .mg-callout__icon { display: grid; height: 48px; width: 48px; flex-shrink: 0; place-items: center; border-radius: 12px; background: color-mix(in srgb, var(--primary) 10%, transparent); color: var(--primary); }
+  .mg-callout__badge { border-radius: 9999px; border-width: 1px; background: color-mix(in srgb, var(--background) 60%, transparent); padding: 2px 8px; font-size: 10.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.025em; color: var(--muted-foreground); }
+  /* 图谱页：flex h-full min-h-0 flex-col */
+  .mg-page { display: flex; height: 100%; min-height: 0; flex-direction: column; }
+  /* 头栏：flex items-center justify-between border-b border-border bg-background/80 px-6 py-3 backdrop-blur md:px-10 */
+  .mg-ghead { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--background) 80%, transparent); padding: 12px 24px; backdrop-filter: blur(8px); }
+  @media (min-width: 768px) { .mg-ghead { padding: 12px 40px; } }
+  /* 返回、刷新：inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-[12px] text-muted-foreground */
+  .mg-gbtn { display: inline-flex; flex-shrink: 0; align-items: center; gap: 6px; border-radius: 6px; border-width: 1px; background: var(--background); padding: 4px 10px; font-size: 12px; color: var(--muted-foreground); }
+  .mg-gtitle { font-family: var(--font-serif); font-size: 16px; font-weight: 600; letter-spacing: -0.025em; }
+  .mg-gdesc { font-size: 11.5px; color: var(--muted-foreground); }
+  /* 画布：relative flex-1 min-h-0 overflow-hidden；底 radial-gradient(ellipse at center, primary 7% → background 65%) */
+  .mg-canvas { position: relative; min-height: 0; flex: 1; overflow: hidden; background: radial-gradient(ellipse at center, color-mix(in srgb, var(--primary) 7%, var(--background)) 0%, var(--background) 65%); container-type: size; }
+  /* 画布里放一个正方形，SVG 的 1200² 坐标和悬停卡的百分比坐标都落在它上面 */
+  .mg-square { position: absolute; left: 50%; top: 50%; width: min(100cqw, 100cqh); height: min(100cqw, 100cqh); transform: translate(-50%, -50%); }
+  .mg-square > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  /* 加载：inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1.5 text-[12px] text-muted-foreground shadow-sm backdrop-blur */
+  .mg-loading { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+  .mg-loading > span { display: inline-flex; align-items: center; gap: 8px; border-radius: 9999px; border-width: 1px; background: color-mix(in srgb, var(--card) 80%, transparent); padding: 6px 12px; font-size: 12px; color: var(--muted-foreground); box-shadow: var(--shadow-sm); backdrop-filter: blur(6px); }
+  /* 环：stroke-width .6、dasharray 2 3，进场时从 92% 放大到 100% */
+  .mg-ring { transform-origin: 600px 600px; animation: mg-ring-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+  @keyframes mg-ring-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+  .mg-fade { animation: mg-fade 520ms ease-out both; }
+  @keyframes mg-fade { from { opacity: 0; } to { opacity: 1; } }
+  /* 连边：pathLength=1，用 dashoffset 从 1 走到 0 画出来 */
+  .mg-edge { stroke-dasharray: 1; stroke-dashoffset: 1; animation: mg-draw 900ms cubic-bezier(0.33, 0, 0.2, 1) forwards; transition: stroke-opacity 260ms, stroke-width 260ms, stroke 260ms; }
+  .mg-edge.is-drawn { stroke-dashoffset: 0; animation: none; }
+  @keyframes mg-draw { to { stroke-dashoffset: 0; } }
+  .mg-node { animation: mg-fade 420ms ease-out both; }
+  .mg-dot { transition: r 220ms cubic-bezier(0.22, 1, 0.36, 1), opacity 260ms; }
+  /* 控件：absolute right-4 top-4 flex flex-col items-end gap-2；缩放条 inline-flex rounded-lg border border-border bg-card/95 shadow-sm */
+  .mg-controls { pointer-events: none; position: absolute; right: 16px; top: 16px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; animation: mg-fade 400ms ease-out both; }
+  .mg-zoom { display: inline-flex; align-items: center; overflow: hidden; border-radius: 8px; border-width: 1px; background: color-mix(in srgb, var(--card) 95%, transparent); box-shadow: var(--shadow-sm); backdrop-filter: blur(6px); }
+  /* IconButton：grid h-8 w-8 place-items-center text-muted-foreground */
+  .mg-zbtn { display: grid; height: 32px; width: 32px; place-items: center; color: var(--muted-foreground); }
+  .mg-zpct { padding: 0 8px; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+  /* 图层开关：flex flex-col gap-1 rounded-lg border border-border bg-card/95 p-1.5 shadow-sm；行 inline-flex items-center gap-2 rounded-md px-2 py-1 text-[11.5px] */
+  .mg-layers { display: flex; flex-direction: column; gap: 4px; border-radius: 8px; border-width: 1px; background: color-mix(in srgb, var(--card) 95%, transparent); padding: 6px; box-shadow: var(--shadow-sm); backdrop-filter: blur(6px); }
+  .mg-layer { display: inline-flex; align-items: center; gap: 8px; border-radius: 6px; padding: 4px 8px; font-size: 11.5px; transition: background-color var(--motion-base); }
+  .mg-layer.is-press { background: var(--muted); }
+  .mg-swatch { display: inline-block; height: 8px; width: 8px; border-radius: 9999px; }
+  /* 图例：absolute bottom-4 left-4 max-w-md rounded-lg border border-border bg-card/92 p-3 text-[11.5px] shadow-sm */
+  .mg-legend { pointer-events: none; position: absolute; bottom: 16px; left: 16px; max-width: 448px; border-radius: 8px; border-width: 1px; background: color-mix(in srgb, var(--card) 92%, transparent); padding: 12px; font-size: 11.5px; box-shadow: var(--shadow-sm); backdrop-filter: blur(6px); animation: mg-fade 400ms ease-out both; }
+  @media (max-width: 700px) { .mg-legend p { display: none; } }
+  /* 悬停卡：fixed z-50 max-w-sm rounded-lg border border-border bg-card p-3 text-[12px] shadow-lg（这里按正方形里的百分比定位） */
+  .mg-hover { position: absolute; z-index: 50; width: 260px; border-radius: 8px; border-width: 1px; background: var(--card); padding: 12px; font-size: 12px; box-shadow: var(--shadow-lg); pointer-events: none; animation: dt-pop-in 200ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .mg-hover__meta { margin-bottom: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); }
+  .mg-hover__text { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.625; }
+  .mg-hover__foot { margin-top: 8px; font-size: 10.5px; color: var(--muted-foreground); }
+  /* 光标：演示里「鼠标」停在节点上 */
+  .mg-cursor { position: absolute; z-index: 40; height: 18px; width: 18px; margin: 2px 0 0 2px; color: var(--foreground); pointer-events: none; transition: left 700ms cubic-bezier(0.22, 1, 0.36, 1), top 700ms cubic-bezier(0.22, 1, 0.36, 1); filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25)); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, Shell, cx, DATA } = DT;
+
+DT.ICONS["mouse-pointer-2"] = '<path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/>';
+DT.ICONS["workflow"] = '<rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/>';
+
+const T = {
+  "Memory": "记忆",
+  "Memory graph": "记忆图谱",
+  "Everything DeepTutor remembers about you, organised across three layers. Click into any layer to inspect or curate it.":
+    "DeepTutor 关于你的全部记忆，分为三层组织。点击任何一层进入查看或整理。",
+  "Refresh": "刷新",
+  "Memory settings": "记忆设置",
+  "L1 · Workspace mirror": "L1 · 工作区镜像",
+  "Live": "实时",
+  "entities tracked": "条 workspace 实体",
+  "Snapshot of your live workspace across {{n}} surfaces. Refresh to record changes.": "对你 {{n}} 个 surface 工作区的快照。点击 Refresh 记录变化。",
+  "L2 · Per-surface summaries": "L2 · 各模块摘要",
+  "Curated": "整理后",
+  "facts across {{n}} surfaces": "条事实，共 {{n}} 个 surface",
+  "Surface-specific facts extracted by the consolidator. Run Update / Audit / Dedup per doc.": "由 consolidator 抽取的、每个 surface 的事实。每个文档支持 更新 / 检查 / 去重。",
+  "L3 · Cross-surface knowledge": "L3 · 跨模块知识",
+  "Synthesis": "综合",
+  "propositions across {{n}} slots": "条命题，共 {{n}} 个 slot",
+  "Cross-surface synthesis: profile, recent timeline, knowledge scope. Hedged claims with L2 evidence.": "跨 surface 综合：用户画像、近期时间线、知识 scope。每条判断都有 L2 证据。",
+  "New": "新建",
+  "See all three layers at once — L3 synthesis at the centre, L2 facts in the middle, L1 traces on the outside. Hover any node for a preview.":
+    "一次查看全部三层 —— 中心为 L3 综合，中圈为 L2 事实，外圈为 L1 原始事件。悬停任意节点可预览。",
+  "L3 synthesis at the centre, L2 facts in the middle ring, L1 traces on the outside.": "中心为 L3 综合，中圈为 L2 事实，外圈为 L1 原始事件。",
+  "Composing memory graph…": "正在构建记忆图谱…",
+  "Zoom in": "放大",
+  "Zoom out": "缩小",
+  "Fit": "适配",
+  "Per-surface": "各模块",
+  "Raw traces": "原始事件",
+  "Hover a node to preview the memory. Click to lock the highlight and trace its references inward (L1 → L2 → L3) or outward.":
+    "悬停节点可预览记忆。点击可锁定高亮，并追踪其向内（L1 → L2 → L3）或向外的引用关系。",
+  "Click to lock · open in workbench": "点击锁定 · 在工作台中打开",
+  "L3 · synthesis": "L3 · 综合",
+  "L2 · curated": "L2 · 已归纳",
+  "L1 · raw trace": "L1 · 原始事件",
+  "facts": "条事实",
+  "traces": "条事件",
+  "synthesis": "综合",
+  "Chat": "聊天",
+  "Notebook": "笔记本",
+  "Quiz": "测验",
+  "Knowledge base": "知识库",
+  "Book": "书籍",
+  "Partner": "伙伴",
+  "Co-writer": "Co-writer",
+  "Profile": "配置文件",
+  "Recent": "近期",
+  "Scope": "范围",
+};
+const tt = (key, vars) => T[key].replace(/\{\{(\w+)\}\}/g, (_, k) => String(vars[k]));
+
+/* lib/memory-graph.ts SURFACE_LABEL、L3_LABEL，经语言包翻译 */
+const SURFACES = DATA.memory.surfaces;
+const SURFACE_LABEL = { chat: T["Chat"], notebook: T["Notebook"], quiz: T["Quiz"], kb: T["Knowledge base"], book: T["Book"], partner: T["Partner"], cowriter: T["Co-writer"] };
+const L3_SLOTS = ["profile", "recent", "scope"];
+const L3_LABEL = { profile: T["Profile"], recent: T["Recent"], scope: T["Scope"] };
+
+/* 演示补的 L1 事件和 L2 事实，让外圈像用了一阵子的样子 */
+const L1_EXTRA = {
+  chat: ["问：p 值和显著性水平是一回事吗", "问：为什么用 t 不用 z", "要求：举个生活里的例子", "问：双侧 p 值怎么从单侧换算", "问：功效是什么", "追问：β 和样本量的关系", "问：0.05 这个数从哪来", "问：例 8.3 的置信区间", "要求：出三道练习"],
+  notebook: ["记下：拒绝域示意图", "记下：三种误读", "记下：功效的定义"],
+  quiz: ["第 5 题 答对", "第 6 题 答错：把 β 当成 1 − α", "第 7 题 答对", "第 8 题 答对", "第 9 题 答对", "第 10 题 答错：单双侧混了", "每日复习 6 题", "每日复习 4 题"],
+  kb: ["检索「临界值 t 分布」", "检索「功效 样本量」", "检索「置信区间 与检验一致」", "重建索引 v-20261021"],
+  book: ["读完第 1 章", "读完第 3 章", "第 3 章测验卡 答对 3/3", "重编译第 2 章"],
+  partner: ["在微信里问：p 值是什么", "打卡 第 12 天", "在微信里做了 3 道题"],
+  cowriter: ["导出 Word", "新建「第 7 章小结」"],
+};
+const L2_EXTRA = {
+  chat: ["问题集中在 p 值、α 和功效三者的关系"],
+  quiz: ["每日复习完成率高，多在晚上九点前后"],
+  kb: ["讲义比教材更常被检索到"],
+  book: ["第 2 章重编译过一次，教材改动后有一页过期"],
+};
+const L3_EXTRA = { recent: ["下一站是拒绝域与临界值"] };
+const SECTION = { chat: "误区", notebook: "笔记", quiz: "表现", kb: "材料", book: "进度", partner: "习惯", cowriter: "写作" };
+
+const L1 = Object.fromEntries(SURFACES.map((s) => [s, DATA.memory.L1[s].concat(L1_EXTRA[s] || [])]));
+const L2 = Object.fromEntries(SURFACES.map((s) => [s, DATA.memory.L2[s].concat(L2_EXTRA[s] || [])]));
+const L3 = Object.fromEntries(L3_SLOTS.map((s) => [s, DATA.memory.L3[s].concat(L3_EXTRA[s] || [])]));
+const count = (o) => Object.values(o).reduce((a, b) => a + b.length, 0);
+
+/* ─── 几何：lib/memory-graph.ts 的 DEFAULT_LAYOUT 和扇区分配 ─── */
+const LAYOUT = { width: 1200, height: 1200, l3InnerRadius: 70, l3OuterRadius: 190, l2InnerRadius: 240, l2OuterRadius: 360, l1InnerRadius: 400, l1OuterRadius: 570, clusterGap: 0.05, l3ClusterGap: 0.22 };
+const CX = 600;
+const CY = 600;
+function fractions(weights, minFrac) {
+  const total = weights.reduce((a, b) => a + b, 0) || 1;
+  const elastic = Math.max(0, 1 - minFrac * weights.length);
+  const f = weights.map((w) => minFrac + (w / total) * elastic);
+  const sum = f.reduce((a, b) => a + b, 0);
+  return f.map((x) => x / sum);
+}
+const clusters = [];
+(function buildClusters() {
+  let cursor = -Math.PI / 2;
+  fractions(L3_SLOTS.map((s) => L3[s].length), 0.12).forEach((fr, i) => {
+    const span = fr * 2 * Math.PI;
+    clusters.push({ id: "L3:" + L3_SLOTS[i], layer: "L3", key: L3_SLOTS[i], start: cursor + LAYOUT.l3ClusterGap / 2, end: cursor + span - LAYOUT.l3ClusterGap / 2, inner: LAYOUT.l3InnerRadius, outer: LAYOUT.l3OuterRadius, count: L3[L3_SLOTS[i]].length });
+    cursor += span;
+  });
+  cursor = -Math.PI / 2;
+  fractions(SURFACES.map((s) => L1[s].length + L2[s].length), 0.025).forEach((fr, i) => {
+    const span = fr * 2 * Math.PI;
+    const s = SURFACES[i];
+    const start = cursor + LAYOUT.clusterGap / 2;
+    const end = cursor + span - LAYOUT.clusterGap / 2;
+    clusters.push({ id: "L2:" + s, layer: "L2", key: s, start, end, inner: LAYOUT.l2InnerRadius, outer: LAYOUT.l2OuterRadius, count: L2[s].length });
+    clusters.push({ id: "L1:" + s, layer: "L1", key: s, start, end, inner: LAYOUT.l1InnerRadius, outer: LAYOUT.l1OuterRadius, count: L1[s].length });
+    cursor += span;
+  });
+})();
+const clusterOf = (id) => clusters.find((c) => c.id === id);
+
+/* 节点：扇区里按序号均匀取角，半径用 (i·7919) mod 97 确定性散开（不移植上游的六边形网格） */
+const nodes = [];
+function place(cluster, items, layer, r, makeLabel) {
+  const pad = 8;
+  const inner = cluster.inner + pad;
+  const outer = cluster.outer - pad;
+  const n = items.length;
+  items.forEach((text, i) => {
+    const a = cluster.start + ((i + 0.5) / n) * (cluster.end - cluster.start);
+    const k = ((i * 7919 + cluster.id.length * 131) % 97) / 97;
+    const rr = inner + k * (outer - inner);
+    nodes.push({ id: cluster.id + ":" + i, layer, cluster: cluster.id, key: cluster.key, x: CX + Math.cos(a) * rr, y: CY + Math.sin(a) * rr, r, preview: text, section: makeLabel(i) });
+  });
+}
+L3_SLOTS.forEach((s) => place(clusterOf("L3:" + s), L3[s], "L3", 6, () => ""));
+SURFACES.forEach((s) => place(clusterOf("L2:" + s), L2[s], "L2", 4.5, () => SECTION[s]));
+SURFACES.forEach((s) => place(clusterOf("L1:" + s), L1[s], "L1", 2.8, () => ""));
+const nodeById = Object.fromEntries(nodes.map((n) => [n.id, n]));
+/* 每个场景一个看不见的锚点，放在 L2 扇区的几何中心（上游 surfaceAnchors） */
+SURFACES.forEach((s) => {
+  const c = clusterOf("L2:" + s);
+  const mid = (c.start + c.end) / 2;
+  const r = (c.inner + c.outer) / 2;
+  nodeById["L2:" + s + ":__anchor__"] = { id: "L2:" + s + ":__anchor__", layer: "L2", x: CX + Math.cos(mid) * r, y: CY + Math.sin(mid) * r, r: 0 };
+});
+
+/* 连边：L2 → 它引用的 L1（strong）；L3 → 场景锚点（soft），近期那条额外连到聊天的第一条 L2（strong） */
+const edges = [];
+SURFACES.forEach((s) => {
+  const n1 = L1[s].length;
+  L2[s].forEach((_, j) => {
+    const refs = [j % n1, (j * 3 + 1) % n1, (j * 5 + 2) % n1].filter((x, i, a) => a.indexOf(x) === i);
+    refs.slice(0, 2 + (j % 2)).forEach((ri) => edges.push({ source: "L2:" + s + ":" + j, target: "L1:" + s + ":" + ri, kind: "strong" }));
+  });
+});
+const L3_CITES = { profile: [["chat", "quiz"], ["chat"]], recent: [["chat", "book", "quiz"], ["notebook", "book"], ["book"]], scope: [["kb", "book"]] };
+L3_SLOTS.forEach((slot) =>
+  L3[slot].forEach((_, j) => (L3_CITES[slot][j] || ["chat"]).forEach((s) => edges.push({ source: "L3:" + slot + ":" + j, target: "L2:" + s + ":__anchor__", kind: "soft" })))
+);
+edges.push({ source: "L3:recent:0", target: "L2:chat:0", kind: "strong" });
+
+/* MemoryGraph.tsx LAYER_COLOR、RING_LINE */
+const LAYER_COLOR = {
+  L3: "var(--primary)",
+  L2: "color-mix(in srgb, var(--primary) 78%, var(--foreground) 22%)",
+  L1: "color-mix(in srgb, var(--primary) 38%, var(--foreground) 62%)",
+};
+const RING_LINE = {
+  L3: "color-mix(in srgb, var(--primary) 22%, transparent)",
+  L2: "color-mix(in srgb, var(--primary) 14%, transparent)",
+  L1: "color-mix(in srgb, var(--foreground) 10%, transparent)",
+};
+const RADII = { L1: [LAYOUT.l1InnerRadius, LAYOUT.l1OuterRadius], L2: [LAYOUT.l2InnerRadius, LAYOUT.l2OuterRadius], L3: [LAYOUT.l3InnerRadius, LAYOUT.l3OuterRadius] };
+
+function arcPath(c) {
+  const large = c.end - c.start > Math.PI ? 1 : 0;
+  const p = (r, a) => (CX + Math.cos(a) * r).toFixed(1) + " " + (CY + Math.sin(a) * r).toFixed(1);
+  return "M " + p(c.outer, c.start) + " A " + c.outer + " " + c.outer + " 0 " + large + " 1 " + p(c.outer, c.end) + " L " + p(c.inner, c.end) + " A " + c.inner + " " + c.inner + " 0 " + large + " 0 " + p(c.inner, c.start) + " Z";
+}
+const layerOfEdge = (e) => (e.source.startsWith("L3") || e.target.startsWith("L3") ? "L3" : e.source.startsWith("L2") || e.target.startsWith("L2") ? "L2" : "L1");
+
+/* 被锁定的那条：聊天的第一条 L2 事实 */
+const LOCK = "L2:chat:0";
+const HIGHLIGHT = (() => {
+  const set = new Set([LOCK]);
+  edges.forEach((e) => {
+    if (e.source === LOCK) set.add(e.target);
+    if (e.target === LOCK) set.add(e.source);
+    if (e.target === "L2:chat:__anchor__") set.add(e.source);
+  });
+  set.add("L2:chat:__anchor__");
+  return set;
+})();
+
+const initial = { view: "hub", hover: false, press: false, stage: 0, locked: false, cursor: null, l1: true, pressL1: false };
+
+const steps = [
+  { at: 1700, set: { hover: true } },
+  { at: 600, set: { press: true } },
+  { at: 200, set: { view: "graph", stage: 0, press: false, hover: false } },
+  { label: "loading" },
+  { at: 900, set: { stage: 1 } },
+  { at: 700, set: { stage: 2 } },
+  { at: 600, set: { stage: 3 } },
+  { at: 520, set: { stage: 4 } },
+  { at: 520, set: { stage: 5 } },
+  { at: 700, set: { stage: 6 } },
+  { label: "drawn" },
+  { at: 1500, set: { cursor: "edge" } },
+  { at: 800, set: { cursor: LOCK } },
+  { at: 700, set: { locked: true } },
+  { label: "locked" },
+  { at: 3600, set: { locked: false, cursor: null } },
+  { at: 900, set: { pressL1: true } },
+  { at: 200, set: { l1: false, pressL1: false } },
+  { label: "l1-hidden" },
+  { at: 2000, set: { pressL1: true } },
+  { at: 200, set: { l1: true, pressL1: false } },
+  { at: 2400 },
+];
+
+function Hub({ s }) {
+  const surfaces = SURFACES.length;
+  return html`<div class="mg-hub" data-dt-scroll>
+    <div class="mg-container dt-page-container">
+      <header class="mg-header">
+        <div class="min0">
+          <h1 class="dt-page-title mg-title">${T["Memory"]}</h1>
+          <p class="mg-desc">${T["Everything DeepTutor remembers about you, organised across three layers. Click into any layer to inspect or curate it."]}</p>
+        </div>
+        <div class="row" style=${{ gap: 12 }}>
+          <span class="mg-action"><${Icon} name="refresh-cw" size=${12} />${T["Refresh"]}</span>
+          <span class="mg-link">${T["Memory settings"]}</span>
+        </div>
+      </header>
+      <div class="mg-grid">
+        ${[
+          { icon: "layers", title: T["L1 · Workspace mirror"], tag: T["Live"], stat: count(L1), unit: T["entities tracked"], detail: tt("Snapshot of your live workspace across {{n}} surfaces. Refresh to record changes.", { n: surfaces }) },
+          { icon: "workflow", title: T["L2 · Per-surface summaries"], tag: T["Curated"], stat: count(L2), unit: tt("facts across {{n}} surfaces", { n: surfaces }), detail: T["Surface-specific facts extracted by the consolidator. Run Update / Audit / Dedup per doc."] },
+          { icon: "network", title: T["L3 · Cross-surface knowledge"], tag: T["Synthesis"], stat: count(L3), unit: tt("propositions across {{n}} slots", { n: L3_SLOTS.length }), detail: T["Cross-surface synthesis: profile, recent timeline, knowledge scope. Hedged claims with L2 evidence."] },
+        ].map(
+          (c) => html`<div key=${c.title} class="mg-card">
+            <div class="row" style=${{ alignItems: "flex-start", justifyContent: "space-between" }}>
+              <span class="mg-card__icon"><${Icon} name=${c.icon} size=${16} /></span>
+              <span class="mg-tag">${c.tag}</span>
+            </div>
+            <h2 class="mg-card__title">${c.title}</h2>
+            <div class="row" style=${{ alignItems: "baseline", gap: 8 }}>
+              <span class="mg-card__stat">${c.stat}</span>
+              <span class="mg-card__unit">${c.unit}</span>
+            </div>
+            <p class="mg-card__detail">${c.detail}</p>
+          </div>`
+        )}
+      </div>
+      <div class=${cx("mg-callout", { "is-hover": s.hover, "dt-press": s.press })} data-mg="callout">
+        <div class="mg-callout__glow"></div>
+        <div class="row" style=${{ position: "relative", gap: 20 }}>
+          <span class="mg-callout__icon"><${Icon} name="sparkles" size=${20} /></span>
+          <div class="min0 grow">
+            <div class="row" style=${{ gap: 8 }}>
+              <h3 style=${{ fontSize: 15, fontWeight: 600 }}>${T["Memory graph"]}</h3>
+              <span class="mg-callout__badge">${T["New"]}</span>
+            </div>
+            <p style=${{ marginTop: 4, fontSize: 13, lineHeight: 1.625, color: "var(--muted-foreground)" }}>${T["See all three layers at once — L3 synthesis at the centre, L2 facts in the middle, L1 traces on the outside. Hover any node for a preview."]}</p>
+          </div>
+          <${Icon} name="arrow-right" size=${16} style=${{ color: "var(--primary)" }} />
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function Graph({ s }) {
+  const on = { L1: s.l1, L2: true, L3: true };
+  const hl = s.locked ? HIGHLIGHT : null;
+  const visibleNodes = nodes.filter((n) => on[n.layer] && s.stage >= { L3: 3, L2: 4, L1: 5 }[n.layer]);
+  const visibleEdges = s.stage >= 6 ? edges.filter((e) => on[layerOfEdge(e)] && (e.source.startsWith("L1") || e.target.startsWith("L1") ? s.l1 : true)) : [];
+  const lockNode = nodeById[LOCK];
+  const cursorNode = s.cursor === LOCK ? lockNode : s.cursor === "edge" ? { x: 1010, y: 920 } : null;
+  return html`<div class="mg-page">
+    <div class="mg-ghead">
+      <div class="row min0" style=${{ gap: 12 }}>
+        <span class="mg-gbtn"><${Icon} name="arrow-left" size=${14} />${T["Memory"]}</span>
+        <div class="col min0">
+          <h1 class="mg-gtitle">${T["Memory graph"]}</h1>
+          <p class="mg-gdesc truncate">${T["L3 synthesis at the centre, L2 facts in the middle ring, L1 traces on the outside."]}</p>
+        </div>
+      </div>
+      <span class="mg-gbtn"><${Icon} name="refresh-cw" size=${14} class=${s.stage === 0 ? "animate-spin" : ""} />${T["Refresh"]}</span>
+    </div>
+    <div class="mg-canvas">
+      <div class="mg-square">
+        <svg viewBox="0 0 1200 1200" aria-label=${T["Memory graph"]}>
+          <defs>
+            <radialGradient id="halo-l3" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.20" />
+              <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.02" />
+            </radialGradient>
+            <radialGradient id="halo-l2" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.12" />
+              <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.02" />
+            </radialGradient>
+            <radialGradient id="halo-l1" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="var(--foreground)" stop-opacity="0.08" />
+              <stop offset="100%" stop-color="var(--foreground)" stop-opacity="0.01" />
+            </radialGradient>
+          </defs>
+          ${s.stage >= 1
+            ? html`<g pointer-events="none">
+                ${["L1", "L2", "L3"].map((layer) =>
+                  on[layer]
+                    ? html`<g key=${"ring-" + layer} class="mg-ring">
+                        ${RADII[layer].map((r) => html`<circle key=${r} cx=${CX} cy=${CY} r=${r} fill="none" stroke=${RING_LINE[layer]} stroke-width="0.6" stroke-dasharray="2 3" />`)}
+                      </g>`
+                    : null
+                )}
+              </g>`
+            : null}
+          ${s.stage >= 2
+            ? html`<g pointer-events="none" class="mg-fade">
+                ${clusters.filter((c) => on[c.layer]).map((c) => html`<path key=${c.id} d=${arcPath(c)} fill=${"url(#halo-" + c.layer.toLowerCase() + ")"} stroke="color-mix(in srgb, var(--primary) 8%, transparent)" stroke-width="0.6" />`)}
+                ${clusters
+                  .filter((c) => c.layer !== "L3" && on[c.layer])
+                  .map((c) => {
+                    const mid = (c.start + c.end) / 2;
+                    const rOut = c.outer + (c.layer === "L1" ? 30 : 18);
+                    const x = CX + Math.cos(mid) * rOut;
+                    const y = CY + Math.sin(mid) * rOut;
+                    return html`<g key=${"label-" + c.id}>
+                      <text x=${x} y=${y - 12} font-size=${c.layer === "L2" ? 20 : 22} font-weight="600" fill="var(--foreground)" text-anchor="middle" dominant-baseline="central">${SURFACE_LABEL[c.key]}</text>
+                      <text x=${x} y=${y + 14} font-size="15" font-weight="500" fill="var(--muted-foreground)" text-anchor="middle" dominant-baseline="central">${c.count} ${c.layer === "L2" ? T["facts"] : T["traces"]}</text>
+                    </g>`;
+                  })}
+                <circle cx=${CX} cy=${CY} r=${LAYOUT.l3InnerRadius - 6} fill="color-mix(in srgb, var(--primary) 12%, var(--background))" stroke="color-mix(in srgb, var(--primary) 22%, transparent)" stroke-width="1" />
+                <text x=${CX} y=${CY - 10} font-size="22" font-weight="700" fill="var(--primary)" text-anchor="middle" dominant-baseline="central" style=${{ letterSpacing: "0.08em" }}>L3</text>
+                <text x=${CX} y=${CY + 16} font-size="14" font-weight="500" fill="var(--muted-foreground)" text-anchor="middle" dominant-baseline="central" style=${{ letterSpacing: "0.04em" }}>${T["synthesis"]}</text>
+                ${clusters
+                  .filter((c) => c.layer === "L3")
+                  .map((c) => {
+                    const mid = (c.start + c.end) / 2;
+                    const r = c.outer + 14;
+                    return html`<text key=${"l3-" + c.id} x=${CX + Math.cos(mid) * r} y=${CY + Math.sin(mid) * r} font-size="18" font-weight="600" fill="var(--primary)" text-anchor="middle" dominant-baseline="central" style=${{ letterSpacing: "0.04em" }}>${L3_LABEL[c.key]}</text>`;
+                  })}
+              </g>`
+            : null}
+          <g pointer-events="none">
+            ${visibleEdges.map((e) => {
+              const a = nodeById[e.source];
+              const b = nodeById[e.target];
+              const dim = hl && !hl.has(e.source) && !hl.has(e.target);
+              const focused = hl && hl.has(e.source) && hl.has(e.target);
+              const opacity = dim ? 0.04 : focused ? (e.kind === "strong" ? 0.85 : 0.55) : e.kind === "strong" ? 0.16 : 0.08;
+              const mx = (a.x + b.x) / 2;
+              const my = (a.y + b.y) / 2;
+              const k = e.kind === "soft" ? 0.45 : 0.25;
+              const d = "M " + a.x.toFixed(1) + " " + a.y.toFixed(1) + " Q " + (mx + (CX - mx) * k).toFixed(1) + " " + (my + (CY - my) * k).toFixed(1) + " " + b.x.toFixed(1) + " " + b.y.toFixed(1);
+              return html`<path key=${e.source + ">" + e.target} class="mg-edge" d=${d} pathLength="1" stroke=${focused ? "var(--primary)" : LAYER_COLOR[layerOfEdge(e)]} stroke-width=${focused ? 0.9 : e.kind === "strong" ? 0.5 : 0.35} stroke-opacity=${opacity} fill="none" stroke-linecap="round" />`;
+            })}
+          </g>
+          <g>
+            ${visibleNodes.map((n, i) => {
+              const dim = hl && !hl.has(n.id);
+              const focused = hl && hl.has(n.id);
+              const active = s.locked && n.id === LOCK;
+              const r = active ? n.r * 2.1 : focused ? n.r * 1.35 : n.r;
+              const fill = LAYER_COLOR[n.layer];
+              return html`<g key=${n.id} class="mg-node" data-node=${n.id} style=${{ animationDelay: (i % 23) * 18 + "ms" }}>
+                ${active ? html`<circle cx=${n.x} cy=${n.y} r=${r * 2.5} fill=${fill} opacity="0.18" />` : null}
+                <circle class="mg-dot" cx=${n.x} cy=${n.y} r=${r} fill=${fill} opacity=${dim ? 0.18 : 1} stroke=${active ? "var(--background)" : "transparent"} stroke-width=${active ? 1.5 : 0} />
+              </g>`;
+            })}
+          </g>
+        </svg>
+        ${cursorNode
+          ? html`<span class="mg-cursor" style=${{ left: (cursorNode.x / 12).toFixed(2) + "%", top: (cursorNode.y / 12).toFixed(2) + "%" }}><${Icon} name="mouse-pointer-2" size=${18} strokeWidth=${1.6} style=${{ fill: "var(--background)" }} /></span>`
+          : null}
+        ${s.locked
+          ? html`<div class="mg-hover" style=${{ left: "calc(" + (lockNode.x / 12).toFixed(2) + "% + 16px)", top: "calc(" + (lockNode.y / 12).toFixed(2) + "% + 16px)" }}>
+              <div class="mg-hover__meta">
+                <span class="mg-swatch" style=${{ background: LAYER_COLOR.L2 }}></span>
+                <span>${T["L2 · curated"]}</span>
+                <span style=${{ color: "var(--border)" }}>·</span>
+                <span>${SURFACE_LABEL.chat}</span>
+                <span style=${{ color: "var(--border)" }}>·</span>
+                <span style=${{ color: "color-mix(in srgb, var(--foreground) 80%, transparent)" }}>${lockNode.section}</span>
+              </div>
+              <p class="mg-hover__text">${lockNode.preview}</p>
+              <p class="mg-hover__foot">${T["Click to lock · open in workbench"]}</p>
+            </div>`
+          : null}
+      </div>
+      ${s.stage === 0
+        ? html`<div class="mg-loading"><span><${Icon} name="loader-2" size=${14} class="animate-spin" />${T["Composing memory graph…"]}</span></div>`
+        : null}
+      ${s.stage >= 2
+        ? html`<div class="mg-controls">
+            <div class="mg-zoom" style=${{ pointerEvents: "auto" }}>
+              <span class="mg-zbtn" title=${T["Zoom in"]}><${Icon} name="zoom-in" size=${14} /></span>
+              <span class="mg-zbtn" title=${T["Zoom out"]}><${Icon} name="zoom-out" size=${14} /></span>
+              <span class="mg-zbtn" title=${T["Fit"]}><${Icon} name="maximize-2" size=${14} /></span>
+              <span class="mg-zpct">52%</span>
+            </div>
+            <div class="mg-layers" style=${{ pointerEvents: "auto" }}>
+              ${["L3", "L2", "L1"].map(
+                (layer) => html`<span key=${layer} class=${cx("mg-layer", { "is-press dt-press": layer === "L1" && s.pressL1 })}>
+                  <span class="mg-swatch" style=${{ background: LAYER_COLOR[layer] }}></span>
+                  <span style=${{ fontWeight: 500 }}>${layer}</span>
+                  <span class="muted">${layer === "L3" ? T["Synthesis"] : layer === "L2" ? T["Per-surface"] : T["Raw traces"]}</span>
+                  <${Icon} name=${on[layer] ? "eye" : "eye-off"} size=${12} style=${{ marginLeft: 4, color: "var(--muted-foreground)", opacity: on[layer] ? 1 : 0.6 }} />
+                </span>`
+              )}
+            </div>
+          </div>`
+        : null}
+      ${s.stage >= 3
+        ? html`<div class="mg-legend">
+            <div class="row" style=${{ marginBottom: 8, gap: 12, color: "var(--muted-foreground)" }}>
+              ${["L3", "L2", "L1"].map(
+                (layer) => html`<span key=${layer} class="row" style=${{ gap: 6 }}>
+                  <span class="mg-swatch" style=${{ background: LAYER_COLOR[layer] }}></span>
+                  <span style=${{ fontWeight: 500, color: "var(--foreground)" }}>${layer}</span>
+                  <span>${nodes.filter((n) => n.layer === layer).length}</span>
+                </span>`
+              )}
+            </div>
+            <p style=${{ lineHeight: 1.625, color: "var(--muted-foreground)" }}>${T["Hover a node to preview the memory. Click to lock the highlight and trace its references inward (L1 → L2 → L3) or outward."]}</p>
+          </div>`
+        : null}
+    </div>
+  </div>`;
+}
+
+function render(s) {
+  return html`<${Shell} active="/memory">
+    ${s.view === "hub" ? html`<${Hub} s=${s} />` : html`<${Graph} s=${s} />`}
+  <//>`;
+}
+
+DT.run({ T, initial, steps, render });
+</script>
+</body>
+</html>

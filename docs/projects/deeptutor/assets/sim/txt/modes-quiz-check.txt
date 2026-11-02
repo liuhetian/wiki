@@ -1,0 +1,17 @@
+【选择题，模型套了 ```json 围栏，正确答案写成了选项原文】
+  选项键：A、B、C、D
+  correct_answer → 'B'
+  格式通过，直接发给前端
+
+【选择题，只给了三个选项】
+  选项键：A、B、C
+  correct_answer → 'A'
+  查出问题，进修复：choice_options_must_be_a_to_d
+
+【判断题，答案写成「对」】
+  correct_answer → 'true'
+  格式通过，直接发给前端
+
+【填空题，题干里没有 ____，也没写解析】
+  correct_answer → '弃真'
+  查出问题，进修复：missing_explanation、fill_in_blank_question_must_contain_blank_token

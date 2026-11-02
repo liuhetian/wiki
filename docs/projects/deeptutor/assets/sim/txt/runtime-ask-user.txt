@@ -1,0 +1,14 @@
+【新格式：一题三选项，模型自己补了「其他」，还有一个只差一个空格的重复项】
+  q1 header='讲法' 题：你想先听哪部分？  选项：先讲定义 / 先看例 8.3  可自填=True
+
+【旧格式：{question, options}】
+  q1 header=None 题：要不要顺手出两道题巩固？  选项：要 / 不要  可自填=True
+
+【一次塞了 5 题】
+  q1 header=None 题：第 1 题？  选项：（无选项）  可自填=True
+  q2 header=None 题：第 2 题？  选项：（无选项）  可自填=True
+  q3 header=None 题：第 3 题？  选项：（无选项）  可自填=True
+  q4 header=None 题：第 4 题？  选项：（无选项）  可自填=True
+
+【空参数】
+  报错回给模型：`questions` must contain at least one question.

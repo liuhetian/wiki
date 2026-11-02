@@ -1,0 +1,13 @@
+四道题写进题库之后：
+  #1 deep_question      incorrect  排进复习，1.0 天后到期
+  #2 mastery_path       correct    不进复习
+  #3 book               correct    不进复习
+  #4 immersive_reading  ungraded   不进复习
+
+#3 后来改判为错之后：
+  #1 deep_question      incorrect  排进复习，1.0 天后到期
+  #2 mastery_path       correct    不进复习
+  #3 book               incorrect  排进复习，1.0 天后到期
+  #4 immersive_reading  ungraded   不进复习
+
+挂在 notebook_entries 上的触发器：practice_capture_insert, practice_capture_update, practice_invalidate_question

@@ -1,0 +1,12 @@
+  chartjs 合格：t 分布 + 拒绝域
+          → 通过，写进画布
+  chartjs tooltip 里写了 JS 回调函数
+          → 退回给模型：Chart.js config must be strict JSON: double-quoted keys, no function callbacks, no comments, no trailing commas.
+  chartjs 用了 Chart.js 没有的类型 area
+          → 退回给模型：unsupported Chart.js type: area
+  chartjs 数据集没写 label
+          → 退回给模型：Chart.js dataset 0 needs a label
+  svg     SVG 根节点没有 viewBox
+          → 退回给模型：SVG root is missing a viewBox attribute (must be camelCase `viewBox`, required for responsive scaling).
+  svg     SVG 缺 <title> 和 <desc>
+          → 退回给模型：SVG must include direct <title> and <desc> accessibility elements

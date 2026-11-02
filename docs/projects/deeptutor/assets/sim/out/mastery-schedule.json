@@ -1,0 +1,126 @@
+{
+  "initial": {
+    "memory": {
+      "seed": [
+        0,
+        1,
+        3,
+        7,
+        14,
+        30,
+        60
+      ],
+      "first_due_days": 0.0,
+      "stability": 0.5
+    },
+    "concept": {
+      "seed": [
+        3,
+        7,
+        14,
+        30
+      ],
+      "first_due_days": 3.0,
+      "stability": 28.473664743089714
+    },
+    "procedure": {
+      "seed": [
+        3,
+        7,
+        14
+      ],
+      "first_due_days": 3.0,
+      "stability": 28.473664743089714
+    },
+    "design": {
+      "seed": [
+        14,
+        28
+      ],
+      "first_due_days": 14.0,
+      "stability": 132.87710213441866
+    }
+  },
+  "procedure": [
+    {
+      "label": "第一次答",
+      "day": 0.0,
+      "result": "correct",
+      "recall_before": 1.0,
+      "stability": 59.39606465408515,
+      "difficulty": 0.44,
+      "next_in_days": 6.258000000000552,
+      "lapses": 0
+    },
+    {
+      "label": "五分钟后再答一题",
+      "day": 0.003472222222222222,
+      "result": "correct",
+      "recall_before": 0.9999415429161265,
+      "stability": 59.39606465408515,
+      "difficulty": 0.44,
+      "next_in_days": 6.254527777778329,
+      "lapses": 0
+    },
+    {
+      "label": "到期再考",
+      "day": 6.258000000000552,
+      "result": "correct",
+      "recall_before": 0.9000526144511652,
+      "stability": 157.8640924281758,
+      "difficulty": 0.3792042091560932,
+      "next_in_days": 16.632642182086904,
+      "lapses": 0
+    },
+    {
+      "label": "到期再考",
+      "day": 22.890642182087458,
+      "result": "correct",
+      "recall_before": 0.9000000000000026,
+      "stability": 370.78349859645715,
+      "difficulty": 0.32569970405736226,
+      "next_in_days": 39.06594060953569,
+      "lapses": 0
+    },
+    {
+      "label": "到期再考，忘了",
+      "day": 61.95658279162314,
+      "result": "incorrect",
+      "recall_before": 0.8999999999999999,
+      "stability": 106.08578304874518,
+      "difficulty": 0.4786157395704788,
+      "next_in_days": 5.58862640298903,
+      "lapses": 1
+    },
+    {
+      "label": "隔一天补考",
+      "day": 62.95658279162314,
+      "result": "correct",
+      "recall_before": 0.9906179548383469,
+      "stability": 224.34637465654552,
+      "difficulty": 0.4204312872090891,
+      "next_in_days": 23.637249719776488,
+      "lapses": 1
+    },
+    {
+      "label": "到期再考",
+      "day": 86.59383251139963,
+      "result": "correct",
+      "recall_before": 0.9000000000000041,
+      "stability": 599.4133614141182,
+      "difficulty": 0.36197953274399874,
+      "next_in_days": 63.15450085078125,
+      "lapses": 1
+    }
+  ],
+  "retention": {
+    "0.9": {
+      "stability": 875.8841712746387,
+      "next_in_days": 92.28360794202321
+    },
+    "0.8": {
+      "stability": 875.8841712746387,
+      "next_in_days": 195.44790451812523
+    }
+  }
+}

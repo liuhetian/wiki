@@ -1,0 +1,48 @@
+{
+  "matrix": {
+    "mastery_build": {
+      "outline": true,
+      "study": false,
+      "review": false,
+      "None": true
+    },
+    "mastery_revise": {
+      "outline": true,
+      "study": false,
+      "review": false,
+      "None": true
+    },
+    "mastery_quiz": {
+      "outline": false,
+      "study": true,
+      "review": true,
+      "None": true
+    },
+    "mastery_grade": {
+      "outline": false,
+      "study": true,
+      "review": true,
+      "None": true
+    },
+    "mastery_assess": {
+      "outline": false,
+      "study": true,
+      "review": true,
+      "None": true
+    },
+    "mastery_status": {
+      "outline": true,
+      "study": true,
+      "review": true,
+      "None": true
+    },
+    "mastery_mode": {
+      "outline": true,
+      "study": true,
+      "review": true,
+      "None": true
+    }
+  },
+  "wrong_mode_message": "mastery_quiz belongs to the 'study' or 'review' mode, and this conversation is in 'outline'. Call mastery_mode with mode='study' first — tell the learner what you are switching to and why, because the mode is shown to them above the conversation.",
+  "admission_study": "There is no outline to study yet. Stay in 'outline' and design one with the learner first."
+}

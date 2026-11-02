@@ -1,0 +1,8 @@
+构造的 kb_config.json：「应用统计学」库 search_mode=local；LightRAG 全局默认 mix；内置默认 hybrid
+
+  这次调用指定 global              → global
+  这次调用指定了引擎不认的 fast    → local
+  不指定，库设了 local             → local
+  不指定，库设了引擎不认的 bogus   → mix
+  不指定，库没设                   → mix
+  连 kb_config.json 都没有         → hybrid

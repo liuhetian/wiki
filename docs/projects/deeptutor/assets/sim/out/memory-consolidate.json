@@ -1,0 +1,79 @@
+{
+  "concat": "=== @entity chat:sess_0409 ===\nref: chat:sess_0409\nlabel: 例 8.3 怎么算\nts: 2026-10-09T20:10:00Z\n\n学习者：例 8.3 的 t 怎么算？先给我看例题再讲定义。\n\n导师：t = (52.3 − 50) / (4.1 / √25) = 2.80。学习者第一次算成 2.3，漏了除以标准误。\n\n=== @entity chat:sess_0412 ===\nref: chat:sess_0412\nlabel: p 值的含义\nts: 2026-10-12T21:02:00Z\n\n学习者：p 值小于 0.05 就说明 H0 是错的吗？p 值是不是 H0 为真的概率？\n\n导师：不是。p 值先假定 H0 为真，再算这么极端的数据有多罕见。学习者复述了一遍，说对了。\n\n=== @entity chat:sess_0415 ===\nref: chat:sess_0415\nlabel: α 取 0.01 时\nts: 2026-10-15T20:40:00Z\n\n学习者：p = 0.0098，α 改成 0.01，是不是就不拒绝了？\n\n导师：0.0098 < 0.01，仍然拒绝。学习者说边界上的数自己总看反。\n\n=== @entity chat:sess_0420 ===\nref: chat:sess_0420\nlabel: 功效\nts: 2026-10-20T21:30:00Z\n\n学习者：功效是 1 − α 吗？\n\n导师：功效是 1 − β，即 H0 为假时正确拒绝它的概率。学习者说这一节还没读。",
+  "chunks": [
+    {
+      "index": 0,
+      "start": 0,
+      "end": 279,
+      "pool": [
+        "chat:sess_0409",
+        "chat:sess_0412"
+      ]
+    },
+    {
+      "index": 1,
+      "start": 256,
+      "end": 503,
+      "pool": [
+        "chat:sess_0412",
+        "chat:sess_0415"
+      ]
+    },
+    {
+      "index": 2,
+      "start": 480,
+      "end": 688,
+      "pool": [
+        "chat:sess_0415",
+        "chat:sess_0420"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "text": "常把 p 值读成 H0 为真的概率，讲过一次后能复述",
+      "refs": [
+        "chat:sess_0412"
+      ],
+      "kept": [
+        "chat:sess_0412"
+      ],
+      "reject": null
+    },
+    {
+      "text": "算 t 时漏除标准误",
+      "refs": [
+        "例 8.3 怎么算:chat:sess_0409"
+      ],
+      "kept": [
+        "chat:sess_0409"
+      ],
+      "reject": null
+    },
+    {
+      "text": "功效的概念还没学",
+      "refs": [
+        "chat:sess_0420"
+      ],
+      "kept": [],
+      "reject": "no surviving refs in chunk pool"
+    },
+    {
+      "text": "喜欢先看例题再看定义",
+      "refs": [],
+      "kept": [],
+      "reject": "missing refs"
+    },
+    {
+      "text": "边界上的数会看反",
+      "refs": [
+        "chat:sess_9999",
+        "chat:sess_0412"
+      ],
+      "kept": [
+        "chat:sess_0412"
+      ],
+      "reject": null
+    }
+  ]
+}

@@ -1,0 +1,265 @@
+{
+  "draft": [
+    {
+      "name": "假设与两类错误",
+      "objective": "能说清假设检验在判断什么、可能犯哪两种错",
+      "knowledge_points": [
+        {
+          "name": "原假设与备择假设",
+          "type": "concept"
+        },
+        {
+          "name": "第一类与第二类错误",
+          "type": "concept"
+        },
+        {
+          "name": "显著性水平 α 的含义",
+          "type": "memory"
+        },
+        {
+          "name": "α",
+          "type": "memory"
+        }
+      ]
+    },
+    {
+      "name": "检验统计量与 p 值",
+      "objective": "能算出 t 统计量并用 p 值作判断",
+      "knowledge_points": [
+        {
+          "name": "单样本 t 统计量",
+          "type": "procedure"
+        },
+        {
+          "name": "p 值不是 H0 为真的概率",
+          "type": "概念型"
+        },
+        {
+          "name": "拒绝域与临界值",
+          "type": "procedure"
+        },
+        {
+          "name": "查 t 分布表",
+          "type": "skill"
+        }
+      ]
+    },
+    "第 3 部分 · 功效",
+    {
+      "name": "功效与样本量",
+      "knowledge_points": [
+        {
+          "name": "功效练习 1",
+          "type": "procedure"
+        },
+        {
+          "name": "功效练习 2",
+          "type": "procedure"
+        },
+        {
+          "name": "功效练习 3",
+          "type": "procedure"
+        },
+        {
+          "name": "功效练习 4",
+          "type": "procedure"
+        },
+        {
+          "name": "功效练习 5",
+          "type": "procedure"
+        },
+        {
+          "name": "功效练习 6",
+          "type": "procedure"
+        },
+        {
+          "name": "功效练习 7",
+          "type": "procedure"
+        },
+        {
+          "name": "功效练习 8",
+          "type": "procedure"
+        },
+        {
+          "name": "功效练习 9",
+          "type": "procedure"
+        }
+      ]
+    },
+    {
+      "name": "",
+      "knowledge_points": [
+        {
+          "name": "两个总体均值的检验",
+          "type": "procedure"
+        }
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "id": "hyp_m0",
+      "name": "假设与两类错误",
+      "order": 0,
+      "pass_threshold": 0.7,
+      "objective": "能说清假设检验在判断什么、可能犯哪两种错",
+      "knowledge_points": [
+        {
+          "id": "hyp_m0_kp0",
+          "name": "原假设与备择假设",
+          "type": "concept",
+          "module_id": "hyp_m0",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        },
+        {
+          "id": "hyp_m0_kp1",
+          "name": "第一类与第二类错误",
+          "type": "concept",
+          "module_id": "hyp_m0",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        },
+        {
+          "id": "hyp_m0_kp2",
+          "name": "显著性水平 α 的含义",
+          "type": "memory",
+          "module_id": "hyp_m0",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        }
+      ]
+    },
+    {
+      "id": "hyp_m1",
+      "name": "检验统计量与 p 值",
+      "order": 1,
+      "pass_threshold": 0.7,
+      "objective": "能算出 t 统计量并用 p 值作判断",
+      "knowledge_points": [
+        {
+          "id": "hyp_m1_kp0",
+          "name": "单样本 t 统计量",
+          "type": "procedure",
+          "module_id": "hyp_m1",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        },
+        {
+          "id": "hyp_m1_kp1",
+          "name": "p 值不是 H0 为真的概率",
+          "type": "concept",
+          "module_id": "hyp_m1",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        },
+        {
+          "id": "hyp_m1_kp2",
+          "name": "拒绝域与临界值",
+          "type": "procedure",
+          "module_id": "hyp_m1",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        },
+        {
+          "id": "hyp_m1_kp3",
+          "name": "查 t 分布表",
+          "type": "concept",
+          "module_id": "hyp_m1",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        }
+      ]
+    },
+    {
+      "id": "hyp_m3",
+      "name": "功效与样本量",
+      "order": 2,
+      "pass_threshold": 0.7,
+      "objective": "",
+      "knowledge_points": [
+        {
+          "id": "hyp_m3_kp0",
+          "name": "功效练习 1",
+          "type": "procedure",
+          "module_id": "hyp_m3",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        },
+        {
+          "id": "hyp_m3_kp1",
+          "name": "功效练习 2",
+          "type": "procedure",
+          "module_id": "hyp_m3",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        },
+        {
+          "id": "hyp_m3_kp2",
+          "name": "功效练习 3",
+          "type": "procedure",
+          "module_id": "hyp_m3",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        },
+        {
+          "id": "hyp_m3_kp3",
+          "name": "功效练习 4",
+          "type": "procedure",
+          "module_id": "hyp_m3",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        },
+        {
+          "id": "hyp_m3_kp4",
+          "name": "功效练习 5",
+          "type": "procedure",
+          "module_id": "hyp_m3",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        },
+        {
+          "id": "hyp_m3_kp5",
+          "name": "功效练习 6",
+          "type": "procedure",
+          "module_id": "hyp_m3",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        },
+        {
+          "id": "hyp_m3_kp6",
+          "name": "功效练习 7",
+          "type": "procedure",
+          "module_id": "hyp_m3",
+          "prerequisite_ids": [],
+          "topic_source_ids": [],
+          "required_visual_tasks": []
+        }
+      ]
+    }
+  ],
+  "discarded": [
+    {
+      "index": 3,
+      "reason": "module is not an object"
+    },
+    {
+      "index": 5,
+      "reason": "module name is missing"
+    }
+  ],
+  "strict": "TopicGenerationError: Route region 1 waypoint 4 needs a name"
+}

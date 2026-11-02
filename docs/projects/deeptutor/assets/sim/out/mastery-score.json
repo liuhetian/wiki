@@ -1,0 +1,171 @@
+{
+  "gate": 0.9,
+  "sequences": [
+    {
+      "label": "答对 1 次",
+      "seq": [
+        true
+      ],
+      "score": 0.5,
+      "passes": false
+    },
+    {
+      "label": "答对 2 次",
+      "seq": [
+        true,
+        true
+      ],
+      "score": 0.8,
+      "passes": false
+    },
+    {
+      "label": "答对 3 次",
+      "seq": [
+        true,
+        true,
+        true
+      ],
+      "score": 1.0,
+      "passes": true
+    },
+    {
+      "label": "对、错",
+      "seq": [
+        true,
+        false
+      ],
+      "score": 0.48717948717948717,
+      "passes": false
+    },
+    {
+      "label": "对、错、对、对、对",
+      "seq": [
+        true,
+        false,
+        true,
+        true,
+        true
+      ],
+      "score": 0.825,
+      "passes": false
+    },
+    {
+      "label": "对、错、对、对、对、对",
+      "seq": [
+        true,
+        false,
+        true,
+        true,
+        true,
+        true
+      ],
+      "score": 0.875,
+      "passes": false
+    },
+    {
+      "label": "对、错、对、对、对、对、对",
+      "seq": [
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "score": 1.0,
+      "passes": true
+    },
+    {
+      "label": "连对 4 次后错 1 次",
+      "seq": [
+        true,
+        true,
+        true,
+        true,
+        false
+      ],
+      "score": 0.75,
+      "passes": false
+    },
+    {
+      "label": "对、半对、对",
+      "seq": [
+        true,
+        0.5,
+        true
+      ],
+      "score": 0.830357142857143,
+      "passes": false
+    }
+  ],
+  "filtered": {
+    "attempts": [
+      {
+        "question_id": "q1",
+        "knowledge_point_id": "hyp_m1_kp0",
+        "module_id": "",
+        "is_correct": true,
+        "result": "correct",
+        "user_answer": null,
+        "error_type": null,
+        "self_attribution": "",
+        "mastery_estimate": 0.0,
+        "timestamp": 1793246501.9384563,
+        "voided": false,
+        "void_reason": "",
+        "independent": true,
+        "visual_context": {}
+      },
+      {
+        "question_id": "q2",
+        "knowledge_point_id": "hyp_m1_kp0",
+        "module_id": "",
+        "is_correct": true,
+        "result": "correct",
+        "user_answer": null,
+        "error_type": null,
+        "self_attribution": "",
+        "mastery_estimate": 0.0,
+        "timestamp": 1793246501.9384656,
+        "voided": false,
+        "void_reason": "",
+        "independent": false,
+        "visual_context": {}
+      },
+      {
+        "question_id": "q3",
+        "knowledge_point_id": "hyp_m1_kp0",
+        "module_id": "",
+        "is_correct": false,
+        "result": "incorrect",
+        "user_answer": null,
+        "error_type": null,
+        "self_attribution": "",
+        "mastery_estimate": 0.0,
+        "timestamp": 1793246501.938469,
+        "voided": true,
+        "void_reason": "答案键写错",
+        "independent": true,
+        "visual_context": {}
+      },
+      {
+        "question_id": "q4",
+        "knowledge_point_id": "hyp_m1_kp0",
+        "module_id": "",
+        "is_correct": true,
+        "result": "correct",
+        "user_answer": null,
+        "error_type": null,
+        "self_attribution": "",
+        "mastery_estimate": 0.0,
+        "timestamp": 1793246501.938471,
+        "voided": false,
+        "void_reason": "",
+        "independent": true,
+        "visual_context": {}
+      }
+    ],
+    "mastery": 0.8
+  }
+}

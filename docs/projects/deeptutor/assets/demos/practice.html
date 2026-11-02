@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh" class="theme-snow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-height" content="620">
+<title>DeepTutor 仿真 demo：今日复习</title>
+<!--
+  Goal      题库里到期的题排成今天的复习：先回忆再看答案，自评或判对错决定下次什么时候再来；
+            答错的题本轮排回队尾再练一次
+  Surface   /learning/practice · components/learning/practice/ReviewHome.tsx → PracticeSession.tsx
+  Sources   components/learning/practice/ReviewHome.tsx 98-229（今日复习卡、三栏统计、底部说明）；
+            components/learning/practice/PracticeSession.tsx 20-25（四档自评）、40-118（进度、完成页）、251-420（单题）；
+            components/learning/LearningShell.tsx 11-52（返回、页头）；components/layout/FeaturePage.tsx 14-50；
+            components/learning/LibraryWorkspace.tsx 18（工作区标签）；deeptutor/services/practice/scheduler.py 31-60（again 10 分钟后再来、good 拉长间隔）
+  Layout    Shell（当前项 个性化学习）→ 练习页头 → 今日复习卡 → 练习会话
+  Data      DT.DATA.practice 不存在，到期数写在本页；题目取 DT.DATA.quiz[1] 和 lecture 里的定义
+  Autoplay  今日复习卡（6 道待复习）→ 开始 → 第 1 题简答：打字作答 → 提交 → 对照参考答案 → 四档自评点「掌握了」→
+            第 2 题选择：选错 → 还需要再练一次 → 稍后再练（题排回队尾），一圈约 30s
+  Height    620
+  Deviations 原生 <progress> 换成同尺寸的条；练习统计的折叠区不展开
+  Checks    按钮、自评四档、状态句与语言包一致
+-->
+<link rel="stylesheet" href="dt-base.css">
+<style>
+  .pr-page { height: 100%; overflow-y: auto; scrollbar-gutter: stable; }
+  .pr-container { margin: 0 auto; width: 100%; max-width: 1180px; padding: 28px 24px; }
+  @media (min-width: 768px) { .pr-container { padding: 28px 36px; } }
+  /* 返回：mb-5 inline-flex items-center gap-1.5 text-xs text-muted-foreground */
+  .pr-back { margin-bottom: 20px; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted-foreground); }
+  .pr-header { margin-bottom: 24px; display: flex; flex-direction: column; gap: 16px; }
+  @container feature-page (min-width: 640px) { .pr-header { flex-direction: row; align-items: flex-end; justify-content: space-between; } }
+  .pr-title { line-height: 1.5; letter-spacing: -0.02em; }
+  .pr-desc { margin-top: 6px; max-width: 672px; font-size: 12.5px; line-height: 1.625; color: var(--muted-foreground); }
+  /* 导入：inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm */
+  .pr-import { display: inline-flex; height: 36px; align-items: center; gap: 8px; border-radius: 8px; border: 1px solid var(--border); padding: 0 12px; font-size: 14px; white-space: nowrap; }
+  /* 今日复习卡：overflow-hidden rounded-2xl border bg-card */
+  .rv { overflow: hidden; border-radius: 16px; border: 1px solid var(--border); background: var(--card); }
+  /* 卡头：flex flex-wrap items-center justify-between gap-4 border-b px-6 py-4；h2 text-sm font-semibold */
+  .rv-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--border); padding: 16px 24px; }
+  .rv-h2 { font-size: 14px; font-weight: 600; }
+  /* 范围：flex items-center gap-2 text-xs；select h-9 rounded-lg border bg-background px-3 text-sm */
+  .rv-scope { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted-foreground); }
+  .rv-select { display: inline-flex; height: 36px; align-items: center; gap: 24px; border-radius: 8px; border: 1px solid var(--border); background: var(--background); padding: 0 10px 0 12px; font-size: 14px; color: var(--foreground); }
+  /* 主区：flex flex-col justify-between gap-6 px-6 py-8 sm:flex-row sm:items-center sm:px-8 */
+  .rv-main { display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding: 32px 24px; }
+  @media (min-width: 640px) { .rv-main { flex-direction: row; align-items: center; padding: 32px; } }
+  /* 大数：text-5xl font-semibold tracking-tight tabular-nums */
+  .rv-big { font-size: 48px; line-height: 1; font-weight: 600; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+  .rv-note { margin-top: 16px; max-width: 448px; font-size: 14px; line-height: 24px; color: var(--muted-foreground); }
+  /* 开始：inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-medium */
+  .rv-start { display: inline-flex; height: 44px; flex-shrink: 0; align-items: center; justify-content: center; gap: 8px; border-radius: 12px; background: var(--primary); padding: 0 24px; font-size: 14px; font-weight: 500; color: var(--primary-foreground); }
+  /* 三栏：grid grid-cols-3 divide-x border-t bg-muted/20 px-2 py-4；数 text-lg font-medium tabular-nums；名 text-xs */
+  .rv-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--border); background: color-mix(in srgb, var(--muted) 20%, transparent); padding: 16px 8px; }
+  .rv-stat { padding: 0 16px; text-align: center; }
+  .rv-stat + .rv-stat { border-left: 1px solid var(--border); }
+  .rv-stat b { display: block; font-size: 18px; line-height: 28px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .rv-stat span { font-size: 12px; color: var(--muted-foreground); }
+  .rv-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 0 4px; font-size: 12px; color: var(--muted-foreground); }
+  /* 统计折叠：rounded-xl border；summary px-5 py-4 text-sm font-medium */
+  .rv-details { display: flex; align-items: center; justify-content: space-between; border-radius: 12px; border: 1px solid var(--border); padding: 16px 20px; font-size: 14px; font-weight: 500; }
+  /* 会话：mx-auto max-w-3xl；顶行 mb-5 flex justify-between；进度 mb-6 h-1.5 accent-primary */
+  .ps { margin: 0 auto; max-width: 768px; }
+  .ps-top { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ps-bar { margin-bottom: 24px; height: 6px; overflow: hidden; border-radius: 9999px; background: var(--muted); }
+  .ps-bar > i { display: block; height: 100%; background: var(--primary); transition: width 400ms ease; }
+  /* 题卡：rounded-2xl border bg-card p-5 sm:p-8 */
+  .ps-card { border-radius: 16px; border: 1px solid var(--border); background: var(--card); padding: 20px; }
+  @media (min-width: 640px) { .ps-card { padding: 32px; } }
+  /* 题头：mb-4 flex flex-wrap items-center gap-2 text-xs；标签 rounded-full bg-muted px-2 py-1 */
+  .ps-meta { margin-bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; color: var(--muted-foreground); }
+  .ps-tag { border-radius: 9999px; background: var(--muted); padding: 4px 8px; }
+  .ps-q { font-size: 16px; line-height: 1.625; }
+  /* 作答：mt-6 block text-sm font-medium；textarea mt-2 rounded-xl border bg-background p-3 */
+  .ps-label { margin-top: 24px; display: block; font-size: 14px; font-weight: 500; }
+  .ps-textarea { margin-top: 8px; min-height: 108px; border-radius: 12px; border: 1px solid var(--border); background: var(--background); padding: 12px; font-size: 14px; font-weight: 400; line-height: 1.6; white-space: pre-wrap; transition: border-color var(--motion-base); }
+  .ps-textarea.is-focus { border-color: var(--primary); }
+  .ps-placeholder { color: color-mix(in srgb, var(--muted-foreground) 75%, transparent); }
+  /* 选项：flex items-start gap-3 rounded-xl border p-3 text-sm；选中 border-primary bg-primary/5 */
+  .ps-opts { margin-top: 24px; display: grid; gap: 8px; }
+  .ps-opt { display: flex; align-items: flex-start; gap: 12px; border-radius: 12px; border: 1px solid var(--border); padding: 12px; font-size: 14px; transition: border-color var(--motion-base), background-color var(--motion-base); }
+  .ps-opt.is-selected { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 5%, transparent); }
+  .ps-radio { margin-top: 3px; height: 14px; width: 14px; flex-shrink: 0; border-radius: 9999px; border: 1px solid color-mix(in srgb, var(--foreground) 40%, transparent); background: var(--background); }
+  .ps-opt.is-selected .ps-radio { border: 4px solid var(--primary); }
+  .ps-opts.is-locked .ps-opt { opacity: 0.6; }
+  /* 按钮行：mt-5 flex flex-wrap items-center gap-3；主 rounded-xl bg-primary px-4 py-2.5 text-sm；次 rounded-xl border px-4 py-2.5；跳过 text-sm */
+  .ps-actions { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .ps-btn { border-radius: 12px; padding: 10px 16px; font-size: 14px; }
+  .ps-btn--primary { background: var(--primary); color: var(--primary-foreground); }
+  .ps-btn--primary[disabled] { opacity: 0.5; }
+  .ps-btn--line { border: 1px solid var(--border); }
+  /* 揭晓：mt-6 space-y-5；参考答案 rounded-xl bg-muted/50 p-4；结论 mb-3 text-sm font-semibold；解析 mt-3 border-t pt-3 */
+  .ps-reveal { margin-top: 24px; display: flex; flex-direction: column; gap: 20px; }
+  .ps-ref { border-radius: 12px; background: color-mix(in srgb, var(--muted) 50%, transparent); padding: 16px; font-size: 14px; line-height: 1.65; }
+  .ps-ref__head { margin-bottom: 12px; font-size: 14px; font-weight: 600; }
+  .ps-ref__exp { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+  /* 自评：mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4；一格 rounded-xl border p-3，悬停 border-primary bg-primary/5 */
+  .ps-rates { margin-top: 12px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  @media (min-width: 640px) { .ps-rates { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .ps-rate { border-radius: 12px; border: 1px solid var(--border); padding: 12px; text-align: left; transition: border-color var(--motion-base), background-color var(--motion-base), opacity var(--motion-base); }
+  .ps-rate b { display: block; font-size: 14px; font-weight: 600; }
+  .ps-rate span { margin-top: 4px; display: block; font-size: 12px; color: var(--muted-foreground); }
+  .ps-rate.is-hot { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 5%, transparent); }
+  .ps-rate.is-off { opacity: 0.35; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script src="dt-runtime.js"></script>
+<script src="dt-data.js"></script>
+<script>
+"use strict";
+const { html, Icon, Shell, cx, DATA } = DT;
+
+
+const T = {
+  "Personalized Learning": "个性化学习",
+  "Practice": "练习",
+  "A little recall today. Remember more tomorrow.": "每天练习一点，让学过的内容记得更久。",
+  "Import questions": "导入题目",
+  "Today's review": "今日复习",
+  "Review scope": "复习范围",
+  "All workspaces": "全部工作区",
+  "Ready to review": "道题待复习",
+  "Mastered questions leave this round and return when your next review is due.": "掌握一道，本轮就少一道；到了下次复习时间，它会再次出现。",
+  "Start today's review": "开始今日复习",
+  "Reviewed today": "今日已复习",
+  "Scheduled for later": "等待下次复习",
+  "Question Bank": "题库",
+  "Recall first, then check. Forgotten questions come back in this round.": "先回忆，再看答案。没记住的题，本轮会再练一次。",
+  "Manage question bank": "管理题库",
+  "Practice analytics": "练习统计",
+  "Back to practice": "返回练习",
+  "{{count}} remaining": "还剩 {{count}} 道",
+  "Your answer": "你的作答",
+  "Try recalling the answer before revealing it.": "先尝试回忆并作答，再查看答案。",
+  "Checking…": "正在检查…",
+  "Check and reveal answer": "提交并查看答案",
+  "I have mastered this": "我已掌握",
+  "Skip for now": "暂时跳过",
+  "Compare your answer with the reference": "对照参考答案，检查自己的作答",
+  "Correct": "正确",
+  "Needs another try": "还需要再练一次",
+  "How well did you remember?": "这次掌握得怎么样？",
+  "Again": "再练",
+  "Practice again this round": "本轮再练一次",
+  "Hard": "困难",
+  "I needed a hint": "需要提示",
+  "Mastered": "掌握了",
+  "Review in a few days": "过几天再复习",
+  "Easy": "简单",
+  "I knew it confidently": "很有把握",
+  "Practice again": "稍后再练",
+};
+const tr = (key, vars) => String(T[key] ?? key).replace(/\{\{(\w+)\}\}/g, (_, k) => (vars && k in vars ? vars[k] : ""));
+
+/* PracticeSession.tsx RATINGS */
+const RATINGS = [
+  ["again", "Again", "Practice again this round"],
+  ["hard", "Hard", "I needed a hint"],
+  ["good", "Mastered", "Review in a few days"],
+  ["easy", "Easy", "I knew it confidently"],
+];
+
+const SUMMARY = { due: 6, reviewed_today: 2, total: 41 };
+const Q2 = DATA.quiz[1];
+const LETTERS = ["A", "B", "C", "D"];
+const QUESTIONS = [
+  {
+    kind: "written",
+    tags: ["第 8 章", "p 值"],
+    prompt: "用一句话解释 p 值。",
+    reference: "在原假设 H0 为真的前提下，得到与观察结果一样极端或更极端数据的概率。",
+    explanation: "它是条件概率，条件是 H0 为真；不是「H0 为真的概率」。",
+  },
+  { kind: "choice", tags: ["第 8 章", "显著性水平"], prompt: Q2.prompt, options: Q2.options, answer: Q2.answer, explanation: Q2.explanation },
+];
+const MY_ANSWER = "假定原假设成立时，看到这么极端或更极端结果的可能性。";
+
+const initial = { scene: "home", pressed: null, qi: 0, answer: "", focus: false, checking: false, revealed: false, correct: null, choice: null, hot: null, saved: 0, remaining: SUMMARY.due };
+
+const steps = [
+  { at: 2600, set: { pressed: "start" } },
+  { at: 300, set: { scene: "session", pressed: null } },
+  { label: "session" },
+  { at: 900, set: { focus: true } },
+  { at: 200, type: { key: "answer", text: MY_ANSWER, cps: 14 } },
+  { at: 700, set: { pressed: "check" } },
+  { at: 150, set: { pressed: null, checking: true } },
+  { at: 900, set: { checking: false, revealed: true, correct: null, focus: false } },
+  { label: "revealed-1" },
+  { at: 400, scroll: { sel: "#pr-scroll", to: "#ps-rates", block: "center", ms: 520 } },
+  { at: 1500, set: { hot: "good" } },
+  { at: 700, set: { pressed: "good" } },
+  { at: 300, set: { pressed: null, hot: null, saved: 1, remaining: SUMMARY.due - 1, qi: 1, answer: "", revealed: false, correct: null } },
+  { at: 50, scroll: { sel: "#pr-scroll", top: 0, ms: 300 } },
+  { label: "question-2" },
+  { at: 1800, set: { choice: 1 } },
+  { at: 900, set: { pressed: "check" } },
+  { at: 150, set: { pressed: null, checking: true } },
+  { at: 800, set: { checking: false, revealed: true, correct: false } },
+  { label: "revealed-2" },
+  { at: 400, scroll: { sel: "#pr-scroll", to: "#ps-verdict", block: "center", ms: 520 } },
+  { at: 2200, set: { pressed: "again" } },
+  { at: 300, set: { pressed: null } },
+  { label: "requeued" },
+  { at: 1200, set: {} },
+];
+
+function Home({ s }) {
+  return html`<div class="col" style=${{ marginTop: 28, gap: 24 }}>
+    <section class="rv">
+      <div class="rv-head">
+        <h2 class="rv-h2">${T["Today's review"]}</h2>
+        <label class="rv-scope">${T["Review scope"]}<span class="rv-select">${T["All workspaces"]}<${Icon} name="chevron-down" size=${14} /></span></label>
+      </div>
+      <div class="rv-main">
+        <div>
+          <div class="row" style=${{ alignItems: "baseline", gap: 12 }}>
+            <span class="rv-big">${SUMMARY.due}</span>
+            <span style=${{ fontSize: 14, color: "var(--muted-foreground)" }}>${T["Ready to review"]}</span>
+          </div>
+          <p class="rv-note">${T["Mastered questions leave this round and return when your next review is due."]}</p>
+        </div>
+        <button type="button" class=${cx("rv-start", { "dt-press": s.pressed === "start" })}><${Icon} name="arrow-right" size=${16} />${T["Start today's review"]}</button>
+      </div>
+      <div class="rv-stats">
+        ${[["Reviewed today", SUMMARY.reviewed_today], ["Scheduled for later", SUMMARY.total - SUMMARY.due], ["Question Bank", SUMMARY.total]].map(
+          ([label, n]) => html`<div key=${label} class="rv-stat"><b>${n}</b><span>${T[label]}</span></div>`
+        )}
+      </div>
+    </section>
+    <div class="rv-foot">
+      <p>${T["Recall first, then check. Forgotten questions come back in this round."]}</p>
+      <span class="row" style=${{ gap: 6, color: "var(--foreground)" }}><${Icon} name="library" size=${14} />${T["Manage question bank"]}<${Icon} name="arrow-right" size=${13} /></span>
+    </div>
+    <div class="rv-details">${T["Practice analytics"]}<${Icon} name="chevron-down" size=${16} /></div>
+  </div>`;
+}
+
+function Session({ s }) {
+  const q = QUESTIONS[s.qi];
+  const total = SUMMARY.due;
+  const verdict = s.correct === null ? T["Compare your answer with the reference"] : s.correct ? T["Correct"] : T["Needs another try"];
+  return html`<section class="ps animate-fade-in" style=${{ marginTop: 32 }}>
+    <div class="ps-top">
+      <span class="row" style=${{ gap: 8, fontSize: 14, color: "var(--muted-foreground)" }}><${Icon} name="arrow-left" size=${15} />${T["Back to practice"]}</span>
+      <p style=${{ fontSize: 12, color: "var(--muted-foreground)" }}>${tr("{{count}} remaining", { count: s.remaining })}</p>
+    </div>
+    <div class="ps-bar"><i style=${{ width: (s.saved / total) * 100 + "%" }}></i></div>
+    <div class="ps-card" key=${s.qi}>
+      <div class="ps-meta">
+        <span>${DATA.book.title}</span><span>·</span><span>${DATA.learner.workspace}</span>
+        ${q.tags.map((tag) => html`<span key=${tag} class="ps-tag">${tag}</span>`)}
+      </div>
+      <div class="ps-q">${q.prompt}</div>
+      ${q.kind === "choice"
+        ? html`<div class=${cx("ps-opts", { "is-locked": s.revealed })}>
+            ${q.options.map(
+              (text, i) => html`<label key=${i} class=${cx("ps-opt", { "is-selected": s.choice === i })}>
+                <span class="ps-radio"></span><span style=${{ fontWeight: 600 }}>${LETTERS[i]}</span><span class="min0">${text}</span>
+              </label>`
+            )}
+          </div>`
+        : html`<label class="ps-label">${T["Your answer"]}
+            <div class=${cx("ps-textarea", { "is-focus": s.focus, "dt-caret": s.focus && !s.revealed })}>
+              ${s.answer ? s.answer : s.focus ? "" : html`<span class="ps-placeholder">${T["Try recalling the answer before revealing it."]}</span>`}
+            </div>
+          </label>`}
+      ${!s.revealed
+        ? html`<div class="ps-actions">
+            <button type="button" class=${cx("ps-btn ps-btn--primary", { "dt-press": s.pressed === "check" })} disabled=${s.checking}>
+              ${s.checking ? T["Checking…"] : T["Check and reveal answer"]}
+            </button>
+            <button type="button" class="ps-btn ps-btn--line">${T["I have mastered this"]}</button>
+            <button type="button" style=${{ fontSize: 14, color: "var(--muted-foreground)" }}>${T["Skip for now"]}</button>
+          </div>`
+        : html`<div class="ps-reveal animate-fade-in">
+            <div class="ps-ref" id="ps-verdict">
+              <p class="ps-ref__head">${verdict}</p>
+              <div>${q.kind === "choice" ? LETTERS[q.answer] + ". " + q.options[q.answer] : q.reference}</div>
+              <div class="ps-ref__exp">${q.explanation}</div>
+            </div>
+            ${s.correct !== null
+              ? html`<div class="row" style=${{ flexWrap: "wrap", justifyContent: "space-between", gap: 16 }}>
+                  <p style=${{ fontSize: 12, color: "var(--muted-foreground)" }}>${s.correct ? T["Mastered questions leave this round and return when your next review is due."] : T["Practice again this round"]}</p>
+                  <button type="button" class=${cx("ps-btn ps-btn--primary", { "dt-press": s.pressed === "again" })} style=${{ padding: "10px 20px", fontWeight: 500 }}>
+                    ${T["Practice again"]}
+                  </button>
+                </div>`
+              : html`<div id="ps-rates">
+                  <h3 style=${{ fontSize: 14, fontWeight: 500 }}>${T["How well did you remember?"]}</h3>
+                  <p style=${{ marginTop: 4, fontSize: 12, color: "var(--muted-foreground)" }}>${T["Mastered questions leave this round and return when your next review is due."]}</p>
+                  <div class="ps-rates">
+                    ${RATINGS.map(
+                      ([value, label, desc]) => html`<button key=${value} type="button" class=${cx("ps-rate", { "is-hot": s.hot === value || s.pressed === value, "dt-press": s.pressed === value, "is-off": s.pressed && s.pressed !== value })}>
+                        <b>${T[label]}</b><span>${T[desc]}</span>
+                      </button>`
+                    )}
+                  </div>
+                </div>`}
+          </div>`}
+    </div>
+  </section>`;
+}
+
+function render(s) {
+  return html`<${Shell} active="/learning">
+    <section class="pr-page" id="pr-scroll" data-dt-scroll>
+      <div class="pr-container dt-page-container">
+        <span class="pr-back"><${Icon} name="arrow-left" size=${14} />${T["Personalized Learning"]}</span>
+        <header class="pr-header">
+          <div class="min0">
+            <h1 class="dt-page-title pr-title">${T["Practice"]}</h1>
+            <p class="pr-desc">${T["A little recall today. Remember more tomorrow."]}</p>
+          </div>
+          ${s.scene === "home" ? html`<span class="pr-import"><${Icon} name="file-up" size=${15} />${T["Import questions"]}</span>` : null}
+        </header>
+        ${s.scene === "home" ? html`<${Home} s=${s} />` : html`<${Session} s=${s} />`}
+      </div>
+    </section>
+  <//>`;
+}
+
+DT.run({ T, initial, steps, render });
+</script>
+</body>
+</html>

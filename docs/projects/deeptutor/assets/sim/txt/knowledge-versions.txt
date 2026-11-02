@@ -1,0 +1,23 @@
+embedding 签名（EmbeddingSignature.hash）
+  bge-m3 · 1024 维                  cec3b5bd92e5be35
+  text-embedding-3-small · 1536 维  39829713366c4ce3
+
+【用 bge-m3 建好 version-1】
+  version-1  签名 cec3b5bd92e5be35 模型 bge-m3                   state=—         ready=True 
+  find_matching_version → 用 bge-m3 读：version-1，用 3-small 读：没有可用版本
+
+【换成 3-small 重建中：version-2 已有输出，还没发布】
+  version-1  签名 cec3b5bd92e5be35 模型 bge-m3                   state=—         ready=True 
+  version-2  签名 version-2        模型 —                        state=—         ready=False .building.json
+  find_matching_version → 用 bge-m3 读：version-1，用 3-small 读：没有可用版本
+
+【version-2 发布】
+  version-1  签名 cec3b5bd92e5be35 模型 bge-m3                   state=—         ready=True 
+  version-2  签名 39829713366c4ce3 模型 text-embedding-3-small   state=published ready=True  .building.json
+  find_matching_version → 用 bge-m3 读：version-1，用 3-small 读：version-2
+
+【version-3 重建到一半中断】
+  version-1  签名 cec3b5bd92e5be35 模型 bge-m3                   state=—         ready=True 
+  version-2  签名 39829713366c4ce3 模型 text-embedding-3-small   state=published ready=True  .building.json
+  version-3  签名 version-3        模型 —                        state=—         ready=False .building.json
+  find_matching_version → 用 bge-m3 读：version-1，用 3-small 读：version-2
