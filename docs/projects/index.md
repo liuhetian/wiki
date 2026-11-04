@@ -34,6 +34,7 @@ copy_source: true
 ### Agent 与评测
 
 - [DeepSeek Harness](deepseek-harness/index.md) —— 细讲：DeepSeek Harness 拆解：领域是 agent harness，以 pi 为 baseline，按插件、会话日志、拼 prompt、压缩、工具与沙箱、多 agent 六条线讲问题和功能，配源码模版和实跑；重心是请求从会话日志现算
+- [Trellis](trellis/index.md) —— 细讲：Trellis 拆解：领域是 AI 编码工作流框架，以裸用 Claude Code 加一份 CLAUDE.md 为 baseline，按会话开始、每轮提醒、派子代理、收尾沉淀、多平台五条线讲每个功能什么时候触发、注入什么 prompt，附中译；重心是 hook 按任务状态现拼提示，状态只由脚本改
 - [OpenAI Evals](openai-evals/index.md) —— 细讲：OpenAI Evals 拆解：领域是大模型评测框架，以 for 循环评测脚本为 baseline，按登记、判分、被测对象、多轮、跑和记五条线讲问题和功能，配源码模版；重心是一个 eval 等于数据加 YAML 里选一个模板类
 - [搭建 AI 助手](ai-assistant/index.md) —— 给常驻 Agent 接输入输出通道；已落地的第一条是[不装邮件服务、自己在 25 端口说 SMTP](ai-assistant/mail-intake.md)，第二条是 [Caddy 换 key 的 API 中转](ai-assistant/api-gateway.md)（已接 DeepSeek）
 - [DeepSeek 视频问答](deepseek-video-rag/index.md) —— 概要：给 agent 挂的 skill，模型不收视频，就把录像拆成带时间标签的帧逐帧做卡片、拼成 30 秒一段；提问时 TF-IDF 粗筛、模型挑段、开推理深读，答案带时刻，准不准由人回放片段核对

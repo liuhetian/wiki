@@ -524,6 +524,13 @@ nav:
               - 压缩与补丁文本: projects/deepseek-harness/compaction.md
               - 工具与安全边界: projects/deepseek-harness/tools.md
               - 多 agent 与长时工作: projects/deepseek-harness/agents.md
+          - Trellis:
+              - projects/trellis/index.md
+              - 会话开始: projects/trellis/session.md
+              - 每轮提醒: projects/trellis/breadcrumb.md
+              - 派子代理: projects/trellis/subagent.md
+              - 收尾与沉淀: projects/trellis/finish.md
+              - 多平台: projects/trellis/platforms.md
           - OpenAI Evals:
               - projects/openai-evals/index.md
               - 登记: projects/openai-evals/registry.md
@@ -1388,6 +1395,7 @@ nav:
               - DeepTutor: maintenance/projects/deeptutor.md
               - wenai: maintenance/projects/wenai.md
               - Mynah: maintenance/projects/mynah.md
+              - Trellis: maintenance/projects/trellis.md
       - 本站:
           - Zensical 升级评估:
               - maintenance/zensical-upgrade/index.md

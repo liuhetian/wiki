@@ -1,0 +1,1 @@
+description: "Trellis 拆解用到的原件：trellis-src/ 是部分源码存档（读的版本见 maintenance/projects/trellis.md），逐字未改，细讲页按行引用；其中 .trellis/ 下的两份清单、task.json 和一份日志是上游仓库自己开发时留下的真实样本。分析在 ../ 下各页"

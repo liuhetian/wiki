@@ -6,7 +6,7 @@ description: "骨架的正逆两个方向风险相反：正向你信它（它定
 
 ## 背景故事
 
-之前最流行的AI Coding Harness是superpowers，后面也有很多好的开源方案 openspec、trellis等。
+之前最流行的AI Coding Harness是superpowers，后面也有很多好的开源方案 openspec、[trellis](../../projects/trellis/index.md)等。
 现有这些插件都不是纯skill，里面会自带很多的命令、脚本、hooks。但是这些命令/脚本是必要的吗？
 
 在这里提出我自己用的更加轻量的方案。下面举一个具体场景的例子，背景是做一个自定义礼包资源管理平台，是一个前后端的全栈项目，大概功能包括管理模版（里面的视频资源，视频位置等）、可售卖道具信息配置balabala。
