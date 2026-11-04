@@ -1,5 +1,5 @@
 ---
-description: "解析分享链接的维护记录：为什么媒体走下载狗、正文作者走 TikHub，为什么写成脚本、B 站为什么并进来；下载狗对小红书各字段稳不稳，正文、作者、点赞收藏都拿不到，轮播视频没有原图；TikHub 补齐这些的实测和单价；作者主页翻页为什么收进来而不单独成 skill、实测；公众号为什么直接取文章页、找号和翻列表走 TikHub，视频号为什么没接；用接口不用看，出问题或想换接口再看"
+description: "解析分享链接的维护记录：为什么媒体走下载狗、正文作者走 TikHub，为什么写成脚本、B 站为什么并进来；下载狗对小红书各字段稳不稳，正文、作者、点赞收藏都拿不到，轮播视频没有原图；TikHub 补齐这些的实测和单价；作者主页翻页为什么收进来而不单独成 skill、实测；公众号为什么直接取文章页、找号和翻列表走 TikHub，视频号为什么没接；YouTube 为什么只取元数据和字幕、视频直链怎么绑着出口 IP；用接口不用看，出问题或想换接口再看"
 ---
 
 # 解析分享链接的维护记录：下载狗、TikHub、B 站与公众号
@@ -35,6 +35,16 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 - **一个号的文章隔一秒取一篇**：连着取多快会碰到验证页没测，先留个间隔
 - **代码块不带语言**：页面上的 `data-lang` 是编辑器猜的，同一篇里 shell 命令标成 `apache`、`css`、`makefile`
 
+## YouTube：只取元数据和字幕，视频还没接 { #youtube }
+
+- **收进来，照一个平台一个脚本**：2026-11-04 用户给了 TikHub 控制台接口市场的 YouTube 一页，说「看看接口，整理到 agent-io 里面，根据url下载视频」，测试视频是 `ZvVJZcw6v_o`。元数据、字幕走 TikHub，和抖音、小红书一样经国内中转
+- **取 YouTube 的东西一律走中转**：用户原话「不要直接连接youtube 啊，肯定是让你测试走中我们的中转」。本机不连 YouTube 和它的 CDN，中转上没有路由的就先不接
+- **控制台读不了，改读 `openapi.json`**：接口市场要登录，登录接口在 Cloudflare 的 JS 挑战后面，还要过 Turnstile 人机验证，curl 和 Python 都只拿到「Just a moment」。市场上列的接口说明就是 `openapi.json` 里那份，单价用 `get_endpoint_info` 逐个查
+- **字幕原文由 TikHub 返回**：`get_video_captions` 的 `data.content` 就是整份 SRT，不用再连 YouTube。详情里 `captions[].base_url` 指向的是 YouTube 自己的字幕地址，不用它
+- **默认只取一条字幕**：一条 0.008 美元，是详情的 8 倍；读内容有说话那种语言的一条就够了，自动字幕的 `language_code` 就是说话的语言
+- **视频直链绑出口 IP，所以还没接**：`get_video_streams_v2` 的每条直链都带 `ip=140.186.243.176`，这是 TikHub 的出口，签名参数 `sparams` 里也有 `ip`，文档也写换出口下载可能 403。能下的只有 `get_video_streams_v3`：请求里带一个有固定公网出口的 HTTP 代理，TikHub 经它取链接，下载也必须走同一个代理、同一个出口。我们没有这样的代理：国内机连不上 Google；海外机的 Caddy 只做反向代理，要当 HTTP 代理得换成带 forwardproxy 插件的版本，而且本机的公钥还没装回海外机；腾讯云的 IP 又是机房 IP，文档说优先用住宅代理。走哪条等用户定
+- **封面也没下**：封面在 YouTube 的图片 CDN 上，中转没有通到那里的路由
+
 ## 接口从哪来 { #upstream }
 
 ### 下载狗
@@ -69,8 +79,12 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
     | `wechat_mp/v2/fetch_article_stats` | 0.01 美元 |
     | `wechat_mp/v2/fetch_article_detail_h5` | 0.01 美元 |
     | `wechat_channels/v2/fetch_video_detail`（视频号） | 0.01 美元 |
+    | `youtube/web_v2/get_video_info_v2` | 0.001 美元 |
+    | `youtube/web_v2/get_video_captions`（字幕一条） | 0.008 美元 |
+    | `youtube/web_v2/get_video_streams_v2`（全部清晰度的直链） | 0.004 美元 |
+    | `youtube/web_v2/get_video_streams_v3`（自带代理的直链） | 0.003 美元 |
 
-    作者主页那三行和公众号、视频号那几行是调 `tikhub/user/get_endpoint_info?endpoint=<接口路径>` 查的，免费，还能看限流（都是每秒 10 次）；公众号、视频号这几个不能用免费额度。文档里公众号 11 个接口、视频号 12 个、搜一搜 2 个，标价都是 0.01 美元
+    作者主页那三行和公众号、视频号、YouTube 那几行是调 `tikhub/user/get_endpoint_info?endpoint=<接口路径>` 查的，免费，还能看限流（都是每秒 10 次）；公众号、视频号这几个不能用免费额度。文档里公众号 11 个接口、视频号 12 个、搜一搜 2 个，标价都是 0.01 美元
 
 - 小红书选 `app_v2/get_image_note_detail`，因为文档推荐它，只要 note_id，不用 xsec_token
 - 公众号、视频号、搜一搜这几组是 POST JSON，`share_common.py` 的 `tikhub()` 传 `body` 就走 POST
@@ -188,6 +202,22 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 | 下载直链 | 7.7 MB，接口写的 `file_size` 是 79.7 MB，没查下到的是不是低码率那档；文件头不是 MP4 |
 | 解密文件头 | 文档说只加密了前 128 KB，和一段密钥流异或。纯 Python 写的 ISAAC64 拿 `decode_key` 当种子，每个输出按大端取 8 字节，文件头解出 `ftyp isom` |
 
+### YouTube
+
+2026-11-04 测，TikHub 经国内中转，测试视频是一条 21 分钟的日语视频：
+
+| 请求 | 结果 |
+|---|---|
+| `get_endpoint_info` 查 9 个 YouTube 接口 | 免费；详情、`get_video_streams`、`get_signed_stream_url`、评论各 0.001 美元，`get_video_streams_v2` 0.004 美元，`get_video_streams_v3` 0.003 美元，字幕 0.008 美元，字幕异步结果免费；都不能用免费额度 |
+| `get_video_info_v2` | 2.9 秒；标题、频道、播放 663、点赞 7、评论 1、时长、标签、字幕轨都有，字幕轨只有一条日语自动字幕 |
+| 同一条再调 4 次 | 1 次 `LOGIN_REQUIRED`：时长、播放数、点赞、字幕轨都空，照样扣钱；另外 3 次正常，2.6～3.0 秒 |
+| `get_video_streams_v2` | 13 秒；合并流 1 路（360p，itag 18），分离流 31 路，最高 1080p，`expires_in_seconds` 是 21600；每条直链都带 `ip=140.186.243.176`，`sparams` 里有 `ip` |
+| `get_video_captions` 不传语言 | 7.3 秒，只返回 `ja`，不标是不是自动生成的 |
+| `get_video_captions` 传 `ja`、`srt` | 3.3 秒，339 条，同步返回，没转异步 |
+| 脚本第一版跑测试视频，带一条 B 站链接 | 详情碰上 `LOGIN_REQUIRED`，字幕轨是空的，花了 0.001 美元，一条字幕也没拿到 → 改成不是 `OK` 就重调，最多三次；B 站那条单独报错、提示换脚本 |
+| 改完加 `--force` 重跑 | 0.009 美元，6.8 秒；字幕 6994 字，发布时间换成东八区 |
+| 换成 `youtu.be/<ID>?si=…` 再跑 | 落进同一个文件夹，跳过，花费 0 |
+
 ### 新 agent 只照用法页跑
 
 开一个没有上下文的 agent，只给最初那句「这是我的一些收藏，看看如何收纳到本wiki……读取方式看本wiki的 agent-io 部分」和 6 条小红书链接，看文档够不够用。
@@ -220,6 +250,9 @@ description: "解析分享链接的维护记录：为什么媒体走下载狗、
 - 被删、违规的文章没碰到，脚本按页面上「已被发布者删除」这几句话判断；付费文章没测，脚本看到 `appmsg_needpay` 只加一条 `warnings`。
 - 连着直接取多少篇会碰到验证页没测，一次最多连取过 5 篇。
 - 同一篇公众号文章传短链和长链会落进两个文件夹：短链只认得出短码，`meta.json` 的 `id` 是一样的。
+- YouTube 的视频和封面没接，原因见[上面](#youtube)。
+- YouTube 字幕的异步任务那段没走到：测试视频 21 分钟也是同步返回的。`--subs` 传字幕轨里没有的语言（翻译字幕）没测。
+- YouTube 的频道视频列表、评论、搜索、Shorts 接口都没接；`get_video_info`（不带 v2）没测，文档说字段更全，但有时取不出来。
 
 [^xiazaitool]: [下载狗 API 接口文档](https://www.xiazaitool.com/jiekou)，2026-10-10 读，2026-10-17 复核字段表和响应示例。
-[^tikhub]: [TikHub 文档](https://docs.tikhub.io/)，2026-10-17 读，公众号、视频号部分 2026-10-18 从 `https://api.tikhub.io/openapi.json` 读；单价取自同日 TikHub 后台的账单明细，作者主页那几个接口取自 `get_endpoint_info`。
+[^tikhub]: [TikHub 文档](https://docs.tikhub.io/)，2026-10-17 读，公众号、视频号部分 2026-10-18、YouTube 部分 2026-11-04 从 `https://api.tikhub.io/openapi.json` 读；单价取自同日 TikHub 后台的账单明细，作者主页那几个接口取自 `get_endpoint_info`。

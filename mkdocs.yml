@@ -952,6 +952,7 @@ nav:
                   - 抖音: skills/agent-io/reference/share-link/douyin.md
                   - B 站: skills/agent-io/reference/share-link/bilibili.md
                   - 微信公众号: skills/agent-io/reference/share-link/wechat-mp.md
+                  - YouTube: skills/agent-io/reference/share-link/youtube.md
               - 读取邮箱: skills/agent-io/reference/mail.md
               - 生成语音: skills/agent-io/reference/tts.md
               - 生成音乐: skills/agent-io/reference/music.md

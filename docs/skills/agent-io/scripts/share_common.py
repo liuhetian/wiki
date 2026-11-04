@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Shared by the per-platform download scripts (xiaohongshu.py, douyin.py, bilibili.py, wechat_mp.py, xiazaitool.py).
+"""Shared by the per-platform download scripts (xiaohongshu.py, douyin.py, bilibili.py, wechat_mp.py, youtube.py,
+xiazaitool.py).
 
 Not run on its own. It holds what every platform does the same way:
 
@@ -12,7 +13,7 @@ Not run on its own. It holds what every platform does the same way:
         cover.<ext>        videos
         video/pNN.mp4      one file per part; most posts have only p01
     meta.json's parts lists, per part: page, cid, title, duration, video, subtitles, source, referer;
-    time_url only where the platform can open a part at a given second (Bilibili): append the seconds.
+    time_url only where the platform can open a part at a given second (Bilibili, YouTube): append the seconds.
 
     xiazaitool (the share-link parser for direct video URLs) with retries, and the video download;
     a failed download is a warning, and a rerun finishes it from the URL saved in raw/ for free,
@@ -56,6 +57,8 @@ TIKHUB_PRICE = {
     "/api/v1/wechat_mp/v2/fetch_account_articles": 0.01,
     "/api/v1/wechat_mp/v2/fetch_article_stats": 0.01,
     "/api/v1/wechat_mp/v2/fetch_article_detail_h5": 0.01,
+    "/api/v1/youtube/web_v2/get_video_info_v2": 0.001,
+    "/api/v1/youtube/web_v2/get_video_captions": 0.008,
 }
 CONFIRM_USD = 1.0  # a profile whose posts would cost more stops after listing until --yes or --limit
 XIAZAITOOL_CNY = 0.005

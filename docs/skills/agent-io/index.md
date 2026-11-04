@@ -19,12 +19,13 @@ copy_source: true
 
 | 能力 | 读取 | 生成 |
 |---|---|---|
-| PDF | [阅读 PDF](reference/pdf.md)：有文字的页直接取，扫描页自动走百度文档识别，公式出 LaTeX、表格出 HTML，图单独提示，跑 `pdf_read.py` | — |
-| 音频 | [转录音频](reference/transcribe.md) | [生成语音](reference/tts.md)：默认用我们自己的音色，用户说不用就换微软 MAI-Voice 的 Mei；[生成音乐](reference/music.md) |
+| PDF | [阅读 PDF](reference/pdf.md) | — |
+| 音频 | [转录音频](reference/transcribe.md) | [生成语音](reference/tts.md)、[生成音乐](reference/music.md) |
 | 图片 | — | [生成、编辑图片](reference/image.md) |
-| 视频 | [阅读视频](reference/read-video.md)：给视频文件或解析分享链接取下的文件夹，出关键帧联系图、转写和每分钟字数，图文帖出编号拼图，跑 `video_read.py` | [生成视频](reference/video/index.md)：默认文字加参考图生成；文生、首尾帧、对口型、动作迁移各有一篇 |
-| 网络 | [网络搜索](reference/web-search.md)：默认 Sonar 给带引用的回答，DeepSeek 给结果列表；[读取网页](reference/web-fetch.md)：给 URL 出 Markdown 正文，读新闻文章好用，技术文档的代码块会丢；[解析分享链接](reference/share-link/index.md)：小红书、抖音、B 站、微信公众号的链接一条换成一个文件夹，有正文、作者、点赞收藏、原图和视频，B 站另有字幕和评论；抖音、小红书传作者主页就翻完这个人发的全部，公众号传号名取最新的文章；一个平台一个脚本，每页上面是脚本、下面是底层接口 | — |
-| 邮件 | [读取邮箱](reference/mail.md)：汇总所有邮箱的未读邮件并标为已读，跑 `mailctl` | — |
-| 调用大模型 | — | [调用 DeepSeek](reference/deepseek.md)、[结构化判断](reference/jev.md)：返回概率和选项，不返回文字；默认 Jev，看图换 OpenAI，另接了微软和 Mercury |
+| 视频 | [阅读视频](reference/read-video.md) | [生成视频](reference/video/index.md) |
+| 社交平台 | [解析分享链接](reference/share-link/index.md)：[小红书图文、视频](reference/share-link/xiaohongshu.md)、[抖音](reference/share-link/douyin.md)、[B 站视频、图文](reference/share-link/bilibili.md)、[微信公众号](reference/share-link/wechat-mp.md)、[YouTube 字幕](reference/share-link/youtube.md)、[作者主页](reference/share-link/index.md#profile)、[其他平台](reference/share-link/index.md#xiazaitool) | — |
+| 网络 | [网络搜索](reference/web-search.md)、[读取网页](reference/web-fetch.md) | — |
+| 邮件 | [读取邮箱](reference/mail.md) | — |
+| 调用大模型 | — | [调用 DeepSeek](reference/deepseek.md)、[结构化判断](reference/jev.md) |
 
 还没接入的能力，接好一个再补一篇，不写占位页。

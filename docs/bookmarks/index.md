@@ -12,7 +12,7 @@ copy_source: true
 - [社区和论坛](community.md) —— 很多人一起发帖的地方：linux.do
 - [人](people.md) —— 一个人或一个工作室持续在发的：小红书、linux.do 上的作者，工作室 Lusion
 - [合集和导航站](collections.md) —— 别人挑好、排好的一批：prompt 卡牌图鉴、agent 用例合集、梯子合集
-- [工具和服务](tools.md) —— 拿来就用的站：接码、买号、下歌、内网穿透
+- [工具和服务](tools.md) —— 拿来就用的站：接码、买号、下歌、内网穿透、社交平台数据 API
 
 周刊、播客、资源库这些形态，有了第一条再开一页。
 
