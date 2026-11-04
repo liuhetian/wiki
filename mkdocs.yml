@@ -538,6 +538,9 @@ nav:
               - 新机器配开发环境: projects/ai-assistant/dev-env.md
               - API 中转：Caddy 换 key: projects/ai-assistant/api-gateway.md
               - 邮件采集：自己说 SMTP: projects/ai-assistant/mail-intake.md
+      - 数字人:
+          - Mynah:
+              - projects/mynah/index.md
       - 开发工具:
           - Teable:
               - projects/teable/index.md
@@ -1364,6 +1367,7 @@ nav:
               - OpenAI Evals: maintenance/projects/openai-evals.md
               - DeepTutor: maintenance/projects/deeptutor.md
               - wenai: maintenance/projects/wenai.md
+              - Mynah: maintenance/projects/mynah.md
       - 本站:
           - Zensical 升级评估:
               - maintenance/zensical-upgrade/index.md

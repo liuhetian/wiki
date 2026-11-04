@@ -74,6 +74,7 @@ Gallery 里别人的成品从哪来、收的时候改了什么、上游更新了
 - [OpenAI Evals](projects/openai-evals.md) —— OpenAI Evals 拆解的维护记录：读的是 8eac7a7（2026-10-20 读），MIT 许可；源码存档和行号怎么对、几份题库样本怎么从 LFS 取的；注册 eval 的计数口径；只读源码，没有实跑
 - [DeepTutor](projects/deeptutor.md) —— DeepTutor 拆解的维护记录：读的是 a31d826（v1.6.15，2026-10-29 读），Apache-2.0 许可；源码存档和行号怎么对；纯函数怎么实跑、父包怎么登记成空壳绕开重依赖，脚本附后；15 个仿真 demo 照哪些上游文件抄的、偏离了哪里、怎么不开浏览器验
 - [wenai](projects/wenai.md) —— wenai 粗讲的维护记录：上游版本和过滤范围、原文行号、构造示例与三次 DeepSeek 文件记忆对照，脚本和原始请求响应附后
+- [Mynah](projects/mynah.md) —— Mynah 粗讲的维护记录：读的是 9f91446（2026-11-02 读），Apache-2.0 许可；上游引擎和模型各从哪来；源码存档和行号怎么对；两段演示动图从 GIF 转成 mp4；只读源码，没有实跑
 
 ## 本站 { #wiki }
 

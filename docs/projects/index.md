@@ -38,6 +38,10 @@ copy_source: true
 - [搭建 AI 助手](ai-assistant/index.md) —— 给常驻 Agent 接输入输出通道；已落地的第一条是[不装邮件服务、自己在 25 端口说 SMTP](ai-assistant/mail-intake.md)，第二条是 [Caddy 换 key 的 API 中转](ai-assistant/api-gateway.md)（已接 DeepSeek）
 - [DeepSeek 视频问答](deepseek-video-rag/index.md) —— 概要：给 agent 挂的 skill，模型不收视频，就把录像拆成带时间标签的帧逐帧做卡片、拼成 30 秒一段；提问时 TF-IDF 粗筛、模型挑段、开推理深读，答案带时刻，准不准由人回放片段核对
 
+### 数字人
+
+- [Mynah](mynah/index.md) —— 粗讲：开源实时数字人，回复语音边合成边驱动一张脸推到浏览器；先讲脸怎么动——三种口型引擎、贴回半身画布、烘焙待机与动作、从视频挑基底帧，再讲语音轮次、本能层、给 Agent 一张脸，最后几个工程问题
+
 ### 开发工具
 
 - [Teable](teable/index.md) —— 概要：不是又一个在线表格，是套了表格外壳的 Postgres；程序管结构和联动计算，模型只填 AI 字段；重心是改一格后跨表连锁重算；追问两条：更像 Airtable，计算字段不靠触发器、在应用层算
