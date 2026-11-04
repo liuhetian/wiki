@@ -11,7 +11,7 @@ copy_source: true
 
 - 能力分两层：**底层**是接口和请求参数，一次调用就完事的能力只有这一层；**中层**是稍微封装过的脚本，跨几家接口、要判断走哪条路的能力才有，比如解析分享链接。有脚本就先用脚本，脚本出错、要改脚本或者只要其中一样时，看底层。
 - 脚本要在本地运行：有 shell 的 Agent 按 URL 下载脚本后执行。头部写了依赖的用 `uv run`，uv 自动装，执行前告诉用户会从 PyPI 装哪些包；只用标准库的直接 `python3`。本地有本 wiki 的仓库时，脚本就在仓库的 `docs/skills/agent-io/scripts/` 下，直接跑，不用下载。
-- 要调厂商 API 的能力统一走 API 中转（已接 DeepSeek、AutoDL、下载狗、TikHub、CodeProxy、OpenRouter）：中转原样转发，只换 base URL 和 key。Agent 不配厂商 key，本站也不存明文密钥。
+- 要调厂商 API 的能力统一走 API 中转（已接 DeepSeek、AutoDL、下载狗、TikHub、百度文字识别、CodeProxy、OpenRouter）：中转原样转发，只换 base URL 和 key。Agent 不配厂商 key，本站也不存明文密钥。
 - 网关 token 由用户写在 `.env` 的 `MY_API_KEY` 里，AI 直接用：在 `.env` 所在目录（本 wiki 就是仓库根）跑 `set -a; . ./.env; set +a` 载入，命令里写 `$MY_API_KEY`。别用 grep、cut 自己把值抠出来，Claude Code 的权限检查会当成数据外泄拦下；也别打印。中转域名 `*.liuhetian.work`、`*.reverse-pro.xyz` 都是用户自己的服务器。
 - 花钱的调用直接调，不用停下来问用户，单价写在各篇里。
 
@@ -19,7 +19,7 @@ copy_source: true
 
 | 能力 | 读取 | 生成 |
 |---|---|---|
-| PDF | [阅读 PDF](reference/pdf.md) | — |
+| PDF | [阅读 PDF](reference/pdf.md)：有文字的页直接取，扫描页自动走百度文档识别，公式出 LaTeX、表格出 HTML，图单独提示，跑 `pdf_read.py` | — |
 | 音频 | [转录音频](reference/transcribe.md) | [生成语音](reference/tts.md)：默认用我们自己的音色，用户说不用就换微软 MAI-Voice 的 Mei；[生成音乐](reference/music.md) |
 | 图片 | — | [生成、编辑图片](reference/image.md) |
 | 视频 | [阅读视频](reference/read-video.md)：给视频文件或解析分享链接取下的文件夹，出关键帧联系图、转写和每分钟字数，图文帖出编号拼图，跑 `video_read.py` | [生成视频](reference/video/index.md)：默认文字加参考图生成；文生、首尾帧、对口型、动作迁移各有一篇 |

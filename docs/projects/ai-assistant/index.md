@@ -15,7 +15,7 @@ AI助手经常迁移服务器，折腾来折腾去，所以目标是根据这个
 
     | 能力 | 读取 | 生成 |
     |---|---|---|
-    | PDF | [阅读 PDF](../../skills/agent-io/reference/pdf.md) | — |
+    | PDF | [阅读 PDF（扫描页走百度文档识别）](../../skills/agent-io/reference/pdf.md) | — |
     | 音频 | [转录（语音转文本）](../../skills/agent-io/reference/transcribe.md) | [生成语音（默认自己的音色，或微软 MAI-Voice 的 Mei）](../../skills/agent-io/reference/tts.md)、[生成音乐](../../skills/agent-io/reference/music.md) |
     | 图片 | - | [生成图片、编辑图片](../../skills/agent-io/reference/image.md) |
     | 视频 | [阅读视频（关键帧联系图、转写）](../../skills/agent-io/reference/read-video.md) | [生成视频](../../skills/agent-io/reference/video/index.md) |

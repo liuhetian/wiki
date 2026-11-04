@@ -10,7 +10,7 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 
 [Agent 基础能力](../skills/agent-io/index.md)的维护记录，一个能力一篇。
 
-- [读 PDF 脚本](pdf-reading.md) —— pdfium 和 pdf-inspector 的实测对比，吸收的两个 DSH 社区插件
+- [读 PDF 脚本](pdf-reading.md) —— 直接取文字和文档识别各自的实测对比（pdfium、pdf-inspector；百度高精度 OCR、PaddleOCR-VL），图怎么发现，吸收的两个 DSH 社区插件
 - [网络搜索和读取网页](web-search.md) —— 默认的 Sonar Pro Search 经海外中转实测耗时、价格和引用格式；2026-10-18 换上 DeepSeek 官方 Search、Fetch 接口，官方指南存档，实测摘要长度、搜索语法和抓取会丢什么
 - [语音合成](tts.md) —— AutoDL 上 IndexTTS2 的接口是怎么找到的，冷启动和 data URI 参考音频的实测；方案二为什么从 Gemini 换成微软 MAI-Voice：9 个直接出 mp3 的模型同文对比，Gemini 只出 pcm 的坑；OpenRouter 上能克隆的 Fish Audio、Seed Audio 实测
 - [图片生成](image.md) —— CodeProxy 的 gpt-image-2.5 经海外中转实测生成和编辑，返回格式和模型列表
