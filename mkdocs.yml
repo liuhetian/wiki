@@ -515,6 +515,8 @@ nav:
               - projects/pawzochat/index.md
           - wenai:
               - projects/wenai/index.md
+          - Eidolon-SC:
+              - projects/eidolon-sc/index.md
       - Agent 与评测:
           - DeepSeek Harness:
               - projects/deepseek-harness/index.md
@@ -1396,6 +1398,7 @@ nav:
               - wenai: maintenance/projects/wenai.md
               - Mynah: maintenance/projects/mynah.md
               - Trellis: maintenance/projects/trellis.md
+              - Eidolon-SC: maintenance/projects/eidolon-sc.md
       - 本站:
           - Zensical 升级评估:
               - maintenance/zensical-upgrade/index.md

@@ -30,6 +30,7 @@ copy_source: true
 - [酒馆 SillyTavern](sillytavern/index.md) —— 细讲：领域是 AI 角色扮演，它把网页版 ChatGPT 的一段 system prompt 换成每轮重拼的上下文；按角色卡、世界书、现拼 prompt、喂各种模型、重来分叉、聊久了、群聊、自加规则八条功能线讲问题和功能，每步配源码模版和实跑效果，结论是能搬走的设计
 - [PawzoChat](pawzochat/index.md) —— 概要：和梨园、酒馆不是一类，不是角色扮演前端，是把角色接进微信、QQ 当联系人的 AI 伙伴引擎；只借酒馆的卡格式，主路径是连发停 7 秒才合成一轮、回复按反斜线切成几条气泡
 - [wenai](wenai/index.md) —— 粗讲：按会话规则、分类档案、文件记忆、发送后落盘、统计和生图分工讲清设计；附过滤后的 prompt、记忆文件示例与 DeepSeek 跨会话对照
+- [Eidolon-SC](eidolon-sc/index.md) —— 粗讲：和《偶像大师 闪耀色彩》偶像打字、打电话的 AI 伙伴，不是数字人；讲 prompt 怎么排、日语原声配字幕的分段流式、判断模型定查不查资料、记忆标着对谁说的、好感度、每轮现拼的此刻和通话，附 Jev、DeepSeek 实跑
 
 ### Agent 与评测
 

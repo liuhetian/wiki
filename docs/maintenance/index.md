@@ -77,6 +77,7 @@ Gallery 里别人的成品从哪来、收的时候改了什么、上游更新了
 - [wenai](projects/wenai.md) —— wenai 粗讲的维护记录：上游版本和过滤范围、原文行号、构造示例与三次 DeepSeek 文件记忆对照，脚本和原始请求响应附后
 - [Mynah](projects/mynah.md) —— Mynah 粗讲的维护记录：读的是 9f91446（2026-11-02 读），Apache-2.0 许可；上游引擎和模型各从哪来；源码存档和行号怎么对；两段演示动图从 GIF 转成 mp4；只读源码，没有实跑
 - [Trellis](projects/trellis.md) —— Trellis 拆解的维护记录：读的是 f089cb3（0.6.17，2026-11-04 读），AGPL-3.0 许可；源码存档和行号怎么对；以 Claude Code 为主讲；上游顶层模块的覆盖表；文档和代码对不上的几处；只读源码，没有实跑，构造情境和译文怎么标
+- [Eidolon-SC](projects/eidolon-sc.md) —— Eidolon-SC 粗讲的维护记录：读的是 596368d（v0.5.2 之后，2026-11-04 读），AGPL-3.0-or-later；源码存档和行号怎么对；通话动图从动画 WebP 转成 mp4；实跑没执行上游程序，按上游格式把判断题和记忆 prompt 重放给本站 Jev、DeepSeek 中转，脚本和原始请求响应附后
 
 ## 本站 { #wiki }
 

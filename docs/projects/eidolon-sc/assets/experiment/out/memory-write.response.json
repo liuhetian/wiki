@@ -1,0 +1,32 @@
+{
+  "id": "ceffd135-0799-44a0-b9c9-fcdf191f373b",
+  "object": "chat.completion",
+  "created": 1793762511,
+  "model": "deepseek-flash",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"memories\": [{\"text\": \"制作人要在2026年11月14日（下周六）给大学室友的婚礼当伴郎，还得准备伴郎致辞稿\", \"supersedes\": []}]}",
+        "reasoning_content": "The producer says: next Saturday (from 2026-11-04, Wednesday) next Saturday = 2026-11-14? Let's think. 2026-11-04 is what day of week? Let's compute. 2026-01-01 is Thursday. Actually let's verify: 2024-01-01 Monday. 2025-01-01 Wednesday (2024 leap year, +2). 2026-01-01 Thursday. Days to Nov 4: Jan 31, Feb 28, Mar 31, Apr 30, May 31, Jun 30, Jul 31, Aug 31, Sep 30, Oct 31 = 304 days through Oct 31. Nov 4 is day 308 of year. Jan 1 = day 1 = Thursday. Day 308: (308-1) mod 7 = 307 mod 7 = 307 - 301 = 6 → Thursday +6 = Wednesday. So Nov 4 2026 is Wednesday. \"下周六\" = next week Saturday = Nov 14? In Japanese/Chinese usage, 下周六 from Wednesday = the Saturday of next week = Nov 14. This week's Saturday is Nov 7. Next week's Saturday = Nov 14.\n\nHmm, but ambiguity. Standard: 下周六 = next week's Saturday = 2026年11月14日.\n\nWorth remembering: producer will be best man at college roommate's wedding on 2026-11-14. That's a plan. The \"致辞稿还没写完有点慌\" — 慌 is transient emotion, don't record. But the plan is worth recording.\n\nText: 「制作人将于2026年11月14日给大学室友的婚礼当伴郎」.\n\nMaybe also mention needs to write a speech. Keep concise."
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 601,
+    "completion_tokens": 435,
+    "total_tokens": 1036,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 387
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 601
+  },
+  "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+}
