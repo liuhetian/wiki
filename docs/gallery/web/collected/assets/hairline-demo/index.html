@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hairline：33 个等距线稿交互图形</title>
+<style>
+  /* 浅色底配浅色调色板：包的板子默认填 #ffffff，底色一致，板子才不显形 */
+  :root { color-scheme: light; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  body { margin: 0; background: #ffffff; color: #232327; }
+  header {
+    position: sticky; top: 0; z-index: 1;
+    display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+    padding: 10px 16px; font-size: 13px;
+    background: rgba(255, 255, 255, 0.94); border-bottom: 1px solid #e0e0e4;
+  }
+  header label { display: inline-flex; gap: 6px; align-items: center; }
+  output { font-family: ui-monospace, "SF Mono", Menlo, monospace; min-width: 3ch; }
+  main {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px; padding: 12px 16px 24px;
+  }
+  figure { margin: 0; }
+  figcaption {
+    display: flex; justify-content: space-between; gap: 8px;
+    padding: 0 4px; font-size: 12px; color: #6b6b73;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+</style>
+</head>
+<body>
+<header>
+  <label>intensity <input id="intensity" type="range" min="0" max="1" step="0.05" value="0.5"> <output id="intensity-value">0.50</output></label>
+  <label><input id="play" type="checkbox" checked> 没人碰时自动演示</label>
+</header>
+<main id="grid"></main>
+<script type="module">
+  // hairline.js 是 @lucasmarkes/hairline 0.5.1 的 dist/index.js，原样未改
+  import * as hairline from "./hairline.js";
+
+  // 顺序照上游 README 的图形表
+  const NAMES = [
+    "riffle", "terrain", "exploded", "phosphor", "slow", "turntable",
+    "keyboard", "elevator", "phone", "laptop", "terminal", "cabinet",
+    "branches", "vault", "lockers", "padlock", "patch", "dish",
+    "router", "loupe", "sieve", "rail", "plug", "query",
+    "drawer", "basket", "plot", "hub", "relay", "settle",
+    "format", "rebuild", "stack",
+  ];
+
+  const grid = document.getElementById("grid");
+  const slider = document.getElementById("intensity");
+  const shown = document.getElementById("intensity-value");
+  const play = document.getElementById("play");
+
+  // 每个图形画进一个空 div，宽度跟格子走、高度按 5:4；onRead 把它的读数写到名字旁边
+  const figures = NAMES.map((name) => {
+    const figure = document.createElement("figure");
+    const stage = document.createElement("div");
+    const caption = document.createElement("figcaption");
+    const title = document.createElement("span");
+    const read = document.createElement("span");
+    title.textContent = name;
+    caption.append(title, read);
+    figure.append(stage, caption);
+    grid.append(figure);
+    return hairline[name](stage, {
+      intensity: Number(slider.value),
+      play: play.checked,
+      onRead: (text) => { read.textContent = text; },
+    });
+  });
+
+  slider.addEventListener("input", () => {
+    const value = Number(slider.value);
+    shown.textContent = value.toFixed(2);
+    for (const f of figures) f.update({ intensity: value });
+  });
+  play.addEventListener("change", () => {
+    for (const f of figures) f.update({ play: play.checked });
+  });
+</script>
+</body>
+</html>

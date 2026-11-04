@@ -50,6 +50,7 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [Windows 软件逆向（exe-reverse）](skills/exe-reverse.md) —— 吸纳自 reverse-skill-lab/exe-reverse（MIT），钉在 af9603c；脚本重、更新快，只收一页概要（分类三轴 + 门禁纪律梗概 + 边界），约 40 篇技术 reference、17 个脚本和全套测试 CI 都不收、引导装上游；正文报清基数，不让人以为这是全部
 - [HyperFrames（hyperframes）](skills/hyperframes.md) —— 吸纳自 heygen-com/hyperframes（Apache-2.0），钉在 5a28b4e（v0.8.206）；7 个 skill 都离不开引擎，只收一页概要，导演纪律为主，合同和片型讲到够分类；约 80 篇 reference、60 多个脚本、13 套外观预设、约 450 个组件和仓库内部 6 个 skill 都不收、引导装上游
 - [Vibe 知识短片（vibe-knowledge-film）](skills/vibe-knowledge-film.md) —— 吸纳自 HeyChengC/vibe-knowledge-film（MIT），钉在 62d5150；上游本来是中文，SKILL.md、7 篇 reference、引擎、脚本和 5 段示例收齐，文档路径改成链接；粗讲页和它共用这篇，两段样片 GIF 转 mp4，未实跑
+- [Hairline 等距线稿图（hairline）](skills/hairline.md) —— 吸纳自 lucasmarkes/hairline（MIT），钉在 37d2e78（v0.5.1）；hairline-create 收齐中译、hairline-adopt 并进入口，脚本、引擎、页面模板和示例一字没改，文档进 reference/、脚本进 scripts/；Gallery demo 用 npm 包 0.5.1 的构建产物原样跑；未实跑
 
 ## Gallery 收录 { #gallery }
 

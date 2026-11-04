@@ -48,6 +48,7 @@ copy_source: true
 - [Dashboard 后台](dashboard/index.md) —— 形状目录 + 每形状一个可玩的活 demo
 - [数据可视化](data-visualization/index.md) —— 可视化 skill 的大目录；每套方法独立维护规则、模板与可运行 demo
 - [前端画布](canvas/index.md) —— 无限画布/白板/节点图的 L1–L4 四级选型，比较成本与实用性，每级一个可玩的活 demo
+- [Hairline 等距线稿图](hairline/index.md) —— 要给网页画一张会回应指针的等距线稿插图时用（产品页主图、空状态、文档配图；给一个想法，或一个现成的 SVG 图标、标志）：在 @lucasmarkes/hairline 的固定引擎上只写一个图形文件，守十条规则，构建、校验、拍八张图看样直到合格，交一个零依赖、双击就能打开的单文件 HTML（吸纳自 lucasmarkes/hairline，MIT；[维护记录](../maintenance/skills/hairline.md)）
 - [让布局说话（ui-no-labels）](ui-no-labels.md) —— 要让 AI 做界面的项目用：让 AI 把一条界面守则写进项目根的 `CLAUDE.md` 或 `AGENTS.md` —— 不加多余的次级标签和说明文字，让布局自己说明，免得界面堆满标签、像说明书（取自 @Ainward 的一张截图；[维护记录](../maintenance/skills/ui-no-labels.md)）
 
 ## 逆向与安全

@@ -565,6 +565,8 @@ nav:
               - projects/pyodide/index.md
           - Frappe Gantt:
               - projects/frappe-gantt/index.md
+          - Hairline:
+              - projects/hairline/index.md
       - 硬件:
           - Kindle 常显信息屏:
               - projects/kindle-dashboard/index.md
@@ -921,6 +923,7 @@ nav:
                       - Wearable 一幕: gallery/web/frontend-styles/oryzo/wearable-scene.md
                       - RGB 呼吸光边: gallery/web/frontend-styles/oryzo/rgb-glow-border.md
               - Sandboard WebGPU 沙盘: gallery/web/sandboard/index.md
+              - Hairline 等距线稿交互图形: gallery/web/collected/gallery-hairline.md
       - 角色:
           - 人设:
               - gallery/personas/index.md
@@ -1326,6 +1329,12 @@ nav:
               - L2 · React 手写画布: skills/canvas/reference/l2-react.md
               - L3 · 数据驱动节点图: skills/canvas/reference/l3-nodegraph.md
               - L4 · 白板: skills/canvas/reference/l4-whiteboard.md
+          - Hairline 等距线稿图:
+              - skills/hairline/index.md
+              - 十条规则: skills/hairline/reference/rules.md
+              - 从想法到概念: skills/hairline/reference/concepts.md
+              - 看样: skills/hairline/reference/look.md
+              - 从现成的 SVG 起: skills/hairline/reference/source.md
           - 让布局说话: skills/ui-no-labels.md
       - 逆向与安全:
           - Windows 软件逆向: skills/exe-reverse.md
@@ -1375,6 +1384,7 @@ nav:
               - Windows 软件逆向: maintenance/skills/exe-reverse.md
               - HyperFrames: maintenance/skills/hyperframes.md
               - Vibe 知识短片: maintenance/skills/vibe-knowledge-film.md
+              - Hairline 等距线稿图: maintenance/skills/hairline.md
           - 实测用的示例:
               - 测试skill:
                   - maintenance/mock-bundle/index.md

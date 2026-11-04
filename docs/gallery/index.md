@@ -11,5 +11,5 @@ description: "Gallery：现成的东西，通用到不用提问题就能挑 —�
 - [色彩](colors/index.md) —— 36 种经典单色主题色和 9 套意象渐变配色，每条一张色卡加一句主题色 prompt
 - [视频](video/index.md) —— 视频成品配生成它的 prompt 或制作方法；已收 2 条：本站自己做的[花卉动态生长海报](video/flower-growth-poster.md)，收录的[彩色手绘三维穿梭视频](video/collected/gallery-parallax-ink.md)
 - [音频](audio/index.md) —— 还没有收录
-- [前端特效](web/index.md) —— 成品前端美学，一种风格一个可抄走的活 demo，另有 Open Design / HAOQI / ORYZO 三个官网逐效果拆解
+- [前端特效](web/index.md) —— 成品前端美学，一种风格一个可抄走的活 demo，另有 Open Design / HAOQI / ORYZO 三个官网逐效果拆解；另收了 [Hairline](web/collected/gallery-hairline.md) 的 33 张等距线稿交互图形
 - [人设](personas/index.md) —— 角色设定，一人一页，定妆照加基本资料；已收 1 位：[SEOA｜徐星澄](personas/seoa.md)，24 岁，主舞兼创作型歌手

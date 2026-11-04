@@ -8,3 +8,4 @@ description: "前端特效：成品前端美学与官网动效拆解，每种风
 
 - [前端风格收集](frontend-styles/index.md) —— 成品前端美学（PIP-BOY 琥珀终端起步），一种风格一个可抄走的活 demo；另有 Open Design / HAOQI / ORYZO 三个官网逐效果拆解
 - [Sandboard WebGPU 沙盘](sandboard/index.md) —— 手指在一块写实沙面上划沟、堆沙、扬沙，点 Start again 由一道海浪冲平重来；整个开源项目原样构建收录，附完整 TypeScript/WGSL 源码
+- [Hairline 等距线稿交互图形](collected/gallery-hairline.md) —— 33 张会回应指针的等距线稿小插图：卡片托盘、地形柱、分层窗口、键盘、电梯、保险库、空衣架…… 单线条圆角立体，零依赖，React 和原生 DOM 都能挂；一页活 demo，可拖 intensity

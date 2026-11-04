@@ -58,6 +58,7 @@ copy_source: true
 - [Coolify](coolify/index.md) —— 概要：和 Podman 不在一层，它不是容器引擎，是坐在 Docker 之上的自托管 Heroku；主路径是 SSH 进目标机起 helper 容器构建镜像，用带 Traefik label 的 compose 拉起
 - [Pyodide](pyodide/index.md) —— 概要：不是把 Python 翻译成 JS，是把 CPython 解释器编译成 WebAssembly；Python 的 import 是同步的、下载只能异步，所以包要先 loadPackage 解进内存文件系统，.so 提前 dlopen
 - [Frappe Gantt](frappe-gantt/index.md) —— 概要：给网页用的甘特图组件，只画图、改内存里的任务，不存也不排期；主路径是日期和像素按列宽互换，拖一条任务时依赖它的下游跟着平移，存回后端靠 on_date_change 交给用的人
+- [Hairline](hairline/index.md) —— 概要：33 张会回应指针的等距线稿交互插图，给网页用；每个实体只画轮廓和一道折痕，板子从远到近互相遮挡，指针反投影到地面驱动弹簧，全页共用一个离屏就睡的帧循环；仓库另带一个让 AI 在同一引擎上画新图形的 skill
 
 ### 硬件
 
