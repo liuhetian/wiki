@@ -1,12 +1,12 @@
 ---
-description: "本站钉在 Zensical 0.0.62、最新 0.0.73，2026-10-28 定下先不升：十一个版本逐条过，有关的只有预览重建、草稿、minify 修复几条；官方 llmstxt 只出转换版、不打算发源文件；privacy 插件能接管 mermaid 和 GLightbox；升级步骤和要看的地方"
+description: "本站钉在 Zensical 0.0.62、最新 0.0.74，11-04 复核仍先不升：有关的只有预览重建、草稿、minify 修复、description 转义几条；官方 llmstxt 只出转换版、不打算发源文件；privacy 能接管 mermaid 和 GLightbox；升级步骤"
 ---
 
-# Zensical 0.0.62 → 0.0.73：升不升级
+# Zensical 0.0.62 → 0.0.74：升不升级
 
-本站钉在 0.0.62（`uv.lock`），最新是 0.0.73（2026-10-26）。这篇把中间十一个版本和配套 UI 0.0.31–0.0.40 的改动逐条过一遍，按跟本站有没有关系分成两堆，再附 2026-10-15 用 0.0.70 构建正式站的实测、2026-10-28 用 0.0.73 搭临时站测 privacy 插件。发布说明原文存档在 [assets/releases.md](assets/releases.md)。
+本站钉在 0.0.62（`uv.lock`），最新是 0.0.74（2026-10-30）。这篇把中间十二个版本和配套 UI 0.0.31–0.0.41 的改动逐条过一遍，按跟本站有没有关系分成两堆，再附 2026-10-15 用 0.0.70 构建正式站的实测、2026-10-28 用 0.0.73 搭临时站测 privacy 插件；0.0.74 是 2026-11-04 补的，只读了发布说明和 llmstxt 那处提交，没有构建。发布说明原文存档在 [assets/releases.md](assets/releases.md)。
 
-**2026-10-28 的结论：先不升**，什么时候重新评估见[升还是不升](#decision)。事实层面：**用 0.0.70 构建正式站零告警，三个代表页的 CSS class 一个没变**——升级风险低；**收益集中在本地预览、草稿和一处 minify 崩溃修复**，线上读者几乎感觉不到；**代价是一次全站重传**——主题资源换了哈希，每页 HTML 都变。「同一份 markdown 双发布」这条线官方没有能借的：`llmstxt` 插件只出转换版，本站不开，复制按钮和发现链接自己做了，见[最后的做法](#own-copy)；官方也不打算发布源文件，见[官方立场](#stance)。
+**2026-10-28 的结论：先不升，11-04 看过 0.0.74 照旧**，什么时候重新评估见[升还是不升](#decision)。事实层面：**用 0.0.70 构建正式站零告警，三个代表页的 CSS class 一个没变**——升级风险低；**收益集中在本地预览、草稿、一处 minify 崩溃修复和 7 页 description 截断**，线上读者几乎感觉不到；**代价是一次全站重传**——主题资源换了哈希，每页 HTML 都变。「同一份 markdown 双发布」这条线官方没有能借的：`llmstxt` 插件只出转换版，本站不开，复制按钮和发现链接自己做了，见[最后的做法](#own-copy)；官方也不打算发布源文件，见[官方立场](#stance)。
 
 ## 跟本站有关的改动 { #relevant }
 
@@ -16,12 +16,15 @@ description: "本站钉在 Zensical 0.0.62、最新 0.0.73，2026-10-28 定下�
 | 0.0.69 | 预览时监听软链目录和软链文件（#1010） | **好**：`assets/` 里的真身是软链，道理同上 |
 | 0.0.71–0.0.72 | 预览监听：扫描文件时误重启、同一秒内连改两次、ext4 复用 inode 都修了 | **好**：预览更稳 |
 | 0.0.69 | `minify` 遇到属性值里的多字节字符会 panic（#1013） | **好**：本站 10-17 起开着 minify。触发面窄——raw HTML 里把「“」这类全角引号当属性引号写，整站构建 panic，不报是哪一页；至今没碰上 |
+| UI 0.0.41 | 页面 description 先转义再写进 `<meta>` | **好**：0.0.62 不转义，description 里写了英文双引号的 7 页，meta 在第一个引号处截断——[L3 节点图](../../skills/canvas/reference/l3-nodegraph.md)只剩「L3 的分水岭不是」，以引号开头的两页是空的。不升也能修：把这 7 处 `\"` 换成中文引号 |
 | 0.0.70 | `exclude_docs` / `draft_docs` / `not_in_nav` | 有用，但要配套改两处，见[草稿](#drafts) |
 | 0.0.72 | `privacy` 插件：外部资源下载进站内 | 能接管本站手工 vendor 的 mermaid 和 GLightbox，但默认下得太多，见 [privacy](#privacy)；不写进 `plugins` 就不生效 |
 | 0.0.72 | SuperFences 按配置里的扩展顺序生效；HTML 地址改写只改属性值、先解析字符引用 | 要看一眼：本站有 4 个自定义 fence、大量 raw HTML 和 iframe，升级时构建正式站对比产物 |
+| 0.0.74 | 模板和主题资源改从单独的 `zensical-ui` 包取，钉死 `zensical-ui==0.0.41` | 要看一眼：本站 `overrides/` 覆盖了 `main.html`、`home.html`、`partials/source.html`，按理照旧生效，升级时构建一次确认 |
 | UI 0.0.39 | 内置加载器从 `mermaid@11` 换成 `@12`，图表配色改了 | 要看一眼：`overrides/main.html` 预先加载的 11.17.1 会被加载器直接拿去用，两版能不能配合、手绘卡片样式变没变，都要实测 |
 | 0.0.66 | sitemap 收录所有发布的页（#977） | 好坏参半：实测 822 条变 1024 条，见[实测](#test-build) |
 | 0.0.67 | 原生 `llmstxt` 插件 + 「Copy as Markdown」按钮 | 唯一正面冲突的改动，见[下一节](#llmstxt)；不写进 `plugins` 就不生效 |
+| 0.0.74 | llmstxt 转换不再丢图片（#1095） | 中性：本站不开插件。转换版里站内图片变成绝对地址的 `![alt](…)`，`data:` 内嵌图换成 alt 文字[^1095] |
 | 0.0.67 | `github-admonitions`：`> [!NOTE]` 渲染成提示框 | 中性：要在 `plugins` 里声明才生效；吸收的上游原文里有这种写法时用得上 |
 | UI 0.0.33 | Mermaid 节点标签的自定义颜色不再被盖掉（#241） | 要看一眼：本站 mermaid 有手绘卡片样式，标签颜色可能变 |
 | UI 0.0.35 | 搜索结果改走 instant navigation | 按代码看不影响：跳转经 `setLocation`，只有开了 `navigation.instant` 才无刷新，本站没开，init 脚本照常整页运行；升级后实测确认一次 |
@@ -35,12 +38,12 @@ description: "本站钉在 Zensical 0.0.62、最新 0.0.73，2026-10-28 定下�
 - mike 版本切换（0.0.65）：本站不分版本
 - social 社交卡片（0.0.67）：每页生成一张预览图，800 多页就是 800 多张图要上传
 - `exclude` 插件（0.0.67）：0.0.70 已有原生的 `exclude_docs`
-- audio / video 插件（0.0.68）、macros（0.0.65、0.0.68）、nav-weight 与 markdownextradata（0.0.69）：没用到
+- audio / video 插件（0.0.68）、macros（0.0.65、0.0.68）、nav-weight 与 markdownextradata（0.0.69）、optimize 图片压缩（0.0.74）：没用到
 - 点开头的文件不进产物（0.0.63，#945）：本站的 `.meta.yml` 本来就不进 `site/`；`.venv` 的漏口在 `deploy.sh` 的 rsync，仍靠那条 `--exclude='.*/'`
 - `include-markdown` 插件（0.0.71）：只是把 `{% include-markdown %}` 翻成 Snippets 指令，每处单独写的参数一律忽略；比 `--8<--` 多的只有 `./`、`../` 开头的路径按当前文件解析[^plugins-new]。本站 163 个文件用 `--8<--`，`md-copy.js` 和 `check-links.py` 都认这个语法，换了没收益
 - 链接可以写成 `foo.md/`、`serve` 打印所有绑定地址、自定义 polyfill 脚本（0.0.72），搜索字段超长报错、社交卡片配色、ARM 安装包（0.0.71），`rustls` 安全补丁（0.0.72）
 - 预览站根地址与 404 页（0.0.63），博客侧栏、任务列表、GLightbox、instant navigation 的几处修复（UI 0.0.31–0.0.36），顶栏无障碍、目录长词省略号、mermaid 状态图注释颜色（UI 0.0.38），锚点和前进后退的滚动位置（UI 0.0.39）
-- 模板拆成独立的 `zensical-ui` 包（UI 0.0.40）：为以后缩小安装包做准备，还没进 Zensical 的发版
+- 内部重定向保留查询参数、博客日期按 locale 显示、旧式 `validation` 写法和 `relative_to_docs`（#1060，本站只写了 `invalid_links`）、privacy 下载认自定义 CA 证书（0.0.74），搜索按标签过滤、GLightbox 只显示当前配色的图（UI 0.0.41）
 
 ## llmstxt 插件：导出的是转换版 { #llmstxt }
 
@@ -111,7 +114,7 @@ description: "本站钉在 Zensical 0.0.62、最新 0.0.73，2026-10-28 定下�
 
 ### 最后的做法：不用插件，按钮和发现链接自己做 { #own-copy }
 
-三条路都没走。插件里真正想要的只有复制按钮和发现链接，两样都自己做了，转换那一步对本站是负收益——源文件就是 AI 写的，AI 读源文件没有障碍，转换反倒丢图片、iframe、选项卡标签和 frontmatter。做法和原理单独成篇：[复制本页 Markdown 源](../../projects/wiki/md-copy.md)。
+三条路都没走。插件里真正想要的只有复制按钮和发现链接，两样都自己做了，转换那一步对本站是负收益——源文件就是 AI 写的，AI 读源文件没有障碍，转换反倒丢 iframe、选项卡标签和 frontmatter（图片 0.0.74 起保住了）。做法和原理单独成篇：[复制本页 Markdown 源](../../projects/wiki/md-copy.md)。
 
 ### 官方立场：不打算发布源文件 { #stance }
 
@@ -122,7 +125,7 @@ description: "本站钉在 Zensical 0.0.62、最新 0.0.73，2026-10-28 定下�
 （#859 维护者回复，2026-08-14[^859]）
 
 - **官方和本站方向相反**：他们嫌源文件缺了 snippet 展开的内容，所以先渲染再转回去；本站的 `--8<--` 路径先相对 `docs/`，AI 照着路径能自己读到真身，复制按钮还会把它改成线上绝对地址，缺的那部分补得上
-- [第 3 条路](#llmstxt-paths)里想提的「发布源文件而不是转换版」不用等了。0.0.70 之后 `llmstxt` 的源码没动，文档的参数表只改了排版
+- [第 3 条路](#llmstxt-paths)里想提的「发布源文件而不是转换版」不用等了。0.0.70 之后 `llmstxt` 只在 0.0.74 改过一处：`autoclean` 不再删图片（#1095）；发布源文件的选项仍然没有，文档的参数表还是那 6 项
 - 路线图上给 AI 的文档（Agent-ready documentation）只挂在 Agentic workflows 一节，不在「已上线、开发中、下一步」三栏里[^roadmap]。「下一步」里有 **Module API for Python**——用 Python 写模块扩展构建。它出来以后，`deploy.sh` 里的 md 镜像、`llms.txt`、skill 打包有可能挪进构建，`zensical serve` 时就有，到时再评估
 
 ??? abstract "原文存档：#859 维护者回复、路线图节选（2026-10-28 抓取）"
@@ -177,7 +180,7 @@ plugins:
 ## 升级要做什么 { #steps }
 
 1. `uv lock --upgrade-package zensical`，`pyproject.toml` 的下限顺手改成新版本
-2. 构建正式站到 `tmp/`，确认零告警，和线上产物对比——[上面的实测](#test-build)只到 0.0.70，0.0.72 改了 SuperFences 顺序和 HTML 地址改写，重点比自定义 fence 和 raw HTML 多的页
+2. 构建正式站到 `tmp/`，确认零告警，和线上产物对比——[上面的实测](#test-build)只到 0.0.70，0.0.72 改了 SuperFences 顺序和 HTML 地址改写，重点比自定义 fence 和 raw HTML 多的页；0.0.74 换了模板来源，再比首页开屏和页头两行发现链接
 3. 部署。主题资源换了哈希，每页 HTML 都变——全站重传一次，上次同样规模是 1027 个文件
 4. 上线后看一遍：首页开屏、mermaid 手绘卡片（加载器已换成 Mermaid 12，本站预加载的是 11.17.1）、提示框 / 折叠块 / 选项卡、代码块复制按钮；搜一个带 ECharts 或公式的页，从搜索结果点进去，确认图和公式照常渲染
 5. `CLAUDE.md`「两道链接校验」里 `invalid_links` 那段写的是 0.0.62 的情况，升级后核对一次
@@ -192,6 +195,8 @@ plugins:
 - privacy 能替掉手工 vendor，但现在的做法能用
 - minify 的崩溃修复是唯一的防御性理由，触发面窄，至今没碰上
 
+2026-11-04 看过 0.0.74，下面的条件一条没碰上，照旧不升：llmstxt 只是不再丢图片，导出的还是转换版；新增的好处是 description 转义，改 7 处源文件的引号就能修，不用为它升级。
+
 碰上下面任何一条再重新评估：
 
 - **本地预览改真身不重建，嫌烦了**：0.0.63、0.0.69 和 0.0.71–0.0.72 的监听修复都管这事
@@ -205,4 +210,5 @@ plugins:
 [^basics]: [basics.md，钉 commit](https://github.com/zensical/docs/blob/1a86815c8f96c9b171c91017cd8c2c90498d3a30/docs/setup/basics.md)，2026-10-15 读。
 [^plugins-new]: [plugins.md，钉 commit](https://github.com/zensical/docs/blob/1a8b4b27db1ba939f85ed9381448c5c2004d19d7/docs/compatibility/mkdocs/plugins.md)，`include-markdown`、`privacy` 两节，2026-10-28 读。
 [^859]: [zensical/zensical#859 维护者回复](https://github.com/zensical/zensical/issues/859#issuecomment-5291561058)，2026-10-28 读，原文存档见上面的折叠块。
+[^1095]: [zensical/zensical@49132b7](https://github.com/zensical/zensical/commit/49132b79d40b110f1fb8d9f0d7c1e757edbda169)，修 #1095 的提交，2026-11-04 读。
 [^roadmap]: [Zensical 路线图](https://zensical.org/roadmap/)，2026-10-28 读，节选存档见上面的折叠块。

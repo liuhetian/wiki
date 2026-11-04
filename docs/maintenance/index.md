@@ -83,7 +83,7 @@ Gallery 里别人的成品从哪来、收的时候改了什么、上游更新了
 
 这个 wiki 自己依赖的东西跟到哪个版本、新版本升不升级。本站怎么搭起来的见[wiki 介绍](../projects/wiki/index.md)。
 
-- [Zensical 升级评估](zensical-upgrade/index.md) —— 本站钉在 Zensical 0.0.62、最新 0.0.73，2026-10-28 定下先不升：十一个版本逐条过，有关的只有预览重建、草稿、minify 修复几条；官方 llmstxt 只出转换版、不打算发源文件；privacy 插件能接管 mermaid 和 GLightbox；升级步骤和要看的地方
+- [Zensical 升级评估](zensical-upgrade/index.md) —— 本站钉在 Zensical 0.0.62、最新 0.0.74，11-04 复核仍先不升：有关的只有预览重建、草稿、minify 修复、description 转义几条；官方 llmstxt 只出转换版、不打算发源文件；privacy 能接管 mermaid 和 GLightbox；升级步骤
 
 ## 实测用的示例 { #fixtures }
 

@@ -1,6 +1,6 @@
-<!-- 存档：GitHub Releases 原文，0.0.70、UI 0.0.37 及以前 2026-10-15 抓取，之后的 2026-10-28 补抓。zensical：https://github.com/zensical/zensical/releases ；ui：https://github.com/zensical/ui/releases 。每个版本的正文原样放在代码块里，不渲染外链图片。 -->
+<!-- 存档：GitHub Releases 原文，0.0.70、UI 0.0.37 及以前 2026-10-15 抓取，0.0.71–0.0.73、UI 0.0.38–0.0.40 2026-10-28 补抓，0.0.74、UI 0.0.41 2026-11-04 补抓。zensical：https://github.com/zensical/zensical/releases ；ui：https://github.com/zensical/ui/releases 。每个版本的正文原样放在代码块里，不渲染外链图片。 -->
 
-# Zensical 0.0.63–0.0.73 与 UI 0.0.31–0.0.40 发布说明（存档）
+# Zensical 0.0.63–0.0.74 与 UI 0.0.31–0.0.41 发布说明（存档）
 
 ## zensical v0.0.63（2026-09-19）
 
@@ -278,6 +278,32 @@ Additionally, the user interface is updated to v0.0.39, adding support for Merma
 - 9d1b114 __zensical__, __compat__ – fix URL rewriting in the privacy plugin (#1080)
 ````
 
+## zensical v0.0.74（2026-10-30）
+
+<https://github.com/zensical/zensical/releases/tag/v0.0.74>
+
+````markdown
+## Summary
+
+This version adds support for the `optimize` plugin and includes fixes for redirects, blog dates, validation settings, privacy downloads, and `llms.txt` output.
+
+## Changelog
+
+### Features
+
+- df2ba1c __zensical__, __compat__ – support optimize plugin
+- 91d4e31 __compat__, __docker__, __ui__ – source assets from `zensical-ui`
+
+### Bug fixes
+
+- e5aa684 – update ui to v0.0.41
+- b4890c3 __zensical__, __compat__ – preserve query strings in internal redirects
+- 7e0784a __zensical__, __compat__ – use configured locale for blog dates (#1097)
+- 49132b7 __zensical__ – preserve images with URLs in llmstxt output (#1095)
+- 6292939 __zensical__, __compat__ – support legacy validation setting and `relative_to_docs` value (#1060)
+- 7bab4ef __zensical__, __compat__ – honor custom CA bundles in privacy downloads (#1089)
+````
+
 ## ui v0.0.31（2026-09-19）
 
 <https://github.com/zensical/ui/releases/tag/v0.0.31>
@@ -484,4 +510,22 @@ The package includes prebuilt assets and supports editable installs for local UI
 ### Features
 
 - b9019fb __ui__, __tools__ – package templates as `zensical-ui`
+````
+
+## ui v0.0.41（2026-10-30）
+
+<https://github.com/zensical/ui/releases/tag/v0.0.41>
+
+````markdown
+## Summary
+
+This version fixes tag filtering in search, correctly escapes page descriptions, and ensures image galleries only show images for the active color scheme.
+
+## Changelog
+
+### Bug fixes
+
+- 2382910 __ui__, __scripts__ – only show images for current theme variant in glightbox slides (#296)
+- bcdd0f9 __ui__, __templates__ – escape HTML descriptions (site and front-matter)
+- 280ff5a __ui__, __scripts__ – correct off-by-one error in bitmap negation (#293)
 ````
