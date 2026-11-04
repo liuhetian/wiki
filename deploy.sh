@@ -72,4 +72,4 @@ cd "$PROJECT_DIR/site"
 "$COSCMD" upload -rs --delete -y ./ /  # 全量镜像+清桶里陈旧；-y 免确认（set -e 保证 build 失败不会拿空 site 清空桶）
 
 echo
-echo "✅ 部署完成 — https://${COS_DOMAIN}/"
+echo "✅ 部署完成 — https://${COS_DOMAIN}/（$(date '+%H:%M:%S') 完成，用时 $((SECONDS / 60)) 分 $((SECONDS % 60)) 秒）"  # SECONDS：bash 自带，脚本启动起的秒数
