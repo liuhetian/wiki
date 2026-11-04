@@ -68,7 +68,7 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 - [社区和论坛](bookmarks/community.md) —— linux.do
 - [人](bookmarks/people.md) —— 小红书、linux.do 上的作者，工作室 Lusion
 - [合集和导航站](bookmarks/collections.md) —— prompt 卡牌图鉴、agent 用例合集、梯子合集
-- [工具和服务](bookmarks/tools.md) —— 接码、买号、下歌、内网穿透、社交平台数据 API
+- [工具和服务](bookmarks/tools.md) —— 接码、买号、下歌、内网穿透、社交平台数据 API、下小说
 
 ## 维护
 

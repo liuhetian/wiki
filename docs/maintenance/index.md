@@ -44,6 +44,7 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [配图：手绘信息图](skills/infographic.md) —— 写作规范的配图做法，2026-10-20 拆解梨园时定下，替换马克笔草图；拼法取自手绘风格库，梨园 11 张图各用的排版、改字和返工的经过、为什么不检查
 - [写真拍摄企划（photo-shoot）](skills/photo-shoot.md) —— 吸纳自 yang0/handraw-style 的 couple-photo-orchestrator（MIT 带署名），钉在 2a25a07；入口和总控 zongkong 合并，CORE_REQUIREMENTS 的规则并进各页，7 个子 skill 重组成入口加 6 个子 skill，生图换成 agent-io，9 个脚本随附、只改三行
 - [东方仙侠视觉导演（xianxia-visual-director）](skills/xianxia-visual-director.md) —— 吸纳自 liyue-aigc/xianxia-visual-director（未附许可证），钉在 bd88617；SKILL.md 和 8 篇 reference 全文中译，放进新建的抽象 skill 视频生成，直接出图接 agent-io
+- [小说转漫剧（novel-to-comic-drama）](skills/novel-to-comic-drama.md) —— 整理自 linux.do 鸭老师分享的提示词包，帖子链接未存；49 个 txt 合并成 42 页，按环节重组成 8 个子 skill，去掉原工具的输出协议和防套 prompt 段；分句、切镜、拼输入、校验的两个脚本是本站写的
 - [获取热点（hot-topics）](skills/hot-topics.md) —— 2026-10-21 用户提议单开成标准 skill，一个信息源一篇；AIHOT 读的是接口 2.0.0，官方 Agent 使用说明存档，没装它的 Skill、没接 MCP 和 RSS，实测条件请求、links.story 还指旧域名；linux.do 日报只取小宇宙上的音频，为什么不走 linux.do 和汇总站
 - [让布局说话（ui-no-labels）](skills/ui-no-labels.md) —— 取自一张水印 @Ainward 的手机截图，原帖链接没留，截图存档；英文原句译成中文，套用初始化项目写进 `CLAUDE.md` / `AGENTS.md` 的形态
 - [PPT Master（ppt-master）](skills/ppt-master.md) —— 吸纳自 hugohe3/ppt-master（MIT），钉在 523e5bd（6.7.3）；只收规划、沟通模式、配图写法和三份风格目录，流水线不收、引导客户端装上游；规划和配图是提炼改写，其余中译

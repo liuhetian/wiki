@@ -1208,6 +1208,66 @@ nav:
                   - 神域聚居地: skills/video-gen/xianxia-visual-director/reference/celestial-realm-route.md
                   - 仙界大境原典: skills/video-gen/xianxia-visual-director/reference/celestial-grand-realm-canon.md
                   - 提示词示例: skills/video-gen/xianxia-visual-director/reference/prompt-examples.md
+              - 小说转漫剧:
+                  - skills/video-gen/novel-to-comic-drama/index.md
+                  - 爆款开头:
+                      - skills/video-gen/novel-to-comic-drama/hook/index.md
+                      - 结构化爆款开头: skills/video-gen/novel-to-comic-drama/hook/structures.md
+                      - 爆点澎湃: skills/video-gen/novel-to-comic-drama/hook/burst.md
+                      - 照案例写开头: skills/video-gen/novel-to-comic-drama/hook/custom.md
+                  - 二创改写:
+                      - skills/video-gen/novel-to-comic-drama/rewrite/index.md
+                      - 逐行洗稿: skills/video-gen/novel-to-comic-drama/rewrite/wash.md
+                      - 深挖仿写: skills/video-gen/novel-to-comic-drama/rewrite/imitate.md
+                      - 性别互换: skills/video-gen/novel-to-comic-drama/rewrite/gender-swap.md
+                      - 角色替换: skills/video-gen/novel-to-comic-drama/rewrite/rename.md
+                  - 角色与时期:
+                      - skills/video-gen/novel-to-comic-drama/characters/index.md
+                      - 角色形象设计: skills/video-gen/novel-to-comic-drama/characters/design.md
+                      - 人物时期表: skills/video-gen/novel-to-comic-drama/characters/periods.md
+                  - 分镜:
+                      - skills/video-gen/novel-to-comic-drama/storyboard/index.md
+                      - 默认分镜: skills/video-gen/novel-to-comic-drama/storyboard/default.md
+                      - 5 秒镜头: skills/video-gen/novel-to-comic-drama/storyboard/five-second.md
+                      - 古风分镜: skills/video-gen/novel-to-comic-drama/storyboard/ancient.md
+                      - 女频分镜: skills/video-gen/novel-to-comic-drama/storyboard/female.md
+                      - 异能分镜: skills/video-gen/novel-to-comic-drama/storyboard/superpower.md
+                      - 悬疑分镜: skills/video-gen/novel-to-comic-drama/storyboard/suspense.md
+                      - 穿越分镜: skills/video-gen/novel-to-comic-drama/storyboard/time-travel.md
+                      - 都市分镜: skills/video-gen/novel-to-comic-drama/storyboard/urban.md
+                  - 小说与剧本互转:
+                      - skills/video-gen/novel-to-comic-drama/script/index.md
+                      - 小说转剧本: skills/video-gen/novel-to-comic-drama/script/novel-to-script.md
+                      - 剧本转小说: skills/video-gen/novel-to-comic-drama/script/script-to-novel.md
+                  - 画面提示词:
+                      - skills/video-gen/novel-to-comic-drama/image-prompt/index.md
+                      - 通用画面提示词: skills/video-gen/novel-to-comic-drama/image-prompt/general.md
+                      - 细节控画面提示词: skills/video-gen/novel-to-comic-drama/image-prompt/detailed.md
+                      - 古风画面提示词: skills/video-gen/novel-to-comic-drama/image-prompt/ancient.md
+                      - 女频画面提示词: skills/video-gen/novel-to-comic-drama/image-prompt/female.md
+                      - 兽世画面提示词: skills/video-gen/novel-to-comic-drama/image-prompt/beast-world.md
+                      - 异能画面提示词: skills/video-gen/novel-to-comic-drama/image-prompt/superpower.md
+                      - 悬疑画面提示词: skills/video-gen/novel-to-comic-drama/image-prompt/suspense.md
+                      - 都市画面提示词: skills/video-gen/novel-to-comic-drama/image-prompt/urban.md
+                  - 视频提示词:
+                      - skills/video-gen/novel-to-comic-drama/video-prompt/index.md
+                      - 通用视频提示词: skills/video-gen/novel-to-comic-drama/video-prompt/general.md
+                      - Sora 2 视频提示词: skills/video-gen/novel-to-comic-drama/video-prompt/sora2.md
+                      - 古风视频提示词: skills/video-gen/novel-to-comic-drama/video-prompt/ancient.md
+                      - 女频视频提示词: skills/video-gen/novel-to-comic-drama/video-prompt/female.md
+                      - 异能视频提示词: skills/video-gen/novel-to-comic-drama/video-prompt/superpower.md
+                      - 穿越视频提示词: skills/video-gen/novel-to-comic-drama/video-prompt/time-travel.md
+                      - 都市视频提示词: skills/video-gen/novel-to-comic-drama/video-prompt/urban.md
+                  - 图文提示词:
+                      - skills/video-gen/novel-to-comic-drama/image-video-prompt/index.md
+                      - 通用图文提示词: skills/video-gen/novel-to-comic-drama/image-video-prompt/general.md
+                      - 剧情图文提示词: skills/video-gen/novel-to-comic-drama/image-video-prompt/plot.md
+                      - Sora 图文提示词: skills/video-gen/novel-to-comic-drama/image-video-prompt/sora.md
+                      - Sora 10 秒图文提示词: skills/video-gen/novel-to-comic-drama/image-video-prompt/sora-10s.md
+                      - Sora 15 秒图文提示词: skills/video-gen/novel-to-comic-drama/image-video-prompt/sora-15s.md
+                      - Sora 对话图文提示词: skills/video-gen/novel-to-comic-drama/image-video-prompt/sora-dialogue.md
+                      - Sora 动画图文提示词: skills/video-gen/novel-to-comic-drama/image-video-prompt/sora-animation.md
+                      - Wan2.2 图文提示词: skills/video-gen/novel-to-comic-drama/image-video-prompt/wan.md
       - 写代码:
           - FastAPI 后端:
               - skills/fastapi/index.md
@@ -1378,6 +1438,7 @@ nav:
               - 手绘风格出图: maintenance/skills/handdraw.md
               - 写真拍摄企划: maintenance/skills/photo-shoot.md
               - 东方仙侠视觉导演: maintenance/skills/xianxia-visual-director.md
+              - 小说转漫剧: maintenance/skills/novel-to-comic-drama.md
               - 配图：手绘信息图: maintenance/skills/infographic.md
               - 获取热点: maintenance/skills/hot-topics.md
               - 让布局说话: maintenance/skills/ui-no-labels.md

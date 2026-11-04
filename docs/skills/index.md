@@ -40,7 +40,7 @@ copy_source: true
 - [anidoodle 代码手绘](anidoodle/index.md) —— 要用代码画画、做动画时用：32 种画风的静帧、自己画出来的延时、任意长度的影片、讲解片、发布片和响应页面操作的网页动画，配乐也用代码作曲；能仿用户给的图的画风、跨镜头保持角色一致、教人画画。同一份源码到哪都出同样的像素和声音，不用任何生成素材；带 Node 引擎和 30 篇画风配方（吸纳自 alexgreensh/anidoodle，Apache-2.0）
 - [HyperFrames](hyperframes.md) —— 要用 HTML 写视频、渲染成 MP4，或让 agent 做发布片、讲解片、数据片时用：一页概要讲清 HyperFrames 的导演纪律 —— 三条故事线挑一条、SPEC 把形容词换成数字并禁掉默认样子、用陌生人的眼光复查 —— 和逐帧确定的渲染合同、各类片子读什么；CLI、素材、组件库和脚本在上游（吸纳自 heygen-com/hyperframes，Apache-2.0；[维护记录](../maintenance/skills/hyperframes.md)）
 - [Vibe 知识短片](vibe-knowledge-film/index.md) —— 要做没有旁白、靠底部字幕讲的 16:9 知识短片时用（抖音「Vibe知识大赏」那类，给一个题目或一份文案）：先立事实表，给每个概念找外行认得的形象，文案和分镜表一起写，再用代码逐帧画出来、看着截图改，寓言、夜曲两套外观，配合成音效；交工程目录、成片和事实表。有人声口播的讲解片不用它（吸纳自 HeyChengC/vibe-knowledge-film，MIT；[维护记录](../maintenance/skills/vibe-knowledge-film.md)）
-- [视频生成](video-gen/index.md) —— 用生图、生视频模型做 AI 视频时用：按题材和环节挑子 skill；已收东方仙侠视觉导演，给仙侠场景写单张画面和视频关键帧的生图提示词（吸纳自 liyue-aigc/xianxia-visual-director）
+- [视频生成](video-gen/index.md) —— 用生图、生视频模型做 AI 视频时用：按题材和环节挑子 skill；已收东方仙侠视觉导演，给仙侠场景写生图提示词（吸纳自 liyue-aigc/xianxia-visual-director）；小说转漫剧，把网文小说一步步做成竖屏漫剧或推文视频（整理自 linux.do 鸭老师分享的提示词包）
 
 ## 写代码
 
