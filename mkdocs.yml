@@ -544,6 +544,9 @@ nav:
       - 视频:
           - Vibe 知识短片:
               - projects/vibe-knowledge-film/index.md
+      - 输入法:
+          - 犀术IME:
+              - projects/xsime/index.md
       - 开发工具:
           - Teable:
               - projects/teable/index.md
