@@ -541,6 +541,9 @@ nav:
       - 数字人:
           - Mynah:
               - projects/mynah/index.md
+      - 视频:
+          - Vibe 知识短片:
+              - projects/vibe-knowledge-film/index.md
       - 开发工具:
           - Teable:
               - projects/teable/index.md
@@ -1164,6 +1167,19 @@ nav:
                   - "影片规格书": skills/anidoodle/example/butterfly-film-spec.md
               - "渲染适配器": skills/anidoodle/engine/tools/adapters/index.md
           - HyperFrames: skills/hyperframes.md
+          - Vibe 知识短片:
+              - skills/vibe-knowledge-film/index.md
+              - 讲解设计: skills/vibe-knowledge-film/references/visualization.md
+              - 画面语法: skills/vibe-knowledge-film/references/visual-grammar.md
+              - 文案: skills/vibe-knowledge-film/references/script.md
+              - 两套外观: skills/vibe-knowledge-film/references/worlds.md
+              - 四条参考片的拆解: skills/vibe-knowledge-film/references/analysis.md
+              - 逆向出的提示词: skills/vibe-knowledge-film/references/prompts.md
+              - 引擎: skills/vibe-knowledge-film/references/engine.md
+              - 示例:
+                  - skills/vibe-knowledge-film/examples/index.md
+                  - 《折叠》分镜表: skills/vibe-knowledge-film/examples/fold_C/storyboard.md
+                  - 《鸽子的迷信》分镜表: skills/vibe-knowledge-film/examples/pigeon_B/storyboard.md
           - 视频生成:
               - skills/video-gen/index.md
               - 东方仙侠视觉导演:
@@ -1346,6 +1362,7 @@ nav:
               - PPT Master: maintenance/skills/ppt-master.md
               - Windows 软件逆向: maintenance/skills/exe-reverse.md
               - HyperFrames: maintenance/skills/hyperframes.md
+              - Vibe 知识短片: maintenance/skills/vibe-knowledge-film.md
           - 实测用的示例:
               - 测试skill:
                   - maintenance/mock-bundle/index.md
