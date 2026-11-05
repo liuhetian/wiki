@@ -71,7 +71,7 @@ copy_source: true
 - [语音合成（TTS）](tts.md) —— 语音 · 给一段文字，出一段人声。还没写，先占着
 - [视频生成（video generation）](video-generation.md) —— 视频 · 给一段描述或首尾帧，出一段视频。还没写，先占着
 - [文本生成（text generation）](text-generation.md) —— 文本 · 给一个要求，出一段文字。还没写，先占着
-- [三维生成（3D generation）](3d-generation.md) —— 三维模型 · 给一段描述或一张参考图，出一个三维模型；只写了一例：照像素画用代码拼一只小橘猫的成本，其余先占着
+- [三维生成（3D generation）](3d-generation.md) —— 三维模型 · 给一段描述或一张参考图，出一个三维模型；实测了用代码拼：小橘猫、绵羊、树和整片微缩牧场各花多少，其余先占着
 
 ### 内容变换 { #transformation }
 
