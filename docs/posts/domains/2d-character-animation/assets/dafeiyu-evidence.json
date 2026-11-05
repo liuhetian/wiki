@@ -51,13 +51,40 @@
       "Sad",
       "Angry",
       "Surprised"
-    ]
+    ],
+    "actual_core_parameter_count": 32,
+    "actual_core_drawable_count": 35,
+    "sha256": {
+      "deepseek-maid-joints.shake.motion3.json": "81f50690b925cab5487c64cd1fc9781485a141f758a1f7085d36f0596bbfe54b",
+      "deepseek-maid-joints.idle.motion3.json": "439d3070809b31d6c89849a38a82380c85f2559b52249781518c3fb12c5c5ad3",
+      "deepseek-maid-joints.surprised.exp3.json": "9b7850b565e3c2edef7534fb62fa364285063c254b76d079328dc8ee747b9097",
+      "deepseek-maid-joints.earTwitch.motion3.json": "2d6e639bff729cac839ce5027a876b26987e5ed66a4a124882960fcd309c6ca3",
+      "deepseek-maid-joints.physics3.json": "385846be2c653e6bf3eda4a4e49353ba7c8ea6051a0e88aa86b5e2db749b30e1",
+      "deepseek-maid-joints.tailSwing.motion3.json": "68a5ea56ed387b9cdf8dde63216b0f62a68eabdfefcccbb72115e13c5dbfc907",
+      "deepseek-maid-joints.headTilt.motion3.json": "bd4e31e1f8775cb7acd312d1bede184b6f1e2bba80851e0e70c88acde349c5a8",
+      "deepseek-maid-joints.wave.motion3.json": "7848a97c2a47eac012531ad87a1d7c915b24bdab133256ec3304f0b620b7d53d",
+      "deepseek-maid-joints.sway.motion3.json": "cffa9f3676e90d030e9c14700e19291fd69416a18d8e775d73be99ccc5920882",
+      "deepseek-maid-joints.smile.exp3.json": "59e6869c12dad404623dc587086b79909262b1d027bdcf1a27a58aa8c2d50377",
+      "deepseek-maid-joints.moc3": "879923e7b57941e0c77351cfe55afa365f09422d5a6e315b998c66d55568c8d8",
+      "deepseek-maid-joints.sad.exp3.json": "e0f88d2ce01fa6f4718051ec6a15c803d70064011cf370cee15e50bf19978c82",
+      "deepseek-maid-joints.cheer.motion3.json": "ba19e4e9b5e41b1df28ecac78d56cc35335bc6e2b11224844db0ed0c29aeeb64",
+      "NOTICE.txt": "245174d475e7bc130464d665c29449e9480ca5e43c8196b569283a44c8f72d19",
+      "deepseek-maid-joints.blink.motion3.json": "399f91b7bfac0666f589ab7c6daace5e33e5c6d6e7c6e7ca4024b6db48a65110",
+      "deepseek-maid-joints.shy.motion3.json": "1bfb6ef2d2e69fed5af28f3365ee3d8660d99a96cdbcec2094df8f4bace0f61c",
+      "deepseek-maid-joints.nod.motion3.json": "bfd9a247d5ec8479145c2dddfd5fdbf03e1c46df8d7460f07badd146c1e19418",
+      "deepseek-maid-joints.angry.exp3.json": "98bacc260d618079f916df94f201c22d8ccde920c029c01fc793ae4dd670e756",
+      "deepseek-maid-joints.model3.json": "99ab1050031f70ce70f047e97b9db0da95289653d6cca24bd834d0b9a0fcf1f0",
+      "deepseek-maid-joints.cdi3.json": "8e071f64ca5a4bf004a30c8bc9265769981c5139aadc02423e9a5c5565738fdf",
+      "deepseek-maid-joints.4096/texture_00.png": "8c8901dfcefa0b1775c42e4d7478e2db72fd94695943bc5357e40dd44a0d3a6c"
+    }
   },
   "source_figure": {
     "path": "docs/images/motion-poses.png",
     "local": "dafeiyu-motion-poses.png",
     "sha256": "ba29c38e56d47c58e6e3465e205e9c31b6b111463cc7614320ce82e930a21d0e"
   },
-  "verification_scope": "下载核对模型包与编辑源文件的 SHA-256、PSD/MOC3 文件头、模型资源引用、动作和参数描述。未运行播放器、PSD2Live 或单图生成流程。",
-  "generation_workflow_evidence": "See-through → PSD2Live 来自公众号制作记录及上游文档/源码核查；已核对最终模型、PSD 和 Cubism 工程，尚未从原图复现自动生成。"
+  "verification_scope": "下载核对源文件 SHA-256、PSD/MOC3 文件头及资源引用；官方 Cubism Core 读取模型并逐帧求值 11 个动作、64 个参数端点与 4 个表情。未做浏览器图像验收，未从原图重做生成流程。",
+  "generation_workflow_evidence": "See-through → PSD2Live 来自公众号制作记录及上游文档/源码核查；已核对最终模型、PSD 和 Cubism 工程，尚未从原图复现自动生成。",
+  "live_demo": "dafeiyu.html",
+  "core_validation": "live2d-validation.json"
 }

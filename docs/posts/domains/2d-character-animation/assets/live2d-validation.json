@@ -1,0 +1,289 @@
+{
+  "success": true,
+  "checked_on": "2026-11-05",
+  "core_version": 83951616,
+  "moc_version": 5,
+  "parameters": 32,
+  "drawables": 35,
+  "motions": [
+    {
+      "group": "Idle",
+      "duration": 12,
+      "samples": 61,
+      "max_vertex_displacement": 0.03400197625160217
+    },
+    {
+      "group": "Blink",
+      "duration": 1.2,
+      "samples": 61,
+      "max_vertex_displacement": 0.01580226421356201
+    },
+    {
+      "group": "Nod",
+      "duration": 2,
+      "samples": 61,
+      "max_vertex_displacement": 0.01982516050338745
+    },
+    {
+      "group": "Shake",
+      "duration": 2,
+      "samples": 61,
+      "max_vertex_displacement": 0.016991211101412773
+    },
+    {
+      "group": "TailSwing",
+      "duration": 3,
+      "samples": 61,
+      "max_vertex_displacement": 0.04385438561439514
+    },
+    {
+      "group": "Shy",
+      "duration": 3,
+      "samples": 61,
+      "max_vertex_displacement": 0.15684999898076057
+    },
+    {
+      "group": "Wave",
+      "duration": 2.8,
+      "samples": 61,
+      "max_vertex_displacement": 0.49622199684381485
+    },
+    {
+      "group": "HeadTilt",
+      "duration": 2.2,
+      "samples": 61,
+      "max_vertex_displacement": 0.05383505579084158
+    },
+    {
+      "group": "Cheer",
+      "duration": 2.2,
+      "samples": 61,
+      "max_vertex_displacement": 0.5677544102072716
+    },
+    {
+      "group": "Sway",
+      "duration": 3,
+      "samples": 61,
+      "max_vertex_displacement": 0.020533308386802673
+    },
+    {
+      "group": "EarTwitch",
+      "duration": 2,
+      "samples": 61,
+      "max_vertex_displacement": 0.010606050491333008
+    }
+  ],
+  "expressions": [
+    {
+      "name": "Smile",
+      "max_vertex_displacement": 0.004279792308807373
+    },
+    {
+      "name": "Sad",
+      "max_vertex_displacement": 0.002567857503890991
+    },
+    {
+      "name": "Angry",
+      "max_vertex_displacement": 0.0017119348049163818
+    },
+    {
+      "name": "Surprised",
+      "max_vertex_displacement": 0.004107147455215454
+    }
+  ],
+  "parameter_extremes": [
+    {
+      "id": "ParamEarL",
+      "min": -1,
+      "max": 1,
+      "max_vertex_displacement": 0.01563064008951187
+    },
+    {
+      "id": "ParamEarR",
+      "min": -1,
+      "max": 1,
+      "max_vertex_displacement": 0.015893101692199707
+    },
+    {
+      "id": "ParamAngleX",
+      "min": -45,
+      "max": 45,
+      "max_vertex_displacement": 0.021150742082681973
+    },
+    {
+      "id": "ParamAngleY",
+      "min": -30,
+      "max": 30,
+      "max_vertex_displacement": 0.015720278024673462
+    },
+    {
+      "id": "ParamAngleZ",
+      "min": -30,
+      "max": 30,
+      "max_vertex_displacement": 0.12317624688148499
+    },
+    {
+      "id": "ParamEyeLOpen",
+      "min": 0,
+      "max": 1,
+      "max_vertex_displacement": 0.01679643988609314
+    },
+    {
+      "id": "ParamEyeROpen",
+      "min": 0,
+      "max": 1,
+      "max_vertex_displacement": 0.017119139432907104
+    },
+    {
+      "id": "ParamEyeBallX",
+      "min": -1,
+      "max": 1,
+      "max_vertex_displacement": 0.003437727689743042
+    },
+    {
+      "id": "ParamEyeBallY",
+      "min": -1,
+      "max": 1,
+      "max_vertex_displacement": 0.003161907196044922
+    },
+    {
+      "id": "ParamEyeBallForm",
+      "min": -1,
+      "max": 1,
+      "max_vertex_displacement": 0.0013622939586639404
+    },
+    {
+      "id": "ParamBrowLY",
+      "min": -1,
+      "max": 1,
+      "max_vertex_displacement": 0.0016405582427978516
+    },
+    {
+      "id": "ParamBrowRY",
+      "min": -1,
+      "max": 1,
+      "max_vertex_displacement": 0.0015666186809539795
+    },
+    {
+      "id": "ParamMouthForm",
+      "min": -1,
+      "max": 1,
+      "max_vertex_displacement": 0.001193016767501831
+    },
+    {
+      "id": "ParamMouthOpenY",
+      "min": 0,
+      "max": 1,
+      "max_vertex_displacement": 0.0068450868129730225
+    },
+    {
+      "id": "ParamBodyAngleX",
+      "min": -10,
+      "max": 10,
+      "max_vertex_displacement": 0.03778284788131714
+    },
+    {
+      "id": "ParamBodyAngleY",
+      "min": -10,
+      "max": 10,
+      "max_vertex_displacement": 0.04154421016573906
+    },
+    {
+      "id": "ParamBodyAngleZ",
+      "min": -10,
+      "max": 10,
+      "max_vertex_displacement": 0.021725701866671443
+    },
+    {
+      "id": "ParamBodyLean",
+      "min": -10,
+      "max": 10,
+      "max_vertex_displacement": 0.057892680168151855
+    },
+    {
+      "id": "ParamProportion",
+      "min": -10,
+      "max": 10,
+      "max_vertex_displacement": 0.11818994581699371
+    },
+    {
+      "id": "ParamBreath",
+      "min": 0,
+      "max": 1,
+      "max_vertex_displacement": 0.006363123655319214
+    },
+    {
+      "id": "ParamHairFront",
+      "min": -1,
+      "max": 1,
+      "max_vertex_displacement": 0.022234726697206497
+    },
+    {
+      "id": "ParamHairBack",
+      "min": -1,
+      "max": 1,
+      "max_vertex_displacement": 0.03756752610206604
+    },
+    {
+      "id": "ParamSkelUpperBody",
+      "min": -30,
+      "max": 30,
+      "max_vertex_displacement": 0.2311619035899639
+    },
+    {
+      "id": "ParamArmRA",
+      "min": -30,
+      "max": 100,
+      "max_vertex_displacement": 0.41927076131105423
+    },
+    {
+      "id": "ParamArmRB",
+      "min": 0,
+      "max": 115,
+      "max_vertex_displacement": 0.3414565250277519
+    },
+    {
+      "id": "ParamHandR",
+      "min": -25,
+      "max": 25,
+      "max_vertex_displacement": 0.031026996672153473
+    },
+    {
+      "id": "ParamArmLA",
+      "min": -30,
+      "max": 100,
+      "max_vertex_displacement": 0.4178820177912712
+    },
+    {
+      "id": "ParamArmLB",
+      "min": 0,
+      "max": 115,
+      "max_vertex_displacement": 0.33859749883413315
+    },
+    {
+      "id": "ParamHandL",
+      "min": -25,
+      "max": 25,
+      "max_vertex_displacement": 0.030883826315402985
+    },
+    {
+      "id": "ParamSkelLowerBody",
+      "min": -20,
+      "max": 20,
+      "max_vertex_displacement": 0.08466394431889057
+    },
+    {
+      "id": "ParamTail1",
+      "min": -20,
+      "max": 20,
+      "max_vertex_displacement": 0.04385438561439514
+    },
+    {
+      "id": "ParamSkelTailSwing",
+      "min": -1,
+      "max": 1,
+      "max_vertex_displacement": 0.04385438561439514
+    }
+  ],
+  "browser_render_tested": false
+}

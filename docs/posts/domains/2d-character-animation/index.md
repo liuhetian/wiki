@@ -50,14 +50,24 @@ AI 可以先把角色参考图拆分、补画成独立部件，再通过代码�
 
 拆图时要为变形留余量：眼白、瞳孔、睫毛分别成层，嘴巴画出张开时的口腔，被头发或手臂遮住的部分补完整。绑定后检查闭眼是否残留瞳孔、张嘴是否露底、转头时五官与头发是否错位，再组合多个参数检查；命名识别成功和导出成功，都不能代替形变检查。[^psd2live]
 
-大肥鱼案例公开了分层 `dafeiyu.psd`、可编辑的 `dafeiyu.cmo3` 和完整运行模型。本站核对了作者的 SHA-256 清单及模型包：`MOC3` 文件头与资源引用完整，含 11 个动作组、4 个表情，显示信息列出 32 个参数；[核对记录](assets/dafeiyu-evidence.json)保留文件路径、版本和校验值，尚未在本机运行模型或从原图重做生成流程。[^dafeiyu]
+大肥鱼案例公开了分层 `dafeiyu.psd`、可编辑的 `dafeiyu.cmo3` 和完整运行模型。本站核对了作者的 SHA-256 清单及模型包，并用官方 Cubism Core 成功读取 32 个参数、35 个绘制部件，逐帧求值 11 个动作和 4 个表情；[文件核对记录](assets/dafeiyu-evidence.json)与[运行库验证结果](assets/live2d-validation.json)保留了范围和校验值，未从原图重做生成流程。[^dafeiyu]
 
-<figure markdown>
+<iframe src="/posts/domains/2d-character-animation/assets/dafeiyu.html"
+        style="width:100%;height:920px;border:1px solid #8884;border-radius:10px"
+        loading="lazy" title="大肥鱼 Live2D：动作、表情、参数与网格演示"></iframe>
 
-![大肥鱼参数姿态对照：手臂、耳朵与尾巴的变化](assets/dafeiyu-motion-poses.png){ loading=lazy }
+[单独打开 Live2D 演示](assets/dafeiyu.html){ target="_blank" rel="noopener" }
 
-<figcaption>作者提供的制作阶段姿态对照：手臂关节、耳朵和尾巴的参数变化；不是本站运行截图。</figcaption>
-</figure>
+先选「挥手」「动耳朵」或「摆尾巴」，暂停后拖动进度；再调眼睛、嘴巴和转头滑杆，打开「显示三角网格」观察局部形变。参数调试会暂停动作，「复位」恢复待机；这是本站实时播放作者模型，页面只演示模型与绑定。
+
+??? abstract "作者提供的制作阶段姿态对照"
+
+    <figure markdown>
+
+    ![大肥鱼参数姿态对照：手臂、耳朵与尾巴的变化](assets/dafeiyu-motion-poses.png){ loading=lazy }
+
+    <figcaption>作者提供的制作阶段姿态对照：手臂关节、耳朵和尾巴的参数变化；不是本站运行截图。</figcaption>
+    </figure>
 
 ## 三条路线：逐帧、骨骼与参数变形 { #routes }
 
@@ -231,6 +241,8 @@ Spine 网格文档写到 “Meshes can be deformed automatically”。[^mesh] �
 
 [素材来源与 SHA-256](assets/sources.json)记录两套数据的来源和转换情况，[运行库来源记录](../../../vendor/spine-3.6/SOURCE.txt)与[许可证](../../../vendor/spine-3.6/LICENSE)随文件保留。角色素材与运行库各有自己的权利来源，不能把项目代码开源理解为角色素材也开放了使用许可。
 
+Live2D 演示使用本站静态托管的模型、贴图和[运行库](../../../vendor/live2d/SOURCE.json)，播放时不请求外部 CDN；参数直接送入 Cubism Core，动作读取作者的 `motion3.json`。暂停、离开视口或切换标签页后停止连续绘制，手动改参数时只重绘一帧；[验证脚本](assets/check-live2d.cjs)用实际 Core 检查了 671 个动作姿势、64 个参数端点及 4 个表情，未做浏览器图像验收。
+
 ??? abstract "Alice 演示入口源码"
 
     ```html
@@ -255,8 +267,22 @@ Spine 网格文档写到 “Meshes can be deformed automatically”。[^mesh] �
     --8<-- "posts/domains/2d-character-animation/assets/dafeiyu-evidence.json"
     ```
 
+??? abstract "Live2D 演示入口与播放逻辑"
+
+    ```html
+    --8<-- "posts/domains/2d-character-animation/assets/dafeiyu.html"
+    ```
+
+    ```javascript
+    --8<-- "posts/domains/2d-character-animation/assets/live2d-player.js"
+    ```
+
+    ```javascript
+    --8<-- "posts/domains/2d-character-animation/assets/live2d-motion.js"
+    ```
+
 [^mesh]: Esoteric Software，[Mesh attachments](https://esotericsoftware.com/spine-meshes)，读取于 2026-11-05；网格、权重与形变的官方说明，短句摘录见文末。
-[^live2d]: Live2D，[About Deformers](https://docs.live2d.com/en/cubism-editor-manual/deformer/)，读取于 2026-11-05；本页只比较原理与制作路线，未接入 Live2D SDK。
+[^live2d]: Live2D，[About Deformers](https://docs.live2d.com/en/cubism-editor-manual/deformer/)，读取于 2026-11-05；演示已接入官方 Cubism Core，运行库版本和来源见本页记录。
 [^gif]: CompuServe，[GIF89a 规范](https://www.w3.org/Graphics/GIF/spec-gif89a.txt)，读取于 2026-11-05；参见 Image Descriptor、Graphic Control Extension 与 Appendix F。PNG 的压缩机制见 [PNG compression](https://www.w3.org/TR/png-3/#10Compression)，读取于同日。
 [^mix]: Esoteric Software，[Applying Animations](https://esotericsoftware.com/spine-applying-animations)，读取于 2026-11-05；术语参考该文，当前旧版 API 以随站保留的 3.6 runtime 为准。
 [^eidolon]: Sallyn0225/eidolon-sc，2026-11-04 获取，固定于 commit `596368d7f7253d58840eb4f0e6f02f57c4418552`：[衣装配置](https://github.com/Sallyn0225/eidolon-sc/blob/596368d7f7253d58840eb4f0e6f02f57c4418552/characters/characters.toml)、[素材下载](https://github.com/Sallyn0225/eidolon-sc/blob/596368d7f7253d58840eb4f0e6f02f57c4418552/backend/src/eidolon/stand_fetch.py)、[动作与嘴型控制](https://github.com/Sallyn0225/eidolon-sc/blob/596368d7f7253d58840eb4f0e6f02f57c4418552/frontend/src/components/conversations/stand/StandEngine.ts)、[说话状态选择](https://github.com/Sallyn0225/eidolon-sc/blob/596368d7f7253d58840eb4f0e6f02f57c4418552/frontend/src/lib/standAnimations.ts)。原始素材取自 ShinyColorsDB CDN 的 `spine/idols/stand/1030010010/`，URL 与校验值见本站来源文件；原作游戏素材不随项目代码许可证开放。

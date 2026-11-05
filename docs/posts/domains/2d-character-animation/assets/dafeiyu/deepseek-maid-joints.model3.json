@@ -1,0 +1,103 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "deepseek-maid-joints.moc3",
+		"Textures": [
+			"deepseek-maid-joints.4096/texture_00.png"
+		],
+		"Physics": "deepseek-maid-joints.physics3.json",
+		"DisplayInfo": "deepseek-maid-joints.cdi3.json",
+		"Expressions": [
+			{
+				"Name": "Smile",
+				"File": "deepseek-maid-joints.smile.exp3.json"
+			},
+			{
+				"Name": "Sad",
+				"File": "deepseek-maid-joints.sad.exp3.json"
+			},
+			{
+				"Name": "Angry",
+				"File": "deepseek-maid-joints.angry.exp3.json"
+			},
+			{
+				"Name": "Surprised",
+				"File": "deepseek-maid-joints.surprised.exp3.json"
+			}
+		],
+		"Motions": {
+			"Idle": [
+				{
+					"File": "deepseek-maid-joints.idle.motion3.json"
+				}
+			],
+			"Blink": [
+				{
+					"File": "deepseek-maid-joints.blink.motion3.json"
+				}
+			],
+			"Nod": [
+				{
+					"File": "deepseek-maid-joints.nod.motion3.json"
+				}
+			],
+			"Shake": [
+				{
+					"File": "deepseek-maid-joints.shake.motion3.json"
+				}
+			],
+			"TailSwing": [
+				{
+					"File": "deepseek-maid-joints.tailSwing.motion3.json"
+				}
+			],
+			"Shy": [
+				{
+					"File": "deepseek-maid-joints.shy.motion3.json"
+				}
+			],
+			"Wave": [
+				{
+					"File": "deepseek-maid-joints.wave.motion3.json"
+				}
+			],
+			"HeadTilt": [
+				{
+					"File": "deepseek-maid-joints.headTilt.motion3.json"
+				}
+			],
+			"Cheer": [
+				{
+					"File": "deepseek-maid-joints.cheer.motion3.json"
+				}
+			],
+			"Sway": [
+				{
+					"File": "deepseek-maid-joints.sway.motion3.json"
+				}
+			],
+			"EarTwitch": [
+				{
+					"File": "deepseek-maid-joints.earTwitch.motion3.json"
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"ParamEyeLOpen",
+				"ParamEyeROpen"
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": [
+				"ParamMouthOpenY"
+			]
+		}
+	]
+}
