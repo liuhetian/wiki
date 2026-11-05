@@ -33,6 +33,32 @@ AI 可以先把角色参考图拆分、补画成独立部件，再通过代码�
 
 [切换动作、暂停或查看骨骼](assets/cat.html){ target="_blank" rel="noopener" }
 
+### AI 制作 Live2D：从立绘到可编辑模型 { #ai-live2d }
+
+**See-through 拆层，PSD2Live 生成网格与绑定，可把单张立绘加工成 Live2D 模型。** 大肥鱼制作教程给出的流程是：
+
+> 立绘 → 分层 PSD → 网格 → 绑定 → 动作物理 → 导出测试[^dafeiyu-tutorial]
+
+| 阶段 | 工具与处理 | 得到什么 |
+|---|---|---|
+| 准备立绘 | 绘制或生成角色图，明确眼、嘴、耳朵和四肢结构 | 完整参考图 |
+| 拆层与补画 | See-through 分离部件、补全遮挡并推断绘制顺序；检查遗漏和破损 | 分层 PSD，尚未绑定[^see-through] |
+| 建立网格 | PSD2Live 识别图层语义，沿透明轮廓生成三角网格 | 可以局部变形的 ArtMesh[^psd2live] |
+| 绑定参数 | 建立变形器层级，把眼睛开合、嘴巴张合、头部朝向关联到网格形态 | 参数及对应关键形[^psd2live] |
+| 动作与物理 | 编排参数随时间的变化，为头发等部件添加滞后摆动 | 动作曲线和物理配置[^psd2live] |
+| 导出与检查 | 导出后核对贴图、遮罩、形变和资源引用 | `.cmo3` 编辑工程，`.moc3`、`.model3.json`、贴图及动作文件[^psd2live] |
+
+拆图时要为变形留余量：眼白、瞳孔、睫毛分别成层，嘴巴画出张开时的口腔，被头发或手臂遮住的部分补完整。绑定后检查闭眼是否残留瞳孔、张嘴是否露底、转头时五官与头发是否错位，再组合多个参数检查；命名识别成功和导出成功，都不能代替形变检查。[^psd2live]
+
+大肥鱼案例公开了分层 `dafeiyu.psd`、可编辑的 `dafeiyu.cmo3` 和完整运行模型。本站核对了作者的 SHA-256 清单及模型包：`MOC3` 文件头与资源引用完整，含 11 个动作组、4 个表情，显示信息列出 32 个参数；[核对记录](assets/dafeiyu-evidence.json)保留文件路径、版本和校验值，尚未在本机运行模型或从原图重做生成流程。[^dafeiyu]
+
+<figure markdown>
+
+![大肥鱼参数姿态对照：手臂、耳朵与尾巴的变化](assets/dafeiyu-motion-poses.png){ loading=lazy }
+
+<figcaption>作者提供的制作阶段姿态对照：手臂关节、耳朵和尾巴的参数变化；不是本站运行截图。</figcaption>
+</figure>
+
 ## 三条路线：逐帧、骨骼与参数变形 { #routes }
 
 | 路线 | 保存什么、运行时做什么 | 制作与资源特点 | 适合的控制方式 |
@@ -223,6 +249,12 @@ Spine 网格文档写到 “Meshes can be deformed automatically”。[^mesh] �
     --8<-- "posts/domains/2d-character-animation/assets/sources-excerpts.txt"
     ```
 
+??? abstract "大肥鱼成品文件与资源引用核对记录"
+
+    ```json
+    --8<-- "posts/domains/2d-character-animation/assets/dafeiyu-evidence.json"
+    ```
+
 [^mesh]: Esoteric Software，[Mesh attachments](https://esotericsoftware.com/spine-meshes)，读取于 2026-11-05；网格、权重与形变的官方说明，短句摘录见文末。
 [^live2d]: Live2D，[About Deformers](https://docs.live2d.com/en/cubism-editor-manual/deformer/)，读取于 2026-11-05；本页只比较原理与制作路线，未接入 Live2D SDK。
 [^gif]: CompuServe，[GIF89a 规范](https://www.w3.org/Graphics/GIF/spec-gif89a.txt)，读取于 2026-11-05；参见 Image Descriptor、Graphic Control Extension 与 Appendix F。PNG 的压缩机制见 [PNG compression](https://www.w3.org/TR/png-3/#10Compression)，读取于同日。
@@ -230,3 +262,7 @@ Spine 网格文档写到 “Meshes can be deformed automatically”。[^mesh] �
 [^eidolon]: Sallyn0225/eidolon-sc，2026-11-04 获取，固定于 commit `596368d7f7253d58840eb4f0e6f02f57c4418552`：[衣装配置](https://github.com/Sallyn0225/eidolon-sc/blob/596368d7f7253d58840eb4f0e6f02f57c4418552/characters/characters.toml)、[素材下载](https://github.com/Sallyn0225/eidolon-sc/blob/596368d7f7253d58840eb4f0e6f02f57c4418552/backend/src/eidolon/stand_fetch.py)、[动作与嘴型控制](https://github.com/Sallyn0225/eidolon-sc/blob/596368d7f7253d58840eb4f0e6f02f57c4418552/frontend/src/components/conversations/stand/StandEngine.ts)、[说话状态选择](https://github.com/Sallyn0225/eidolon-sc/blob/596368d7f7253d58840eb4f0e6f02f57c4418552/frontend/src/lib/standAnimations.ts)。原始素材取自 ShinyColorsDB CDN 的 `spine/idols/stand/1030010010/`，URL 与校验值见本站来源文件；原作游戏素材不随项目代码许可证开放。
 [^viseme]: Microsoft，[Get facial position with viseme](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-speech-synthesis-viseme)，读取于 2026-11-05。
 [^rhubarb]: DanielSWolf，[Rhubarb Lip Sync](https://github.com/DanielSWolf/rhubarb-lip-sync)，读取于 2026-11-05；参见 Output formats、Recognizers 和 Spine 集成说明。
+[^dafeiyu-tutorial]: JackCui 小R，[我把大肥鱼做成了Live2D皮套人？可以在线聊天，还能摸耳朵！【附教程】](https://mp.weixin.qq.com/s/1Vf2KdxoBBGvLe_i7mBpsw)，发布并读取于 2026-11-05；读取正文与 29 张原图，未获取文章中的视频。
+[^see-through]: shitagaki-lab，[See-through](https://github.com/shitagaki-lab/see-through)，读取于 2026-11-05；Usage 与 Discussion 说明其输出分层 PSD，绑定不在该项目范围，短句摘录见文末来源存档。
+[^psd2live]: tsunehimatoi/psd2live，固定于 commit `b496b1b13736ae49e7f806a2a39e89755c3eea21`：[实现概览](https://github.com/tsunehimatoi/psd2live/blob/b496b1b13736ae49e7f806a2a39e89755c3eea21/docs/zh/spec/IMPLEMENTATION_COMPARISON.md)、[PSD 素材与命名](https://github.com/tsunehimatoi/psd2live/blob/b496b1b13736ae49e7f806a2a39e89755c3eea21/docs/zh/spec/PSD_LAYER_SPEC.md)、[模型生成及导出实现](https://github.com/tsunehimatoi/psd2live/blob/b496b1b13736ae49e7f806a2a39e89755c3eea21/src/main/kotlin/io/github/psd2live/core/PSD2LivePipeline.kt)，读取于 2026-11-05；本次读文档与代码，未运行该工具。
+[^dafeiyu]: Jack-Cherish/dsi，固定于 commit `84f518088c2fc727af628d65ffe85ec01a91254e`：[模型包](https://github.com/Jack-Cherish/dsi/blob/84f518088c2fc727af628d65ffe85ec01a91254e/dafeiyu/assets/character.airi.zip)、[PSD 与 Cubism 工程](https://github.com/Jack-Cherish/dsi/tree/84f518088c2fc727af628d65ffe85ec01a91254e/dafeiyu/assets/source)、[作者校验清单](https://github.com/Jack-Cherish/dsi/blob/84f518088c2fc727af628d65ffe85ec01a91254e/dafeiyu/SHA256SUMS)，读取于 2026-11-05；只提取模型制作产物，姿态图来自该版本的 `dafeiyu/docs/images/motion-poses.png`。

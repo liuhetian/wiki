@@ -1,0 +1,63 @@
+{
+  "inspected_on": "2026-11-05",
+  "repository": "https://github.com/Jack-Cherish/dsi",
+  "commit": "84f518088c2fc727af628d65ffe85ec01a91254e",
+  "directory": "dafeiyu",
+  "article": "https://mp.weixin.qq.com/s/1Vf2KdxoBBGvLe_i7mBpsw",
+  "checked_files": [
+    {
+      "path": "assets/character.airi.zip",
+      "bytes": 1843284,
+      "sha256": "4524058faac9e6507a73ea5741eac96ea753215f67821c6749d22e3adbe7b6fa",
+      "matches_author_SHA256SUMS": true
+    },
+    {
+      "path": "assets/source/dafeiyu.psd",
+      "bytes": 5961862,
+      "sha256": "c64591f1aa81e8d3f97e575737f6afb17ce0ff70cbdc3c6effaa4e5ce99431ef",
+      "matches_author_SHA256SUMS": true
+    },
+    {
+      "path": "assets/source/dafeiyu.cmo3",
+      "bytes": 3981308,
+      "sha256": "b396a118c4490f954dd80f2889e6fa79718b793458559976e0bf087f266b8745",
+      "matches_author_SHA256SUMS": true
+    }
+  ],
+  "runtime_bundle": {
+    "path": "assets/character.airi.zip/models/body-model.zip",
+    "files": 20,
+    "moc_file": "deepseek-maid-joints.moc3",
+    "moc_bytes": 671744,
+    "moc_magic": "MOC3",
+    "model_manifest": "deepseek-maid-joints.model3.json",
+    "missing_file_references": [],
+    "display_info_parameter_count": 32,
+    "motion_groups": [
+      "Idle",
+      "Blink",
+      "Nod",
+      "Shake",
+      "TailSwing",
+      "Shy",
+      "Wave",
+      "HeadTilt",
+      "Cheer",
+      "Sway",
+      "EarTwitch"
+    ],
+    "expressions": [
+      "Smile",
+      "Sad",
+      "Angry",
+      "Surprised"
+    ]
+  },
+  "source_figure": {
+    "path": "docs/images/motion-poses.png",
+    "local": "dafeiyu-motion-poses.png",
+    "sha256": "ba29c38e56d47c58e6e3465e205e9c31b6b111463cc7614320ce82e930a21d0e"
+  },
+  "verification_scope": "下载核对模型包与编辑源文件的 SHA-256、PSD/MOC3 文件头、模型资源引用、动作和参数描述。未运行播放器、PSD2Live 或单图生成流程。",
+  "generation_workflow_evidence": "See-through → PSD2Live 来自公众号制作记录及上游文档/源码核查；已核对最终模型、PSD 和 Cubism 工程，尚未从原图复现自动生成。"
+}
