@@ -1,14 +1,14 @@
 ---
-description: "本站自己做的低多边形 3D 牧场：米白底上一块方形微缩草地，左边蜿蜒的河、右边浅黄小路、圆冠绿树和一棵粉紫色的树，11 只白色绵羊；鼠标和触控都能转视角、点选、拖羊，选中后切 Idle、Graze、Walk、Jump 四种动画，旋转、复制、删除；下面是做出它的整段 prompt，交给 Claude Code 一次做完，约 30 分钟，以及 AI 自己改过的几轮和拿去改哪里"
+description: "本站自己做的低多边形 3D 牧场：米白底上一块方形微缩草地，左边蜿蜒的河、右边浅黄小路、圆冠绿树和一棵粉紫色的树，11 只白色绵羊；鼠标和触控都能转视角、点选、拖羊，选中后切 Idle、Graze、Walk、Jump 四种动画，旋转、复制、删除；下面是做出它的整段 prompt，交给 Claude Code 一次做完，约 30 分钟，以及 AI 自己改过的几轮、拿去改哪里和完整源码"
 ---
 
 # 低多边形 3D 牧场
 
-<iframe src="/posts/domains/3d-character-animation/assets/ranch.html"
+<iframe src="/gallery/games/assets/lowpoly-ranch/index.html"
         style="width:100%;height:640px;border:1px solid #8884;border-radius:10px"
         loading="lazy" title="低多边形 3D 牧场：程序化绵羊、四种动画与拖动交互"></iframe>
 
-<a href="/posts/domains/3d-character-animation/assets/ranch.html" target="_blank" rel="noopener">单独打开</a>
+[单独打开](assets/lowpoly-ranch/index.html){ target="_blank" rel="noopener" }
 
 拖动空白处转视角，滚轮或双指缩放，顶栏按钮回到默认视角、再添一只羊。点一只羊出现选中框，底部面板切换四种动画、左右各转 45°、复制、删除；按住羊直接拖到别处，拖进河里会被推回岸上。手机上单指转、双指缩放、按住羊拖动都一样。键盘也能操作：1–4 切动画，Q、E 转向，D 复制，Delete 删除，Esc 取消选择。
 
@@ -35,4 +35,36 @@ AI 自己用无头浏览器截图、看、改了几轮，下面这些都是它�
 - 羊的颜色、身材、毛团数、腿长、步幅、跳跃高度：`sheep.js` 顶部的 `SHEEP_PARAMS`
 - 开场几只羊、各自在做什么：`app.js` 的 `spawnInitial`
 
-源码：<a href="/posts/domains/3d-character-animation/assets/js/world.js">world.js</a>、<a href="/posts/domains/3d-character-animation/assets/js/sheep.js">sheep.js</a>、<a href="/posts/domains/3d-character-animation/assets/js/controls.js">controls.js</a>、<a href="/posts/domains/3d-character-animation/assets/js/app.js">app.js</a>。
+## 源码 { #source }
+
+四个脚本和原项目一字不差，放在 [`assets/lowpoly-ranch/`](assets/lowpoly-ranch/index.html) 下。原项目用本地打包的 three.js r170；这里的入口页改成加载本站 `/vendor` 的 three.js r185，r182 起 `PCFSoftShadowMap` 弃用、r185 的 `THREE.Clock` 也报弃用，为此两边一起改了两处：阴影类型按 `THREE.REVISION` 选，计时改用 `setAnimationLoop` 回调传入的时间戳。轨道相机 `controls.js` 也给 [3D 模型](../models/index.md)区的小橘猫用，只存这一份。
+
+??? abstract "`index.html` —— 入口页：顶栏、提示条、选中后的面板，按顺序加载四个脚本"
+
+    ```html
+    --8<-- "gallery/games/assets/lowpoly-ranch/index.html"
+    ```
+
+??? abstract "`world.js` —— 牧场：高度函数、地形与侧壁、河流着色器、小路、树、石头、草叶"
+
+    ```js
+    --8<-- "gallery/games/assets/lowpoly-ranch/js/world.js"
+    ```
+
+??? abstract "`sheep.js` —— 绵羊：毛团几何、四种动画的姿态函数、行走转向、腿部 IK"
+
+    ```js
+    --8<-- "gallery/games/assets/lowpoly-ranch/js/sheep.js"
+    ```
+
+??? abstract "`controls.js` —— 带阻尼的轨道相机"
+
+    ```js
+    --8<-- "gallery/games/assets/lowpoly-ranch/js/controls.js"
+    ```
+
+??? abstract "`app.js` —— 场景、灯光、羊群、指针交互、默认视角、面板"
+
+    ```js
+    --8<-- "gallery/games/assets/lowpoly-ranch/js/app.js"
+    ```

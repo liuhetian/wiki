@@ -929,6 +929,9 @@ nav:
                       - RGB 呼吸光边: gallery/web/frontend-styles/oryzo/rgb-glow-border.md
               - Sandboard WebGPU 沙盘: gallery/web/sandboard/index.md
               - Hairline 等距线稿交互图形: gallery/web/collected/gallery-hairline.md
+          - 3D 模型:
+              - gallery/models/index.md
+              - 低多边形小橘猫: gallery/models/orange-cat.md
       - 角色:
           - 人设:
               - gallery/personas/index.md

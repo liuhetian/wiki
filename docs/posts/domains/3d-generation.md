@@ -15,4 +15,4 @@ description: "三维模型 · 给一段描述或一张参考图，出一个三�
 | 一棵树 | 一根七棱圆台当树干，4–5 团顶点随机鼓包的二十面体当树冠 | 约 45 行 | 5–6 / 348–428 | 算在整片牧场里 |
 | 整片牧场 | 一个高度函数出草地、河道和小路，再摆 13 棵树、20 块石头、近 9000 片草叶和 11 只羊 | 4 个脚本约 2000 行，含相机、交互和面板 | 267 / 约 10.7 万 | 约 30 分钟 |
 
-变体几乎不要钱：每只羊的毛团分布由各自的 `seed` 决定，每棵树的树冠团数、位置和配色由随机数决定，粉紫色那棵只是换了一组配色。做法和可交互的模型见三维角色动画的[程序化建模](3d-character-animation/index.md#procedural-modeling)（猫）和[微缩牧场](3d-character-animation/index.md#ranch)（羊和树），测法见那页的[实测](3d-character-animation/index.md#tests)。
+变体几乎不要钱：每只羊的毛团分布由各自的 `seed` 决定，每棵树的树冠团数、位置和配色由随机数决定，粉紫色那棵只是换了一组配色。成品、做出它们的 prompt 和完整源码收在 Gallery 的[低多边形小橘猫](../../gallery/models/orange-cat.md)和[低多边形 3D 牧场](../../gallery/games/lowpoly-ranch.md)；做法见三维角色动画的[程序化建模](3d-character-animation/index.md#procedural-modeling)（猫）和[微缩牧场](3d-character-animation/index.md#ranch)（羊和树），测法见那页的[实测](3d-character-animation/index.md#tests)。

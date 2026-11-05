@@ -62,10 +62,11 @@
   <div class="card hint">拖动旋转 · 滚轮/双指缩放 · 右键拖动平移</div>
 
   <!-- 运行时用全站 /vendor 的 three（ES Module），挂到 window.THREE 后按顺序加载普通脚本 -->
+  <!-- 轨道相机和牧场共用一份，从 Gallery 牧场的目录加载，不另存 -->
   <script type="module">
     import * as THREE from '/vendor/three/three.module.min.js';
     window.THREE = THREE;
-    for (const src of ['js/cat.js', 'js/controls.js', 'js/cat-viewer.js']) {
+    for (const src of ['js/cat.js', '/gallery/games/assets/lowpoly-ranch/js/controls.js', 'js/cat-viewer.js']) {
       await new Promise((ok, fail) => {
         const s = document.createElement('script');
         s.src = src; s.onload = ok; s.onerror = fail;

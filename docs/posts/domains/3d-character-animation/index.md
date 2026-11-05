@@ -75,24 +75,24 @@ Spine 运行库源码里对 IK 约束的注释：
 **用代码当建模软件：形状是变形过的椭球，花纹写进顶点色，不要贴图。** 例子是照一张像素画做的小橘猫 —— 坐着，举起左前爪挥手，大眼睛带高光，张嘴吐舌，胸口和脚掌奶白，尾巴向上卷。
 
 <figure markdown>
-![参考图：举爪挥手的像素画小橘猫](assets/cat-reference.png){ width="300" }
+![参考图：举爪挥手的像素画小橘猫](../../../gallery/models/assets/orange-cat/cat-reference.png){ width="300" }
 <figcaption>参考图（用户提供的像素画）</figcaption>
 </figure>
 
-<iframe src="/posts/domains/3d-character-animation/assets/cat.html"
+<iframe src="/gallery/models/assets/orange-cat/index.html"
         style="width:100%;height:560px;border:1px solid #8884;border-radius:10px"
         loading="lazy" title="小橘猫：程序化建模的三维模型"></iframe>
 
-[单独打开小橘猫演示](assets/cat.html){ target="_blank" rel="noopener" }
+[单独打开小橘猫演示](../../../gallery/models/assets/orange-cat/index.html){ target="_blank" rel="noopener" }
 
-拖动旋转，滚轮或双指缩放；动画有挥手、眨眼、歪头、抖耳、摇尾和呼吸。
+拖动旋转，滚轮或双指缩放；动画有挥手、眨眼、歪头、抖耳、摇尾和呼吸。演示、做出它的 prompt 和完整源码收在 Gallery 的[小橘猫](../../../gallery/models/orange-cat.md)，本页只嵌它、只摘几段代码。
 
 ### 形状：一块积木拼全身 { #shape }
 
 只用一块积木 —— **细分过的二十面体单位球**。每个部件给它位置、三轴缩放、旋转和一个可选的变形函数：头是头顶压平、腮帮略鼓的椭球；两团奶白小椭球挤出「ω」形上唇，下面一个深色椭球当张开的嘴、一个粉色小椭球当舌头；身体是坐成平底的下宽上窄椭球；耳朵是压扁的三棱锥；尾巴是沿曲线排的 12 节胶囊。核心是 `Builder.ellipsoid`：遍历单位球的每个三角面，先变形、再缩放和摆放，颜色由涂色函数按这个面的朝向决定。
 
-```js title="assets/js/cat.js:78-98"
---8<-- "posts/domains/3d-character-animation/assets/js/cat.js:78:98"
+```js title="cat.js:78-98"
+--8<-- "gallery/models/assets/orange-cat/js/cat.js:78:98"
 ```
 
 - 部件最后合进少数几个 `BufferGeometry`，共用一个「顶点色 + 平面着色」材质 —— 低多边形的块面感是平面着色给的
@@ -102,14 +102,14 @@ Spine 运行库源码里对 IK 约束的注释：
 
 **大块颜色按面的朝向算，一个函数画完。** 涂色函数拿到的是三角面中心在单位球上的方向 `d`：`d.z` 大是朝前，`d.y` 大是朝上。胸口的奶白倒三角和身上斜走的条纹：
 
-```js title="assets/js/cat.js:171-178"
---8<-- "posts/domains/3d-character-animation/assets/js/cat.js:171:178"
+```js title="cat.js:171-178"
+--8<-- "gallery/models/assets/orange-cat/js/cat.js:171:178"
 ```
 
 **细条纹不能这么画** —— 颜色以三角面为单位，条纹和三角面差不多宽时边缘碎成菱形格。初版额头的竖纹就是一片菱形块，把头部细分从 3 级提到 4 级（5120 个面）也没救回来；最后改成贴在表面的扁椭球「笔触」：算出头部椭球表面某点的位置和法线，按走向摆一个扁椭球，稍微嵌进去。
 
-```js title="assets/js/cat.js:217-225"
---8<-- "posts/domains/3d-character-animation/assets/js/cat.js:217:225"
+```js title="cat.js:217-225"
+--8<-- "gallery/models/assets/orange-cat/js/cat.js:217:225"
 ```
 
 经验是：**大面积色块交给涂色函数，细线交给几何。** 尾巴同理 —— 初版是首尾相接的椭球，接缝处变细像一串珠子；换成同半径的胶囊后，相邻两节在关节处是同一个球面，连成一根光滑的管子。
@@ -148,8 +148,8 @@ root
 
 关节要放在转动的支点上 —— 头的支点在脖子，不在头中心，否则歪头变成整个头平移。没有关键帧，各关节角每帧用正弦波和包络现算：
 
-```js title="assets/js/cat.js:404-438"
---8<-- "posts/domains/3d-character-animation/assets/js/cat.js:404:438"
+```js title="cat.js:404-438"
+--8<-- "gallery/models/assets/orange-cat/js/cat.js:404:438"
 ```
 
 - 包络 `env` 让挥手「挥 2.6 秒、停 1.6 秒」，停的时候爪子仍举着
@@ -164,14 +164,14 @@ root
 
 羊从一开始按「要走路」建：四条腿各两节，动画不给关节角度，只给「脚该踩在哪」，两骨骼 IK 用余弦定理反算髋和膝：
 
-```js title="assets/js/sheep.js:675-696"
---8<-- "posts/domains/3d-character-animation/assets/js/sheep.js:675:696"
+```js title="sheep.js:675-696"
+--8<-- "gallery/games/assets/lowpoly-ranch/js/sheep.js:675:696"
 ```
 
 步态只描述脚的轨迹：支撑相脚线性后移，摆动相按余弦曲线前移并抬起。
 
-```js title="assets/js/sheep.js:444-462"
---8<-- "posts/domains/3d-character-animation/assets/js/sheep.js:444:462"
+```js title="sheep.js:444-462"
+--8<-- "gallery/games/assets/lowpoly-ranch/js/sheep.js:444:462"
 ```
 
 走起来碰到的问题和解法：
@@ -197,19 +197,19 @@ root
 
 **几个方向拼起来就是一个能玩的小场景。** 一块 36×36 的方形微缩草地：左边一条蜿蜒的河，右边一条浅黄色小路，圆冠绿树和一棵粉紫色的树，近 9000 片草叶；11 只羊各自吃草、发呆、走路或跳。点一只羊出现选中框，底部面板能切换四种动画、旋转、复制、删除；羊可以直接拖着走。手机上同样能单指旋转、双指缩放、按住羊拖动。
 
-<iframe src="/posts/domains/3d-character-animation/assets/ranch.html"
+<iframe src="/gallery/games/assets/lowpoly-ranch/index.html"
         style="width:100%;height:640px;border:1px solid #8884;border-radius:10px"
         loading="lazy" title="微缩牧场：程序化绵羊、四种动画与拖动交互"></iframe>
 
-[单独打开牧场演示](assets/ranch.html){ target="_blank" rel="noopener" }
+[单独打开牧场演示](../../../gallery/games/assets/lowpoly-ranch/index.html){ target="_blank" rel="noopener" }
 
-做出这个牧场的整段 prompt 收在 Gallery 的[低多边形 3D 牧场](../../../gallery/games/lowpoly-ranch.md)。
+演示、做出它的整段 prompt 和完整源码收在 Gallery 的[低多边形 3D 牧场](../../../gallery/games/lowpoly-ranch.md)，本页只嵌它、只摘几段代码。
 
 - **羊毛是 34 个小毛团按斐波那契球面铺在一个椭球上**，毛团半径随机，肚子下的更小、更深，像腹部的阴影
 - **一个高度函数管全场**：河道、小路、草叶落点、羊脚下的高度都问它；同一套距离函数还决定哪里能走、拖动时把羊推回岸上
 
-```js title="assets/js/world.js:117-126"
---8<-- "posts/domains/3d-character-animation/assets/js/world.js:117:126"
+```js title="world.js:117-126"
+--8<-- "gallery/games/assets/lowpoly-ranch/js/world.js:117:126"
 ```
 
 - **水面高光是着色器画的**：河面网格的横向坐标表示离岸远近、纵向坐标是沿河道的距离，片元着色器把河面分成几条「车道」，亮条按各自的速度往下游走
@@ -217,8 +217,8 @@ root
 - **小目标要好点**：每只羊挂一个大一圈的不可见盒子接射线；射线没中，再找屏幕上离指针最近的羊
 - **双指缩放别误选**：第一根手指落在羊附近会被当成选中，弹出的面板挡住后面的触点；改成按下只记候选，轻点抬起或开始拖动才选中，第二根手指一来就取消
 
-```js title="assets/js/app.js:302-309"
---8<-- "posts/domains/3d-character-animation/assets/js/app.js:302:309"
+```js title="app.js:302-309"
+--8<-- "gallery/games/assets/lowpoly-ranch/js/app.js:302:309"
 ```
 
 ## 怎么选 { #choose }
@@ -240,7 +240,7 @@ root
 
 ## 演示源码与实测 { #sources }
 
-两个演示是本站自己做的，`assets/js/` 是原项目六个脚本的原样拷贝；两个入口页只把脚本加载方式换成本站 `/vendor` 的 three.js。原项目钉的是 three.js r170，这里跑 r185：r182 起 `PCFSoftShadowMap` 弃用，r185 的 `THREE.Clock` 也报弃用，源码为此改了两处 —— 阴影类型按 `THREE.REVISION` 选，计时改用 `setAnimationLoop` 回调传入的时间戳。
+两个演示是本站自己做的，只在 Gallery 存一份，本页的演示和代码摘录都引用那里：小橘猫在 [Gallery · 小橘猫](../../../gallery/models/orange-cat.md#source)，牧场在 [Gallery · 低多边形 3D 牧场](../../../gallery/games/lowpoly-ranch.md#source)，完整源码折叠在各自页尾。六个脚本和原项目一字不差，两个入口页只把脚本加载方式换成本站 `/vendor` 的 three.js，猫的入口页另从牧场目录加载共用的轨道相机 `controls.js`。原项目用本地打包的 three.js r170，这里跑 r185：r182 起 `PCFSoftShadowMap` 弃用，r185 的 `THREE.Clock` 也报弃用，为此两边一起改了两处 —— 阴影类型按 `THREE.REVISION` 选，计时改用 `setAnimationLoop` 回调传入的时间戳。
 
 ### 实测 { #tests }
 
@@ -250,58 +250,12 @@ root
 - **鼠标和触控**：点选、动画切换、旋转、拖动、视角旋转缩放、重置、复制、删除全部通过；触控用 CDP 模拟多点触控，测出并修好了双指误选
 - **行走长测**：20 只羊全设成走，固定步长 1/60 秒跑 36000 步（模拟 10 分钟），每 0.5 秒采样；加硬分离前后各跑一次，越界、非数值、卡住都是 0，互相穿插从 218 次降到 0。脚本见下
 - **成本数字**：网格和三角面在 r185 下对模型 `traverseVisible` 累加，不计不可见的拾取盒；[三维生成](../3d-generation.md)那张的树和整片牧场同样这么算，草叶是一个 `InstancedMesh`，按实例数乘每片的三角面；生成耗时是猫连做 10 只、羊连做 20 只取平均，两次运行，软件渲染下只看量级；AI 用时按文件时间戳 —— 牧场目录建立到最后一次改 `sheep.js`，放入参考图到最后一次改 `cat.js`
-- **r185 兼容**：把本站 `/vendor/three/` 和本页 `assets/` 拷到临时目录、按站点路径起静态服务，加载两个演示只收控制台报错，不截图；牧场零报错零警告，猫页只有临时服务器缺 favicon 的一条 404
+- **r185 兼容**：把本站 `/vendor/three/` 和两个演示的目录拷到临时目录、按站点路径起静态服务，加载两个演示只收控制台报错，不截图；牧场零报错零警告，猫页只有临时服务器缺 favicon 的一条 404
 
 ??? abstract "`walk-test.mjs` —— 行走长测脚本"
 
     ```js
     --8<-- "posts/domains/3d-character-animation/assets/walk-test.mjs"
-    ```
-
-??? abstract "`cat.js` —— 小橘猫：几何构建器、涂色函数、部件、关节与动画"
-
-    ```js
-    --8<-- "posts/domains/3d-character-animation/assets/js/cat.js"
-    ```
-
-??? abstract "`sheep.js` —— 绵羊：毛团几何、四种动画的姿态函数、行走转向、腿部 IK"
-
-    ```js
-    --8<-- "posts/domains/3d-character-animation/assets/js/sheep.js"
-    ```
-
-??? abstract "`world.js` —— 牧场：高度函数、地形与侧壁、河流着色器、小路、树、石头、草叶"
-
-    ```js
-    --8<-- "posts/domains/3d-character-animation/assets/js/world.js"
-    ```
-
-??? abstract "`app.js` —— 牧场场景、灯光、羊群、指针交互、默认视角、面板"
-
-    ```js
-    --8<-- "posts/domains/3d-character-animation/assets/js/app.js"
-    ```
-
-??? abstract "`controls.js` —— 带阻尼的轨道相机"
-
-    ```js
-    --8<-- "posts/domains/3d-character-animation/assets/js/controls.js"
-    ```
-
-??? abstract "`cat-viewer.js` —— 小猫演示页的舞台、灯光与交互"
-
-    ```js
-    --8<-- "posts/domains/3d-character-animation/assets/js/cat-viewer.js"
-    ```
-
-??? abstract "`cat.html` 与 `ranch.html` —— 两个演示入口"
-
-    ```html
-    --8<-- "posts/domains/3d-character-animation/assets/cat.html"
-    ```
-
-    ```html
-    --8<-- "posts/domains/3d-character-animation/assets/ranch.html"
     ```
 
 ??? abstract "一手资料短句摘录、出处与读取日期"
