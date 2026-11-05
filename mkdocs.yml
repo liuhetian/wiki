@@ -1042,6 +1042,7 @@ nav:
                   - 事实核查: skills/chat-prompts/fact-check.md
                   - 纵横分析法: skills/chat-prompts/cross-axis.md
                   - 根因追踪: skills/chat-prompts/root-cause.md
+                  - 上线体检: skills/chat-prompts/launch-review.md
                   - 实事求是: skills/chat-prompts/seek-truth.md
               - 学概念:
                   - 双层解释法: skills/chat-prompts/dual-explain.md

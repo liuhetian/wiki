@@ -1,10 +1,10 @@
 ---
-description: "对话提示词（chat-prompts）的维护记录：17 段取自 prompt-cards.cyanfish.site，去掉卡牌包装按场景重组，钉在 JS 包 index-IivKxZ0S.js；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录的 assets/"
+description: "对话提示词（chat-prompts）的维护记录：17 段取自 prompt-cards.cyanfish.site，去掉卡牌包装按场景重组，钉在 JS 包 index-IivKxZ0S.js；说人话取自小红书 Krypto说AI 的《让AI说人话》，上线体检取自公众号刘小排r 的《许愿式编程上线前，把这段话复制给你的AI》，原文存档在 skill 目录的 assets/"
 ---
 
 # 对话提示词（chat-prompts）
 
-[对话提示词](../../skills/chat-prompts/index.md)的维护记录。18 段 prompt 来自两处；概要项目（当时称粗讲）、细讲项目原来也在这里，2026-10-20 挪成了顶层的[调研项目](project-research.md)。
+[对话提示词](../../skills/chat-prompts/index.md)的维护记录。19 段 prompt 来自三处；概要项目（当时称粗讲）、细讲项目原来也在这里，2026-10-20 挪成了顶层的[调研项目](project-research.md)。
 
 ## prompt-cards.cyanfish.site { #prompt-cards }
 
@@ -50,5 +50,20 @@ description: "对话提示词（chat-prompts）的维护记录：17 段取自 pr
     - prompt 一字没改；开头加一句「这一场对话都按下面这条规矩来」，照实事求是、范围铁闸的写法：作者说的用法是「存进常用提示词」，就是整场生效
 - **没做的**：没有实测；作者自己也说中文句子该卡多少字还没想好，原 prompt 没写句长上限
 
+## 公众号《许愿式编程上线前》 { #wechat-launch-review }
+
+[上线体检](../../skills/chat-prompts/launch-review.md)取自这里。
+
+- **上游**：微信公众号文章《许愿式编程上线前，把这段话复制给你的AI》[^wechat]，号名刘小排r（`gh_d56f73c13a02`），署名刘小排，2026-10-23 15:48 发布，没写许可证。开头那段中文审查要求是刘小排加的；后面的英文清单，他注明出自 Limestone Digital 创始人 Mark Ajzenstadt，本意是提醒觉得有了 Vibe Coding 就不需要程序员的人。Mark 的原帖没有追
+- **存档**：标题、正文存在 [`assets/wechat-RURNTQi/article.md`](../../skills/chat-prompts/assets/wechat-RURNTQi/article.md)，一字没改。2026-11-05 用 agent-io 的 [`wechat_mp.py`](../../skills/agent-io/scripts/wechat_mp.py) 从文章页直接取，没花钱；正文没有图，封面没存
+- **跳过**：清单结尾「Oh, and besides…」那句和 13 条「还需要什么人」—— 从代码里查不出来，AI 只能答「无法确认」；作者自己的看法：许愿式编程、「AI 懂不等于你懂」、「不是万能咒语」；文末「延伸阅读」链的另一篇没有打开
+- **翻译之外的改动**：
+    - 开头的审查要求一字没改，从代码块挪成页面正文，「要求：」下面五行改成列表
+    - 147 条检查项译成中文，不增删、不改顺序；MFA、SSO、SAML 这类缩写保留原文
+    - 原文是一整串引用行，按原顺序切成 16 组加小标题
+    - 成本告警那条原文写「we learned this one for $1,382.59」，「我们」指原作者，改成「原作者为这一条付过 1,382.59 美元」，免得 AI 当成用户自己的事
+- **没做的**：没有实测
+
 [^site]: [prompt-cards.cyanfish.site](https://prompt-cards.cyanfish.site/)，2026-10-16 读。
 [^xhs]: [让AI说人话，1.3万人收藏了这招](https://www.xiaohongshu.com/discovery/item/6abf6887000000000d02979c)，2026-10-17 读。
+[^wechat]: [许愿式编程上线前，把这段话复制给你的AI](https://mp.weixin.qq.com/s/RURNTQi-DJ2WNcvyF-ZsDA)，2026-11-05 读。
