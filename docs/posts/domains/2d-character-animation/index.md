@@ -196,7 +196,7 @@ Spine 网格文档写到 “Meshes can be deformed automatically”。[^mesh] �
 
 - **实时生成式说话头像**：从语音生成嘴部或头部画面，见 [Mynah](../../../projects/mynah/index.md)。这里的 Spine 演示只驱动预制素材，没有逐帧生成新图。
 - **AI 伙伴与角色对话**：决定角色说什么、记得什么、何时回应，见 [Eidolon-SC](../../../projects/eidolon-sc/index.md)。它把情绪和说话状态交给动画控制层。
-- **三维角色动画**：有空间几何、相机、材质和绑定，能处理自由视角；不在本页展开。
+- **三维角色动画**：有空间几何、相机、材质和绑定，能处理自由视角，见[三维角色动画](../3d-character-animation/index.md)；那张把 Spine 的骨骼、网格权重、IK 约束和三维的对应概念列成了表。
 - **视频合成**：把已生成或已渲染的角色放进其他画面，见[视频合成](../video-compositing/index.md)。
 
 ## 演示源码与来源 { #sources }

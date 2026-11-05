@@ -1,0 +1,36 @@
+一手资料摘录，读取日期：2026-11-05。只存本文使用的短句，不是完整文档；链接钉在读取时的 commit 上。
+
+[glTF 2.0 Specification, Skins / Animations]
+https://github.com/KhronosGroup/glTF/blob/9d23a5a5b1d10f22d1554e847f2a1a3f24222392/specification/2.0/Specification.adoc
+glTF 2.0 mesh primitives support Linear Blend Skinning via skin objects, joint hierarchies, and designated vertex attributes.
+glTF supports articulated and skinned animation via key frame animations of nodes' transforms.
+
+[three.js r185, AnimationMixer]
+https://github.com/mrdoob/three.js/blob/2431a09f46f34c560bc8e44b33be0e567723d5b9/docs/pages/AnimationMixer.html
+AnimationMixer is a player for animations on a particular object in the scene.
+
+[three.js r185, AnimationAction.crossFadeTo]
+https://github.com/mrdoob/three.js/blob/2431a09f46f34c560bc8e44b33be0e567723d5b9/src/animation/AnimationAction.js
+Causes this action to fade out and the given action to fade in,
+within the passed time interval.
+
+[Spine Runtimes 4.2, IkConstraint.ts]
+https://github.com/EsotericSoftware/spine-runtimes/blob/5cb78e77d3711ddcd80c7bd043bb11cf70fcc88c/spine-ts/spine-core/src/IkConstraint.ts
+An IK constraint adjusts the rotation of 1 or 2 constrained bones so the tip of the last bone is as close to the target bone as possible.
+Controls the bend direction of the IK bones, either 1 or -1.
+
+[Spine Runtimes License Agreement, file header of the same file]
+Integration of the Spine Runtimes into software or otherwise creating derivative works of the Spine Runtimes is permitted under the terms and conditions of Section 2 of the Spine Editor License Agreement
+provided that each user of the Products must obtain their own Spine Editor license
+
+[Spine Runtimes, PhysicsConstraint.ts]
+https://github.com/EsotericSoftware/spine-runtimes/blob/5cb78e77d3711ddcd80c7bd043bb11cf70fcc88c/spine-ts/spine-core/src/PhysicsConstraint.ts
+4.2 分支有此文件，4.1 分支没有（raw 地址分别返回 200、404）。
+
+[threejs-procedural-animals, README / AUTHORING]
+https://github.com/majidmanzarpour/threejs-procedural-animals/blob/c95ae49346aa8e140a924376cec6cf0073d99512/README.md
+24 animals for three.js, generated entirely in code: no models, no textures, no animation clips.
+sculpted from signed distance fields, meshed, rigged, skinned (dual-quaternion), covered in fur, feathers or scales, and animated with IK gaits and actions.
+five quality tiers, from `hero` (~120k vertices) to `crowd` (~6k vertices, one draw call).
+https://github.com/majidmanzarpour/threejs-procedural-animals/blob/c95ae49346aa8e140a924376cec6cf0073d99512/docs/AUTHORING.md
+`k` is the smooth-union blend radius, and 0 gives a hard union.

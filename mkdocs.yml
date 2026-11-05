@@ -459,6 +459,8 @@ nav:
                   - posts/domains/video-compositing/index.md
               - 二维角色动画:
                   - posts/domains/2d-character-animation/index.md
+              - 三维角色动画:
+                  - posts/domains/3d-character-animation/index.md
               - 机器翻译: posts/domains/translation.md
           - 检索、匹配与排序:
               - 推荐系统: posts/domains/recommender.md
