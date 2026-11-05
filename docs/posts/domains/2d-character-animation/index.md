@@ -22,6 +22,17 @@ description: "二维角色图像 · 给角色素材、动作和时间，输出�
 
 拿到导出的 JSON、骨骼二进制、atlas 和贴图，已经可以播放；要大改动作或造型，原始编辑工程和分层绘画文件会更有帮助。本页只收演示必需的导出资源。
 
+### AI 制作 Spine：从拆件图到骨骼动作 { #ai-spine }
+
+AI 可以先把角色参考图拆分、补画成独立部件，再通过代码生成 Spine 的骨骼、网格权重和动画关键帧，交给运行库实时播放。下面的橘猫用 8 根骨骼和 2 个加权网格完成待机、挥爪、歪头，身体里重复画出的前腿在检查后重新补画修正。
+
+<video src="/posts/domains/2d-character-animation/assets/cat-spine.mp4"
+       poster="/posts/domains/2d-character-animation/assets/cat-spine-poster.png"
+       autoplay loop muted playsinline controls preload="metadata"
+       style="display:block;width:100%;max-width:600px;margin:auto;border-radius:12px"></video>
+
+[切换动作、暂停或查看骨骼](assets/cat.html){ target="_blank" rel="noopener" }
+
 ## 三条路线：逐帧、骨骼与参数变形 { #routes }
 
 | 路线 | 保存什么、运行时做什么 | 制作与资源特点 | 适合的控制方式 |

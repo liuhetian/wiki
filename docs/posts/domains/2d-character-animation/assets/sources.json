@@ -26,6 +26,24 @@
     "alice/original.skel": "d10e4b7ab812c6cd50db03ca512a616afb398be1631a29cf6197c4724d47516b",
     "mano/data.json": "0f3c4a4b0c4a33e56c9deed58f08bfd711d042982773be9a76df87b9096d38e4",
     "mano/data.atlas": "ab96eb6739a9b7985a16d8af5e87624b39eea6285a8cee9b27fbe98fc7d3924a",
-    "mano/data.png": "a4ed696c20128962f0207dbbbf711fafd8b8ad08a2f7c2e48605942324cae30d"
+    "mano/data.png": "a4ed696c20128962f0207dbbbf711fafd8b8ad08a2f7c2e48605942324cae30d",
+    "cat.html": "5cf514890cbd28807ccbae21ecf43ed41cb6d5ab9377f7441703ef6c30b31353",
+    "cat-spine.mp4": "a5ed809299119f2a8bc8d21028c9d6ba39c43a2b3754f8efdc6c58cd78b71ae3",
+    "cat-spine-poster.png": "ef046d7816da6c26de1b44a7eef85795721e3e07eaab4e7f8ccb1f52b552d3a9"
+  },
+  "cat": {
+    "created": "2026-11-05",
+    "source": "用户提供橘猫参考图；内置 image_gen 拆分与补画透明部件，Codex 用代码制作骨骼、权重和关键帧。",
+    "spine": "3.6.53",
+    "bones": 8,
+    "weighted_meshes": 2,
+    "animations": [
+      "idle",
+      "wave",
+      "curious"
+    ],
+    "anatomy_fix": "重画身体为一只落地前爪与两只后脚，抬起的前爪只存在于独立图层。",
+    "video": "实际 Spine WebGL 运行库逐帧截图，FFmpeg 编码为 H.264 MP4；54 帧，15 fps。",
+    "preview": "cat.html"
   }
 }
