@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#fbf3e3" />
+  <title>牧场的绵羊和树 · 程序化低多边形模型</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root { --ink: #4b4137; --muted: #8d8173; --card: rgba(255, 252, 246, 0.9); --accent: #f08a34;
+      --shadow: 0 10px 34px rgba(98, 76, 44, 0.13), 0 2px 6px rgba(98, 76, 44, 0.06); }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #fbf3e3; color: var(--ink);
+      font-family: "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+      user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+    #scene { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; display: block; touch-action: none; }
+    .bar { position: fixed; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; pointer-events: none; }
+    .bar > *, .actions { pointer-events: auto; }
+    .card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .title { padding: 10px 14px; }
+    .title h1 { margin: 0; font-size: 15px; }
+    .title small { display: block; margin-top: 2px; font-size: 11.5px; color: var(--muted); }
+    .tools { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .chip { display: inline-flex; align-items: center; height: 38px; padding: 0 14px; border: 0; border-radius: 13px;
+      background: var(--card); color: var(--ink); font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow); white-space: nowrap; }
+    .chip.on { background: var(--accent); color: #fff; }
+    .chip:active { transform: scale(.96); }
+    .actions { position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+      display: flex; gap: 4px; padding: 5px; border-radius: 16px; }
+    .actions .chip { box-shadow: none; background: transparent; }
+    .actions .chip.on { background: var(--accent); }
+    body[data-model="tree"] .actions { display: none; }
+    .hint { position: fixed; right: 14px; bottom: 14px; padding: 9px 14px; font-size: 12px; color: var(--muted); border-radius: 999px; }
+    @media (max-width: 760px) { .hint { display: none; } }
+    @media (max-width: 600px) {
+      .bar { top: 10px; left: 10px; right: 10px; flex-wrap: wrap; }
+      .title { padding: 9px 12px; }
+      .title h1 { font-size: 14px; white-space: nowrap; }
+      .title small { font-size: 11px; }
+      .tools { gap: 6px; justify-content: flex-start; }
+      .chip { height: 34px; padding: 0 11px; font-size: 12.5px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="scene" aria-label="程序化低多边形 3D 模型"></canvas>
+  <div class="bar">
+    <div class="card title">
+      <h1 id="title">3D 模型</h1>
+      <small id="sub">程序化低多边形几何</small>
+    </div>
+    <div class="tools">
+      <button class="chip" id="next">换一个</button>
+      <button class="chip on" id="play">暂停动画</button>
+      <button class="chip" id="spin">自动旋转</button>
+      <button class="chip" id="reset">重置视角</button>
+    </div>
+  </div>
+  <div class="card actions" role="group" aria-label="切换动画">
+    <button class="chip" data-action="Idle">Idle</button>
+    <button class="chip" data-action="Graze">Graze</button>
+    <button class="chip" data-action="Walk">Walk</button>
+    <button class="chip" data-action="Jump">Jump</button>
+  </div>
+  <div class="card hint">拖动旋转 · 滚轮/双指缩放 · 右键拖动平移</div>
+
+  <!-- 运行时用全站 /vendor 的 three（ES Module），挂到 window.THREE 后按顺序加载普通脚本 -->
+  <!-- 绵羊、树和轨道相机的代码都直接用 Gallery 牧场目录里那一份，不另存 -->
+  <script type="module">
+    import * as THREE from '/vendor/three/three.module.min.js';
+    window.THREE = THREE;
+    const ranch = '/gallery/games/assets/lowpoly-ranch/js/';
+    for (const src of [ranch + 'world.js', ranch + 'sheep.js', ranch + 'controls.js', 'js/viewer.js']) {
+      await new Promise((ok, fail) => {
+        const s = document.createElement('script');
+        s.src = src; s.onload = ok; s.onerror = fail;
+        document.body.appendChild(s);
+      });
+    }
+  </script>
+</body>
+</html>

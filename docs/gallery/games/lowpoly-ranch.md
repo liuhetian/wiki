@@ -37,7 +37,7 @@ AI 自己用无头浏览器截图、看、改了几轮，下面这些都是它�
 
 ## 源码 { #source }
 
-四个脚本和原项目一字不差，放在 [`assets/lowpoly-ranch/`](assets/lowpoly-ranch/index.html) 下。原项目用本地打包的 three.js r170；这里的入口页改成加载本站 `/vendor` 的 three.js r185，r182 起 `PCFSoftShadowMap` 弃用、r185 的 `THREE.Clock` 也报弃用，为此两边一起改了两处：阴影类型按 `THREE.REVISION` 选，计时改用 `setAnimationLoop` 回调传入的时间戳。轨道相机 `controls.js` 也给 [3D 模型](../models/index.md)区的小橘猫用，只存这一份。
+四个脚本和原项目一字不差，放在 [`assets/lowpoly-ranch/`](assets/lowpoly-ranch/index.html) 下。原项目用本地打包的 three.js r170；这里的入口页改成加载本站 `/vendor` 的 three.js r185，r182 起 `PCFSoftShadowMap` 弃用、r185 的 `THREE.Clock` 也报弃用，为此两边一起改了两处：阴影类型按 `THREE.REVISION` 选，计时改用 `setAnimationLoop` 回调传入的时间戳。[3D 模型](../models/index.md)区也用这一份：小橘猫借轨道相机 `controls.js`，[绵羊](../models/sheep.md)和[树](../models/tree.md)的查看页直接加载 `world.js`、`sheep.js` 和 `controls.js`。
 
 ??? abstract "`index.html` —— 入口页：顶栏、提示条、选中后的面板，按顺序加载四个脚本"
 

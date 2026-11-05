@@ -174,6 +174,14 @@ root
 --8<-- "gallery/games/assets/lowpoly-ranch/js/sheep.js:444:462"
 ```
 
+单独拿一只羊出来原地走，转到侧面看四条腿的先后和膝盖朝向最清楚；底部能切另外三种动作：
+
+<iframe src="/gallery/models/assets/ranch-models/index.html?m=sheep&a=Walk"
+        style="width:100%;height:480px;border:1px solid #8884;border-radius:10px"
+        loading="lazy" title="一只绵羊原地行走：两节腿、两骨骼 IK 与侧向序列步态"></iframe>
+
+演示收在 Gallery 的[低多边形绵羊](../../../gallery/models/sheep.md)。
+
 走起来碰到的问题和解法：
 
 | 问题 | 解法 | 效果 |
@@ -206,6 +214,12 @@ root
 演示、做出它的整段 prompt 和完整源码收在 Gallery 的[低多边形 3D 牧场](../../../gallery/games/lowpoly-ranch.md)，本页只嵌它、只摘几段代码。
 
 - **羊毛是 34 个小毛团按斐波那契球面铺在一个椭球上**，毛团半径随机，肚子下的更小、更深，像腹部的阴影
+- **树是一根七棱圆台加 4–5 团鼓包的二十面体**：每团的顶点随机推拉 8% 以内，团数、位置和配色按整片牧场的种子变，13 棵各不相同；粉紫色那棵只换了一组配色。下面在牧场的 13 棵里轮换，演示收在 Gallery 的[低多边形树](../../../gallery/models/tree.md)
+
+<iframe src="/gallery/models/assets/ranch-models/index.html?m=tree"
+        style="width:100%;height:440px;border:1px solid #8884;border-radius:10px"
+        loading="lazy" title="牧场里的低多边形树：七棱圆台树干与鼓包的树冠"></iframe>
+
 - **一个高度函数管全场**：河道、小路、草叶落点、羊脚下的高度都问它；同一套距离函数还决定哪里能走、拖动时把羊推回岸上
 
 ```js title="world.js:117-126"

@@ -12,6 +12,6 @@ description: "Gallery：现成的东西，通用到不用提问题就能挑 —�
 - [视频](video/index.md) —— 视频成品配生成它的 prompt 或制作方法；已收 2 条：本站自己做的[花卉动态生长海报](video/flower-growth-poster.md)，收录的[彩色手绘三维穿梭视频](video/collected/gallery-parallax-ink.md)
 - [音频](audio/index.md) —— 还没有收录
 - [前端特效](web/index.md) —— 成品前端美学，一种风格一个可抄走的活 demo，另有 Open Design / HAOQI / ORYZO 三个官网逐效果拆解；另收了 [Hairline](web/collected/gallery-hairline.md) 的 33 张等距线稿交互图形
-- [3D 模型](models/index.md) —— 能在浏览器里转着看的三维模型，一个模型一页，demo 配做出它的 prompt；已收 1 个：本站照像素画用代码拼的[低多边形小橘猫](models/orange-cat.md)，举爪挥手、眨眼、摇尾
+- [3D 模型](models/index.md) —— 能在浏览器里转着看的三维模型，一个模型一页，demo 配做出它的 prompt；已收 3 个，都是本站用代码拼的：照像素画做的[低多边形小橘猫](models/orange-cat.md)，牧场里的[绵羊](models/sheep.md)和[树](models/tree.md)
 - [人设](personas/index.md) —— 角色设定，一人一页，定妆照加基本资料；已收 1 位：[SEOA｜徐星澄](personas/seoa.md)，24 岁，主舞兼创作型歌手
 - [游戏玩法](games/index.md) —— 能直接在浏览器里玩的小游戏和玩法原型，一个玩法一页，能玩的 demo 配做出它的 prompt；已收 1 条：本站自己做的[低多边形 3D 牧场](games/lowpoly-ranch.md)，11 只绵羊能点选、拖动、切四种动画

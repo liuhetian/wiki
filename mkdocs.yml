@@ -932,6 +932,8 @@ nav:
           - 3D 模型:
               - gallery/models/index.md
               - 低多边形小橘猫: gallery/models/orange-cat.md
+              - 低多边形绵羊: gallery/models/sheep.md
+              - 低多边形树: gallery/models/tree.md
       - 角色:
           - 人设:
               - gallery/personas/index.md
