@@ -452,6 +452,7 @@ nav:
               - 语音合成: posts/domains/tts.md
               - 视频生成: posts/domains/video-generation.md
               - 文本生成: posts/domains/text-generation.md
+              - 三维生成: posts/domains/3d-generation.md
           - 内容变换:
               - 图像编辑: posts/domains/image-editing.md
               - 音频处理: posts/domains/audio-processing.md

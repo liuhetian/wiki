@@ -233,7 +233,7 @@ root
 ## 相邻任务 { #neighbors }
 
 - **二维角色动画**：动的是画好的图，见[二维角色动画](../2d-character-animation/index.md)。
-- **三维生成（image-to-3D、text-to-3D）**：从图片或文字直接生成网格，属内容生成，还没有地图。本页的猫是照图手写代码做的，不是生成的。
+- **三维生成（3D generation）**：给描述或参考图出一个三维模型，属内容生成，见[三维生成](../3d-generation.md)；从图片、文字直接生成网格（image-to-3D、text-to-3D）也在那张。本页的猫是照图手写代码做的，不是模型生成的。
 - **寻路与群体行为（pathfinding、steering behaviors）**：决定角色往哪走、怎么让开，属决策、规划与控制。本页羊的避障只够演示。
 
 ## 演示源码与实测 { #sources }
