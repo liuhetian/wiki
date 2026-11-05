@@ -1,0 +1,27 @@
+一手文档摘录，读取日期：2026-11-05。只存本文使用的短句，不是完整文档。
+
+[Spine meshes]
+https://esotericsoftware.com/spine-meshes
+Meshes can be deformed automatically when bones are transformed by using weights.
+
+[Spine applying animations]
+https://esotericsoftware.com/spine-applying-animations
+mixing (crossfading)
+applying multiple animations on top of each other (layering)
+
+[Live2D deformers]
+https://docs.live2d.com/en/cubism-editor-manual/deformer/
+Use deformers to edit vertices together and create shapes with less effort.
+
+[GIF89a specification, Image Descriptor / Appendix F]
+https://www.w3.org/Graphics/GIF/spec-gif89a.txt
+Image Width - Width of the image in pixels.
+Variable-Length-Code LZW Compression.
+
+[Azure viseme]
+https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-speech-synthesis-viseme
+Audio offset
+
+[Rhubarb Lip Sync, Output formats]
+https://github.com/DanielSWolf/rhubarb-lip-sync
+which mouth shape to display at what time

@@ -1,0 +1,6 @@
+Spine 官方 spine-ts 3.6 WebGL runtime，文件未修改。
+来源：https://github.com/EsotericSoftware/spine-runtimes/blob/654c20e5b0e523040b6366bbd1042510d2645134/spine-ts/build/spine-webgl.js
+获取日期：2026-11-04；迁入 wiki：2026-11-05。
+SHA-256：2883daee81ae60b25f6205b83feb82b76812bf63cfdf0886f04f390b12891794
+本目录 LICENSE 保留随运行库附带的 Spine Runtimes Software License v2.5。
+使用此版本以匹配 Alice 3.6.52 和真乃 3.6.53 数据。

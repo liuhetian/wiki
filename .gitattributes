@@ -28,3 +28,4 @@ docs/vendor/htm.umd.js filter=lfs diff=lfs merge=lfs -text
 docs/vendor/htm.module.js filter=lfs diff=lfs merge=lfs -text
 docs/vendor/r3f/** filter=lfs diff=lfs merge=lfs -text
 docs/vendor/react-esm/** filter=lfs diff=lfs merge=lfs -text
+docs/vendor/spine-3.6/spine-webgl.js filter=lfs diff=lfs merge=lfs -text

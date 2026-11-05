@@ -1,0 +1,31 @@
+{
+  "collected": "2026-11-04",
+  "wiki_imported": "2026-11-05",
+  "alice": {
+    "source": "用户本地 663日韩二.zip（文件实际为 RAR）/ 冒险xfdq版spine动画 / spine / alice_130008_q",
+    "original_author": "未核实",
+    "spine": "3.6.52",
+    "declared_animation_count": 11,
+    "complete_animation_count": 10,
+    "conversion": "convert-spine36.py；仅在完整动作边界已到文件末尾时停止，不能推断缺失动作名称。",
+    "original": "alice/original.skel"
+  },
+  "mano": {
+    "source": "https://github.com/Sallyn0225/eidolon-sc",
+    "commit": "596368d7f7253d58840eb4f0e6f02f57c4418552",
+    "character": "櫻木真乃 / 樱木真乃",
+    "outfit": "stand/1030010010 / ナチュラルモード",
+    "asset_base": "https://cf-static.shinycolors.moe/spine/idols/stand/1030010010/",
+    "rights": "原作游戏素材，非项目作者原创；项目代码的开源许可证不覆盖角色素材。"
+  },
+  "runtime": "/vendor/spine-3.6/SOURCE.txt",
+  "sha256": {
+    "alice/data.json": "8440bf192f589a81b90f39a109f0d31736d1bee17e454aa7694fd8742e6368a2",
+    "alice/data.atlas": "98924a1e101b54348974c29b1751c4cb0103f7e13a7b4018e0e921b402eac160",
+    "alice/Alice_130008_Q.png": "f27420533c3fa7f0c7568a4866343898fee62c030b088cec3de9f5c7ea7ab42e",
+    "alice/original.skel": "d10e4b7ab812c6cd50db03ca512a616afb398be1631a29cf6197c4724d47516b",
+    "mano/data.json": "0f3c4a4b0c4a33e56c9deed58f08bfd711d042982773be9a76df87b9096d38e4",
+    "mano/data.atlas": "ab96eb6739a9b7985a16d8af5e87624b39eea6285a8cee9b27fbe98fc7d3924a",
+    "mano/data.png": "a4ed696c20128962f0207dbbbf711fafd8b8ad08a2f7c2e48605942324cae30d"
+  }
+}

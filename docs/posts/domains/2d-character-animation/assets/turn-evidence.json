@@ -1,0 +1,120 @@
+{
+  "source": "mano/data.json",
+  "spine": "3.6.53",
+  "bones": 72,
+  "animations": 62,
+  "no_animation": {
+    "bones": {
+      "face_control": {
+        "translate": [
+          {
+            "time": 0,
+            "x": 0,
+            "y": 0,
+            "curve": [
+              0.25,
+              0,
+              0.75,
+              1
+            ]
+          },
+          {
+            "time": 0.2333,
+            "x": -58.04,
+            "y": 98.08,
+            "curve": [
+              0.25,
+              0,
+              0.75,
+              1
+            ]
+          },
+          {
+            "time": 0.5333,
+            "x": -97.01,
+            "y": -141.63,
+            "curve": [
+              0.25,
+              0,
+              0.75,
+              1
+            ]
+          },
+          {
+            "time": 0.8333,
+            "x": -102.74,
+            "y": 85.45,
+            "curve": [
+              0.25,
+              0,
+              0.75,
+              1
+            ]
+          },
+          {
+            "time": 1.2333,
+            "x": -78.48,
+            "y": -99.16,
+            "curve": [
+              0.25,
+              0,
+              0.75,
+              1
+            ]
+          },
+          {
+            "time": 2,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    }
+  },
+  "transform_constraints": [
+    {
+      "name": "eyes",
+      "bones": [
+        "eyes"
+      ],
+      "target": "face_control",
+      "translateMix": 0.2
+    },
+    {
+      "name": "hair_F",
+      "bones": [
+        "hair_F_R"
+      ],
+      "target": "face_control",
+      "translateMix": 0.1
+    },
+    {
+      "name": "mouth",
+      "bones": [
+        "mouse"
+      ],
+      "target": "face_control",
+      "translateMix": 0.19
+    },
+    {
+      "name": "re",
+      "bones": [
+        "Face_re"
+      ],
+      "target": "face_control",
+      "translateMix": -1
+    }
+  ],
+  "face_mesh": {
+    "type": "mesh",
+    "vertex_count": 34,
+    "bone_vertex_counts": {
+      "face_": 34,
+      "head": 31,
+      "face_control": 34,
+      "Face_re": 17,
+      "ear_L": 7
+    },
+    "note": "统计某骨骼参与了多少个顶点，非权重百分比；同一顶点可受多个骨骼影响。"
+  }
+}

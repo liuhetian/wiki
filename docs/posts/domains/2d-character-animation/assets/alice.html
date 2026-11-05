@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Alice / 夏日爱丽丝 · Spine 动画演示</title>
+  <link rel="stylesheet" href="player.css">
+  <script defer src="/vendor/spine-3.6/spine-webgl.js"></script>
+  <script defer src="player.js"></script>
+</head>
+<body><main>
+<header class="top"><div><div class="eyebrow">2D CHARACTER ANIMATION</div><h1>Alice / 夏日爱丽丝</h1><p class="subtitle">Alice_130008_Q · 静态资源实时渲染</p></div><span class="badge">Spine 3.6.52</span></header>
+<div class="layout">
+<section>
+  <div class="stage" id="stage">
+    <canvas id="canvas" aria-label="Alice / 夏日爱丽丝 角色动画画布"></canvas>
+    <div class="stage-label">角色预览 / <span id="current">idle</span></div>
+    <div id="status" class="live" aria-live="polite">正在加载</div>
+    <div class="caption">拖动进度条查看姿势 · 空格暂停</div>
+    <div class="error" id="error" role="alert"></div>
+  </div>
+  <div class="timeline"><input id="timeline" type="range" min="0" max="1000" step="1" value="0" aria-label="动画进度"><span id="time">0.00 / 0.00 s</span></div>
+</section>
+<aside class="panel" aria-label="动画播放控制">
+  <div><h2>播放控制</h2><small id="count">正在读取动作…</small></div>
+  <div class="field"><label for="animation">选择动作</label><select id="animation"></select></div>
+  
+  <div class="row"><button id="play" class="primary">暂停</button><button id="restart">重播 ↻</button></div>
+  <div class="field"><div class="row"><label for="speed">播放速度</label><small id="speed-value">1.00×</small></div><input id="speed" type="range" min="0.25" max="2" step="0.25" value="1"></div>
+  <div class="field"><div class="row"><label for="zoom">画面缩放</label><small id="zoom-value">1.00×</small></div><input id="zoom" type="range" min="0.5" max="2" step="0.05" value="1"></div>
+  <div class="row"><label for="loop">循环播放</label><input type="checkbox" id="loop" checked></div>
+  <div class="row"><label for="flip">左右翻转</label><input type="checkbox" id="flip"></div>
+  <div class="row"><label for="bones">显示骨骼</label><input type="checkbox" id="bones"></div>
+  <div class="field"><span class="label">背景颜色</span><div class="colors">
+    <button class="swatch active" data-color="#21202b" style="background:#21202b" aria-label="深色背景"></button>
+    <button class="swatch" data-color="#e2dfeb" style="background:#e2dfeb" aria-label="浅色背景"></button>
+    <button class="swatch" data-color="#53677b" style="background:#53677b" aria-label="蓝色背景"></button>
+    <button class="swatch" data-color="#4b6657" style="background:#4b6657" aria-label="绿色背景"></button>
+  </div></div>
+  <div class="foot">身体动作重置后切换，不演示动作衔接。<br>资源全部保存在本站；离屏自动暂停。<br><a href="../" target="_blank" rel="noopener">回到文章</a></div>
+</aside></div>
+<footer><span>骨骼、图集与贴图 · WebGL / Spine 3.6</span></footer>
+</main>
+<script id="preview-config" type="application/json">{"name": "Alice / 夏日爱丽丝", "asset": "Alice_130008_Q", "version": "3.6.52", "initial": "idle", "layers": false, "premultipliedAlpha": false, "skeleton": "alice/data.json", "atlas": "alice/data.atlas", "texture": "alice/Alice_130008_Q.png"}</script>
+<noscript>请开启 JavaScript 以播放 Spine 动画。</noscript>
+<script>
+window.addEventListener('error', function (event) {
+  const box = document.getElementById('error');
+  if (event.target && event.target.tagName === 'SCRIPT') {
+    document.getElementById('status').textContent = '加载失败';
+    box.textContent = '脚本加载失败，请检查本站演示资源。';
+  }
+}, true);
+</script>
+</body></html>

@@ -457,6 +457,8 @@ nav:
               - 音频处理: posts/domains/audio-processing.md
               - 视频合成:
                   - posts/domains/video-compositing/index.md
+              - 二维角色动画:
+                  - posts/domains/2d-character-animation/index.md
               - 机器翻译: posts/domains/translation.md
           - 检索、匹配与排序:
               - 推荐系统: posts/domains/recommender.md
