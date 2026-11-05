@@ -933,6 +933,9 @@ nav:
           - 人设:
               - gallery/personas/index.md
               - gallery/personas/seoa.md
+      - 游戏玩法:
+          - gallery/games/index.md
+          - 低多边形 3D 牧场: gallery/games/lowpoly-ranch.md
   - Skills:
       - skills/index.md
       - 基础:

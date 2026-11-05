@@ -1,0 +1,38 @@
+---
+description: "本站自己做的低多边形 3D 牧场：米白底上一块方形微缩草地，左边蜿蜒的河、右边浅黄小路、圆冠绿树和一棵粉紫色的树，11 只白色绵羊；鼠标和触控都能转视角、点选、拖羊，选中后切 Idle、Graze、Walk、Jump 四种动画，旋转、复制、删除；下面是做出它的整段 prompt，交给 Claude Code 一次做完，约 30 分钟，以及 AI 自己改过的几轮和拿去改哪里"
+---
+
+# 低多边形 3D 牧场
+
+<iframe src="/posts/domains/3d-character-animation/assets/ranch.html"
+        style="width:100%;height:640px;border:1px solid #8884;border-radius:10px"
+        loading="lazy" title="低多边形 3D 牧场：程序化绵羊、四种动画与拖动交互"></iframe>
+
+<a href="/posts/domains/3d-character-animation/assets/ranch.html" target="_blank" rel="noopener">单独打开</a>
+
+拖动空白处转视角，滚轮或双指缩放，顶栏按钮回到默认视角、再添一只羊。点一只羊出现选中框，底部面板切换四种动画、左右各转 45°、复制、删除；按住羊直接拖到别处，拖进河里会被推回岸上。手机上单指转、双指缩放、按住羊拖动都一样。键盘也能操作：1–4 切动画，Q、E 转向，D 复制，Delete 删除，Esc 取消选择。
+
+## Prompt { #prompt }
+
+> 制作一个可直接在浏览器运行的低多边形 3D 牧场网页。使用米白背景和柔和阴影，在宽敞的方形微缩草地上布置左侧蜿蜒蓝色河流、沿河道纵向流动的水面高光、右侧浅黄色弯曲小路、圆冠绿树、一棵粉紫色树和细小草叶，不要深色田埂线条。创建约 11 只小巧的白色蓬松绵羊，深色头部与四肢，模型由可编辑的程序化几何构成，草地相对于羊要有充足活动空间。支持在空白处通过鼠标和触控旋转缩放、重置视角、点击选羊及选中框，并可用鼠标或触控直接拖动羊只移位。选中后可切换 Idle、Graze、Walk、Jump 四种持续循环的真实动画，并旋转、复制、删除羊只。
+
+## 怎么做出来的 { #how }
+
+2026-11-05 在 Claude Code 里用 `/goal` 把上面这段 prompt 交给 Claude Opus 5.5，中间没有再追加要求，从建目录到最后一次改羊的代码约 30 分钟。成品是一个 `index.html` 加 4 个脚本（约 2000 行），three.js 打包在本地，不联网、双击 `index.html` 就能跑；没有模型文件和贴图，草地、河、树、羊全是代码现拼的。
+
+AI 自己用无头浏览器截图、看、改了几轮，下面这些都是它自己看出来改掉的：
+
+- 镜头裁掉了草地边角 → 按草地四角投到屏幕上自动定默认视角，竖屏再加大视场角
+- 腿走成锯齿、腿偏长，羊毛偏米黄，草叶太大 → 改参数
+- 双指缩放时第一根手指落在羊附近被当成选中，弹出的面板挡住了第二根手指 → 按下只记候选，轻点抬起或开始拖动才选中
+- 羊走着走着互相穿过去 → 绕行之外再加一道硬分离，挨得太近就互相推开
+
+## 拿去改 { #tweak }
+
+改数就是改场景，改完刷新就生效：
+
+- 草地大小、河和小路的走向与宽窄、草叶多少、所有颜色：`world.js` 顶部的 `WORLD_CONFIG`
+- 羊的颜色、身材、毛团数、腿长、步幅、跳跃高度：`sheep.js` 顶部的 `SHEEP_PARAMS`
+- 开场几只羊、各自在做什么：`app.js` 的 `spawnInitial`
+
+源码：<a href="/posts/domains/3d-character-animation/assets/js/world.js">world.js</a>、<a href="/posts/domains/3d-character-animation/assets/js/sheep.js">sheep.js</a>、<a href="/posts/domains/3d-character-animation/assets/js/controls.js">controls.js</a>、<a href="/posts/domains/3d-character-animation/assets/js/app.js">app.js</a>。
