@@ -50,7 +50,7 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 - [视频](gallery/video/index.md) —— 视频成品配制作方法：本站自己做的[花卉动态生长海报](gallery/video/flower-growth-poster.md)，收录的[彩色手绘三维穿梭视频](gallery/video/collected/gallery-parallax-ink.md)，做法都写在成品下面
 - [3D 模型](gallery/models/index.md) —— 能转着看的三维模型配做出它的 prompt：本站用代码拼的[小橘猫](gallery/models/orange-cat.md)、[绵羊](gallery/models/sheep.md)和[树](gallery/models/tree.md)
 - [人设](gallery/personas/index.md) —— 角色设定一人一页：[SEOA｜徐星澄](gallery/personas/seoa.md)，24 岁，主舞兼创作型歌手
-- [游戏玩法](gallery/games/index.md) —— 能直接在浏览器里玩的 demo 配做出它的 prompt：本站用一段 prompt 做的[低多边形 3D 牧场](gallery/games/lowpoly-ranch.md)
+- [游戏玩法](gallery/games/index.md) —— 能直接在浏览器里玩的 demo 配做出它的 prompt：本站用一段 prompt 做的[低多边形 3D 牧场](gallery/games/lowpoly-ranch.md)，参照 PokéBonk 技术方案做的[3D 像素幸存者](gallery/games/terrace-survivors.md)
 - 音频区还没有收录
 
 ## Skills

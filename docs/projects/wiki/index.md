@@ -443,6 +443,16 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 详见[复制本页 Markdown 源](md-copy.md)。
 
+### 2026-11-06 · 收大一点的构建工程：产物给 iframe 跑，源码给 AI 读
+
+> 我感觉对于本wiki是一个考验，现在是直接用html来写，这样一来遇到稍微大一点的就会很吃力，强制写成原生html反而增加了AI阅读wiki时候的阅读理解压力
+
+> 需要打包这个问题，意味着开发完一个部分之后就进行build，而不是每次deploy的时候自动进行吗
+
+> 要用简洁的话术收纳回本wiki的规范，可能要加一个时间线的板块，记录收纳大一点的项目
+
+此前交互演示一律免构建，vite 产物能嵌但算二等公民，大一点的工程只能改写成原生脚本。[嵌入交互单页](../../skills/wiki-guide/reference/components.md#iframe-demo)改成按规模分：小 demo 照旧免构建；要 `vendor/` 里没有的 npm 依赖、本来就是构建工程做的、逻辑过千行的，原样收构建工程 —— `base: './'` 的产物整个目录放进 `assets/<名>/` 给 iframe 跑，工程带 lockfile 放进 `source/` 给 AI 读，页面列文件表、折叠引讲到的几篇，压缩过的产物不链给 AI。构建在本地、在 `docs/` 外做，产物和源码同一个 commit；`deploy.sh` 不加构建 —— 部署时要装 Node、联网装依赖，哪个工程编译失败整站就停，而且多数工程收完不再改，每次部署重打是白跑。`deploy.sh` 早已给 `.ts` 钉了文本类型，不用改。第一个这样收的是 Gallery 的 [3D 像素幸存者](../../gallery/games/terrace-survivors.md)：Vite + TypeScript，39 个模块约 6200 行，依赖 three.js 0.187 和站内 `vendor/` 没有的 postprocessing；改写成原生要把 three 降到站内的 r185、给 `vendor/` 加库，存下来的也不再是测过的那份。
+
 </div>
 
 [^commit]: [edb03a6](https://github.com/liuhetian/wiki/commit/edb03a6)，2026-10-15 读。

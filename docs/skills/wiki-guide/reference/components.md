@@ -28,7 +28,7 @@ description: "本 wiki 自研的写法和 mermaid 的坑：iframe 嵌交互单�
 
 ## 嵌入交互单页 { #iframe-demo }
 
-要展示交互效果（组件、可视化、小工具），把纯客户端的自包含单页放进所属 skill 或文章的 `assets/`，用原生 `<iframe>` 同域嵌入。AI 顺同一个 URL 能读到未压缩的源码。
+要展示交互效果（组件、可视化、小工具），把纯客户端的自包含单页放进所属 skill 或文章的 `assets/`，用原生 `<iframe>` 同域嵌入。AI 顺链接读到的必须是未压缩的源码。
 
 <iframe src="/skills/wiki-guide/assets/react-spa-demo.html"
         style="width:100%;height:720px;border:1px solid #8884;border-radius:10px"
@@ -38,8 +38,9 @@ description: "本 wiki 自研的写法和 mermaid 的坑：iframe 嵌交互单�
 
 - **只能纯客户端**：对象存储是静态托管，带服务端的应用只能外部部署后跨域嵌
 - **不走 CDN**：运行时库用全站共享的 `docs/vendor/`，demo 里写根绝对路径 `/vendor/xxx.js`；不放 `docs/assets/`，那会跟主题产物的 `site/assets/` 混居
-- **免构建**：React 钉 18 的 UMD（19 起不发 UMD）配 `htm` 的 tagged template，源码即真身
-- **逻辑不压缩**：vite 构建产物（`base: './'` 后整个目录丢进 `assets/`）也能嵌，但 minified 对 AI 不可读，算二等公民
+- **小 demo 免构建**：React 钉 18 的 UMD（19 起不发 UMD）配 `htm` 的 tagged template，源码即真身
+- **大工程原样收，不改写成原生**：要 `vendor/` 里没有的 npm 依赖、本来就是构建工程做的、逻辑过千行，满足一条就收构建工程 —— `base: './'` 的构建产物整个目录放进 `assets/<名>/` 给 iframe 跑，工程带 lockfile 放进 `assets/<名>/source/` 给 AI 读，说明写进页面；页面列文件表、折叠引讲到的几篇，压缩过的产物不链给 AI。活例：[3D 像素幸存者](../../../gallery/games/terrace-survivors.md#source)
+- **在 `docs/` 外构建，产物和源码同一个 commit**：改完一部分就在本地 build、拷回产物，`deploy.sh` 不构建；在 `docs/` 里装依赖，`node_modules` 会被原样发上线
 - **`src` 写站点根绝对路径，且指到具体 `.html` 文件**（`/skills/<skill>/assets/xxx.html`，vite 目录产物写到 `xxx-demo/index.html`）：目录式 URL 下相对路径容易算错层级，目录 URL 能不能解析到入口又取决于托管配置。活例：[前端风格收集](../../../gallery/web/frontend-styles/index.md)的 task1–task7
 - 样式给固定高度 + `loading="lazy"`
 

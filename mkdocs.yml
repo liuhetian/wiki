@@ -941,6 +941,7 @@ nav:
       - 游戏玩法:
           - gallery/games/index.md
           - 低多边形 3D 牧场: gallery/games/lowpoly-ranch.md
+          - 3D 像素幸存者: gallery/games/terrace-survivors.md
   - Skills:
       - skills/index.md
       - 基础:
