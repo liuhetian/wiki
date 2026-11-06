@@ -1,0 +1,10 @@
+一手文档摘录，读取日期：2026-11-05。只存本文使用的短句，不是完整文档。
+
+[JackCui 小R，大肥鱼制作教程，2026-11-05]
+https://mp.weixin.qq.com/s/1Vf2KdxoBBGvLe_i7mBpsw
+立绘 → 分层 PSD → 网格 → 绑定 → 动作物理 → 导出测试
+
+[See-through README，Usage / Discussion，2026-11-05]
+https://github.com/shitagaki-lab/see-through
+this rigging process is arguably the most critical
+and it is not covered in this project.

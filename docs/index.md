@@ -43,14 +43,15 @@ description: "AI 友好的个人知识库：每个页面在同域提供 .md 源�
 
 ## Gallery
 
-现成的东西，通用到不用提问题就能挑：别人的原样收录、本站自己做的成品和做法写在同一页，分图片、排版、色彩、视频、音频、前端特效、3D 模型、人设、游戏玩法九类，全部在 [Gallery 索引](gallery/index.md)：
+现成的东西，通用到不用提问题就能挑：别人的原样收录、本站自己做的成品和做法写在同一页，分图片、排版、色彩、视频、音频、前端特效、2D 动画、3D 模型、人设、游戏玩法十类，全部在 [Gallery 索引](gallery/index.md)：
 
 - [图片](gallery/images/index.md) —— 一张图配一段生成它的 prompt，7 大类共 175 条：GPT Image 2 的 163 条（译成中文）+ [二次元平面设计风格](gallery/images/linux-do-style/gallery-anime-graphic-design.md) 12 组；另有把照片做成[旧刊物海报](gallery/images/collected/gallery-pulp-posters.md)的样片（做法拆成了同名 [skill](skills/pulp-poster.md)），和小红书收来的[拍照姿势](gallery/images/index.md#poses)实拍图 59 组
 - [前端特效](gallery/web/index.md) —— [前端风格收集](gallery/web/frontend-styles/index.md)：有特色的前端美学，一种风格一个可抄的活 demo
 - [视频](gallery/video/index.md) —— 视频成品配制作方法：本站自己做的[花卉动态生长海报](gallery/video/flower-growth-poster.md)，收录的[彩色手绘三维穿梭视频](gallery/video/collected/gallery-parallax-ink.md)，做法都写在成品下面
+- [2D 动画](gallery/animation/index.md) —— 能动的二维动画配做出它的 prompt：一句话让 AI 写出的纯 SVG [鹈鹕骑自行车](gallery/animation/pelican-bicycle.md)
 - [3D 模型](gallery/models/index.md) —— 能转着看的三维模型配做出它的 prompt：本站用代码拼的[小橘猫](gallery/models/orange-cat.md)、[绵羊](gallery/models/sheep.md)和[树](gallery/models/tree.md)
 - [人设](gallery/personas/index.md) —— 角色设定一人一页：[SEOA｜徐星澄](gallery/personas/seoa.md)，24 岁，主舞兼创作型歌手
-- [游戏玩法](gallery/games/index.md) —— 能直接在浏览器里玩的 demo 配做出它的 prompt：本站用一段 prompt 做的[低多边形 3D 牧场](gallery/games/lowpoly-ranch.md)，参照 PokéBonk 技术方案做的[3D 像素幸存者](gallery/games/terrace-survivors.md)
+- [游戏玩法](gallery/games/index.md) —— 能直接在浏览器里玩的 demo 配做出它的 prompt：本站用一段 prompt 做的[低多边形 3D 牧场](gallery/games/lowpoly-ranch.md)，照小红书视频复刻的[压路机修出来的小镇](gallery/games/duck-road.md)，参照 PokéBonk 技术方案做的[3D 像素幸存者](gallery/games/terrace-survivors.md)，照小红书视频复刻的港口沙盘[果冻码头](gallery/games/harbor-jelly.md)
 - 音频区还没有收录
 
 ## Skills

@@ -174,7 +174,7 @@
       raf = 0;
       if (!canRender()) return;
       try {
-        const delta=Math.min((now-last)/1000,0.1);last=now;
+        const delta=Math.max(0,Math.min((now-last)/1000,0.1));last=now;
         const dpr=Math.min(devicePixelRatio||1,2),w=Math.round(canvas.clientWidth*dpr),h=Math.round(canvas.clientHeight*dpr);
         if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
         gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);

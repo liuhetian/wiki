@@ -452,6 +452,8 @@ nav:
               - 语音合成: posts/domains/tts.md
               - 视频生成: posts/domains/video-generation.md
               - 文本生成: posts/domains/text-generation.md
+              - 二维角色生成:
+                  - posts/domains/2d-character-generation/index.md
               - 三维生成: posts/domains/3d-generation.md
           - 内容变换:
               - 图像编辑: posts/domains/image-editing.md
@@ -929,6 +931,9 @@ nav:
                       - RGB 呼吸光边: gallery/web/frontend-styles/oryzo/rgb-glow-border.md
               - Sandboard WebGPU 沙盘: gallery/web/sandboard/index.md
               - Hairline 等距线稿交互图形: gallery/web/collected/gallery-hairline.md
+          - 2D 动画:
+              - gallery/animation/index.md
+              - 鹈鹕骑自行车: gallery/animation/pelican-bicycle.md
           - 3D 模型:
               - gallery/models/index.md
               - 低多边形小橘猫: gallery/models/orange-cat.md
@@ -941,7 +946,9 @@ nav:
       - 游戏玩法:
           - gallery/games/index.md
           - 低多边形 3D 牧场: gallery/games/lowpoly-ranch.md
+          - 压路机修出来的小镇: gallery/games/duck-road.md
           - 3D 像素幸存者: gallery/games/terrace-survivors.md
+          - 果冻码头: gallery/games/harbor-jelly.md
   - Skills:
       - skills/index.md
       - 基础:

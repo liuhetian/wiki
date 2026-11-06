@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>果冻码头 · Harbor Jelly（网页 3D 复刻练习）</title>
+    <style>
+      :root {
+        --paper: #edeae0;
+        --ink: #2a4b4a;
+        --ink-soft: #5d7270;
+        --accent: #d0675c;
+        --fade: 0;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; overflow: hidden; background: var(--paper); color: var(--ink);
+        -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+        font-family: "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", "Source Han Sans SC", system-ui, sans-serif; }
+      #app { position: fixed; inset: 0; }
+      #app canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+      #app canvas.water { cursor: pointer; }
+      #app canvas.dragging { cursor: grabbing; }
+      #app canvas.pressing { cursor: grabbing; }
+
+      /* paper-coloured fades that cut the 3D view off in close-ups, like the poster */
+      .fade { position: fixed; left: 0; right: 0; pointer-events: none; opacity: var(--fade); transition: opacity 1.4s ease; }
+      #fadeTop { top: 0; height: 33%; background: linear-gradient(to bottom, var(--paper) 72%, rgba(237,234,224,0)); }
+      #fadeBottom { bottom: 0; height: 36%; background: linear-gradient(to top, var(--paper) 66%, rgba(237,234,224,0)); }
+      #fadeLeft { display: none; }
+
+      .poster { position: fixed; left: 7.5vw; right: 7.5vw; pointer-events: none; }
+      #top { top: max(10vh, 24px); }
+      .kicker { font-size: clamp(9px, 1.2vh, 14px); letter-spacing: 0.32em; color: var(--ink-soft); display: flex; align-items: center; gap: 0.9em; }
+      .kicker i { width: 0.62em; height: 0.62em; border-radius: 50%; background: var(--accent); display: inline-block; }
+      h1 { margin: 2.2vh 0 0; font-size: max(20px, min(3.9vh, 7.6vw, 54px)); line-height: 1.42; font-weight: 800; letter-spacing: 0.02em; }
+      h1 span { white-space: nowrap; }
+      h1 span { display: block; transition: opacity .5s ease, transform .5s ease; }
+      h1.out span { opacity: 0; transform: translateY(8px); }
+
+      #bottom { bottom: max(12vh, 22px); }
+      .sec { font-size: clamp(10px, 1.35vh, 15px); letter-spacing: 0.22em; color: var(--ink-soft); }
+      .sub { margin-top: 1.3vh; font-size: clamp(13px, 1.75vh, 21px); color: #3b4f4d; letter-spacing: 0.04em; transition: opacity .5s ease; }
+      .sub.out, .sec.out { opacity: 0; }
+      .rule { position: relative; height: 1px; background: rgba(42,75,74,0.18); margin-top: 3vh; }
+      .rule i { position: absolute; left: 0; top: 0; height: 1px; background: #6e8f87; width: 10%; transition: width 1.2s ease; }
+      .sig { margin-top: 2.2vh; font-size: clamp(10px, 1.3vh, 14px); letter-spacing: 0.24em; color: #8a9a95; }
+
+      /* controls */
+      #ctrl { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 6px; align-items: center; pointer-events: auto; }
+      #ctrl button { font: inherit; font-size: 12px; letter-spacing: 0.08em; border: 1px solid rgba(42,75,74,0.25); background: rgba(245,243,236,0.85);
+        color: var(--ink); border-radius: 999px; padding: 6px 10px; cursor: pointer; backdrop-filter: blur(4px); }
+      #ctrl button.on { background: var(--ink); color: #f3f1ea; border-color: var(--ink); }
+      #ctrl .dots { display: flex; gap: 4px; }
+      #ctrl .dots button { width: 30px; padding: 6px 0; text-align: center; }
+      #hint { position: fixed; left: 50%; transform: translateX(-50%); bottom: 64px; font-size: 12px; letter-spacing: .06em; color: #6b7d79;
+        background: rgba(245,243,236,0.8); padding: 6px 12px; border-radius: 999px; pointer-events: none; transition: opacity .8s; white-space: nowrap; }
+      #hint.hide { opacity: 0; }
+
+      /* landscape: text column on the left, the diorama on the right */
+      @media (min-aspect-ratio: 6/5) {
+        .poster { left: 5vw; right: auto; width: min(36vw, 520px); }
+        #top { top: 9vh; }
+        h1 { font-size: max(22px, min(5.4vh, 3.3vw, 68px)); }
+        #bottom { bottom: 9vh; }
+        #fadeTop, #fadeBottom { display: none; }
+        #fadeLeft { display: block; top: 0; bottom: 0; left: 0; right: auto; width: 46vw;
+          background: linear-gradient(to right, var(--paper) 62%, rgba(237,234,224,0)); }
+        #ctrl { right: 22px; bottom: 22px; }
+        #hint { left: auto; right: 22px; transform: none; bottom: 66px; }
+      }
+      @media (max-aspect-ratio: 6/5) {
+        #ctrl { right: 8px; left: 8px; justify-content: center; bottom: 10px; flex-wrap: wrap; }
+        #ctrl .dots button { width: 28px; }
+        #ctrl { gap: 4px; }
+        #ctrl button { padding: 5px 8px; font-size: 11px; }
+        #hint { top: calc(max(10vh, 24px) + 2.2vh + 2 * 1.42 * max(20px, min(3.9vh, 7.6vw, 54px)) + 26px); bottom: auto; font-size: 11px;
+          white-space: normal; width: max-content; max-width: 90vw; text-align: center; line-height: 1.6; border-radius: 14px; }
+        #bottom { bottom: max(9vh, 64px); }
+      }
+      @media (max-width: 420px) { #ctrl .dots button { width: 24px; } #ctrl button { padding: 4px 6px; } }
+      #loading { position: fixed; inset: 0; display: grid; place-items: center; color: var(--ink-soft); letter-spacing: .3em; font-size: 13px; background: var(--paper); transition: opacity 1s; }
+      #loading.done { opacity: 0; pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div class="fade" id="fadeTop"></div>
+    <div class="fade" id="fadeBottom"></div>
+    <div class="fade" id="fadeLeft"></div>
+    <header class="poster" id="top">
+      <div class="kicker"><i></i>VIBE CODING / HARBOR JELLY</div>
+      <h1 id="headline"><span></span><span></span></h1>
+    </header>
+    <footer class="poster" id="bottom">
+      <div class="sec" id="sec"></div>
+      <div class="sub" id="sub"></div>
+      <div class="rule"><i id="bar"></i></div>
+      <div class="sig">果冻码头 · THREE.JS 复刻练习</div>
+    </footer>
+    <div id="hint">点水面起涟漪 · 长按水面拖动推水 · 双击掀起大浪 · 拖动转视角 · 滚轮缩放</div>
+    <nav id="ctrl">
+      <div class="dots" id="dots"></div>
+      <button id="play" title="空格">暂停</button>
+      <button id="sound" title="M">声音 关</button>
+    </nav>
+    <div id="loading">HARBOR JELLY</div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

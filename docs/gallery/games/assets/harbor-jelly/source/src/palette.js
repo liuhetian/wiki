@@ -1,0 +1,92 @@
+// Colours picked from the reference frames (sRGB hex). Underwater things are tinted in the shader,
+// so their colours here are the "dry" colours.
+export const C = {
+  paper: 0xedeae0,
+  ink: 0x2a4b4a,
+
+  // water
+  waterShallow: 0x9ad8cf,
+  waterDeep: 0x4f9f8c,
+  waterSky: 0xbfe6e0,
+
+  // ground
+  sand: 0xe8e2bf,
+  sandDark: 0xd9d1a9,
+  soil: 0x8a8466,
+  strata: [0xdcd4b0, 0xc4bf9f, 0xa3b59c, 0xb6a184, 0xc6ae9f, 0xadb59a, 0xc4b89d, 0xb7b5a7],
+
+  // quay
+  quayWall: 0x6f9c8b,
+  quayCap: 0xd6d3b8,
+  tire: 0x2c3331,
+  lifeRed: 0xd2483e,
+  white: 0xf4f1e6,
+  bollard: 0x3c4a48,
+  rail: 0x5b625e,
+
+  // ship
+  hull: 0x263e41,
+  hullRed: 0x9c3f33,
+  deck: 0x7f8a7d,
+  superstructure: 0xebe6d6,
+  windowDark: 0x2e3f44,
+  funnel: 0x2f5552,
+  tug: 0xc9473b,
+
+  // cranes
+  craneRed: 0xc8473c,
+  craneBlue: 0x3f7fb3,
+  craneHouse: 0xe3dfcf,
+  cable: 0x2b2f2e,
+
+  // containers
+  containers: [0xb9493a, 0xe2b94c, 0x3f8a8a, 0xe2dcc4, 0x4a7aa0, 0xe08c4a, 0x5f9a74, 0x9c5a3c, 0xc96a5a, 0x7a9db0],
+
+  // town
+  roof: 0x4e7a72,
+  roofDark: 0x3e655e,
+  wall: 0xebe3cc,
+  wallWarm: 0xe6d6b4,
+  wood: 0x8a6446,
+  woodDark: 0x5c4332,
+  windowPane: 0x41545a,
+  torii: 0xbf4436,
+  toriiBlack: 0x2f2b28,
+  sakura: [0xf4cdd2, 0xeebcc5, 0xf8dfe1, 0xe8aab8, 0xf1c4cc],
+  trunk: 0x4d3b2f,
+  awning: 0xf2ac92,
+  awningStripe: 0xf7d8c8,
+  lantern: 0xd9503f,
+  lampGlow: 0xfff3d2,
+  grass: 0x8fa77d,
+  plaza: 0xd3cfb8,
+
+  // pier & lighthouse
+  plank: 0xd8ceb0,
+  plankDark: 0xb8ad8e,
+  rock: [0xc3c8bb, 0xb2baae, 0xd0d2c2, 0xa7b0a5],
+  lhRed: 0xc9443a,
+  lhWhite: 0xf3efe4,
+  lhDark: 0x2c3a3a,
+  lhLight: 0xffe08a,
+
+  // sea life
+  seaweed: [0x3f7d5c, 0x4d8f66, 0x356f55, 0x5d9b6c],
+  pebble: [0xb9c7b0, 0xa9bba6, 0xc6ceb6, 0x9fb3a2],
+  coral: [0xc98d7a, 0xb5866b, 0xd9a58e],
+  starfish: 0xe0876a,
+  fishBlue: 0x5f9fc8,
+  fishGold: 0xd6a94e,
+  jelly: 0xbfe8f2,
+  buoy: 0xf3bf3c,
+  buoyGreen: 0x5c9a5c,
+  anchor: 0x3d5a52,
+  wreck: 0x8a7556,
+  gull: 0xf7f6f0,
+  gullWing: 0xb9c1c1,
+  boatBlue: 0x4b7fae,
+  sailHull: 0xf2f0e8,
+  keel: 0x3a4a48,
+  person: [0x5d7fa8, 0xd7744e, 0x6a9a6a, 0xe2c25a, 0x9a6aa0, 0x4a6670, 0xc9545a, 0xe8e2d0],
+  skin: 0xf0c8a0,
+};

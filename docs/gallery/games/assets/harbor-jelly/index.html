@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>果冻码头 · Harbor Jelly（网页 3D 复刻练习）</title>
+    <style>:root{--paper:#edeae0;--ink:#2a4b4a;--ink-soft:#5d7270;--accent:#d0675c;--fade:0}*{box-sizing:border-box}html,body{background:var(--paper);height:100%;color:var(--ink);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;margin:0;font-family:Noto Sans CJK SC,PingFang SC,Microsoft YaHei,Source Han Sans SC,system-ui,sans-serif;overflow:hidden}#app{position:fixed;inset:0}#app canvas{touch-action:none;cursor:grab;width:100%;height:100%;display:block}#app canvas.water{cursor:pointer}#app canvas.dragging,#app canvas.pressing{cursor:grabbing}.fade{pointer-events:none;opacity:var(--fade);transition:opacity 1.4s;position:fixed;left:0;right:0}#fadeTop{background:linear-gradient(to bottom, var(--paper) 72%, #edeae000);height:33%;top:0}#fadeBottom{background:linear-gradient(to top, var(--paper) 66%, #edeae000);height:36%;bottom:0}#fadeLeft{display:none}.poster{pointer-events:none;position:fixed;left:7.5vw;right:7.5vw}#top{top:max(10vh,24px)}.kicker{letter-spacing:.32em;color:var(--ink-soft);align-items:center;gap:.9em;font-size:clamp(9px,1.2vh,14px);display:flex}.kicker i{background:var(--accent);border-radius:50%;width:.62em;height:.62em;display:inline-block}h1{letter-spacing:.02em;margin:2.2vh 0 0;font-size:max(20px,min(3.9vh,7.6vw,54px));font-weight:800;line-height:1.42}h1 span{white-space:nowrap;transition:opacity .5s,transform .5s;display:block}h1.out span{opacity:0;transform:translateY(8px)}#bottom{bottom:max(12vh,22px)}.sec{letter-spacing:.22em;color:var(--ink-soft);font-size:clamp(10px,1.35vh,15px)}.sub{color:#3b4f4d;letter-spacing:.04em;margin-top:1.3vh;font-size:clamp(13px,1.75vh,21px);transition:opacity .5s}.sub.out,.sec.out{opacity:0}.rule{background:#2a4b4a2e;height:1px;margin-top:3vh;position:relative}.rule i{background:#6e8f87;width:10%;height:1px;transition:width 1.2s;position:absolute;top:0;left:0}.sig{letter-spacing:.24em;color:#8a9a95;margin-top:2.2vh;font-size:clamp(10px,1.3vh,14px)}#ctrl{pointer-events:auto;align-items:center;gap:6px;display:flex;position:fixed;bottom:18px;right:18px}#ctrl button{font:inherit;letter-spacing:.08em;color:var(--ink);cursor:pointer;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);background:#f5f3ecd9;border:1px solid #2a4b4a40;border-radius:999px;padding:6px 10px;font-size:12px}#ctrl button.on{background:var(--ink);color:#f3f1ea;border-color:var(--ink)}#ctrl .dots{gap:4px;display:flex}#ctrl .dots button{text-align:center;width:30px;padding:6px 0}#hint{letter-spacing:.06em;color:#6b7d79;pointer-events:none;white-space:nowrap;background:#f5f3eccc;border-radius:999px;padding:6px 12px;font-size:12px;transition:opacity .8s;position:fixed;bottom:64px;left:50%;transform:translate(-50%)}#hint.hide{opacity:0}@media (aspect-ratio>=6/5){.poster{width:min(36vw,520px);left:5vw;right:auto}#top{top:9vh}h1{font-size:max(22px,min(5.4vh,3.3vw,68px))}#bottom{bottom:9vh}#fadeTop,#fadeBottom{display:none}#fadeLeft{background:linear-gradient(to right, var(--paper) 62%, #edeae000);width:46vw;display:block;inset:0 auto 0 0}#ctrl{bottom:22px;right:22px}#hint{bottom:66px;left:auto;right:22px;transform:none}}@media (aspect-ratio<=6/5){#ctrl{flex-wrap:wrap;justify-content:center;bottom:10px;left:8px;right:8px}#ctrl .dots button{width:28px}#ctrl{gap:4px}#ctrl button{padding:5px 8px;font-size:11px}#hint{white-space:normal;text-align:center;border-radius:14px;width:max-content;max-width:90vw;font-size:11px;line-height:1.6;top:calc(max(10vh,24px) + 2.2vh + 2.84*max(20px,min(3.9vh,7.6vw,54px)) + 26px);bottom:auto}#bottom{bottom:max(9vh,64px)}}@media (width<=420px){#ctrl .dots button{width:24px}#ctrl button{padding:4px 6px}}#loading{color:var(--ink-soft);letter-spacing:.3em;background:var(--paper);place-items:center;font-size:13px;transition:opacity 1s;display:grid;position:fixed;inset:0}#loading.done{opacity:0;pointer-events:none}</style>
+    <script type="module" crossorigin src="./assets/index-osaKKcX5.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div class="fade" id="fadeTop"></div>
+    <div class="fade" id="fadeBottom"></div>
+    <div class="fade" id="fadeLeft"></div>
+    <header class="poster" id="top">
+      <div class="kicker"><i></i>VIBE CODING / HARBOR JELLY</div>
+      <h1 id="headline"><span></span><span></span></h1>
+    </header>
+    <footer class="poster" id="bottom">
+      <div class="sec" id="sec"></div>
+      <div class="sub" id="sub"></div>
+      <div class="rule"><i id="bar"></i></div>
+      <div class="sig">果冻码头 · THREE.JS 复刻练习</div>
+    </footer>
+    <div id="hint">点水面起涟漪 · 长按水面拖动推水 · 双击掀起大浪 · 拖动转视角 · 滚轮缩放</div>
+    <nav id="ctrl">
+      <div class="dots" id="dots"></div>
+      <button id="play" title="空格">暂停</button>
+      <button id="sound" title="M">声音 关</button>
+    </nav>
+    <div id="loading">HARBOR JELLY</div>
+  </body>
+</html>

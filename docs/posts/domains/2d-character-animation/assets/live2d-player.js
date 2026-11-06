@@ -23,13 +23,13 @@
     const indices = new Map(Array.from(raw.parameters.ids, (id, i) => [id, i]));
     const meshCanvas = $('mesh'), ctx = meshCanvas.getContext('2d');
     let animation = 'Idle', time = 0, playing = true, manual = false, speed = 1, expression = '';
-    let wireframe = false, frame = 0, previous = performance.now(), raf = 0, inView = true;
+    let wireframe = false, frame = 0, previous = 0, raf = 0, inView = true;
     const overrides = new Map(), controls = new Map();
     const motionLabels = {Idle:'悠闲待机', Blink:'眨眼', Nod:'点头', Shake:'摇头', TailSwing:'摆尾巴', Shy:'害羞', Wave:'挥手', HeadTilt:'歪头', Cheer:'欢呼', Sway:'身体摇摆', EarTwitch:'动耳朵'};
     const expressionLabels = {Smile:'微笑', Sad:'难过', Angry:'生气', Surprised:'惊讶'};
     const parameterLabels = {ParamAngleX:'左右转头',ParamAngleY:'上下转头',ParamAngleZ:'歪头',ParamEyeLOpen:'左眼开合',ParamEyeROpen:'右眼开合',ParamMouthOpenY:'嘴巴开合',ParamMouthForm:'嘴型',ParamEarL:'左耳',ParamEarR:'右耳',ParamTail1:'尾巴',ParamSkelTailSwing:'尾巴摆动',ParamEyeBallX:'视线左右',ParamEyeBallY:'视线上下',ParamBodyAngleX:'身体左右',ParamBodyAngleY:'身体上下',ParamBodyAngleZ:'身体倾斜',ParamBreath:'呼吸',ParamArmRA:'右上臂',ParamArmRB:'右前臂',ParamArmLA:'左上臂',ParamArmLB:'左前臂'};
     const primary = new Set(['ParamAngleX','ParamAngleY','ParamEyeLOpen','ParamEyeROpen','ParamMouthOpenY']);
-    function setPlaying(value) {playing = value; $('play').textContent = value ? '暂停' : '播放'; schedule();}
+    function setPlaying(value) {playing = value; previous = 0; $('play').textContent = value ? '暂停' : '播放'; schedule();}
     function syncButtons() {
       document.querySelectorAll('[data-motion]').forEach(b => {const active = !manual && b.dataset.motion === animation; b.classList.toggle('active', active); b.setAttribute('aria-pressed', String(active));});
     }
@@ -82,7 +82,10 @@
       }
     }
     function tick(now) {
-      raf = 0; const dt = Math.min((now - previous) / 1000, .05) * speed; previous = now;
+      // dt 只在 rAF 自己的时间戳之间算：rAF 的 now 是这一帧的起始时刻，主线程忙时 Chrome 会给出
+      // 已经错过的 vsync 时刻，比上一帧回调里取的 performance.now() 还早，混用两个时钟会算出负 dt、
+      // 时间倒走。previous 为 0 表示刚（重新）开始播放，这一帧不推进时间。
+      raf = 0; const dt = previous ? Math.max(0, Math.min((now - previous) / 1000, .05)) * speed : 0; previous = now;
       if (playing && !manual) {
         const duration = motions.get(animation).duration;
         time += dt;
@@ -91,7 +94,8 @@
       }
       schedule();
     }
-    function schedule() {if (!raf && playing && !manual && inView && !document.hidden) {previous = performance.now(); raf = requestAnimationFrame(tick);}}
+    function schedule() {if (!raf && playing && !manual && inView && !document.hidden) raf = requestAnimationFrame(tick);}
+    function stop() {if (raf) {cancelAnimationFrame(raf); raf = 0;} previous = 0;}
     function fit() {
       const w = $('stage').clientWidth, h = $('stage').clientHeight;
       app.renderer.resize(w, h); meshCanvas.width = w; meshCanvas.height = h;
@@ -124,8 +128,8 @@
       $('stage').style.background = name === 'dark' ? '#252c3e' : name === 'light' ? 'radial-gradient(ellipse at 48% 40%,#fff,#e7edf8)' : '';
       document.querySelectorAll('[data-bg]').forEach(x => x.classList.toggle('active', x === b));
     });
-    document.addEventListener('visibilitychange', () => {if (document.hidden && raf) {cancelAnimationFrame(raf); raf = 0;} else schedule();});
-    new IntersectionObserver(entries => {inView = entries[0].isIntersecting; if (!inView && raf) {cancelAnimationFrame(raf); raf = 0;} else schedule();}).observe($('stage'));
+    document.addEventListener('visibilitychange', () => {if (document.hidden) stop(); else schedule();});
+    new IntersectionObserver(entries => {inView = entries[0].isIntersecting; if (!inView) stop(); else schedule();}).observe($('stage'));
     new ResizeObserver(fit).observe($('stage'));
     document.addEventListener('keydown', e => {if (e.code === 'Space' && !['INPUT','BUTTON','SELECT','SUMMARY'].includes(e.target.tagName)) {e.preventDefault(); $('play').click();}});
     $('stats').textContent = raw.parameters.count + ' 参数 · ' + motions.size + ' 动作';
