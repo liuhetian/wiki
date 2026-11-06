@@ -42,7 +42,7 @@ skill 本质是渐进式披露的文档。markdown 里写的相对链接，渲�
 ```
 
 - **放在开头介绍段，不单独成节、不放进「用法」**：它是例外的指引，放进用法读起来像在引导人下载。要补一句为什么非整包不可（比如跑一次总入口就算调用多次），另起一句接在后面，别用分号连 —— 句号是标准句的一部分
-- **这一行同时是指引和声明**：客户端照它决定要不要整包；部署时 `scripts/build-skill-bundles.py` 认这一行，把链接指向的目录原样打成包。代码块和行内代码里写的不算；链了一个全站没人用这一行声明过的包，部署直接停住，免得线上挂一个 404 的包
+- **这一行是[整包下载](reference/components.md#bundle)的 skill 版**：条件固定写「调用 2 次以上脚本」，客户端照它决定要不要整包；部署怎么认、包放哪、链了没声明的包会怎样，见那一节
 - **链接指向要打的那个目录**：包放在被打包的目录里、以目录名命名。入口是 `index.md` 的打它自己的目录，链接就是 `<目录名>.tar.gz`；Gallery 里不占 `index.md` 的单页打它的工程目录，比如[彩色手绘三维穿梭视频](../../gallery/video/collected/gallery-parallax-ink.md)写的是 `assets/parallax-ink-starter/parallax-ink-starter.tar.gz`，包里只有工程，页面照旧在网页上读
 - **整个 skill 都调用不到 2 次的不写**：脚本单文件、自包含，远程取一个就够，比如 agent-io 的 `pdf_read.py`
 - **调用一次也要整包的，在子 skill 里说一句**，链到上级的包，比如[数字数](../../maintenance/mock-bundle/count/index.md)页的 `所以调用一次也要整包：直接将[测试skill](../mock-bundle.tar.gz)下载到本地`

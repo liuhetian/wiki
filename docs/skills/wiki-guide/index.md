@@ -83,6 +83,7 @@ Material / pymdownx 的语法照常写，这张表只提醒什么时候该用上
 | 外部来源 | 脚注 `[^名]` |
 | 读者要看到 JS 跑出来的结果 | ```` ```{.js .run} ```` → [可运行 JS 代码块](reference/components.md#js-run) |
 | 交互演示 | iframe 嵌自包含单页 → [嵌入交互单页](reference/components.md#iframe-demo) |
+| 读者要把一个目录整个拿到本地 | 一句指引加 `.tar.gz` 链接 → [整包下载](reference/components.md#bundle) |
 | 放图片、视频 | 按怎么看来排：单张用 `<figure markdown>` 居中；要对照着看的几张（首尾帧、改前改后）放进 `<div class="grid" markdown>` 并排，一张一个 figure 配 `<figcaption>`。别把几张塞进同一个 figure，主题把 figure 里的图设成块级，会上下摞成一长条。一组同类照片当图库翻的（姿势参考这类），放进 `<div class="gallery-grid" markdown>` 排三栏，每张写成 `![说明](x.jpg){ loading=lazy }` → 活例 [ins风拍照姿势](../../gallery/images/xhs-poses/gallery-ins-poses.md)。正文里的图点了都弹灯箱放大，别再给图套指向它自己的链接，套了链接的图点了会直接跳走。动图效果放静音循环的 mp4，`<video autoplay loop muted playsinline>`，`src` 写站点根绝对路径，不放 GIF（体积是 mp4 的好几倍）→ 活例 [花卉动态生长海报](../../gallery/video/flower-growth-poster.md) |
 | 不想公开的小字：服务器地址、域名、用户名 | `` `age:…` `` 打码 → [打码](reference/components.md#age-mosaic) |
 | 一串按时间排的事件 | `zx-timeline` 块 → [时间线](reference/components.md#timeline) |

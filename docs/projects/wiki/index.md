@@ -453,6 +453,18 @@ vendor 补上 Chart.js，线上不再走任何 CDN；MathJax 改成按需加载�
 
 此前交互演示一律免构建，vite 产物能嵌但算二等公民，大一点的工程只能改写成原生脚本。[嵌入交互单页](../../skills/wiki-guide/reference/components.md#iframe-demo)改成按规模分：小 demo 照旧免构建；要 `vendor/` 里没有的 npm 依赖、本来就是构建工程做的、逻辑过千行的，原样收构建工程 —— `base: './'` 的产物整个目录放进 `assets/<名>/` 给 iframe 跑，工程带 lockfile 放进 `source/` 给 AI 读，页面列文件表、折叠引讲到的几篇，压缩过的产物不链给 AI。构建在本地、在 `docs/` 外做，产物和源码同一个 commit；`deploy.sh` 不加构建 —— 部署时要装 Node、联网装依赖，哪个工程编译失败整站就停，而且多数工程收完不再改，每次部署重打是白跑。`deploy.sh` 早已给 `.ts` 钉了文本类型，不用改。第一个这样收的是 Gallery 的 [3D 像素幸存者](../../gallery/games/terrace-survivors.md)：Vite + TypeScript，39 个模块约 6200 行，依赖 three.js 0.187 和站内 `vendor/` 没有的 postprocessing；改写成原生要把 three 降到站内的 r185、给 `vendor/` 加库，存下来的也不再是测过的那份。
 
+### 2026-11-06 · 整包下载不再限于 skill：条件各写各的 {: data-kind="流水线" }
+
+> 对于这种代码，本只是一个小仓库，之前本wiki的处理做法是打包成一个压缩包，那有没有直接下载一个目录的做法呢？比如别人 curl https://wiki.me.com/xxx/ 直接批量下载多个文件？ 是否可以实现，方式是否好呢
+
+> 那这样改的话，本质就是一个通用的写法？ 本wiki的skills 里面的写法也可以变了？
+
+> 要改，那对于这种情况，应该就没必要在文章中罗列项目结构树了吧？或者可以简单讲述即可？
+
+HTTP 没有「下载一个目录」：所谓下载目录，不是服务器先打包，就是先给清单、客户端逐个取。清单在 HyperFrames 那次已经换成了整包；目录 URL 又被页面和 demo 的 `index.html` 占着，放不下列表页；所以留整包，只放宽声明。`scripts/build-skill-bundles.py` 原来只认 skill 那一整句、一字不差，构建工程的页面挂不上包；改成只认后半 `直接将[…](<目录>/<目录名>.tar.gz)下载到本地`，前半的条件按场景写 —— skill 照旧是「如果要调用 2 次以上本 skill 中的脚本」，构建工程写「要在本地运行或修改」。现有 skill 页一字未改，原有 9 个包重跑逐字节不变；链了包却没写这一句的照旧报错停住。规矩挪到[自研组件 · 整包下载](../../skills/wiki-guide/reference/components.md#bundle)，写 skill 只留 skill 那句的条件；写作规范语法表、`deploy.sh` 注释、`CLAUDE.md` 跟着改。[3D 像素幸存者](../../gallery/games/terrace-survivors.md)的「拿去改」挂上工程整包，页尾 45 行的文件表换成按目录的简述 —— 要全部文件的下整包，AI 读源码只取问答链到的那几篇。
+
+详见[自研组件 · 整包下载](../../skills/wiki-guide/reference/components.md#bundle)。
+
 </div>
 
 [^commit]: [edb03a6](https://github.com/liuhetian/wiki/commit/edb03a6)，2026-10-15 读。

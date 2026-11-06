@@ -159,7 +159,7 @@ AI 自己用无头浏览器截图、看、改了几轮，下面这些都是它�
 
 ## 拿去改 { #tweak }
 
-把 [`source/`](assets/terrace-survivors/source/package.json) 下的文件拷到本地，`npm install` 后 `npm run dev` 开 `http://localhost:5180`；改完 `npm run build` 出 `dist/`，整个目录丢到任意静态服务器就能跑。
+要在本地运行或修改，直接将[整个工程](assets/terrace-survivors/source/source.tar.gz)下载到本地。解开后 `npm install`、`npm run dev` 开 `http://localhost:5180`；改完 `npm run build` 出 `dist/`，整个目录丢到任意静态服务器就能跑。
 
 - 数值平衡 —— 敌人、武器各级数值、被动、经验曲线：[`game/data.ts`](assets/terrace-survivors/source/src/game/data.ts)
 - 三张地图的地形形状、配色、怪物构成：[`world/biomes.ts`](assets/terrace-survivors/source/src/world/biomes.ts)
@@ -201,51 +201,16 @@ AI 自己用无头浏览器截图、看、改了几轮，下面这些都是它�
 
 上面 iframe 跑的是打包产物：`index.html` 加一个 725KB 的 `index-Be4VVCnG.js`，three.js 和 postprocessing 都打在里面，压缩过，不用读。能读的是 `source/` 下的整个工程，和原项目一字不差，收的是 2026-11-06 的版本；依赖是 Vite 8、TypeScript 7、three.js 0.187、postprocessing 6.39，锁在 [`package-lock.json`](assets/terrace-survivors/source/package-lock.json)。
 
-| 文件 | 管什么 |
-| --- | --- |
-| [`src/main.ts`](assets/terrace-survivors/source/src/main.ts) | 入口：生成美术 → 主菜单 → 开局；读 URL 参数 |
-| [`core/rng.ts`](assets/terrace-survivors/source/src/core/rng.ts) | 种子随机数和噪声，同一种子出同一张地图、同一套精灵 |
-| [`core/input.ts`](assets/terrace-survivors/source/src/core/input.ts) | 键鼠；拿不到指针锁定时左键拖动和 Q E 转视角 |
-| [`core/loop.ts`](assets/terrace-survivors/source/src/core/loop.ts) | 固定步长 60Hz 逻辑，渲染帧率不定 |
-| [`art/index.ts`](assets/terrace-survivors/source/src/art/index.ts) | 开局生成全部美术；有自制图集就用自制的 |
-| [`art/pixel.ts`](assets/terrace-survivors/source/src/art/pixel.ts) | 像素画工具：环绕写入（无缝 tile）、色阶 |
-| [`art/rig.ts`](assets/terrace-survivors/source/src/art/rig.ts) | 椭球小骨架的软件光栅器：色带着色、选择性描边、内轮廓线 |
-| [`art/creatures.ts`](assets/terrace-survivors/source/src/art/creatures.ts) | 主角与 6 种原创怪：椭球加每个动作的 pose 函数 → 8 方向 × 5 动作图集 |
-| [`art/tiles.ts`](assets/terrace-survivors/source/src/art/tiles.ts) | 128px 无缝地表 tile：草地、高地、雪、沙、路、悬崖石墙或砂岩层 |
-| [`art/props.ts`](assets/terrace-survivors/source/src/art/props.ts) | 物件图集：树、松、灌木、岩石、仙人掌、棕榈、冰晶、草丛 |
-| [`art/fx.ts`](assets/terrace-survivors/source/src/art/fx.ts) | 特效图集与 UI 图标 |
-| [`render/renderer.ts`](assets/terrace-survivors/source/src/render/renderer.ts) | WebGLRenderer、天空、雾、灯光、后处理链 |
-| [`render/post.ts`](assets/terrace-survivors/source/src/render/post.ts) | 后处理：PixelOutline 深度描边、ToonGrade 调色 |
-| [`render/glsl.ts`](assets/terrace-survivors/source/src/render/glsl.ts) | 共用 GLSL：哈希、噪声、4×4 Bayer 抖动矩阵 |
-| [`render/spriteBatch.ts`](assets/terrace-survivors/source/src/render/spriteBatch.ts) | 角色精灵：每个物种一个 InstancedMesh，billboard shader，选帧与 8 方向 |
-| [`render/propBatch.ts`](assets/terrace-survivors/source/src/render/propBatch.ts) | 物件：圆柱 billboard、风摆、挡住玩家时 screen-door 透明 |
-| [`render/fxBatch.ts`](assets/terrace-survivors/source/src/render/fxBatch.ts) | 弹道、粒子、宝石、地面贴花的实例化批次，以及 blob 阴影 |
-| [`render/toonModel.ts`](assets/terrace-survivors/source/src/render/toonModel.ts) | 宝箱、神坛：3 阶 MeshToonMaterial 加反向外壳描边 |
-| [`world/terrain.ts`](assets/terrace-survivors/source/src/world/terrain.ts) | 高度场：fbm → 阶梯量化 → 模糊 → BFS 连通台地并修坡道；静态碰撞 |
-| [`world/terrainMat.ts`](assets/terrace-survivors/source/src/world/terrainMat.ts) | 地形 shader：像素网格对齐、Bayer 抖动分区、toon 两级光照、悬崖贴图、雪线、风带、云影 |
-| [`world/scatter.ts`](assets/terrace-survivors/source/src/world/scatter.ts) | 物件撒点（聚簇、坡度和路径过滤）与烘焙阴影 |
-| [`world/biomes.ts`](assets/terrace-survivors/source/src/world/biomes.ts) | 生物群系参数 |
-| [`game/game.ts`](assets/terrace-survivors/source/src/game/game.ts) | 一局的状态机与帧组装 |
-| [`game/player.ts`](assets/terrace-survivors/source/src/game/player.ts) | 主角：相对镜头移动、跳跃、悬崖阻挡、无敌帧 |
-| [`game/camera.ts`](assets/terrace-survivors/source/src/game/camera.ts) | 第三人称轨道相机：被地形挡住时拉近，不钻地 |
-| [`game/enemies.ts`](assets/terrace-survivors/source/src/game/enemies.ts) | 敌人：SoA 存储、追击与分离、悬崖绕行、飞行、溶解死亡、Boss 冲撞和落石 |
-| [`game/flow.ts`](assets/terrace-survivors/source/src/game/flow.ts) | 流场寻路：从玩家所在格 BFS，每格最多爬 0.9、往下随便跳，怪绕开悬崖走坡道 |
-| [`game/director.ts`](assets/terrace-survivors/source/src/game/director.ts) | 刷怪节奏：随时间加量、精英、包围潮、Boss |
-| [`game/weapons.ts`](assets/terrace-survivors/source/src/game/weapons.ts) | 武器行为：索敌和发射；数值在 `data.ts` |
-| [`game/projectiles.ts`](assets/terrace-survivors/source/src/game/projectiles.ts) | 弹道：追踪飞弹、抛物线火球和陨石、Boss 落石，爆炸范围伤害 |
-| [`game/pickups.ts`](assets/terrace-survivors/source/src/game/pickups.ts) | 经验宝石、金币、回血果、磁铁 |
-| [`game/interact.ts`](assets/terrace-survivors/source/src/game/interact.ts) | 宝箱与神坛 |
-| [`game/upgrades.ts`](assets/terrace-survivors/source/src/game/upgrades.ts) | 升级与宝箱的三选一 |
-| [`game/grid.ts`](assets/terrace-survivors/source/src/game/grid.ts) | 空间哈希：分离、索敌、命中检测 |
-| [`game/fxsys.ts`](assets/terrace-survivors/source/src/game/fxsys.ts) | 粒子、地面环、预警、闪电、伤害数字 |
-| [`game/data.ts`](assets/terrace-survivors/source/src/game/data.ts) | 数值表：敌人、武器等级、被动、经验曲线 |
-| [`ui/hud.ts`](assets/terrace-survivors/source/src/ui/hud.ts) | DOM HUD：经验条、血条、计时、小地图、武器栏、Boss 血条 |
-| [`ui/menus.ts`](assets/terrace-survivors/source/src/ui/menus.ts) | 加载、主菜单、三选一、暂停、结算 |
-| [`ui/style.css`](assets/terrace-survivors/source/src/ui/style.css) | 界面样式 |
-| [`debug/overlay.ts`](assets/terrace-survivors/source/src/debug/overlay.ts) | `?debug` 调试面板 |
-| [`scripts/smoke.mjs`](assets/terrace-survivors/source/scripts/smoke.mjs) | 无头冒烟测试：bot 自动玩一局，检查页面报错 |
-| [`scripts/shot.mjs`](assets/terrace-survivors/source/scripts/shot.mjs) | 无头截图 |
-| [`index.html`](assets/terrace-survivors/source/index.html)、[`package.json`](assets/terrace-survivors/source/package.json)、[`tsconfig.json`](assets/terrace-survivors/source/tsconfig.json)、[`vite.config.ts`](assets/terrace-survivors/source/vite.config.ts) | 页面入口与工程配置 |
+入口是 [`src/main.ts`](assets/terrace-survivors/source/src/main.ts)：生成美术 → 主菜单 → 开局，URL 参数也在这里读。`src/` 按职责分成几个目录：
+
+- `core/` —— 种子随机数和噪声、键鼠输入、固定步长 60Hz 的逻辑循环
+- `art/` —— 程序化美术：椭球小骨架的软件光栅器，主角和 6 种怪的 8 方向图集，地表 tile、物件和特效图集
+- `render/` —— 渲染器和后处理（深度描边、调色），角色、物件、特效各一个实例化批次，宝箱和神坛的 toon 模型
+- `world/` —— 地形高度场、地形 shader、物件撒点、三个群系的参数
+- `game/` —— 一局的状态机和各个系统：主角、相机、敌人、流场寻路、刷怪节奏、武器、弹道、拾取、宝箱神坛、升级三选一、数值表
+- `ui/` —— DOM 做的 HUD 和菜单；`debug/` 是 `?debug` 面板
+
+`scripts/` 里是无头冒烟测试和截图工具。
 
 问答和「拿去改」提到的几篇：
 

@@ -1,5 +1,5 @@
 ---
-description: "本 wiki 自研的写法和 mermaid 的坑：iframe 嵌交互单页、可运行 JS 代码块、age 打码、时间线、复制时跳过的块、填空输入框；写作规范的语法表指到哪节读哪节"
+description: "本 wiki 自研的写法和 mermaid 的坑：iframe 嵌交互单页、整包下载、可运行 JS 代码块、age 打码、时间线、复制时跳过的块、填空输入框；写作规范的语法表指到哪节读哪节"
 ---
 
 # 自研组件
@@ -8,6 +8,7 @@ description: "本 wiki 自研的写法和 mermaid 的坑：iframe 嵌交互单�
 
 - [mermaid 的坑](#mermaid)
 - [嵌入交互单页](#iframe-demo)
+- [整包下载](#bundle)
 - [可运行 JS 代码块](#js-run)
 - [打码](#age-mosaic)
 - [时间线](#timeline)
@@ -39,7 +40,7 @@ description: "本 wiki 自研的写法和 mermaid 的坑：iframe 嵌交互单�
 - **只能纯客户端**：对象存储是静态托管，带服务端的应用只能外部部署后跨域嵌
 - **不走 CDN**：运行时库用全站共享的 `docs/vendor/`，demo 里写根绝对路径 `/vendor/xxx.js`；不放 `docs/assets/`，那会跟主题产物的 `site/assets/` 混居
 - **小 demo 免构建**：React 钉 18 的 UMD（19 起不发 UMD）配 `htm` 的 tagged template，源码即真身
-- **大工程原样收，不改写成原生**：要 `vendor/` 里没有的 npm 依赖、本来就是构建工程做的、逻辑过千行，满足一条就收构建工程 —— `base: './'` 的构建产物整个目录放进 `assets/<名>/` 给 iframe 跑，工程带 lockfile 放进 `assets/<名>/source/` 给 AI 读，说明写进页面；页面列文件表、折叠引讲到的几篇，压缩过的产物不链给 AI。活例：[3D 像素幸存者](../../../gallery/games/terrace-survivors.md#source)
+- **大工程原样收，不改写成原生**：要 `vendor/` 里没有的 npm 依赖、本来就是构建工程做的、逻辑过千行，满足一条就收构建工程 —— `base: './'` 的构建产物整个目录放进 `assets/<名>/` 给 iframe 跑，工程带 lockfile 放进 `assets/<名>/source/` 给 AI 读，说明写进页面；页面按目录简述、折叠引讲到的几篇，整个工程用[整包下载](#bundle)给出，压缩过的产物不链给 AI。活例：[3D 像素幸存者](../../../gallery/games/terrace-survivors.md#source)
 - **在 `docs/` 外构建，产物和源码同一个 commit**：改完一部分就在本地 build、拷回产物，`deploy.sh` 不构建；在 `docs/` 里装依赖，`node_modules` 会被原样发上线
 - **`src` 写站点根绝对路径，且指到具体 `.html` 文件**（`/skills/<skill>/assets/xxx.html`，vite 目录产物写到 `xxx-demo/index.html`）：目录式 URL 下相对路径容易算错层级，目录 URL 能不能解析到入口又取决于托管配置。活例：[前端风格收集](../../../gallery/web/frontend-styles/index.md)的 task1–task7
 - 样式给固定高度 + `loading="lazy"`
@@ -60,6 +61,21 @@ description: "本 wiki 自研的写法和 mermaid 的坑：iframe 嵌交互单�
 - **字体用系统回退**：上游自带的西文字体不为一个项目进 `vendor/`，从它自己的回退链开始，中文本来就落在这些字上
 - **共用件放项目自己的 `assets/demos/`**：主题样式、时间线运行时、贯穿所有 demo 的假数据各一个文件，入口页折叠引一次；每个 demo 所在的页照旧折叠引自己的 html
 - **验收靠脚本**：`scripts/` 放一个只为这批 demo 跑的检查脚本，在 node 沙箱里按时间线逐步渲染元素树，核渲染报错、没定义的 class、滚动目标、嵌入高度和文案；CLAUDE.md 常用命令记一行。好不好看照旧由用户在浏览器里看
+
+## 整包下载 { #bundle }
+
+读者要把一个目录整个拿到本地时，页面写一句指引；部署时 `scripts/build-skill-bundles.py` 认这一句，把链接指向的目录原样打成 `<目录名>.tar.gz`，放在这个目录里：
+
+```markdown
+要在本地运行或修改，直接将[整个工程](assets/terrace-survivors/source/source.tar.gz)下载到本地。
+```
+
+- **前半写什么时候该下整包，后半固定**：脚本只认 `直接将[…](<目录>/<目录名>.tar.gz)下载到本地`，条件和链接名按场景写；skill 的条件固定一句，见[写 skill · 带脚本的 skill](../skill.md#scripts)
+- **这一句同时是指引和声明**：代码块和行内代码里写的不算；链了全站没人声明过的包，部署直接停住，免得线上挂一个 404 的包
+- **包放在被打包的目录里、以目录名命名**：解开是原样的目录树，跳过点开头的文件；包只在 `site/` 和桶里，不进 git
+- **不附下载命令，不逐个罗列文件**：下载、解压读者的 AI 自己会写；要全部文件的下整包，读源码的顺页面链到的那几篇取
+
+活例：[3D 像素幸存者](../../../gallery/games/terrace-survivors.md#tweak)。
 
 ## 可运行 JS 代码块 `{.js .run}` { #js-run }
 
