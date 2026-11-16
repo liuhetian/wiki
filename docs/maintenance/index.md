@@ -13,7 +13,7 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [读 PDF 脚本](pdf-reading.md) —— 直接取文字和文档识别各自的实测对比（pdfium、pdf-inspector；百度高精度 OCR、PaddleOCR-VL），图怎么发现，吸收的两个 DSH 社区插件
 - [网络搜索和读取网页](web-search.md) —— 默认的 Sonar Pro Search 经海外中转实测耗时、价格和引用格式；2026-10-18 换上 DeepSeek 官方 Search、Fetch 接口，官方指南存档，实测摘要长度、搜索语法和抓取会丢什么
 - [语音合成](tts.md) —— AutoDL 上 IndexTTS2 的接口是怎么找到的，冷启动和 data URI 参考音频的实测；方案二为什么从 Gemini 换成微软 MAI-Voice：9 个直接出 mp3 的模型同文对比，Gemini 只出 pcm 的坑；OpenRouter 上能克隆的 Fish Audio、Seed Audio 实测
-- [图片生成](image.md) —— CodeProxy 的 gpt-image-2.5 经海外中转实测生成和编辑，返回格式和模型列表
+- [图片生成](image.md) —— CodeProxy 的 gpt-image-2.5 经海外中转实测生成、编辑和透明背景，返回格式和模型列表
 - [音频转录](transcribe.md) —— OpenRouter 的 MAI-Transcribe-2 经海外中转实测两种传法、时间戳和说话人分离，段落起止要开 diarization 才准
 - [视频生成](video.md) —— AutoDL 工作流列表怎么找到、价格怎么换算，16 个视频工作流只收 8 个的理由，文字加图生成和首尾帧各实测一次
 - [音乐生成](music.md) —— 为什么选 OpenRouter 上的 Lyria 3、不选 Suno，请求格式从哪两份文档推出来，没实测

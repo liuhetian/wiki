@@ -1,5 +1,5 @@
 ---
-description: "Agent 生成、编辑图片：CodeProxy 的 gpt-image-2.5，走海外中转 https://codeproxy.reverse-pro.xyz，MY_API_KEY 写成 Authorization: Bearer；生成和编辑都是 JSON 请求，同步返回 PNG，data[0] 里有时是 b64_json、有时是 url，两种都要接；编辑的原图放在 images[].image_url 里，本地图写成 data URI"
+description: "Agent 生成、编辑图片：CodeProxy 的 gpt-image-2.5，走海外中转 https://codeproxy.reverse-pro.xyz，MY_API_KEY 写成 Authorization: Bearer；生成和编辑都是 JSON 请求，同步返回 PNG，data[0] 里有时是 b64_json、有时是 url，两种都要接；编辑的原图放在 images[].image_url 里，本地图写成 data URI；透明背景加 background: transparent"
 ---
 
 # 生成、编辑图片
@@ -28,6 +28,7 @@ curl -sS https://codeproxy.reverse-pro.xyz/v1/images/edits \
 - **用 HTTP/2 发**：走 HTTP/1.1 的请求（Python 的 urllib、`curl --http1.1`）到 62 秒就被中转回 499，返回体是空的；curl 默认走 HTTP/2，同一个请求照常返回
 - **`size` 写比例**：`"2:3"` 出 1024×1536，`"9:16"` 出 940×1672，`"21:9"` 出 1916×821；16:9、3:2、4:3、4:5 也实测过
 - **本地图片**：写成 `data:image/png;base64,…`，放进 `image_url`
+- **透明背景**：加 `"background": "transparent", "output_format": "png"`，返回 RGBA 的 PNG。拿编辑接口去背景是整张重画，不是在原图上抠，皮肤和碎发会跟着变；人物部分的 alpha 是 250–254，不是 255
 - **更高分辨率**：2.5 没有 2k、4k 版本，要的话只能退回旧版 `gpt-image-2-2k` 或 `gpt-image-2-4k`
 
 维护记录：[接口从哪来、实测结果](../../../maintenance/image.md)。正常使用不用看，出问题再看。

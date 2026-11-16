@@ -51,6 +51,10 @@ copy_source: true
 - [Hairline 等距线稿图](hairline/index.md) —— 要给网页画一张会回应指针的等距线稿插图时用（产品页主图、空状态、文档配图；给一个想法，或一个现成的 SVG 图标、标志）：在 @lucasmarkes/hairline 的固定引擎上只写一个图形文件，守十条规则，构建、校验、拍八张图看样直到合格，交一个零依赖、双击就能打开的单文件 HTML（吸纳自 lucasmarkes/hairline，MIT；[维护记录](../maintenance/skills/hairline.md)）
 - [让布局说话（ui-no-labels）](ui-no-labels.md) —— 要让 AI 做界面的项目用：让 AI 把一条界面守则写进项目根的 `CLAUDE.md` 或 `AGENTS.md` —— 不加多余的次级标签和说明文字，让布局自己说明，免得界面堆满标签、像说明书（取自 @Ainward 的一张截图；[维护记录](../maintenance/skills/ui-no-labels.md)）
 
+## 建站与部署
+
+- [使用 EdgeOne](edgeone/index.md) —— 用 EdgeOne Makers 发布网站时用：建中国大陆加速的项目并部署、绑备案域名配 HTTPS、给 COS 静态站全站上锁、用 Blob 存数据和文件；每样一页步骤，配脚本
+
 ## 逆向与安全
 
 - [Windows 软件逆向（exe-reverse）](exe-reverse.md) —— 逆向 Windows 本地软件（`.exe`/`.dll`/`.sys`/`.msi`）、定位授权校验、给二进制打补丁又不打坏、判断「只改客户端能不能成」时用：一页概要讲清这个 skill 把逆向分成哪些情况、靠什么纪律收口，逐层操作和脚本在上游；限用于自己的软件、授权样本和竞赛沙箱（吸纳自 reverse-skill-lab/exe-reverse，MIT；[维护记录](../maintenance/skills/exe-reverse.md)）

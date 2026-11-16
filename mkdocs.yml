@@ -410,6 +410,8 @@ plugins:
         # 2026-10-28 Zensical 升级评估是本站依赖的版本记录，从 wiki 介绍挪进维护
         projects/wiki/zensical-upgrade/index.md: maintenance/zensical-upgrade/index.md
         projects/wiki/zensical-upgrade/assets/releases.md: maintenance/zensical-upgrade/assets/releases.md
+        # 2026-11-12 全站上锁从文章挪进 wiki 项目
+        posts/static-site-lock.md: projects/wiki/static-site-lock.md
 
 # 链接校验。0.0.53 及更早版本有并行竞态：同一份内容偶发（约 1/15 次构建）误报大量
 # "page does not exist"，产物 HTML 实测无差异，只能关掉。0.0.62 上复现不出来了 ——
@@ -448,7 +450,8 @@ nav:
               - 视频理解: posts/domains/video-understanding.md
               - 文本理解: posts/domains/text-understanding.md
           - 内容生成:
-              - 图像生成: posts/domains/image-generation.md
+              - 图像生成:
+                  - posts/domains/image-generation/index.md
               - 语音合成: posts/domains/tts.md
               - 视频生成: posts/domains/video-generation.md
               - 文本生成: posts/domains/text-generation.md
@@ -483,6 +486,7 @@ nav:
               - 部署实操手册: projects/wiki/cos-deploy/reference/deploy.md
               - 自建 git-lfs 后端: projects/wiki/git-lfs.md
               - 打码：key 和小字: projects/wiki/age-mosaic.md
+              - 全站上锁: projects/wiki/static-site-lock.md
               - 复制本页 Markdown 源: projects/wiki/md-copy.md
               - 新机器初始化自检: projects/wiki/init-check.md
           - Docmost:
@@ -554,6 +558,9 @@ nav:
               - 新机器配开发环境: projects/ai-assistant/dev-env.md
               - API 中转：Caddy 换 key: projects/ai-assistant/api-gateway.md
               - 邮件采集：自己说 SMTP: projects/ai-assistant/mail-intake.md
+          - 基础调用:
+              - projects/basic-calls/index.md
+              - DeepSeek 插话拼接: projects/basic-calls/deepseek-interrupt.md
       - 数字人:
           - Mynah:
               - projects/mynah/index.md
@@ -1419,6 +1426,13 @@ nav:
               - 看样: skills/hairline/reference/look.md
               - 从现成的 SVG 起: skills/hairline/reference/source.md
           - 让布局说话: skills/ui-no-labels.md
+      - 建站与部署:
+          - 使用 EdgeOne:
+              - skills/edgeone/index.md
+              - 建项目与部署: skills/edgeone/reference/deploy.md
+              - 绑域名与 HTTPS: skills/edgeone/reference/domain.md
+              - 全站上锁: skills/edgeone/reference/site-lock.md
+              - Blob 存储: skills/edgeone/reference/blob.md
       - 逆向与安全:
           - Windows 软件逆向: skills/exe-reverse.md
   - 收藏夹:

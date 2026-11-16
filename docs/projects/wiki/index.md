@@ -37,6 +37,7 @@ copy_source: true
 - [用对象存储部署 AI 友好的个人知识库](cos-deploy/index.md) —— 总纲：什么算对 AI 友好、同一份 markdown 双发布、为什么是对象存储而不是服务器；附[部署实操手册](cos-deploy/reference/deploy.md)
 - [用自己的对象存储做 git-lfs 后端](git-lfs.md) —— standalone custom transfer agent：140 行脚本替掉整个 LFS 服务，协议、坑和换存储的改法
 - [打码：key 和小字都以密文写进 wiki](age-mosaic.md) —— API key、服务器地址用 age 公钥加密后写进 markdown，浏览器里显示成马赛克，解锁后还原；六种存法的比较、对称与非对称加密、scrypt 为什么撑得住短口令，以及 encryptcontent 这类插件为什么在本站会漏
+- [COS 静态站全站上锁：绕了三圈，最后用 EdgeOne 边缘函数](static-site-lock.md) —— COS 静态站全站上锁、人和 AI 都好进：前端加密、Caddy 302、桶半开放各卡在哪，最后用 EdgeOne Makers 边缘函数验密码、签名读私有 COS —— 浏览器记 30 天登录，AI 带请求头；额度用完打不开但不漏
 - [复制本页 Markdown 源：不用官方插件，自己做](md-copy.md) —— 右上角复制按钮和页头发现链接：为什么不用官方 llmstxt 插件、借 `page.edit_url` 拿源文件地址、复制时相对链接怎么改成线上绝对地址
 
 Zensical 本身跟到哪个版本、新版本升不升级，记在维护的[Zensical 升级评估](../../maintenance/zensical-upgrade/index.md)。

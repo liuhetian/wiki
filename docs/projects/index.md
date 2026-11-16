@@ -39,6 +39,7 @@ copy_source: true
 - [OpenAI Evals](openai-evals/index.md) —— 细讲：OpenAI Evals 拆解：领域是大模型评测框架，以 for 循环评测脚本为 baseline，按登记、判分、被测对象、多轮、跑和记五条线讲问题和功能，配源码模版；重心是一个 eval 等于数据加 YAML 里选一个模板类
 - [搭建 AI 助手](ai-assistant/index.md) —— 给常驻 Agent 接输入输出通道；已落地的第一条是[不装邮件服务、自己在 25 端口说 SMTP](ai-assistant/mail-intake.md)，第二条是 [Caddy 换 key 的 API 中转](ai-assistant/api-gateway.md)（已接 DeepSeek）
 - [DeepSeek 视频问答](deepseek-video-rag/index.md) —— 概要：给 agent 挂的 skill，模型不收视频，就把录像拆成带时间标签的帧逐帧做卡片、拼成 30 秒一段；提问时 TF-IDF 粗筛、模型挑段、开推理深读，答案带时刻，准不准由人回放片段核对
+- [基础调用](basic-calls/index.md) —— 直接调大模型 API 碰到的边界情况，一个问题一篇实测报告；已有 [DeepSeek 插话拼接](basic-calls/deepseek-interrupt.md)：玩家在 AI 出正文、思考、等工具时插话，只有三种拼法会 400
 
 ### 数字人
 
