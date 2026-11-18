@@ -7,19 +7,20 @@ copy_source: true
 
 项目是一个具体的东西 —— 自己做的软件、别人的仓库 —— 讲它解了哪些问题，每个问题只留它自己那一种方案；问题之间互相牵连，一个怎么解会牵制另一个，读者拿走的是整个东西怎么造。在[板块的那根轴](wiki/sections.md#axis)上它在最具体那头；一个通用问题讲几种方案的是[文章](../posts/index.md)。一个项目一个目录，按领域分组；只为这个项目写的操作手册、截图跟着项目放。
 
-按[调研项目](../skills/project-research/index.md)选深度，项目索引用「概要：」「粗讲：」「细讲：」标明对应页面：
+按[调研项目](../skills/project-research/index.md)选深度，项目索引用「概要：」「粗讲：」「细讲：」「自有：」标明对应页面：
 
 - **概要**：三四段、400 字以内，知道是什么、主路径与分工；版本和出处放脚注，独立概要不建维护记录。追问按问答补在正文后，不受概要字数限制。活例：[Teable](teable/index.md#qa)。
 - **粗讲**：几千字，主要功能各一个板块，展示机制、prompt、源码、配置或状态文件，按需实跑。活例：[wenai](wenai/index.md)。
 - **细讲**：从 baseline 的具体问题出发，沿功能线对照源码、验证效果与设计取舍。活例：[梨园](liyuan/index.md)。
 - **写书**：按学习目标组织复刻、对比或实验；从零复刻和做实验落项目，领域对比落文章。要求见调研入口。
+- **自有**：自己开发的项目照[使用 wiki 管理项目开发](../skills/subwiki/index.md)带的子 wiki，文档写在项目自己的仓库里，整个目录照[吸纳子 wiki](../skills/subwiki/absorb.md)拷进来；比细讲更细，管到运维、待办和接口参考，目录归项目，不在这里改。
 - **原地升级**：概要、粗讲、细讲沿用同一个目录和入口 URL；粗讲起将版本、实验与改动集中放[维护](../maintenance/index.md#projects)，同来源已有记录的复用。
 
 ## 按领域 { #projects }
 
 ### 知识库
 
-- [wiki 介绍](wiki/index.md) —— 这个 wiki 自己的事：[目标与计划](wiki/roadmap.md)、[怎么当远程 skill 用](wiki/everything-skill.md)、[板块怎么分](wiki/sections.md)、用到的技术一项一页（[对象存储部署](wiki/cos-deploy/index.md)、[自建 git-lfs 后端](wiki/git-lfs.md)、[打码](wiki/age-mosaic.md)），文末能力时间线按日期列出在 Zensical 之上加过的每项功能，附当时的需求原话和改了哪里
+- [wiki 介绍](wiki/index.md) —— 这个 wiki 自己的事：[目标与计划](wiki/roadmap.md)、[怎么当远程 skill 用](wiki/everything-skill.md)、[板块怎么分](wiki/sections.md)、用到的技术一项一页（[对象存储部署](wiki/cos-deploy/index.md)、[自建 git-lfs 后端](wiki/git-lfs.md)、[打码](wiki/age-mosaic.md)），文末能力时间线按日期列出在 Zensical 之上加过的每项功能，每条写问题、一句话方案和当时的需求原话
 - [Docmost](docmost/index.md) —— 概要：不是一个人用的在线记事本，是自托管的团队 wiki；主路径是每页一份 Yjs 文档，经 Hocuspocus 实时合并多人改动，停笔 10 秒连同 JSON 和纯文本一起落库；开源版模型不参与，AI 在闭源 ee 子模块；追问两条：不是 Office 套件，Bases 要付费、ppt 只有演示模式；和 git 仓库加 Zensical 比，差在谁来写、谁来读
 - [TiddlyWiki](tiddlywiki/index.md) —— 概要：整个 wiki 可以只是一个 HTML 文件；打开时从文件里的 JSON 读出全部 tiddler，内核和界面也是 tiddler；存盘把模板渲染成新文件，浏览器里兜底是下载副本，写回原文件靠服务器或扩展
 - [DeepTutor](deeptutor/index.md) —— 细讲：领域是 AI 辅导，以「聊天网页加一个 PDF、再加一句当老师的 prompt」为 baseline，按知识库、一轮对话的运行时、学习模式流水线、精通路径、Book 引擎、沉浸阅读与视频、记忆、学习空间八条功能线讲问题和功能，每步配源码模版和实跑效果，每个界面配一个照源码做的自动播放仿真 demo；重心是「什么时候算学会」由程序的硬门算，不由模型说了算
@@ -60,6 +61,7 @@ copy_source: true
 - [Pyodide](pyodide/index.md) —— 概要：不是把 Python 翻译成 JS，是把 CPython 解释器编译成 WebAssembly；Python 的 import 是同步的、下载只能异步，所以包要先 loadPackage 解进内存文件系统，.so 提前 dlopen
 - [Frappe Gantt](frappe-gantt/index.md) —— 概要：给网页用的甘特图组件，只画图、改内存里的任务，不存也不排期；主路径是日期和像素按列宽互换，拖一条任务时依赖它的下游跟着平移，存回后端靠 on_date_change 交给用的人
 - [Hairline](hairline/index.md) —— 概要：33 张会回应指针的等距线稿交互插图，给网页用；每个实体只画轮廓和一道折痕，板子从远到近互相遮挡，指针反投影到地面驱动弹簧，全页共用一个离屏就睡的帧循环；仓库另带一个让 AI 在同一引擎上画新图形的 skill
+- [牛牛便利贴](clipboard/index.md) —— 自有：牛牛便利贴的项目文档：家里几个人共用的几块白板，跑在 EdgeOne Makers 上，用来在设备之间传东西、记待办，也给 AI 开了读写接口；入口带一段现状快照，从这里走到需求、给 AI 的接口说明、运维、开发、时间线和待办
 
 ### 硬件
 

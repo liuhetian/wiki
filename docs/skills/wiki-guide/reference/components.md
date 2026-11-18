@@ -132,9 +132,15 @@ bash scripts/age-seal.sh -a   # 粘贴多行、Ctrl-D 结束 → 打印 armor，
 
 ### 2026-08-14 · 字体本地化 {: data-kind="配置 + 前端" }
 
+**问题**：开屏加载很慢，卡在去 Google Fonts 拉字体。
+
+**方案**：关掉官方的字体引用，woff2 放进 `vendor/fonts/` 本地加载。
+
 > 开屏的时候加载很慢……改为本地化吧
 
-`theme.font: false`，字体真身放进 `vendor/fonts/`。条目里放代码块、表格、提示框都行，线不会断。
+??? note "改了哪里"
+
+    `theme.font: false`，字体真身放进 `vendor/fonts/`。条目里放代码块、表格、提示框、折叠块都行，线不会断。
 
 </div>
 

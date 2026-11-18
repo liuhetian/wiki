@@ -16,6 +16,10 @@
   里的 .wrap 一致。不做成全站规则，是因为站内的 ```text 大多是目录树、ASCII 图，一换行就乱了。
 
   第三件事：页头写两行发现链接，按 llms.txt 提案——alternate 指向这一页的 .md 源文件，describedby 指向 llms.txt。
+  第四件事：吸纳进来的子 wiki 在目录的 .meta.yml 写了 api_base（子服务的接口地址），这些页面才输出
+  <meta name="api-base"> 并引入 live.js，把正文里的 {{ api("…").字段 }} 换成接口当前的返回值。
+  live.js 的真身在 skills/subwiki/scripts/，和发给子项目的是同一份。
+
   源文件地址取自 page.edit_url：mkdocs.yml 把 edit_uri 设成站点根，它就等于「站点根 + 源文件路径」，
   普通文章是 /x.md、目录首页是 /x/index.md，模板里分不出来的事交给它。vendor/md-copy.js 的复制按钮也读这一行。
 #}
@@ -27,6 +31,9 @@
     <link rel="alternate" type="text/markdown" href="{{ page.edit_url }}">
   {% endif %}
   <link rel="describedby" href="{{ 'llms.txt' | url }}">
+  {% if page and page.meta and page.meta.api_base %}
+    <meta name="api-base" content="{{ page.meta.api_base }}">
+  {% endif %}
   {% if page and 'class="glightbox"' in page.content %}
     <link rel="stylesheet" href="{{ 'vendor/glightbox/glightbox.min.css' | url }}">
   {% endif %}
@@ -44,5 +51,8 @@
   {% endif %}
   {% if 'class="glightbox"' in page.content %}
     <script src="{{ 'vendor/glightbox/glightbox.min.js' | url }}"></script>
+  {% endif %}
+  {% if page.meta and page.meta.api_base %}
+    <script src="{{ 'skills/subwiki/scripts/live.js' | url }}"></script>
   {% endif %}
 {% endblock %}

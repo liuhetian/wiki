@@ -412,6 +412,9 @@ plugins:
         projects/wiki/zensical-upgrade/assets/releases.md: maintenance/zensical-upgrade/assets/releases.md
         # 2026-11-12 全站上锁从文章挪进 wiki 项目
         posts/static-site-lock.md: projects/wiki/static-site-lock.md
+        # 2026-11-17 项目文档、自己建站两页并进 skill 入口
+        skills/subwiki/project-docs.md: skills/subwiki/index.md#docs
+        skills/subwiki/site.md: skills/subwiki/index.md#site
 
 # 链接校验。0.0.53 及更早版本有并行竞态：同一份内容偶发（约 1/15 次构建）误报大量
 # "page does not exist"，产物 HTML 实测无差异，只能关掉。0.0.62 上复现不出来了 ——
@@ -436,6 +439,8 @@ nav:
           - 上线前的三层验收: posts/release-acceptance.md
       - Agent 架构:
           - Super-agent: posts/super-agent.md
+      - 部署与平台:
+          - EdgeOne 不只是 CDN: posts/edgeone.md
       - 领域地图:
           - posts/domains/index.md
           - 识别与分类:
@@ -488,6 +493,7 @@ nav:
               - 打码：key 和小字: projects/wiki/age-mosaic.md
               - 全站上锁: projects/wiki/static-site-lock.md
               - 复制本页 Markdown 源: projects/wiki/md-copy.md
+              - 子 wiki: projects/wiki/subwiki.md
               - 新机器初始化自检: projects/wiki/init-check.md
           - Docmost:
               - projects/docmost/index.md
@@ -581,6 +587,14 @@ nav:
               - projects/frappe-gantt/index.md
           - Hairline:
               - projects/hairline/index.md
+          - 牛牛便利贴:
+              - projects/clipboard/index.md
+              - 需求: projects/clipboard/requirements.md
+              - 给 AI 的接口说明: projects/clipboard/ai-api.md
+              - 部署与日常维护: projects/clipboard/ops.md
+              - 开发: projects/clipboard/dev.md
+              - 时间线: projects/clipboard/timeline.md
+              - 待办: projects/clipboard/todo.md
       - 硬件:
           - Kindle 常显信息屏:
               - projects/kindle-dashboard/index.md
@@ -1071,6 +1085,141 @@ nav:
               - 职业与人生:
                   - 深度天赋挖掘机: skills/chat-prompts/talent-miner.md
                   - 人生设计师: skills/chat-prompts/life-designer.md
+              - 指挥 Agent 的短句: skills/chat-prompts/agent-lines.md
+      - 写代码:
+          - 使用 wiki 管理项目开发:
+              - skills/subwiki/index.md
+              - 从已有项目整理文档: skills/subwiki/from-existing.md
+              - 动态数据: skills/subwiki/live.md
+              - 吸纳子 wiki: skills/subwiki/absorb.md
+          - FastAPI 后端:
+              - skills/fastapi/index.md
+              - 项目布局: skills/fastapi/reference/项目布局.md
+              - 数据库: skills/fastapi/reference/数据库.md
+              - RAG: skills/fastapi/reference/rag.md
+              - MCP: skills/fastapi/reference/mcp.md
+              - 优雅终止: skills/fastapi/reference/优雅终止.md
+              - 定时任务: skills/fastapi/reference/定时任务.md
+              - 配置管理: skills/fastapi/reference/配置管理.md
+              - 对话前端: skills/fastapi/reference/对话前端.md
+              - 运行时补丁: skills/fastapi/reference/运行时补丁.md
+              - 日志管理: skills/fastapi/reference/日志管理.md
+              - 测试: skills/fastapi/reference/测试.md
+              - 部署: skills/fastapi/reference/部署.md
+              - 监控: skills/fastapi/reference/监控.md
+              - 事后检查: skills/fastapi/reference/事后检查.md
+          - Dashboard 后台:
+              - skills/dashboard/index.md
+              - 表单:
+                  - 表单: skills/dashboard/reference/表单/表单.md
+                  - 向导表单: skills/dashboard/reference/表单/向导表单.md
+                  - 搜索下拉: skills/dashboard/reference/表单/搜索下拉.md
+                  - 文件上传: skills/dashboard/reference/表单/文件上传.md
+                  - 行内编辑: skills/dashboard/reference/表单/行内编辑.md
+              - 列表与表格:
+                  - 表格: skills/dashboard/reference/列表与表格/表格.md
+                  - 卡片列表: skills/dashboard/reference/列表与表格/卡片列表.md
+                  - 紧凑列表: skills/dashboard/reference/列表与表格/紧凑列表.md
+                  - 无限滚动: skills/dashboard/reference/列表与表格/无限滚动.md
+                  - 虚拟表格: skills/dashboard/reference/列表与表格/虚拟表格.md
+                  - 列控制: skills/dashboard/reference/列表与表格/列控制.md
+                  - 筛选面板: skills/dashboard/reference/列表与表格/筛选面板.md
+                  - 保存视图: skills/dashboard/reference/列表与表格/保存视图.md
+                  - CSV 导入导出: skills/dashboard/reference/列表与表格/CSV导入导出.md
+              - 富视图:
+                  - 看板: skills/dashboard/reference/富视图/看板.md
+                  - 日历: skills/dashboard/reference/富视图/日历.md
+                  - 树形: skills/dashboard/reference/富视图/树形.md
+                  - 时间线: skills/dashboard/reference/富视图/时间线.md
+                  - 主从视图: skills/dashboard/reference/富视图/主从视图.md
+              - 详情与页面:
+                  - 详情页: skills/dashboard/reference/详情与页面/详情页.md
+                  - 记录选项卡: skills/dashboard/reference/详情与页面/记录选项卡.md
+                  - 关联记录: skills/dashboard/reference/详情与页面/关联记录.md
+                  - 多栏布局: skills/dashboard/reference/详情与页面/多栏布局.md
+                  - 设置页: skills/dashboard/reference/详情与页面/设置页.md
+                  - 图表页: skills/dashboard/reference/详情与页面/图表页.md
+              - 展示与反馈:
+                  - 数据展示件: skills/dashboard/reference/展示与反馈/数据展示件.md
+                  - 反馈状态: skills/dashboard/reference/展示与反馈/反馈状态.md
+                  - 通知中心: skills/dashboard/reference/展示与反馈/通知中心.md
+                  - 审计日志: skills/dashboard/reference/展示与反馈/审计日志.md
+              - 平台能力:
+                  - 权限门控: skills/dashboard/reference/平台能力/权限门控.md
+                  - 登录方式: skills/dashboard/reference/平台能力/登录方式.md
+                  - 全局搜索: skills/dashboard/reference/平台能力/全局搜索.md
+                  - i18n: skills/dashboard/reference/平台能力/i18n.md
+                  - 计费: skills/dashboard/reference/平台能力/计费.md
+                  - 实时刷新: skills/dashboard/reference/平台能力/实时刷新.md
+          - 数据可视化:
+              - skills/data-visualization/index.md
+              - Lieflat Charts:
+                  - skills/data-visualization/lieflat-charts/index.md
+                  - 基础型 · Lupi Basics:
+                      - F1 · 梯级柱状图: skills/data-visualization/lieflat-charts/reference/f1-rung-bars.md
+                      - F2 · 发丝折线图: skills/data-visualization/lieflat-charts/reference/f2-hairline-line.md
+                      - F3 · 发丝面积图: skills/data-visualization/lieflat-charts/reference/f3-hairline-area.md
+                      - F4 · 刻线环形图: skills/data-visualization/lieflat-charts/reference/f4-tick-donut.md
+                      - F5 · 刻线横条图: skills/data-visualization/lieflat-charts/reference/f5-tick-rows.md
+                      - F6 · 并列梯级柱: skills/data-visualization/lieflat-charts/reference/f6-paired-rungs.md
+                      - F7 · 堆叠梯级柱: skills/data-visualization/lieflat-charts/reference/f7-stacked-rungs.md
+                      - F8 · 铅垂散点图: skills/data-visualization/lieflat-charts/reference/f8-plumb-scatter.md
+                      - F9 · 梯级瀑布图: skills/data-visualization/lieflat-charts/reference/f9-rung-waterfall.md
+                      - F10 · 点阵热力图: skills/data-visualization/lieflat-charts/reference/f10-dot-heat.md
+                      - F11 · 刻线进度表: skills/data-visualization/lieflat-charts/reference/f11-tick-gauge.md
+                      - F12 · 串珠哑铃图: skills/data-visualization/lieflat-charts/reference/f12-dumbbell-queue.md
+                  - 编辑型 · Lupi Editorial:
+                      - L1 · 上线扇形图: skills/data-visualization/lieflat-charts/reference/l1-launch-fan.md
+                      - L2 · 点阵级联图: skills/data-visualization/lieflat-charts/reference/l2-dot-cascade.md
+                      - L3 · 条码棒棒糖图: skills/data-visualization/lieflat-charts/reference/l3-barcode-lollipop.md
+                      - L4 · 弧形矩阵: skills/data-visualization/lieflat-charts/reference/l4-arc-matrix.md
+                      - L5 · 径向汇聚图: skills/data-visualization/lieflat-charts/reference/l5-radial-convergence.md
+                      - L6 · 贡献者星群: skills/data-visualization/lieflat-charts/reference/l6-cluster-field.md
+                      - L7 · 品牌光谱: skills/data-visualization/lieflat-charts/reference/l7-brand-spectrum.md
+                      - L8 · 点阵空间矩阵: skills/data-visualization/lieflat-charts/reference/l8-dotty-matrix.md
+                      - L9 · 气泡年鉴: skills/data-visualization/lieflat-charts/reference/l9-bubble-almanac.md
+                      - L10 · 径向拼布图: skills/data-visualization/lieflat-charts/reference/l10-radial-patchwork.md
+                      - L11 · 趋势谱系图: skills/data-visualization/lieflat-charts/reference/l11-trend-lineage.md
+                      - L12 · 归属柱廊图: skills/data-visualization/lieflat-charts/reference/l12-type-colonnade.md
+                      - L13 · 沙漏流图: skills/data-visualization/lieflat-charts/reference/l13-hourglass-stream.md
+                      - L14 · 百人点阵: skills/data-visualization/lieflat-charts/reference/l14-hundred-field.md
+                      - L15 · 选票刻线图: skills/data-visualization/lieflat-charts/reference/l15-ballot-tally.md
+                  - 快读型 · Glance:
+                      - G1 · 区间胶囊图: skills/data-visualization/lieflat-charts/reference/g1-range-capsules.md
+                      - G2 · 花瓣玫瑰图: skills/data-visualization/lieflat-charts/reference/g2-petal-rose.md
+                      - G3 · 粗体柱状图: skills/data-visualization/lieflat-charts/reference/g3-chunky-bars.md
+                      - G4 · 点阵华夫图: skills/data-visualization/lieflat-charts/reference/g4-dot-waffle.md
+                      - G5 · 象形柱状图: skills/data-visualization/lieflat-charts/reference/g5-pictorial-bar.md
+                      - G6 · 小型环形关系图: skills/data-visualization/lieflat-charts/reference/g6-circular-graph.md
+                      - G7 · 左右树状图: skills/data-visualization/lieflat-charts/reference/g7-tree-lr.md
+                      - G8 · 雨幕双面积图: skills/data-visualization/lieflat-charts/reference/g8-rainfall-dual-area.md
+                      - G9 · 散点变形图: skills/data-visualization/lieflat-charts/reference/g9-scatter-morph.md
+                      - G10 · 发散条形图: skills/data-visualization/lieflat-charts/reference/g10-diverging-bar.md
+                      - G11 · 小型力导向图: skills/data-visualization/lieflat-charts/reference/g11-force-graph.md
+                      - G12 · 错落波形图: skills/data-visualization/lieflat-charts/reference/g12-stagger-wave.md
+                      - G13 · 大切片图: skills/data-visualization/lieflat-charts/reference/g13-big-slice.md
+                      - G14 · 单轴图: skills/data-visualization/lieflat-charts/reference/g14-single-axis.md
+                      - G15 · 抖动条带图: skills/data-visualization/lieflat-charts/reference/g15-jitter-strip.md
+                      - G16 · 动态条形竞赛: skills/data-visualization/lieflat-charts/reference/g16-bar-race.md
+                      - G17 · 动态流图: skills/data-visualization/lieflat-charts/reference/g17-dynamic-stream.md
+                      - G18 · 一笔绘制与计数器: skills/data-visualization/lieflat-charts/reference/g18-draw-in-plus-counter.md
+                  - 独立交互大图:
+                      - B1 · 密集环形关系图: skills/data-visualization/lieflat-charts/reference/b1-circular-graph-dense.md
+                      - B2 · 密集力导向图: skills/data-visualization/lieflat-charts/reference/b2-force-graph-dense.md
+                      - B3 · 三段丝线图: skills/data-visualization/lieflat-charts/reference/b3-thread-triptych.md
+          - 前端画布:
+              - skills/canvas/index.md
+              - L1 · 原生无限画布: skills/canvas/reference/l1-vanilla.md
+              - L2 · React 手写画布: skills/canvas/reference/l2-react.md
+              - L3 · 数据驱动节点图: skills/canvas/reference/l3-nodegraph.md
+              - L4 · 白板: skills/canvas/reference/l4-whiteboard.md
+          - Hairline 等距线稿图:
+              - skills/hairline/index.md
+              - 十条规则: skills/hairline/reference/rules.md
+              - 从想法到概念: skills/hairline/reference/concepts.md
+              - 看样: skills/hairline/reference/look.md
+              - 从现成的 SVG 起: skills/hairline/reference/source.md
+          - 让布局说话: skills/ui-no-labels.md
       - 演示文稿:
           - PPT Master:
               - skills/ppt-master/index.md
@@ -1297,135 +1446,6 @@ nav:
                       - Sora 对话图文提示词: skills/video-gen/novel-to-comic-drama/image-video-prompt/sora-dialogue.md
                       - Sora 动画图文提示词: skills/video-gen/novel-to-comic-drama/image-video-prompt/sora-animation.md
                       - Wan2.2 图文提示词: skills/video-gen/novel-to-comic-drama/image-video-prompt/wan.md
-      - 写代码:
-          - FastAPI 后端:
-              - skills/fastapi/index.md
-              - 项目布局: skills/fastapi/reference/项目布局.md
-              - 数据库: skills/fastapi/reference/数据库.md
-              - RAG: skills/fastapi/reference/rag.md
-              - MCP: skills/fastapi/reference/mcp.md
-              - 优雅终止: skills/fastapi/reference/优雅终止.md
-              - 定时任务: skills/fastapi/reference/定时任务.md
-              - 配置管理: skills/fastapi/reference/配置管理.md
-              - 对话前端: skills/fastapi/reference/对话前端.md
-              - 运行时补丁: skills/fastapi/reference/运行时补丁.md
-              - 日志管理: skills/fastapi/reference/日志管理.md
-              - 测试: skills/fastapi/reference/测试.md
-              - 部署: skills/fastapi/reference/部署.md
-              - 监控: skills/fastapi/reference/监控.md
-              - 事后检查: skills/fastapi/reference/事后检查.md
-          - Dashboard 后台:
-              - skills/dashboard/index.md
-              - 表单:
-                  - 表单: skills/dashboard/reference/表单/表单.md
-                  - 向导表单: skills/dashboard/reference/表单/向导表单.md
-                  - 搜索下拉: skills/dashboard/reference/表单/搜索下拉.md
-                  - 文件上传: skills/dashboard/reference/表单/文件上传.md
-                  - 行内编辑: skills/dashboard/reference/表单/行内编辑.md
-              - 列表与表格:
-                  - 表格: skills/dashboard/reference/列表与表格/表格.md
-                  - 卡片列表: skills/dashboard/reference/列表与表格/卡片列表.md
-                  - 紧凑列表: skills/dashboard/reference/列表与表格/紧凑列表.md
-                  - 无限滚动: skills/dashboard/reference/列表与表格/无限滚动.md
-                  - 虚拟表格: skills/dashboard/reference/列表与表格/虚拟表格.md
-                  - 列控制: skills/dashboard/reference/列表与表格/列控制.md
-                  - 筛选面板: skills/dashboard/reference/列表与表格/筛选面板.md
-                  - 保存视图: skills/dashboard/reference/列表与表格/保存视图.md
-                  - CSV 导入导出: skills/dashboard/reference/列表与表格/CSV导入导出.md
-              - 富视图:
-                  - 看板: skills/dashboard/reference/富视图/看板.md
-                  - 日历: skills/dashboard/reference/富视图/日历.md
-                  - 树形: skills/dashboard/reference/富视图/树形.md
-                  - 时间线: skills/dashboard/reference/富视图/时间线.md
-                  - 主从视图: skills/dashboard/reference/富视图/主从视图.md
-              - 详情与页面:
-                  - 详情页: skills/dashboard/reference/详情与页面/详情页.md
-                  - 记录选项卡: skills/dashboard/reference/详情与页面/记录选项卡.md
-                  - 关联记录: skills/dashboard/reference/详情与页面/关联记录.md
-                  - 多栏布局: skills/dashboard/reference/详情与页面/多栏布局.md
-                  - 设置页: skills/dashboard/reference/详情与页面/设置页.md
-                  - 图表页: skills/dashboard/reference/详情与页面/图表页.md
-              - 展示与反馈:
-                  - 数据展示件: skills/dashboard/reference/展示与反馈/数据展示件.md
-                  - 反馈状态: skills/dashboard/reference/展示与反馈/反馈状态.md
-                  - 通知中心: skills/dashboard/reference/展示与反馈/通知中心.md
-                  - 审计日志: skills/dashboard/reference/展示与反馈/审计日志.md
-              - 平台能力:
-                  - 权限门控: skills/dashboard/reference/平台能力/权限门控.md
-                  - 登录方式: skills/dashboard/reference/平台能力/登录方式.md
-                  - 全局搜索: skills/dashboard/reference/平台能力/全局搜索.md
-                  - i18n: skills/dashboard/reference/平台能力/i18n.md
-                  - 计费: skills/dashboard/reference/平台能力/计费.md
-                  - 实时刷新: skills/dashboard/reference/平台能力/实时刷新.md
-          - 数据可视化:
-              - skills/data-visualization/index.md
-              - Lieflat Charts:
-                  - skills/data-visualization/lieflat-charts/index.md
-                  - 基础型 · Lupi Basics:
-                      - F1 · 梯级柱状图: skills/data-visualization/lieflat-charts/reference/f1-rung-bars.md
-                      - F2 · 发丝折线图: skills/data-visualization/lieflat-charts/reference/f2-hairline-line.md
-                      - F3 · 发丝面积图: skills/data-visualization/lieflat-charts/reference/f3-hairline-area.md
-                      - F4 · 刻线环形图: skills/data-visualization/lieflat-charts/reference/f4-tick-donut.md
-                      - F5 · 刻线横条图: skills/data-visualization/lieflat-charts/reference/f5-tick-rows.md
-                      - F6 · 并列梯级柱: skills/data-visualization/lieflat-charts/reference/f6-paired-rungs.md
-                      - F7 · 堆叠梯级柱: skills/data-visualization/lieflat-charts/reference/f7-stacked-rungs.md
-                      - F8 · 铅垂散点图: skills/data-visualization/lieflat-charts/reference/f8-plumb-scatter.md
-                      - F9 · 梯级瀑布图: skills/data-visualization/lieflat-charts/reference/f9-rung-waterfall.md
-                      - F10 · 点阵热力图: skills/data-visualization/lieflat-charts/reference/f10-dot-heat.md
-                      - F11 · 刻线进度表: skills/data-visualization/lieflat-charts/reference/f11-tick-gauge.md
-                      - F12 · 串珠哑铃图: skills/data-visualization/lieflat-charts/reference/f12-dumbbell-queue.md
-                  - 编辑型 · Lupi Editorial:
-                      - L1 · 上线扇形图: skills/data-visualization/lieflat-charts/reference/l1-launch-fan.md
-                      - L2 · 点阵级联图: skills/data-visualization/lieflat-charts/reference/l2-dot-cascade.md
-                      - L3 · 条码棒棒糖图: skills/data-visualization/lieflat-charts/reference/l3-barcode-lollipop.md
-                      - L4 · 弧形矩阵: skills/data-visualization/lieflat-charts/reference/l4-arc-matrix.md
-                      - L5 · 径向汇聚图: skills/data-visualization/lieflat-charts/reference/l5-radial-convergence.md
-                      - L6 · 贡献者星群: skills/data-visualization/lieflat-charts/reference/l6-cluster-field.md
-                      - L7 · 品牌光谱: skills/data-visualization/lieflat-charts/reference/l7-brand-spectrum.md
-                      - L8 · 点阵空间矩阵: skills/data-visualization/lieflat-charts/reference/l8-dotty-matrix.md
-                      - L9 · 气泡年鉴: skills/data-visualization/lieflat-charts/reference/l9-bubble-almanac.md
-                      - L10 · 径向拼布图: skills/data-visualization/lieflat-charts/reference/l10-radial-patchwork.md
-                      - L11 · 趋势谱系图: skills/data-visualization/lieflat-charts/reference/l11-trend-lineage.md
-                      - L12 · 归属柱廊图: skills/data-visualization/lieflat-charts/reference/l12-type-colonnade.md
-                      - L13 · 沙漏流图: skills/data-visualization/lieflat-charts/reference/l13-hourglass-stream.md
-                      - L14 · 百人点阵: skills/data-visualization/lieflat-charts/reference/l14-hundred-field.md
-                      - L15 · 选票刻线图: skills/data-visualization/lieflat-charts/reference/l15-ballot-tally.md
-                  - 快读型 · Glance:
-                      - G1 · 区间胶囊图: skills/data-visualization/lieflat-charts/reference/g1-range-capsules.md
-                      - G2 · 花瓣玫瑰图: skills/data-visualization/lieflat-charts/reference/g2-petal-rose.md
-                      - G3 · 粗体柱状图: skills/data-visualization/lieflat-charts/reference/g3-chunky-bars.md
-                      - G4 · 点阵华夫图: skills/data-visualization/lieflat-charts/reference/g4-dot-waffle.md
-                      - G5 · 象形柱状图: skills/data-visualization/lieflat-charts/reference/g5-pictorial-bar.md
-                      - G6 · 小型环形关系图: skills/data-visualization/lieflat-charts/reference/g6-circular-graph.md
-                      - G7 · 左右树状图: skills/data-visualization/lieflat-charts/reference/g7-tree-lr.md
-                      - G8 · 雨幕双面积图: skills/data-visualization/lieflat-charts/reference/g8-rainfall-dual-area.md
-                      - G9 · 散点变形图: skills/data-visualization/lieflat-charts/reference/g9-scatter-morph.md
-                      - G10 · 发散条形图: skills/data-visualization/lieflat-charts/reference/g10-diverging-bar.md
-                      - G11 · 小型力导向图: skills/data-visualization/lieflat-charts/reference/g11-force-graph.md
-                      - G12 · 错落波形图: skills/data-visualization/lieflat-charts/reference/g12-stagger-wave.md
-                      - G13 · 大切片图: skills/data-visualization/lieflat-charts/reference/g13-big-slice.md
-                      - G14 · 单轴图: skills/data-visualization/lieflat-charts/reference/g14-single-axis.md
-                      - G15 · 抖动条带图: skills/data-visualization/lieflat-charts/reference/g15-jitter-strip.md
-                      - G16 · 动态条形竞赛: skills/data-visualization/lieflat-charts/reference/g16-bar-race.md
-                      - G17 · 动态流图: skills/data-visualization/lieflat-charts/reference/g17-dynamic-stream.md
-                      - G18 · 一笔绘制与计数器: skills/data-visualization/lieflat-charts/reference/g18-draw-in-plus-counter.md
-                  - 独立交互大图:
-                      - B1 · 密集环形关系图: skills/data-visualization/lieflat-charts/reference/b1-circular-graph-dense.md
-                      - B2 · 密集力导向图: skills/data-visualization/lieflat-charts/reference/b2-force-graph-dense.md
-                      - B3 · 三段丝线图: skills/data-visualization/lieflat-charts/reference/b3-thread-triptych.md
-          - 前端画布:
-              - skills/canvas/index.md
-              - L1 · 原生无限画布: skills/canvas/reference/l1-vanilla.md
-              - L2 · React 手写画布: skills/canvas/reference/l2-react.md
-              - L3 · 数据驱动节点图: skills/canvas/reference/l3-nodegraph.md
-              - L4 · 白板: skills/canvas/reference/l4-whiteboard.md
-          - Hairline 等距线稿图:
-              - skills/hairline/index.md
-              - 十条规则: skills/hairline/reference/rules.md
-              - 从想法到概念: skills/hairline/reference/concepts.md
-              - 看样: skills/hairline/reference/look.md
-              - 从现成的 SVG 起: skills/hairline/reference/source.md
-          - 让布局说话: skills/ui-no-labels.md
       - 建站与部署:
           - 使用 EdgeOne:
               - skills/edgeone/index.md
@@ -1433,6 +1453,7 @@ nav:
               - 绑域名与 HTTPS: skills/edgeone/reference/domain.md
               - 全站上锁: skills/edgeone/reference/site-lock.md
               - Blob 存储: skills/edgeone/reference/blob.md
+              - 边缘函数的限制: skills/edgeone/reference/functions.md
       - 逆向与安全:
           - Windows 软件逆向: skills/exe-reverse.md
   - 收藏夹:
@@ -1463,6 +1484,7 @@ nav:
               - 七维拆解: maintenance/skills/seven-dimensions.md
               - 对话提示词: maintenance/skills/chat-prompts.md
               - 调研项目: maintenance/skills/project-research.md
+              - 使用 wiki 管理项目开发: maintenance/skills/subwiki.md
               - 收纳分诊: maintenance/skills/collect.md
               - 整理视频为笔记: maintenance/skills/video-note.md
               - 花卉动态生长海报: maintenance/skills/flower-growth-poster.md

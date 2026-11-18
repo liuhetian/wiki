@@ -1,0 +1,68 @@
+{
+  "_comment": "占位符服务端渲染的共享用例：Python（placeholders.py）和 TS（md-render.ts） 都要通过。responses 里 status>=400 或 body 为 \"<not-json>\" 表示请求失败。",
+  "cases": [
+    {
+      "name": "单个字段",
+      "input": "结果：{{ api(\"/api/add?a=1&b=2\").result }}\n",
+      "responses": { "/api/add?a=1&b=2": { "status": 200, "body": { "result": 3 } } },
+      "expected": "结果：3\n"
+    },
+    {
+      "name": "单引号与多级字段、数组下标",
+      "input": "{{ api('/api/x').data.items.0.name }}",
+      "responses": { "/api/x": { "status": 200, "body": { "data": { "items": [{ "name": "甲" }] } } } },
+      "expected": "甲"
+    },
+    {
+      "name": "无字段时输出整个对象的紧凑 JSON",
+      "input": "{{ api(\"/api/x\") }}",
+      "responses": { "/api/x": { "status": 200, "body": { "a": 1, "b": [true, null], "c": "中" } } },
+      "expected": "{\"a\":1,\"b\":[true,null],\"c\":\"中\"}"
+    },
+    {
+      "name": "缺失字段和 null 输出空串，布尔输出小写",
+      "input": "[{{ api(\"/api/x\").nope }}][{{ api(\"/api/x\").n }}][{{ api(\"/api/x\").t }}]",
+      "responses": { "/api/x": { "status": 200, "body": { "n": null, "t": false } } },
+      "expected": "[][][false]"
+    },
+    {
+      "name": "整数值的浮点数按整数输出",
+      "input": "{{ api(\"/api/x\").v }} {{ api(\"/api/x\").w }} {{ api(\"/api/x\") }}",
+      "responses": { "/api/x": { "status": 200, "body": { "v": 3.0, "w": 2.5 } } },
+      "expected": "3 2.5 {\"v\":3,\"w\":2.5}"
+    },
+    {
+      "name": "请求失败显示加载失败",
+      "input": "A{{ api(\"/api/bad\").x }}B{{ api(\"/api/notjson\").x }}C",
+      "responses": {
+        "/api/bad": { "status": 500, "body": { "error": "boom" } },
+        "/api/notjson": { "status": 200, "body": "<not-json>" }
+      },
+      "expected": "A加载失败B加载失败C"
+    },
+    {
+      "name": "围栏代码块与行内代码里的占位符保持原样",
+      "input": "实时：{{ api(\"/api/x\").v }}，写法：`{{ api(\"/api/x\").v }}`\n\n```markdown\n{{ api(\"/api/x\").v }}\n```\n\n~~~~\n```\n{{ api(\"/api/x\").v }}\n~~~~\n\n后面：{{ api(\"/api/x\").v }}\n",
+      "responses": { "/api/x": { "status": 200, "body": { "v": 7 } } },
+      "expected": "实时：7，写法：`{{ api(\"/api/x\").v }}`\n\n```markdown\n{{ api(\"/api/x\").v }}\n```\n\n~~~~\n```\n{{ api(\"/api/x\").v }}\n~~~~\n\n后面：7\n"
+    },
+    {
+      "name": "同一 URL 只请求一次（同页多处随机数一致）",
+      "input": "{{ api(\"/api/random\").value }}={{ api(\"/api/random\").value }}",
+      "responses": { "/api/random": { "status": 200, "body": { "value": 42 }, "once": true } },
+      "expected": "42=42"
+    },
+    {
+      "name": "不合法的占位符原样保留",
+      "input": "{{ page.title }} {{ api(/api/x).v }} {{ api(\"/api/x\").v",
+      "responses": {},
+      "expected": "{{ page.title }} {{ api(/api/x).v }} {{ api(\"/api/x\").v"
+    },
+    {
+      "name": "字符串的 length",
+      "input": "{{ api(\"/api/x\").s.length }}",
+      "responses": { "/api/x": { "status": 200, "body": { "s": "abcd" } } },
+      "expected": "4"
+    }
+  ]
+}

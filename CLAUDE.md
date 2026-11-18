@@ -44,7 +44,7 @@ bash scripts/course-smoke.sh               # 只在改 courses-src/git/assets/ �
 
 ## 加功能就记一笔时间线，内容不记
 
-改了 `mkdocs.yml` 里 nav 和 redirects 以外的部分、`overrides/`、`docs/stylesheets/`、`docs/vendor/` 下的 init 脚本、`deploy.sh`，或 `scripts/` 里作用于全站的脚本，在 `docs/projects/wiki/index.md` 的「能力时间线」一节末尾追加一条。新增文章、分区、收录资料不记，只为某一批内容服务的脚本（如 `check-leetcode.py`、`build-handdraw-gallery.py`）也不记。功能撤回也记，写进当初加它的那一条，标题注明撤回；实测后决定不用的官方功能也记一条，写清不用的理由，只是讨论过的不记。每条写：日期 + 分类（配置 / 前端 / 流水线）、用户提需求的原话（删节可以，key、口令、服务器地址不进）、一段改了哪里。原话取自本次对话；有专文的条目末尾加一行「详见」链过去；写法见写作规范「时间线」一节。
+改了 `mkdocs.yml` 里 nav 和 redirects 以外的部分、`overrides/`、`docs/stylesheets/`、`docs/vendor/` 下的 init 脚本、`deploy.sh`，或 `scripts/` 里作用于全站的脚本，在 `docs/projects/wiki/index.md` 的「能力时间线」一节末尾追加一条。新增文章、分区、收录资料不记，只为某一批内容服务的脚本（如 `check-leetcode.py`、`build-handdraw-gallery.py`）也不记。功能撤回也记，写进当初加它的那一条，标题注明撤回；实测后决定不用的官方功能也记一条，写清不用的理由，只是讨论过的不记。每条写：标题是日期 + 功能名，分类（配置 / 前端 / 流水线）写在标题属性上；下面依次是 `**问题**：` 当时卡在哪、要什么，`**方案**：` 一句话怎么解的，引用块放用户提需求的原话（删节可以，key、口令、服务器地址不进），最后 `??? note "改了哪里"` 折叠具体改动、实测数字和没选的做法；不写 commit 号。原话取自本次对话；有专文的条目末尾加一行「详见」链过去；写法见写作规范「时间线」一节。
 
 ## 两道链接校验
 

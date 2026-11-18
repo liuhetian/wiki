@@ -41,6 +41,7 @@ copy_source: true
 ├─ 现成的东西，不用提问题就能挑 ────────────→ Gallery，照 docs/skills/collect/gallery.md
 ├─ 一个通用问题，几种方案 ──────────────────→ 文章，照 docs/skills/wiki-guide/index.md 写
 └─ 一个具体的东西：仓库、软件 ──────────────→ 项目，照 docs/skills/project-research/index.md 的表挑概要、粗讲、细讲或写书
+    └─ 自己开发的项目，docs/ 里带着子 wiki ──→ 照 docs/skills/subwiki/absorb.md 整个目录吸纳
 ```
 
 对上几支时这样判，还分不开就把候选都摆给我：

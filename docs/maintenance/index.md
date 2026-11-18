@@ -33,8 +33,9 @@ description: "维护板块：skill 和 Agent 能力背后的事，分两部分�
 - [整理视频为笔记（video-note）](skills/video-note.md) —— 吸纳自 Rimagination/bili-note，钉在 08fe812；2026-10-17 改名，拆成下载、分析、输出三段，前两段并进 agent-io，本 skill 只留证据索引、篇幅预算和打分
 - [花卉动态生长海报（flower-growth-poster）](skills/flower-growth-poster.md) —— 整理自抖音「小洁AI实战」的设计教程；即梦平台存技能的操作和 Seedream、Seedance 的型号跳过，模型换成 agent-io 的 gpt-image-2.5 和 MiniMax H3 首尾帧；prompt 照画面关键词自己写，首帧改成截海报纸纹，补了接成循环一步
 - [anidoodle 代码手绘](skills/anidoodle.md) —— 吸纳自 alexgreensh/anidoodle，钉在 25aae33，73 篇文档全文中译；6 个撞网址或当不了索引的文件改名，正文路径改成相对链接，风格索引加配方列；registry.mjs 不再覆盖中文索引，docs-check.mjs 和 README 演示素材跳过
-- [对话提示词（chat-prompts）](skills/chat-prompts.md) —— 取自 prompt-cards.cyanfish.site 的 17 段对话 prompt，钉在 JS 包 index-IivKxZ0S.js；去掉卡牌包装按场景重组，修补了架构先知和深度天赋挖掘机各一处；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录；上线体检取自公众号刘小排r 的上线清单 prompt，原文存档在 skill 目录
+- [对话提示词（chat-prompts）](skills/chat-prompts.md) —— 取自 prompt-cards.cyanfish.site 的 17 段对话 prompt，钉在 JS 包 index-IivKxZ0S.js；去掉卡牌包装按场景重组，修补了架构先知和深度天赋挖掘机各一处；说人话取自小红书 Krypto说AI 的《让AI说人话》，原文和图存档在 skill 目录；上线体检取自公众号刘小排r 的上线清单 prompt，原文存档在 skill 目录；指挥 Agent 的短句取自 linux.do flamecode 的帖子，19 条收 15 句，原文存档在 skill 目录
 - [调研项目（project-research）](skills/project-research.md) —— 调研项目的维护记录：概要原称粗讲，功能级粗讲由 wenai 收纳提炼，另有细讲与写书；记录四档命名、分诊先问意图、证据规则和旧页迁移
+- [使用 wiki 管理项目开发（subwiki）](skills/subwiki.md) —— 使用 wiki 管理项目开发的维护记录：规范来自 2026-11-17 的一次三站实验和一份内部手册里的项目文档写作规范；记录从实验改了什么、哪些自动化实测后没用
 - [收纳分诊](skills/collect.md) —— 收纳分诊的维护记录：交接按任务携带必读规则、已选能力和条件参考，先查本站入口以复用页面与维护记录，保留先问意图的深度选择
 - [去 AI 味（qu-ai-wei）](skills/qu-ai-wei.md) —— 吸纳自 LifelongLazyLearner/qu-ai-wei，钉在 ed35e74；上游本来是中文，SKILL.md 和九份规则表原文照录，只把外链挪进脚注
 - [檄文（xi-wen）](skills/xi-wen.md) —— 吸纳自 YuanZHAO321/XiWen，钉在 eb32d38；上游本来是中文，主文件、四份精讲、五篇底本古檄原文照录，入口的文件路径改成链接
@@ -85,7 +86,7 @@ Gallery 里别人的成品从哪来、收的时候改了什么、上游更新了
 
 这个 wiki 自己依赖的东西跟到哪个版本、新版本升不升级。本站怎么搭起来的见[wiki 介绍](../projects/wiki/index.md)。
 
-- [Zensical 升级评估](zensical-upgrade/index.md) —— 本站钉在 Zensical 0.0.62、最新 0.0.74，11-04 复核仍先不升：有关的只有预览重建、草稿、minify 修复、description 转义几条；官方 llmstxt 只出转换版、不打算发源文件；privacy 能接管 mermaid 和 GLightbox；升级步骤
+- [Zensical 升级评估](zensical-upgrade/index.md) —— Zensical 钉在 0.0.62、最新 0.1.1：实测只差模板层，description 修好 9 页；官方 llmstxt 能出相对链接，但填空、分支、frontmatter、iframe 全丢，体积涨 68%；升级步骤
 
 ## 实测用的示例 { #fixtures }
 

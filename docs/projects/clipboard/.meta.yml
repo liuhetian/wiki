@@ -1,0 +1,2 @@
+# 主 wiki 吸纳后，页面向这里取实时数据；本站页面和接口同源，用不上
+api_base: "https://clip.liuhetian.life"

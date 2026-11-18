@@ -25,7 +25,17 @@ copy_source: true
 - [初始化项目（init-project）](init-project.md) —— 新项目初始化时用：让 AI 把四条编码守则写进项目根的 `CLAUDE.md` 或 `AGENTS.md`，之后每次会话都生效（吸纳自 multica-ai/andrej-karpathy-skills，MIT，中译；[维护记录](../maintenance/skills/init-project.md)）
 - [盘问我（grilling）](grilling.md) —— 给方案、决定或想法做压力测试时用，说 grill（盘问）类触发词也算：AI 按设计树一轮一轮编号提问、每题附推荐答案，事实自己查、决策等用户答，达成一致前不动手（吸纳自 mattpocock/skills，中译；[维护记录](../maintenance/skills/grilling.md)）
 - [带文档盘问（grill-with-docs）](grill-with-docs/index.md) —— 想把方案或设计盘问清楚、同时留下文档时用：按盘问我一轮轮拷问，边问边把术语写进 `GLOSSARY.md`、把难以回退的决策写成 ADR；依赖的[领域建模](grill-with-docs/domain-modeling/index.md)聊术语、写 ADR 时也能单独用（吸纳自 mattpocock/skills，中译；[维护记录](../maintenance/skills/grill-with-docs.md)）
-- [对话提示词](chat-prompts/index.md) —— 按场景挑一段对话 prompt 照做：理清问题、查证研究、学概念、写作与方案、职业与人生五类共 19 个，每个是独立的 skill，整页能直接粘进对话框（17 个取自 prompt-cards.cyanfish.site，去掉卡牌包装重组；说人话取自小红书 Krypto说AI 的《让AI说人话》；[维护记录](../maintenance/skills/chat-prompts.md)）
+- [对话提示词](chat-prompts/index.md) —— 按场景挑一段对话 prompt 照做：理清问题、查证研究、学概念、写作与方案、职业与人生五类共 19 个，每个是独立的 skill，整页能直接粘进对话框；在仓库里指挥 agent 另有一页 15 句短句（17 个取自 prompt-cards.cyanfish.site，去掉卡牌包装重组；说人话取自小红书 Krypto说AI 的《让AI说人话》；短句取自 linux.do flamecode 的帖子；[维护记录](../maintenance/skills/chat-prompts.md)）
+
+## 写代码
+
+- [使用 wiki 管理项目开发](subwiki/index.md) —— 自己开发的项目用 wiki 管文档时用：文档写在项目的 docs/ 里，六个固定板块讲背景与现状、需求、运维、开发、时间线和待办，再由项目的服务把它挂成站点，人读 HTML、AI 读 .md；要在文档里嵌接口的实时数据、要把它收进本 wiki 的项目板块，各有一页可选
+- [FastAPI 后端](fastapi/index.md) —— 依赖注入、SQLModel 分层建模、按需参考的一整套后端约定
+- [Dashboard 后台](dashboard/index.md) —— 形状目录 + 每形状一个可玩的活 demo
+- [数据可视化](data-visualization/index.md) —— 可视化 skill 的大目录；每套方法独立维护规则、模板与可运行 demo
+- [前端画布](canvas/index.md) —— 无限画布/白板/节点图的 L1–L4 四级选型，比较成本与实用性，每级一个可玩的活 demo
+- [Hairline 等距线稿图](hairline/index.md) —— 要给网页画一张会回应指针的等距线稿插图时用（产品页主图、空状态、文档配图；给一个想法，或一个现成的 SVG 图标、标志）：在 @lucasmarkes/hairline 的固定引擎上只写一个图形文件，守十条规则，构建、校验、拍八张图看样直到合格，交一个零依赖、双击就能打开的单文件 HTML（吸纳自 lucasmarkes/hairline，MIT；[维护记录](../maintenance/skills/hairline.md)）
+- [让布局说话（ui-no-labels）](ui-no-labels.md) —— 要让 AI 做界面的项目用：让 AI 把一条界面守则写进项目根的 `CLAUDE.md` 或 `AGENTS.md` —— 不加多余的次级标签和说明文字，让布局自己说明，免得界面堆满标签、像说明书（取自 @Ainward 的一张截图；[维护记录](../maintenance/skills/ui-no-labels.md)）
 
 ## 演示文稿
 
@@ -42,18 +52,9 @@ copy_source: true
 - [Vibe 知识短片](vibe-knowledge-film/index.md) —— 要做没有旁白、靠底部字幕讲的 16:9 知识短片时用（抖音「Vibe知识大赏」那类，给一个题目或一份文案）：先立事实表，给每个概念找外行认得的形象，文案和分镜表一起写，再用代码逐帧画出来、看着截图改，寓言、夜曲两套外观，配合成音效；交工程目录、成片和事实表。有人声口播的讲解片不用它（吸纳自 HeyChengC/vibe-knowledge-film，MIT；[维护记录](../maintenance/skills/vibe-knowledge-film.md)）
 - [视频生成](video-gen/index.md) —— 用生图、生视频模型做 AI 视频时用：按题材和环节挑子 skill；已收东方仙侠视觉导演，给仙侠场景写生图提示词（吸纳自 liyue-aigc/xianxia-visual-director）；小说转漫剧，把网文小说一步步做成竖屏漫剧或推文视频（整理自 linux.do 鸭老师分享的提示词包）
 
-## 写代码
-
-- [FastAPI 后端](fastapi/index.md) —— 依赖注入、SQLModel 分层建模、按需参考的一整套后端约定
-- [Dashboard 后台](dashboard/index.md) —— 形状目录 + 每形状一个可玩的活 demo
-- [数据可视化](data-visualization/index.md) —— 可视化 skill 的大目录；每套方法独立维护规则、模板与可运行 demo
-- [前端画布](canvas/index.md) —— 无限画布/白板/节点图的 L1–L4 四级选型，比较成本与实用性，每级一个可玩的活 demo
-- [Hairline 等距线稿图](hairline/index.md) —— 要给网页画一张会回应指针的等距线稿插图时用（产品页主图、空状态、文档配图；给一个想法，或一个现成的 SVG 图标、标志）：在 @lucasmarkes/hairline 的固定引擎上只写一个图形文件，守十条规则，构建、校验、拍八张图看样直到合格，交一个零依赖、双击就能打开的单文件 HTML（吸纳自 lucasmarkes/hairline，MIT；[维护记录](../maintenance/skills/hairline.md)）
-- [让布局说话（ui-no-labels）](ui-no-labels.md) —— 要让 AI 做界面的项目用：让 AI 把一条界面守则写进项目根的 `CLAUDE.md` 或 `AGENTS.md` —— 不加多余的次级标签和说明文字，让布局自己说明，免得界面堆满标签、像说明书（取自 @Ainward 的一张截图；[维护记录](../maintenance/skills/ui-no-labels.md)）
-
 ## 建站与部署
 
-- [使用 EdgeOne](edgeone/index.md) —— 用 EdgeOne Makers 发布网站时用：建中国大陆加速的项目并部署、绑备案域名配 HTTPS、给 COS 静态站全站上锁、用 Blob 存数据和文件；每样一页步骤，配脚本
+- [使用 EdgeOne](edgeone/index.md) —— 用 EdgeOne Makers 发布网站时用：建中国大陆加速的项目并部署、绑备案域名配 HTTPS、给 COS 静态站全站上锁、用 Blob 存数据和文件，每样一页步骤，配脚本；在边缘函数里写后端，另有一页实测出来的限制
 
 ## 逆向与安全
 

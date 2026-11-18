@@ -1,10 +1,10 @@
 ---
-description: "对话提示词（chat-prompts）的维护记录：17 段取自 prompt-cards.cyanfish.site，去掉卡牌包装按场景重组，钉在 JS 包 index-IivKxZ0S.js；说人话取自小红书 Krypto说AI 的《让AI说人话》，上线体检取自公众号刘小排r 的《许愿式编程上线前，把这段话复制给你的AI》，原文存档在 skill 目录的 assets/"
+description: "对话提示词（chat-prompts）的维护记录：17 段取自 prompt-cards.cyanfish.site，去掉卡牌包装按场景重组，钉在 JS 包 index-IivKxZ0S.js；说人话取自小红书 Krypto说AI 的《让AI说人话》，上线体检取自公众号刘小排r 的《许愿式编程上线前，把这段话复制给你的AI》，指挥 Agent 的短句取自 linux.do flamecode 的帖子，原文存档在 skill 目录的 assets/"
 ---
 
 # 对话提示词（chat-prompts）
 
-[对话提示词](../../skills/chat-prompts/index.md)的维护记录。19 段 prompt 来自三处；概要项目（当时称粗讲）、细讲项目原来也在这里，2026-10-20 挪成了顶层的[调研项目](project-research.md)。
+[对话提示词](../../skills/chat-prompts/index.md)的维护记录。19 段整页 prompt 来自三处，另有一页短句来自第四处；概要项目（当时称粗讲）、细讲项目原来也在这里，2026-10-20 挪成了顶层的[调研项目](project-research.md)。
 
 ## prompt-cards.cyanfish.site { #prompt-cards }
 
@@ -63,6 +63,22 @@ description: "对话提示词（chat-prompts）的维护记录：17 段取自 pr
     - 原文是一整串引用行，按原顺序切成 16 组加小标题
     - 成本告警那条原文写「we learned this one for $1,382.59」，「我们」指原作者，改成「原作者为这一条付过 1,382.59 美元」，免得 AI 当成用户自己的事
 - **没做的**：没有实测
+
+## linux.do《指挥Agent最爱用的Prompt》 { #linuxdo-agent-lines }
+
+[指挥 Agent 的短句](../../skills/chat-prompts/agent-lines.md)取自这里。
+
+- **上游**：linux.do 帖子《指挥Agent最爱用的Prompt！转载自数字生命卡兹克，收集使用，可收藏》，flamecode 2026-11-17 发，没写许可证，原帖链接未留。帖子说转载自数字生命卡兹克、又自己搜集了一些，哪几条出自谁没有标；卡兹克的原文没有追。帖尾转述 Lauren Tan 的「信任倒金字塔」和内外双循环，出处也没有给
+- **存档**：用户从帖子页粘贴的正文存在 [`assets/linuxdo-flamecode/post.md`](../../skills/chat-prompts/assets/linuxdo-flamecode/post.md)，一字没改，编号残缺照留；论坛页头的标签、浏览量没存，回帖没有抓
+- **跳过**：19 条收 15 句（第 14 条是两句）。第 5 条跨领域找最优解，被第 11 条包含；第 9 条找最慢的 PR，没说「慢」指什么；第 12 条低熵运行，是口号，第 15 条是能照做的版本；第 16 条只留「至少 3 种」并进第 6 条，「Level: xHigh」不要；第 19 条和第 17 条重，靠「不安全、偏执、疯狂」推模型的写法不要。Lauren Tan 那段是观点不是 prompt，只取一句进第 10 条
+- **翻译之外的改动**：
+    - 不拆成一句一页，15 句放进一页，按使用时机分六组，每句一个代码块单独复制；每句前的「什么时候用」是本站写的
+    - 原话照收，不扩写成分步骤的模版；去掉编号和「写结论常用的」「开局定场」「【洗掉ai味】」这类引子，句尾缺的句号补上
+    - 第 13 条的 XXXXX、第 10 条的 XX 时间改成【讨论的主题】【多长时间】：代码块里放不了填空输入框
+    - 第 6 条并入第 16 条：「边界情况」后加「至少列出 3 种，逐一做逆向压力测试」
+    - 第 10 条末尾加一句「能做成确定性检查（lint、类型、测试、脚本）的优先做成检查，不写成文字规则」，取自帖尾 Lauren Tan 的「每次纠正 Agent，先问能不能变成一条确定性检查」—— 原句列了规则、自动化、Skill 三样，没排先后
+    - 和现有整页 prompt 有重叠的照收（第一性原理、盘问我、跨领域借解各有一句短的）：短句给仓库里的 agent，整页模版给没有上下文的聊天框，分工写在入口页
+- **没做的**：没有实测；短句是否能替掉对应的整页模版，等用下来再定
 
 [^site]: [prompt-cards.cyanfish.site](https://prompt-cards.cyanfish.site/)，2026-10-16 读。
 [^xhs]: [让AI说人话，1.3万人收藏了这招](https://www.xiaohongshu.com/discovery/item/6abf6887000000000d02979c)，2026-10-17 读。

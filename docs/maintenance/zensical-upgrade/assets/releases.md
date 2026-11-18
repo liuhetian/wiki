@@ -1,6 +1,6 @@
-<!-- 存档：GitHub Releases 原文，0.0.70、UI 0.0.37 及以前 2026-10-15 抓取，0.0.71–0.0.73、UI 0.0.38–0.0.40 2026-10-28 补抓，0.0.74、UI 0.0.41 2026-11-04 补抓。zensical：https://github.com/zensical/zensical/releases ；ui：https://github.com/zensical/ui/releases 。每个版本的正文原样放在代码块里，不渲染外链图片。 -->
+<!-- 存档：GitHub Releases 原文，0.0.70、UI 0.0.37 及以前 2026-10-15 抓取，0.0.71–0.0.73、UI 0.0.38–0.0.40 2026-10-28 补抓，0.0.74、UI 0.0.41 2026-11-04 补抓，0.1.0–0.1.1、UI 0.0.42 2026-11-16 补抓。zensical：https://github.com/zensical/zensical/releases ；ui：https://github.com/zensical/ui/releases 。每个版本的正文原样放在代码块里，不渲染外链图片。 -->
 
-# Zensical 0.0.63–0.0.74 与 UI 0.0.31–0.0.41 发布说明（存档）
+# Zensical 0.0.63–0.1.1 与 UI 0.0.31–0.0.42 发布说明（存档）
 
 ## zensical v0.0.63（2026-09-19）
 
@@ -304,6 +304,73 @@ This version adds support for the `optimize` plugin and includes fixes for redir
 - 7bab4ef __zensical__, __compat__ – honor custom CA bundles in privacy downloads (#1089)
 ````
 
+## zensical v0.1.0（2026-11-05）
+
+<https://github.com/zensical/zensical/releases/tag/v0.1.0>
+
+````markdown
+## Zensical 0.1.0: one year in, and we're just getting started
+
+Exactly one year ago today, we released the first version of Zensical. Today, Zensical reaches its 0.1.0 milestone.
+
+This release closes the major remaining compatibility gaps with MkDocs, including support for many of its most widely used plugins. You can bring your existing MkDocs project to Zensical and continue using the workflows you're familiar with.
+
+With 0.1.0, Zensical enters **beta for the next three months**. Thousands of projects already use it, and we expect it to work reliably in production. The beta period gives us time to gather feedback, address remaining issues, and continue refining the APIs and ecosystem. If all goes as expected, we plan to move to stable after those three months.
+
+MkDocs compatibility has been essential to giving existing projects a path forward. It also gives us a foundation for what comes next. Our ambition is to build Zensical into a broader system for technical content: one that helps teams create, maintain, and publish across channels.
+
+[**Studio**](https://zensical.org/studio/) brings project understanding into the editor, helping you work with connected content. [**Spark**](https://zensical.org/spark/) brings practitioners and organizations closer to our work and gives them a voice in Zensical's direction. Both are optional, and they help sustain the team behind Zensical. Zensical is and will always be free.
+
+Thank you to everyone who has tried Zensical, reported issues, contributed, or shared what they need. This is the beginning of a much longer journey, and we're excited to build what comes next together.
+
+## Changelog
+
+### Bug fixes
+
+- 340c3ac – update vulnerable dependencies
+- d6fdf6e __zensical__, __compat__ – preserve configured and inherited static templates
+- 0d8201a __zensical__, __compat__ – validate MkDocs-compatible configuration before building
+- 3acbefe __zensical__, __compat__ – align extra template paths and warnings with MkDocs
+- 1ccc67a __zensical__, __compat__ – match MkDocs extra script module inference
+- ab99f8f __zensical__, __compat__ – align approved MkDocs URL configuration and page links
+````
+
+## zensical v0.1.1（2026-11-10）
+
+<https://github.com/zensical/zensical/releases/tag/v0.1.1>
+
+````markdown
+## Summary
+
+This release adds support for the `meta-descriptions` plugin and fixes issues with `llms.txt` references and table-reader indentation.
+
+The [user interface](https://github.com/zensical/ui/releases/tag/v0.0.42) includes fixes for instant previews, search, code copying, scrolling, and navigation, along with 182 new icons.
+
+The development server has received security improvements covering request validation, redirects, symlinks, and connection limits. It remains a **preview server** and is not intended for production use.
+
+## Changelog
+
+### Features
+
+- a417516 __zensical__, __compat__ – support meta-descriptions plugin
+
+### Bug fixes
+
+- 29a30ce – update ui to v0.0.42
+- 08a1397 __zensical__, __compat__ – resolve autorefs before HTML->Markdown conversion for llmstxt (#1141)
+- d777212 __zensical-serve__ – reject control characters in response headers
+- 4704b6d __zensical-serve__ – bound slow server connections
+- 167fb9c __zensical__ – omit livereload body from HEAD responses
+- d69cfd2 __zensical-serve__ – block external path redirects
+- b948bb0 __zensical-serve__ – limit WebSocket frame and message sizes
+- 64de31c __zensical__, __compat__ – prevent output symlink escapes
+- af3cb16 __zensical-serve__ – clean up disconnected websocket clients
+- eb0e232 __zensical__, __zensical-serve__ – validate preview hosts and websocket origins
+- 158df1b __zensical-serve__ – validate HTTP request framing
+- 5ee8670 __zensical-serve__ – prevent static file symlink escapes
+- 0dc285f __compat__ – fix indentation for table-reader contents (#1130)
+````
+
 ## ui v0.0.31（2026-09-19）
 
 <https://github.com/zensical/ui/releases/tag/v0.0.31>
@@ -528,4 +595,30 @@ This version fixes tag filtering in search, correctly escapes page descriptions,
 - 2382910 __ui__, __scripts__ – only show images for current theme variant in glightbox slides (#296)
 - bcdd0f9 __ui__, __templates__ – escape HTML descriptions (site and front-matter)
 - 280ff5a __ui__, __scripts__ – correct off-by-one error in bitmap negation (#293)
+````
+
+## ui v0.0.42（2026-11-10）
+
+<https://github.com/zensical/ui/releases/tag/v0.0.42>
+
+````markdown
+## Summary
+
+This version fixes freezes when using instant previews on pages with many links and preserves scroll position when loading additional search results. Overflowing navigation tabs now fade at their edges to indicate that more tabs are available. It also fixes code copying, unwanted scrolling when selecting code lines, scrollbar overlap with the floating table of contents, and outdated-version warnings on page load. Dependencies have been updated, unused type dependencies removed, and 182 new icons added.
+
+## Changelog
+
+### Features
+
+- c94958c __ui__ – updated Lucide icons
+
+### Bug fixes
+
+- 40d3e29 __ui__, __templates__ – resolve relative URL in outdated version banner (#306)
+- 40c5c4e __ui__, __scripts__ – preserve scroll position when loading search results (#307)
+- 3fca0ec __ui__, __scripts__ – cache sitemap for instant previews (#308)
+- 9dd9aa8 __ui__, __scripts__ – ignore unrelated wrapper IDs when copying code (#304)
+- fb8c5a9 __ui__, __modern__ – keep code scrollbars below the floating table of contents (#301)
+- 8a03f25 __ui__, __classic__, __modern__, __scripts__ – indicate overflowing navigation tabs (#295)
+- ed594fb __ui__, __scripts__ – preserve scroll position when selecting code lines (#300)
 ````
